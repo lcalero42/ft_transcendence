@@ -1,0 +1,42 @@
+name: Feature
+description: Define a clear, scoped feature.
+title: "[FEATURE] <short title>"
+labels: ["feature"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What feature or part of the project is this about?
+      placeholder: e.g. Implement the voting phase at the end of each round
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What is the expected result?
+      placeholder: e.g. Players can vote to eliminate a suspect, the undercover is revealed if they get the most votes
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Feature works end-to-end locally
+        - [ ] Edge cases and errors are handled (ties, disconnects during vote)
+        - [ ] Manual test passes in the browser with multiple players
+        - [ ] CI is green
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other issues or components required before starting
+      placeholder: e.g. Depends on room system, needs role assignment, issue #8
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Architecture notes, edge cases, references
+      placeholder: e.g. Vote must be server-authoritative, clients cannot see other votes until round ends

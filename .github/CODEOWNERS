@@ -1,0 +1,6 @@
+# CODEOWNERS for ft_IRC
+
+# Github repository configuration and actions
+/.github/                       @lcalero42
+.env
+.vscode

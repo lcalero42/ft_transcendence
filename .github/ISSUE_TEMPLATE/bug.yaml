@@ -1,0 +1,55 @@
+name: Bug
+description: Report a bug or unexpected behavior.
+title: "[BUG] <short description>"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong?
+      placeholder: e.g. The undercover player receives the same word as civilians
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to trigger the bug
+      placeholder: |
+        1. Start the app: docker compose up --build
+        2. Create a room with 4 players
+        3. Start a game
+        4. Check the word received by the undercover player
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should happen?
+      placeholder: e.g. The undercover player should receive a different but related word
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happens?
+      placeholder: e.g. All players including undercover receive the exact same word
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Relevant logs or errors
+      placeholder: |
+        docker compose logs -f
+        # paste relevant output here
+    validations:
+      required: false
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, Docker version
+      placeholder: e.g. Ubuntu 22.04, Chrome 124, Docker 26.1

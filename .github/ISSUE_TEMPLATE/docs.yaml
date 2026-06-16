@@ -1,0 +1,28 @@
+name: Docs
+description: Documentation work (README, architecture, runbook, ADRs).
+title: "[DOCS] <short title>"
+labels: ["docs"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What needs to be documented or updated?
+      placeholder: e.g. Document the game round lifecycle in docs/architecture.md
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be documented by the end?
+      placeholder: e.g. Clear overview of how roles are assigned and how votes are resolved
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Write example usage in README
+        - [ ] Add diagram to docs/architecture.md
