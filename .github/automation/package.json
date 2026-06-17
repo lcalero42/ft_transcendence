@@ -1,0 +1,18 @@
+{
+  "name": "gh-automation",
+  "private": true,
+  "scripts": {
+    "branch-status-transition": "ts-node src/entrypoints/branch-status-transition.ts",
+    "pr-status-transition":     "ts-node src/entrypoints/pr-status-transition.ts",
+    "merge-status-cleanup":     "ts-node src/entrypoints/merge-status-cleanup.ts"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node":     "^10.9.2",
+    "typescript":  "^5.4.0"
+  }
+}
+

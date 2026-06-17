@@ -1,7 +1,7 @@
-name: Feature
+name: Feat
 description: Define a clear, scoped feature.
-title: "[FEATURE] <short title>"
-labels: ["feature"]
+title: "[FEAT] <short title>"
+labels: ["feat"]
 body:
   - type: textarea
     id: context
