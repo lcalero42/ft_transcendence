@@ -1,7 +1,7 @@
-name: Infra
+name: Chore
 description: CI, Docker, tooling, GitHub configuration or other infrastructure work.
-title: "[INFRA] <short title>"
-labels: ["infra"]
+title: "[CHORE] <short title>"
+labels: ["type:chore"]
 body:
   - type: textarea
     id: context

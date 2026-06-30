@@ -1,0 +1,50 @@
+name: Pull Requests · Status Transition
+
+on:
+  pull_request_target:
+    types:
+      - opened
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: automation-pr-status-transition-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  reconcile-pr-status:
+    name: Reconcile PR status
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+          package_json_file: .github/automation/package.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .github/automation/.nvmrc
+          cache: pnpm
+          cache-dependency-path: .github/automation/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: .github/automation
+        run: pnpm install --frozen-lockfile
+
+      - name: Transition issue and PR to in review
+        working-directory: .github/automation
+        run: pnpm tsx src/entrypoints/pr-status-transition.ts
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
