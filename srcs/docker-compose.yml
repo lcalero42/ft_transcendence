@@ -3,11 +3,31 @@ services:
     build: ./containers/back
     container_name: back
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
-      - back_project:/app   # bind mount : ton code host -> conteneur
-      # - /app/node_modules   # volume anonyme : protège node_modules du conteneur
+      - back_project:/app
     ports:
       - "3000:3000"
+
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    user:103100
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ma_base
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d ma_base"]
+      interval: 3s
+      timeout: 2s
+      retries: 15
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
 
 volumes:
   back_project:
@@ -16,3 +36,10 @@ volumes:
       type: none
       o: bind
       device: ${PROJECT_PATH}/srcs/containers/back/project_volume
+
+  postgres_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/db/postgres_volume
