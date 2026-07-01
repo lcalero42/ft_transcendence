@@ -1,11 +1,8 @@
-FROM node:20-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY conf/package*.json ./
+CMD ["npm", "run", "start"]
 
-RUN npm install
-
-RUN npx prisma generate
-
-CMD ["npm", "run", "start:dev"]
+# CMD ["tail", "-f", "/dev/null"]
+# ENTRYPOINT ["/conf/entrypoint.sh"]

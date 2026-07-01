@@ -1,11 +1,11 @@
 services:
   back:
-    build: ./containers/back/
+    build: ./containers/back
     container_name: back
     restart: unless-stopped
     volumes:
       - back_project:/app   # bind mount : ton code host -> conteneur
-      - /app/node_modules   # volume anonyme : protège node_modules du conteneur
+      # - /app/node_modules   # volume anonyme : protège node_modules du conteneur
     ports:
       - "3000:3000"
 
@@ -15,4 +15,4 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${HOME}/data/back_project_volume
+      device: ${PROJECT_PATH}/srcs/containers/back/project_volume
