@@ -25,8 +25,6 @@ services:
     image: postgres:16
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -51,10 +49,3 @@ volumes:
       type: none
       o: bind
       device: ${PROJECT_PATH}/srcs/containers/back/project_volume
-
-  postgres_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/srcs/containers/db/postgres_data
