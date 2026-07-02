@@ -23,12 +23,14 @@ services:
   postgres:
     container_name: postgres
     image: postgres:16
-    ports:
-      - "5432:5432"
+    secrets:
+      - db_user
+      - db_password
+      - db_name
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: ma_base
+      POSTGRES_USER_FILE: /run/secrets/db_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+      POSTGRES_DB_FILE: /run/secrets/db_name
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d ma_base"]
       interval: 3s
@@ -49,3 +51,11 @@ volumes:
       type: none
       o: bind
       device: ${PROJECT_PATH}/srcs/containers/back/project_volume
+
+secrets:
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  db_name:
+    file: ./secrets/db_name.txt
