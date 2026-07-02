@@ -1,19 +1,32 @@
 services:
+  front:
+    build: ./containers/front
+    container_name: front
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - front_data:/app
+
   back:
     build: ./containers/back
     container_name: back
     restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - back_project:/app
     depends_on:
       postgres:
         condition: service_healthy
-    volumes:
-      - back_project:/app
-    ports:
-      - "3000:3000"
 
   postgres:
     container_name: postgres
     image: postgres:16
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -23,12 +36,15 @@ services:
       interval: 3s
       timeout: 2s
       retries: 15
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
 volumes:
+  front_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/front/front_data
+
   back_project:
     driver: local
     driver_opts:
