@@ -4,5 +4,5 @@ WORKDIR /app
 
 # COPY --chmod=755 ./conf/entrypoint.sh /tmp/entrypoint.sh
 
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "run", "dev"]
 # ENTRYPOINT ["/tmp/entrypoint.sh"]
