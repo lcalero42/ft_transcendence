@@ -1,7 +1,7 @@
 name: Chore
 description: CI, Docker, tooling, GitHub configuration or other infrastructure work.
 title: "[CHORE] <short title>"
-labels: ["type:chore"]
+labels: ["type:chore", "status:to-do"]
 body:
   - type: textarea
     id: context

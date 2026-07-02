@@ -1,7 +1,7 @@
 name: Docs
 description: Documentation work (README, architecture, runbook, ADRs).
 title: "[DOCS] <short title>"
-labels: ["type:docs"]
+labels: ["type:docs", "status:to-do"]
 body:
   - type: textarea
     id: context
