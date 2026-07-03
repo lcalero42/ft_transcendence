@@ -16,6 +16,10 @@ services:
       - "3000:3000"
     volumes:
       - back_project:/app
+    secrets:
+      - db_user
+      - db_password
+      - db_name
     depends_on:
       postgres:
         condition: service_healthy

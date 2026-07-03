@@ -1,8 +1,13 @@
 #!/bin/sh
 set -e
 
-#install package.json dependencies (colyseus)
-npm ci
+DB_USER=$(cat /run/secrets/db_user)
+DB_PASSWORD=$(cat /run/secrets/db_password)
+DB_NAME=$(cat /run/secrets/db_name)
 
-#launch nodeJs server :3000
+export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public"
+
+npm ci
+npx prisma migrate deploy
+npx prisma generate
 npm run start
