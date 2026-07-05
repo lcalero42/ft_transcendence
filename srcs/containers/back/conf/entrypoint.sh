@@ -10,4 +10,9 @@ export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_N
 npm ci
 npx prisma migrate deploy
 npx prisma generate
+npx prisma studio --browser none &
 npm run start
+
+# while :; do
+#     sleep infinity
+# done
