@@ -7,9 +7,69 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
-model User_test {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+model Player {
+  id                Int       @id @default(autoincrement())
+  name              String
+  email             String    @unique
+  createdAt         DateTime  @default(now())
+  
+  rooms             Rooms[]
+  game_player       Game_Players[]
+}
+
+model Rooms {
+  id                Int       @id @default(autoincrement())
+  name              String
+  min_players       Int       @default(3)  
+  max_players       Int       @default(6)  
+  colyseus_room_id  String?
+  created_at        DateTime  @default(now())
+  
+  created_by        Int
+  created_by_rel    Player      @relation(fields: [created_by], references: [id])
+
+  games             Games[]
+}
+
+enum GameStatus {
+  waiting
+  playing
+  finished
+}
+
+model Games {
+  id                Int         @id @default(autoincrement())
+  status            GameStatus  @default(waiting)
+  civilian_word     String?
+  undecover_word    String?
+  created_at        DateTime    @default(now())
+  finished_at       DateTime?
+
+  room_id           Int
+  room_id_rel       Rooms       @relation(fields: [room_id], references: [id])
+
+  game_player       Game_Players[]
+}
+
+enum Role {
+  civilian
+  undercover
+}
+
+model Game_Players {
+  id                Int         @id @default(autoincrement())
+  role              Role
+  eliminated_at     DateTime?
+
+  game_id           Int
+  game_id_rel       Games       @relation(fields: [game_id], references: [id])
+  
+  player_id         Int
+  player_id_rel     Player      @relation(fields: [player_id], references: [id])
+}
+
+model Word_Pair {
+  id                Int         @id @default(autoincrement())  
+  civilian_word     String
+  undercover_word   String
 }
