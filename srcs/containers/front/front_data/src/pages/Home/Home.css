@@ -1,0 +1,24 @@
+.page {
+	background-color: #0d0a1f;
+	color: white;
+	min-height: 100vh;
+	font-family: sans-serif;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 30px;
+}
+
+.main {
+	text-align: center;
+	padding: 40px 40px;
+}
+
+.room-list {
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+}

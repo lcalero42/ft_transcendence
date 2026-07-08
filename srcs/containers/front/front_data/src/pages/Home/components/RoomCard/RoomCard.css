@@ -1,0 +1,33 @@
+.room-card {
+	background-color: #1e1a3a;
+	border-radius: 12px;
+	padding: 16px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	text-decoration: none;
+	color: inherit;
+}
+
+.room-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.room-name {
+	margin: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.room-mode {
+  margin: 0;
+  color: #a1a1aa;
+}
+
+.room-count {
+  margin-left: auto;
+  color: #a1a1aa;
+}
