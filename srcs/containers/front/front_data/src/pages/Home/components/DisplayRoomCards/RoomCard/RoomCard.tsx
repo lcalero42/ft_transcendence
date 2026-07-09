@@ -1,7 +1,7 @@
 import "./RoomCard.css";
 import { Link } from "react-router-dom";
 
-type RoomCardProps = {
+export type RoomCardProps = {
 	id: number;
 	name: string;
 	players: number;
@@ -17,7 +17,7 @@ function RoomCard({id, name, players}: RoomCardProps) {
 				<div className="room-row">
 					<span className="icon">🥷</span>
 					<p className="room-mode">undercover</p>
-					<span className="room-count">{players}/10</span>
+					<span className="small-oval">{players}/10</span>
 				</div>
 		</Link>
 	);

@@ -1,10 +1,11 @@
 import "./Home.css";
-import RoomCard from "./components/RoomCard/RoomCard";
 import CreateRoomButton from "./components/CreateRoomButton/CreateRoomButton";
+import DisplayRoomCards from "./components/DisplayRoomCards/DisplayRoomCards";
 import Logo from "../../components/Logo/Logo";
 import Title from "../../components/Title/Title";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import { useState } from 'react';
+import Credit from "../../components/Credit/Credit";
 
 function Home() {
 	const rooms = [
@@ -26,16 +27,14 @@ function Home() {
 
 			<main className="main">
 				<Title />
-		        <h5 className="subtitle">jiraaaaaaaaaaaaafffffffffffffffffffffffffff=)</h5>
+
+				<h5 className="subtitle"> Rejoignez une partie et démasquez les imposteurs.</h5>
 
 				<CreateRoomButton />
-				<section className="room-list">
-					{rooms.map((room) => (
-						<RoomCard key={room.id} {...room} />
-					))}
-				</section>
-				<p>
-					<p/>
+
+				<DisplayRoomCards rooms={rooms} />
+
+				<Credit />
 			</main>
 		 </div>
   );

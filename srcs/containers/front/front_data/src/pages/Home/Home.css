@@ -1,8 +1,9 @@
 .page {
-	background-color: #0d0a1f;
+	background: linear-gradient(#040325, #170e48);
 	color: white;
 	min-height: 100vh;
 	font-family: sans-serif;
+
 }
 
 .header {
@@ -17,8 +18,7 @@
 	padding: 40px 40px;
 }
 
-.room-list {
-	display: flex;
-	flex-direction: column;
-	gap: 15px;
+.subtitle {
+	text-align: left;
+	margin-left: 44px;
 }
