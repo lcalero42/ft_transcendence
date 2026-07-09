@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 function CreateRoomButton() {
 	 return (
 		<Link to={`/create-room`} className="create-room-card">
-      		<h3 className="label">Create Game</h3>
+      		<h3 className="label">Create Room</h3>
 		</Link>
 
   );

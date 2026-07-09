@@ -34,6 +34,8 @@ function Home() {
 						<RoomCard key={room.id} {...room} />
 					))}
 				</section>
+				<p>
+					<p/>
 			</main>
 		 </div>
   );
