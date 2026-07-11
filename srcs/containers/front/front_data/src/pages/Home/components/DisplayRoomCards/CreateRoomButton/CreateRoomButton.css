@@ -6,14 +6,13 @@
 .create-room-card {
 	box-sizing: border-box;
 	background-color: #17103c;
-	/* background: linear-gradient(180deg, #17103c, #50337f); */
 	border-radius: 12px;
 	padding: 16px 20px;
 	display: flex;
+	align-items: center;
 	justify-content: center;
 	text-decoration: none;
 	color: inherit;
-	margin: 15px 0;
 	gap: 15px;
 	border: 1.5px dashed #8e5adf;
 }

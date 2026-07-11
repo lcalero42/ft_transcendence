@@ -1,11 +1,11 @@
 import "./Home.css";
-import CreateRoomButton from "./components/CreateRoomButton/CreateRoomButton";
 import DisplayRoomCards from "./components/DisplayRoomCards/DisplayRoomCards";
 import Logo from "../../components/Logo/Logo";
 import Title from "../../components/Title/Title";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
-import { useState } from 'react';
 import Credit from "../../components/Credit/Credit";
+import FeatureHighlights from "./components/FeatureHighlights/FeatureHighlights";
+import { useState } from 'react';
 
 function Home() {
 	const rooms = [
@@ -30,12 +30,13 @@ function Home() {
 
 				<h5 className="subtitle"> Rejoignez une partie et démasquez les imposteurs.</h5>
 
-				<CreateRoomButton />
-
 				<DisplayRoomCards rooms={rooms} />
 
-				<Credit />
+				<FeatureHighlights />
 			</main>
+
+			<Credit />
+
 		 </div>
   );
 }
