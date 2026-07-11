@@ -8,12 +8,14 @@
 	flex-direction: column;
 	text-decoration: none;
 	color: inherit;
+	min-width: 0;
 }
 
 .room-row {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	min-width: 0;
 }
 
 .room-name {
@@ -21,11 +23,14 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	min-width: 0;
+	flex: 1;
 }
 
 .room-mode {
   margin: 0;
   color: #a1a1aa;
+  flex-shrink: 0;
 }
 
 .room-count {
