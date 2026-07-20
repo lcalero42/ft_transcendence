@@ -25,17 +25,13 @@
 	text-overflow: ellipsis;
 	min-width: 0;
 	flex: 1;
+	text-align: left;
 }
 
 .room-mode {
   margin: 0;
   color: #a1a1aa;
   flex-shrink: 0;
-}
-
-.room-count {
-  margin-left: auto;
-  color: #a1a1aa;
 }
 
 .room-list {
@@ -53,18 +49,12 @@
 	}
 }
 
-.small-oval {
+.room-count {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 
-	width: 60px;
-	height: 28px;
-	border-radius: 50%;
-
-	background-color: #45237f;
-	color: white;
-	font-size: 1.2rem;
-	font-weight: bold;
+	color: #a1a1aa;
+	font-size: 0.85rem;
 	margin-left: auto;
 }

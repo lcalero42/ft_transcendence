@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 .page {
 	background: linear-gradient(#040325, #170e48);
 	color: white;
 	min-height: 100vh;
-	font-family: sans-serif;
+	font-family: 'poppins';
 
 	display: flex;
 	flex-direction: column;
@@ -12,12 +14,12 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 30px;
+	padding: 20px 10vw;
 }
+
 .main {
-	/* margin: 0 auto; */
 	width: 100%;
-	padding: 40px 40px;
+	padding: 10vw;
 	text-align: center;
 	min-width: 0;
 	flex: 1;
@@ -26,5 +28,17 @@
 
 .subtitle {
 	text-align: left;
-	margin-left: 44px;
+	color: #695e83;
+}
+
+.home-title {
+	text-align: center;
+	margin: 0 auto;
+}
+
+@media (min-width: 768px)
+{
+	.home-title {
+		text-align: left;
+	}
 }

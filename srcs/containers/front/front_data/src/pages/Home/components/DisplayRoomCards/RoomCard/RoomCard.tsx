@@ -17,7 +17,7 @@ function RoomCard({id, name, players}: RoomCardProps) {
 				<div className="room-row">
 					<span className="icon">🥷</span>
 					<p className="room-mode">undercover</p>
-					<span className="small-oval">{players}/10</span>
+					<span className="room-count">{players}/10</span>
 				</div>
 		</Link>
 	);

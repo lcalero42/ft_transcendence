@@ -26,8 +26,9 @@ function Home() {
 			</header>
 
 			<main className="main">
-				<Title />
-
+				<div className="home-title">
+					<Title />
+				</div>
 				<h5 className="subtitle"> Rejoignez une partie et démasquez les imposteurs.</h5>
 
 				<DisplayRoomCards rooms={rooms} />
