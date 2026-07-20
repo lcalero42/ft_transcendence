@@ -11,6 +11,7 @@ echo "DATABASE_URL=${DATABASE_URL}" > /app/.env
 npm ci
 npx prisma migrate deploy
 npx prisma generate
+npx prisma db seed
 npx prisma studio --browser none &
 npm run start
 
