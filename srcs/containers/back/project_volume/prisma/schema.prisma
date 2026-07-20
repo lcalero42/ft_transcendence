@@ -69,8 +69,7 @@ model Game_Players {
 }
 
 model Word_Pair {
-  id                Int         @id @default(autoincrement())  
-
+  id                Int         @id @default(autoincrement())
   civilian_word     String
   undercover_word   String
 }

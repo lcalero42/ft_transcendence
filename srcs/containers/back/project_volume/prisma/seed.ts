@@ -28,7 +28,7 @@ async function main() {
   });
 
   const marley = await prisma.player.upsert({
-	where: { email: "bob@prisma.io" },
+	where: { email: "marley@prisma.io" },
 	update: {},
 	create: {
 		name: "Marley",
@@ -84,6 +84,27 @@ async function main() {
 		role: "civilian",
 		game_id: aliceRoomGame1.id,
 		player_id: marley.id
+	}
+  })
+
+  const wp_1 = await prisma.word_Pair.create({
+	data: {
+		civilian_word: "lapin",
+		undercover_word: "cheval"
+	}
+  })
+
+  const wp_2 = await prisma.word_Pair.create({
+	data: {
+		civilian_word: "chat",
+		undercover_word: "tigre"
+	}
+  })
+
+  const wp_3 = await prisma.word_Pair.create({
+	data: {
+		civilian_word: "telephone",
+		undercover_word: "ordinateur"
 	}
   })
 
