@@ -8,7 +8,7 @@ LOG_DIR      := logs
 
 .PHONY: all up down front back re re-front re-back \
         logs logs-front ps clean fclean prisma-migrate \
-		prisma-generate help
+		prisma-generate help build
 
 # -----------------------------------------------------------------------------
 # Default target
@@ -18,8 +18,13 @@ all: up
 # -----------------------------------------------------------------------------
 # Build & run
 # -----------------------------------------------------------------------------
-up: ## Build and start all services (front + back + postgres)
+
+build: ## Build and start all services (front + back + postgres)
 	$(COMPOSE) up --build -d
+
+up: ## Start all services (front + back + postgres)
+	$(COMPOSE) up  -d
+
 
 down: ## Stop and remove all containers
 	$(COMPOSE) down
