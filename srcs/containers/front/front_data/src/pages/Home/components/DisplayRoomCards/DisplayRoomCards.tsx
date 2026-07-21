@@ -11,7 +11,7 @@ function DisplayRoomCards({rooms}: DisplayRoomCardsProps) {
 		<section className="room-list">
 			<CreateRoomButton />
 			{rooms.map((room) => (
-				<RoomCard key={room. id} {...room} />
+				<RoomCard key={room.id} {...room} />
 			))}
 		</section>
 	);

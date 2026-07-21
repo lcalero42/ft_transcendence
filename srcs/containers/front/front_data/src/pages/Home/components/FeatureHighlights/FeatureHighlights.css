@@ -3,12 +3,12 @@
 }
 
 @media (min-width: 768px){
+
 	.feature-highlights {
 		background-color: #17103c;
-		border-left: 1px solid #8e5adf;
+		border-left: 2px solid #8e5adf;
 		border-radius: 12px;
 		padding: 24px;
-		padding: 16 20px;
 		gap: 24px;
 		display: flex;
 		margin-top: clamp(15px, 2vw, 30px);
@@ -19,11 +19,6 @@
 		align-items: center;
 		gap: 12px;
 		flex: 1;
-		padding: 0 12px;
-	}
-
-	.feature-item:not(:last-child) {
-		border-right: 1px solid #3a3168;
 	}
 
 	.icon-circle {
@@ -60,6 +55,6 @@
 		text-align: left;
 		margin: 0;
 		color: #a1a1aa;
-		font-size: 0.85rem;
+		font-size: 0.8rem;
 	}
 }

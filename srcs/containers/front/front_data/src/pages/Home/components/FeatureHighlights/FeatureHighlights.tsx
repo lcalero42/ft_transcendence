@@ -13,19 +13,19 @@ function FeatureHighlights() {
 	return (
 		<section className="feature-highlights">
 			{features.map((feature, index) => (
-				<div className="feature-item" key={feature.title}>
-					<div className="icon-circle">
-						<div className="feature-icon"
-  							style={{
-								WebkitMaskImage: `url("${feature.icon}")`,
-								maskImage: `url("${feature.icon}")` }}
-					/>
-				</div>
-					<div className="feature-text">
-						<h3>{feature.title}</h3>
-						<p>{feature.description}</p>
+					<div className="feature-item" key={feature.title}>
+						<div className="icon-circle">
+							<div className="feature-icon"
+								style={{
+									WebkitMaskImage: `url("${feature.icon}")`,
+									maskImage: `url("${feature.icon}")` }}
+							/>
+						</div>
+						<div className="feature-text">
+							<h3>{feature.title}</h3>
+							<p>{feature.description}</p>
+						</div>
 					</div>
-				</div>
 			))}
 		</section>
 	);
