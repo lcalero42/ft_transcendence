@@ -7,8 +7,6 @@ REPO_ROOT="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)"
 
 source "${SCRIPT_DIR}/../utils/log.sh"
 
-EXPECTED_PNPM="10.11.0"
-
 FIX=false
 if [[ "${1:-}" == "--fix" ]]; then
   FIX=true
@@ -28,16 +26,8 @@ lint_package() {
 
   cd "$target_dir"
 
-  local actual_pnpm
-  actual_pnpm="$(pnpm --version)"
-  if [[ "$actual_pnpm" != "$EXPECTED_PNPM" ]]; then
-    log_error "Expected pnpm ${EXPECTED_PNPM} in ${target_dir}, found ${actual_pnpm}."
-    FAILED+=("$package_name")
-    return
-  fi
-
   log_group "Linting ${package_name} (${target_dir}) [${target_script}]"
-  if ! pnpm run "$target_script"; then
+  if ! npm run "$target_script"; then
     log_end
     log_error "ESLint failed in ${package_name}"
     FAILED+=("$package_name")
@@ -50,7 +40,7 @@ lint_package() {
 FAILED=()
 
 lint_package "${REPO_ROOT}/srcs/containers/back/project_volume" "lint:check" "lint"
-lint_package "${REPO_ROOT}/srcs/containers/front/front_data" "lint" "lint"
+lint_package "${REPO_ROOT}/srcs/containers/front/front_data" "lint" "lint:fix"
 
 if [[ ${#FAILED[@]} -gt 0 ]]; then
   log_error "ESLint failed in: ${FAILED[*]}"
