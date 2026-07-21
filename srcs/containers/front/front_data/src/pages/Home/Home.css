@@ -14,12 +14,14 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 10vw;
+	padding: 20px 15vw;
+	/* padding: 20px 10vw; */
 }
 
 .main {
 	width: 100%;
-	padding: 10vw;
+	padding: 15vw;
+	/* padding: 10vw; */
 	text-align: center;
 	min-width: 0;
 	flex: 1;

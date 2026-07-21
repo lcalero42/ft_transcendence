@@ -1,6 +1,7 @@
 
 .label {
 	margin: 0;
+	-webkit-text-stroke: 0.7px #a066f6;
 }
 
 .create-room-card {

@@ -26,6 +26,8 @@
 	min-width: 0;
 	flex: 1;
 	text-align: left;
+	-webkit-text-stroke: 0.7px #a066f6;
+
 }
 
 .room-mode {
