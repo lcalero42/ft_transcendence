@@ -1,0 +1,51 @@
+name: Lint
+
+on:
+  pull_request:
+    paths-ignore:
+      - .github/automation/**
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint core project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.11.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            srcs/containers/back/project_volume/pnpm-lock.yaml
+            srcs/containers/front/front_data/pnpm-lock.yaml
+
+      - name: Install backend dependencies
+        working-directory: srcs/containers/back/project_volume
+        run: pnpm install --frozen-lockfile
+
+      - name: Install frontend dependencies
+        working-directory: srcs/containers/front/front_data
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ESLint
+        run: .github/scripts/ci/ci-lint-eslint.sh
