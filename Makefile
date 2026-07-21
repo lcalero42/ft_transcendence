@@ -7,13 +7,18 @@ COMPOSE      := docker compose -f $(COMPOSE_FILE)
 LOG_DIR      := logs
 PROJECT_NAME := $(shell basename $$(pwd))
 
+ENV_FILE     := srcs/.env
+SECRETS_DIR  := srcs/secrets
+SECRETS      := db_user.txt db_password.txt db_name.txt
+
+RED    := \033[0;31m
 YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
 .PHONY: all up down front back re re-front re-back \
         logs logs-front logs-back ps clean fclean prisma-migrate \
-        prisma-generate help build
+        prisma-generate help build check-env check-secrets
 
 # -----------------------------------------------------------------------------
 # Default target
@@ -21,22 +26,50 @@ NC     := \033[0m
 all: help
 
 # -----------------------------------------------------------------------------
+# Safety checks
+# -----------------------------------------------------------------------------
+check-env: ## Verify srcs/.env exists and PROJECT_PATH is set inside it
+	@if [ ! -f "$(ENV_FILE)" ]; then \
+		printf "$(RED)Error:$(NC) $(ENV_FILE) not found.\n"; \
+		printf "$(YELLOW)Fix:$(NC) create $(ENV_FILE) before running make (see README).\n"; \
+		exit 1; \
+	fi
+	@value=$$(grep -E '^PROJECT_PATH=' $(ENV_FILE) | cut -d '=' -f2-); \
+	if [ -z "$$value" ]; then \
+		printf "$(RED)Error:$(NC) PROJECT_PATH is missing or empty in $(ENV_FILE)\n"; \
+		printf "$(YELLOW)Fix:$(NC) add this line to $(ENV_FILE):\n"; \
+		printf "  PROJECT_PATH=$$(pwd)\n"; \
+		exit 1; \
+	fi
+
+check-secrets: ## Verify secret files exist and are not empty
+	@for f in $(SECRETS); do \
+		if [ ! -f "$(SECRETS_DIR)/$$f" ]; then \
+			printf "$(RED)Error:$(NC) missing $(SECRETS_DIR)/$$f - see README for secrets setup\n"; \
+			exit 1; \
+		fi; \
+		if [ ! -s "$(SECRETS_DIR)/$$f" ]; then \
+			printf "$(RED)Error:$(NC) $(SECRETS_DIR)/$$f is empty - fill it in before running make\n"; \
+			exit 1; \
+		fi; \
+	done
+
+# -----------------------------------------------------------------------------
 # Build & run
 # -----------------------------------------------------------------------------
-
-build: ## Build and start all services (front + back + postgres)
+build: check-env check-secrets ## Build and start all services (front + back + postgres)
 	$(COMPOSE) up --build -d
 
-up: ## Start all services (front + back + postgres)
+up: check-env check-secrets ## Start all services (front + back + postgres)
 	$(COMPOSE) up -d
 
 down: ## Stop and remove all containers
 	$(COMPOSE) down
 
-front: ## Build and start only the front service
+front: check-env check-secrets ## Build and start only the front service
 	$(COMPOSE) up --build -d front
 
-back: ## Build and start only the back service (+ postgres if needed)
+back: check-env check-secrets ## Build and start only the back service (+ postgres if needed)
 	$(COMPOSE) up --build -d back
 
 # -----------------------------------------------------------------------------
@@ -44,12 +77,12 @@ back: ## Build and start only the back service (+ postgres if needed)
 # -----------------------------------------------------------------------------
 re: down up ## Full rebuild of the whole stack (down + up, keeps volumes)
 
-re-front: ## Rebuild only the front service
+re-front: check-env check-secrets ## Rebuild only the front service
 	$(COMPOSE) stop front && \
 	$(COMPOSE) rm -f front && \
 	$(COMPOSE) up --build -d front
 
-re-back: ## Rebuild only the back service
+re-back: check-env check-secrets ## Rebuild only the back service
 	$(COMPOSE) stop back && \
 	$(COMPOSE) rm -f back && \
 	$(COMPOSE) up --build -d back
