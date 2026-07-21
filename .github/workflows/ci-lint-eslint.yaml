@@ -36,8 +36,8 @@ jobs:
           node-version: 22
           cache: pnpm
           cache-dependency-path: |
-            srcs/containers/back/project_volume/pnpm-lock.yaml
-            srcs/containers/front/front_data/pnpm-lock.yaml
+            srcs/containers/back/project_volume/package-lock.json
+            srcs/containers/front/front_data/package-lock.json
 
       - name: Install backend dependencies
         working-directory: srcs/containers/back/project_volume
