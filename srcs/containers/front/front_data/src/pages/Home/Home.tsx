@@ -1,3 +1,4 @@
+import "../../style/global.css";
 import "./Home.css";
 import DisplayRoomCards from "./components/DisplayRoomCards/DisplayRoomCards";
 import Logo from "../../components/Logo/Logo";
@@ -26,7 +27,7 @@ function Home() {
 			</header>
 
 			<main className="main">
-				<div className="home-title">
+				<div className="title">
 					<Title />
 				</div>
 				<h5 className="subtitle"> Rejoignez une partie et démasquez les imposteurs.</h5>

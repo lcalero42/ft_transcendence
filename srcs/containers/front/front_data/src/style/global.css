@@ -1,0 +1,20 @@
+.page {
+	background: linear-gradient(#020221, #170e48);
+	color: white;
+	min-height: 100vh;
+	font-family: 'poppins';
+	display: flex;
+	flex-direction: column;
+}
+
+title {
+	text-align: center;
+	margin: 0 auto;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px 10vw;
+}
