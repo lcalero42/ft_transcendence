@@ -5,24 +5,24 @@ import { prisma } from '../../lib/prisma'
 
 @Injectable()
 export class PlayerService {
-  create(createPlayerDto: CreatePlayerDto) {
+  async create(createPlayerDto: CreatePlayerDto) {
     return 'This action adds a new player';
   }
 
-  findAll() {
-    const users = await prisma.player.findMany();
-    return `This action returns all player`;
+  async findAll() {
+    const players = await prisma.player.findMany();
+    return players;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     return `This action returns a #${id} player`;
   }
 
-  update(id: number, updatePlayerDto: UpdatePlayerDto) {
+  async update(id: number, updatePlayerDto: UpdatePlayerDto) {
     return `This action updates a #${id} player`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} player`;
   }
 }
