@@ -17,7 +17,7 @@ export class PlayerController {
     return this.playerService.findAll();
   }
 
-  @Get(':id')
+  @Get(':id') 
   findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);
   }
