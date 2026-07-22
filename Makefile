@@ -16,9 +16,13 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all up down front back re re-front re-back \
-        logs logs-front logs-back ps clean fclean prisma-migrate \
-        prisma-generate help build check-env check-secrets
+.PHONY: all build up down front back re re-front re-back \
+        logs logs-front logs-back ps \
+		clean fclean \
+		prisma-migrate prisma-generate \
+		check-env check-secrets \
+		check-lint check-lint-fix \
+		help
 
 # -----------------------------------------------------------------------------
 # Default target
@@ -53,6 +57,16 @@ check-secrets: ## Verify secret files exist and are not empty
 			exit 1; \
 		fi; \
 	done
+
+# -----------------------------------------------------------------------------
+# Safety checks
+# -----------------------------------------------------------------------------
+
+check-lint: ## Execute eslint script to check style/format of our front & back
+		./.github/scripts/ci/ci-lint-eslint.sh
+
+check-lint-fix: ## Execute eslint script to check style/format and fix our front & back
+		./.github/scripts/ci/ci-lint-eslint.sh --fix
 
 # -----------------------------------------------------------------------------
 # Build & run
