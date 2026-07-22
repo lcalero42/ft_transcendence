@@ -16,11 +16,13 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all up down front back re re-front re-back \
-        logs logs-front logs-back ps clean fclean prisma-migrate \
-        prisma-generate help build check-env check-secrets check-typecheck
-
-.DEFAULT_GOAL := help
+.PHONY: all build up down front back re re-front re-back \
+        logs logs-front logs-back ps \
+		clean fclean \
+		prisma-migrate prisma-generate \
+		check-env check-secrets \
+		check-lint check-lint-fix \
+		help
 
 # -----------------------------------------------------------------------------
 # Default target
