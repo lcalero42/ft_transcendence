@@ -42,4 +42,9 @@ export class PlayerController {
   async remove(@Param('id') id: string) {
     return this.playerService.remove(+id);
   }
+
+  @Get(':id/games-played')
+  async countGamesPlayed(@Param('id') id: string) {
+    return this.playerService.countGamesPlayed(+id);
+  }
 }

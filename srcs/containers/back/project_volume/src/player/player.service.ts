@@ -46,4 +46,14 @@ export class PlayerService {
     });
     return deleteUser;
   }
+
+  async countGamesPlayed(id: number) {
+    const gamesPlayed = await prisma.game_Players.count({
+      where: {
+        player_id: id,
+        game_id_rel: { status: 'finished' },
+      },
+    });
+    return { playerId: id, gamesPlayed };
+  }
 }
