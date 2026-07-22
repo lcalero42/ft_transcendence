@@ -7,7 +7,10 @@ COMPOSE      := docker compose -f $(COMPOSE_FILE)
 LOG_DIR      := logs
 PROJECT_NAME := $(shell basename $$(pwd))
 
-ENV_FILE     := srcs/.env
+ROOT_ENV_FILE := srcs/.env
+BACK_ENV_FILE := srcs/containers/back/project_volume/.env
+ENV_FILES     := $(ROOT_ENV_FILE) $(BACK_ENV_FILE)
+
 SECRETS_DIR  := srcs/secrets
 SECRETS      := db_user.txt db_password.txt db_name.txt
 
@@ -18,11 +21,13 @@ NC     := \033[0m
 
 .PHONY: all build up down front back re re-front re-back \
         logs logs-front logs-back ps \
-		clean fclean \
-		prisma-migrate prisma-generate \
-		check-env check-secrets \
-		check-lint check-lint-fix \
-		help
+        clean fclean \
+        prisma-migrate prisma-generate \
+        check-env check-secrets \
+        check-lint check-lint-fix check-typecheck check-all \
+        help
+
+.DEFAULT_GOAL := help
 
 # -----------------------------------------------------------------------------
 # Default target
@@ -31,16 +36,23 @@ all: help
 
 ##@ Safety Checks
 
-check-env: ## Verify srcs/.env exists and PROJECT_PATH is set inside it
-	@if [ ! -f "$(ENV_FILE)" ]; then \
-		printf "$(RED)Error:$(NC) $(ENV_FILE) not found.\n"; \
-		printf "$(YELLOW)Fix:$(NC) create $(ENV_FILE) before running make (see README).\n"; \
-		exit 1; \
-	fi
-	@value=$$(grep -E '^PROJECT_PATH=' $(ENV_FILE) | cut -d '=' -f2-); \
+check-env: ## Verify all required .env files exist and PROJECT_PATH is set in srcs/.env
+	@for f in $(ENV_FILES); do \
+		if [ ! -f "$$f" ]; then \
+			printf "$(RED)Error:$(NC) $$f not found.\n"; \
+			printf "$(YELLOW)Fix:$(NC) create $$f before running make (see README).\n"; \
+			exit 1; \
+		fi; \
+		if [ ! -s "$$f" ]; then \
+			printf "$(RED)Error:$(NC) $$f is empty.\n"; \
+			printf "$(YELLOW)Fix:$(NC) fill in $$f before running make (see README).\n"; \
+			exit 1; \
+		fi; \
+	done
+	@value=$$(grep -E '^PROJECT_PATH=' $(ROOT_ENV_FILE) | cut -d '=' -f2-); \
 	if [ -z "$$value" ]; then \
-		printf "$(RED)Error:$(NC) PROJECT_PATH is missing or empty in $(ENV_FILE)\n"; \
-		printf "$(YELLOW)Fix:$(NC) add this line to $(ENV_FILE):\n"; \
+		printf "$(RED)Error:$(NC) PROJECT_PATH is missing or empty in $(ROOT_ENV_FILE)\n"; \
+		printf "$(YELLOW)Fix:$(NC) add this line to $(ROOT_ENV_FILE):\n"; \
 		printf "  PROJECT_PATH=$$(pwd)\n"; \
 		exit 1; \
 	fi
@@ -59,13 +71,47 @@ check-secrets: ## Verify secret files exist and are not empty
 
 ##@ CI / Checks
 
+
+check-lint: ## Execute eslint check script on our front & back
+	./.github/scripts/ci/ci-lint-eslint.sh
+
+check-lint-fix: ## Execute eslint check then fix script on our front & back
+	./.github/scripts/ci/ci-lint-eslint.sh --fix
+
 check-typecheck: ## Execute typecheck script on our front & back
 	./.github/scripts/ci/ci-typecheck.sh
 
+check-all: ## Run all checks (eslint + typecheck) and report which ones failed
+	@FAILED=""; \
+	LINT_LOG=$$(mktemp); \
+	TYPECHECK_LOG=$$(mktemp); \
+	printf "$(CYAN)Running lint...$(NC)\n"; \
+	if ! ./.github/scripts/ci/ci-lint-eslint.sh > "$$LINT_LOG" 2>&1; then \
+		FAILED="$$FAILED lint"; \
+		printf "$(RED)--- lint output ---$(NC)\n"; \
+		cat "$$LINT_LOG"; \
+	fi; \
+	printf "$(CYAN)Running typecheck...$(NC)\n"; \
+	if ! ./.github/scripts/ci/ci-typecheck.sh > "$$TYPECHECK_LOG" 2>&1; then \
+		FAILED="$$FAILED typecheck"; \
+		printf "$(RED)--- typecheck output ---$(NC)\n"; \
+		cat "$$TYPECHECK_LOG"; \
+	fi; \
+	rm -f "$$LINT_LOG" "$$TYPECHECK_LOG"; \
+	if [ -n "$$FAILED" ]; then \
+		printf "$(RED)Failed checks:$(NC)%s\n" "$$FAILED"; \
+		exit 1; \
+	else \
+		printf "$(YELLOW)All checks passed.$(NC)\n"; \
+	fi
+
 ##@ Build & Run
 
-build: check-env check-secrets ## Build and start all services (front + back + postgres)
+build-detached: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
 	$(COMPOSE) up --build -d
+
+build-attached: check-env check-secrets ## Build and start all services (front + back + postgres) attached on your terminal
+	$(COMPOSE) up --build
 
 up: check-env check-secrets ## Start all services (front + back + postgres)
 	$(COMPOSE) up -d
@@ -107,6 +153,14 @@ logs-back: ## Tail logs for the back service only
 ps: ## Show status of running containers
 	$(COMPOSE) ps
 
+##@ Prisma (back)
+
+prisma-migrate: ## Run Prisma migrations inside the back container
+	$(COMPOSE) exec back npx prisma migrate dev
+
+prisma-generate: ## Regenerate Prisma client inside the back container
+	$(COMPOSE) exec back npx prisma generate
+
 ##@ Cleaning
 
 clean: ## Stop containers and remove associated images/networks (keeps volumes)
@@ -123,14 +177,6 @@ fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped 
 		else \
 			printf "$(CYAN)Aborted.$(NC)\n"; \
 		fi
-
-##@ Prisma (back)
-
-prisma-migrate: ## Run Prisma migrations inside the back container
-	$(COMPOSE) exec back npx prisma migrate dev
-
-prisma-generate: ## Regenerate Prisma client inside the back container
-	$(COMPOSE) exec back npx prisma generate
 
 ##@ Help
 
