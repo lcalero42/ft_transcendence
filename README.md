@@ -4,10 +4,16 @@
 
 ## Getting Started
 
+This project uses a Makefile to manage the Docker stack.
+
 ```bash
-cp .env.example .env
-docker compose up --build
+make up      # Start all services
+make down    # Stop all services
+make re      # Rebuild everything
+make help    # List all available commands
 ```
+
+See `make help` for the full list of targets (front/back specific builds, logs, Prisma helpers, cleaning, etc.).
 
 ## Stack
 
