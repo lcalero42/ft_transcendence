@@ -12,7 +12,7 @@ const features = [
 function FeatureHighlights() {
 	return (
 		<section className="feature-highlights">
-			{features.map((feature, index) => (
+			{features.map((feature) => (
 					<div className="feature-item" key={feature.title}>
 						<div className="icon-circle">
 							<div className="feature-icon"

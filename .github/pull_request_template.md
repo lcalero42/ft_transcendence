@@ -2,7 +2,7 @@
 What task does this PR implement?
 
 ## Why
-Why is this task needed? Link the related issue and any relevant subject/RFC sections.
+Why is this task needed? Link the related issue and any relevant subject sections.
 
 ## Changes
 - change 1
@@ -10,9 +10,9 @@ Why is this task needed? Link the related issue and any relevant subject/RFC sec
 - change 3
 
 ## Tests
-- [ ] Manual test with nc (when relevant)
-- [ ] Manual test with the reference IRC client (when relevant)
-- [ ] Edge cases tested (partial messages, malformed commands, client disconnects)
+- [ ] Build containers and check localhost:...
+- [ ] Open Prisma Studio (when relevant)
+- [ ] Edge cases tested (simultaneous API request, client disconnects...)
 
 ## Risks
 What existing behavior could be affected?
