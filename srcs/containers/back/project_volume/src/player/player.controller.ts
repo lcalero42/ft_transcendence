@@ -38,10 +38,10 @@ export class PlayerController {
     return this.playerService.update(+id, updatePlayerDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.playerService.remove(+id);
-  }
+  // @Delete(':id')
+  // async remove(@Param('id') id: string) {
+  //   return this.playerService.remove(+id);
+  // }
 
   @Get(':id/games-played')
   async countGamesPlayed(@Param('id') id: string) {

@@ -38,14 +38,14 @@ export class PlayerService {
     return updatePlayer;
   }
 
-  async remove(id: number) {
-    const deleteUser = await prisma.player.delete({
-    where: {
-        id: id,
-      },
-    });
-    return deleteUser;
-  }
+  // async remove(id: number) {
+  //   const deleteUser = await prisma.player.delete({
+  //   where: {
+  //       id: id,
+  //     },
+  //   });
+  //   return deleteUser;
+  // }
 
   async countGamesPlayed(id: number) {
     const gamesPlayed = await prisma.game_Players.count({
