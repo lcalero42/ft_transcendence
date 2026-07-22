@@ -1,7 +1,7 @@
 import "../../style/global.css";
 import "./Profile.css";
 import Sidebar from "./components/Sidebar/Sidebar";
-import { useState } from "react";
+import Identity from "./components/Identity/Identity";
 import Logo from "../../components/Logo/Logo";
 
 function Profile() {
@@ -31,6 +31,9 @@ function Profile() {
 				<Logo />
 			</div>
 			<Sidebar />
+			<main className="main">
+				<Identity username="MasterMind" Since="14/05/2026"/>
+			</main>
 
 
 		</div>

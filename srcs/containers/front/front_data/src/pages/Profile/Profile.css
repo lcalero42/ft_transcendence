@@ -1,7 +1,11 @@
+.header {
+	border-bottom: 1px solid #928ea4;
 
-.profile-logo{
+}
+
+.profile-logo {
 	justify-content: center;
-	font-size: 1.2em;
+	font-size: 1.3em;
 }
 
 /* .profile-main {

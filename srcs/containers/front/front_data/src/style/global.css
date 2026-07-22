@@ -18,3 +18,13 @@ title {
 	align-items: center;
 	padding: 20px 10vw;
 }
+
+.main {
+	width: 100%;
+	padding: 10vw;
+	padding-top: 2vh;
+	text-align: center;
+	min-width: 0;
+	flex: 1;
+	box-sizing: border-box;
+}
