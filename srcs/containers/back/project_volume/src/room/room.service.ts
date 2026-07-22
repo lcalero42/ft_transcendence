@@ -6,7 +6,13 @@ import { prisma } from '../../lib/prisma';
 @Injectable()
 export class RoomService {
   async create(createRoomDto: CreateRoomDto) {
-    return 'This action adds a new room';
+    const createRoom = await prisma.rooms.create({
+        data: {
+            name: createRoomDto.name,
+            created_by: createRoomDto.created_by,
+        },
+    });
+    return createRoom;
   }
 
   async findAll() {
@@ -15,7 +21,11 @@ export class RoomService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} room`;
+    const room = await prisma.rooms.findUnique({
+            where: { id: id }
+        }
+    );
+    return room;
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {

@@ -21,11 +21,11 @@ model Player {
 model Rooms {
   id                Int       @id @default(autoincrement())
   name              String
-  min_players       Int       @default(3)  
-  max_players       Int       @default(6)  
+  min_players       Int       @default(3)
+  max_players       Int       @default(6)
   colyseus_room_id  String?
   created_at        DateTime  @default(now())
-  
+
   created_by        Int       @unique
   created_by_rel    Player    @relation(fields: [created_by], references: [id])
 
@@ -64,7 +64,7 @@ model Game_Players {
 
   game_id           Int
   game_id_rel       Games       @relation(fields: [game_id], references: [id])
-  
+
   player_id         Int
   player_id_rel     Player      @relation(fields: [player_id], references: [id])
 }
