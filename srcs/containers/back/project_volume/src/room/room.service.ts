@@ -29,7 +29,13 @@ export class RoomService {
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+    const updateRoom = await prisma.player.update({
+        where: { id: id },
+        data: {
+            name: updateRoomDto.name,
+        },
+    });
+    return updateRoom;
   }
 
   async remove(id: number) {
