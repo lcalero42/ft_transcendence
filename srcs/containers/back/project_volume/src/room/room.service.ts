@@ -29,7 +29,7 @@ export class RoomService {
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {
-    const updateRoom = await prisma.player.update({
+    const updateRoom = await prisma.rooms.update({
         where: { id: id },
         data: {
             name: updateRoomDto.name,
@@ -39,6 +39,9 @@ export class RoomService {
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} room`;
+    const deleteRoom = await prisma.rooms.delete({
+        where: { id: id, },
+    });
+    return deleteRoom;
   }
 }

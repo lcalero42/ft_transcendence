@@ -46,8 +46,8 @@ model Games {
   created_at        DateTime    @default(now())
   finished_at       DateTime?
 
-  room_id           Int
-  room_id_rel       Rooms       @relation(fields: [room_id], references: [id])
+  room_id           Int?
+  room_id_rel       Rooms?       @relation(fields: [room_id], references: [id], onDelete: SetNull)
 
   game_player       Game_Players[]
 }
