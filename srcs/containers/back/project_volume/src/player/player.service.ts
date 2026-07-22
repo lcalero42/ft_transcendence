@@ -1,12 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { prisma } from '../../lib/prisma'
+import { prisma } from '../../lib/prisma';
 
 @Injectable()
 export class PlayerService {
   async create(createPlayerDto: CreatePlayerDto) {
-    return 'This action adds a new player';
+    const createPlayer = await prisma.player.create({
+      data: {
+        email: createPlayerDto.email,
+        name: createPlayerDto.name,
+      },
+    });
+    return createPlayer;
   }
 
   async findAll() {
@@ -15,14 +21,29 @@ export class PlayerService {
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} player`;
+    const player = await prisma.player.findUnique({
+      where: { id: id },
+    });
+    return player;
   }
 
   async update(id: number, updatePlayerDto: UpdatePlayerDto) {
-    return `This action updates a #${id} player`;
+    const updatePlayer = await prisma.player.update({
+      where: { id : id },
+      data: {
+        email: updatePlayerDto.email,
+        name: updatePlayerDto.name,
+       },
+    });
+    return updatePlayer;
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} player`;
+    const deleteUser = await prisma.player.delete({
+    where: {
+        id: id,
+      },
+    });
+    return deleteUser;
   }
 }
