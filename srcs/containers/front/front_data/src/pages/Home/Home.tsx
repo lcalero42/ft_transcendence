@@ -17,7 +17,7 @@ function Home() {
 		    { id: 5, name: "jiji ", players: 6},
 		    { id: 6, name: "jiji ", players: 6},
 		];
-		const [userName, setUsername] = useState("audrna");
+		const [userName] = useState("audrna");
 
 	return (
 		<div className="page">
