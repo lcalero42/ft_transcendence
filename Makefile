@@ -18,16 +18,17 @@ NC     := \033[0m
 
 .PHONY: all up down front back re re-front re-back \
         logs logs-front logs-back ps clean fclean prisma-migrate \
-        prisma-generate help build check-env check-secrets
+        prisma-generate help build check-env check-secrets check-typecheck
+
+.DEFAULT_GOAL := help
 
 # -----------------------------------------------------------------------------
 # Default target
 # -----------------------------------------------------------------------------
 all: help
 
-# -----------------------------------------------------------------------------
-# Safety checks
-# -----------------------------------------------------------------------------
+##@ Safety Checks
+
 check-env: ## Verify srcs/.env exists and PROJECT_PATH is set inside it
 	@if [ ! -f "$(ENV_FILE)" ]; then \
 		printf "$(RED)Error:$(NC) $(ENV_FILE) not found.\n"; \
@@ -54,9 +55,13 @@ check-secrets: ## Verify secret files exist and are not empty
 		fi; \
 	done
 
-# -----------------------------------------------------------------------------
-# Build & run
-# -----------------------------------------------------------------------------
+##@ CI / Checks
+
+check-typecheck: ## Execute typecheck script on our front & back
+	./.github/scripts/ci/ci-typecheck.sh
+
+##@ Build & Run
+
 build: check-env check-secrets ## Build and start all services (front + back + postgres)
 	$(COMPOSE) up --build -d
 
@@ -72,9 +77,8 @@ front: check-env check-secrets ## Build and start only the front service
 back: check-env check-secrets ## Build and start only the back service (+ postgres if needed)
 	$(COMPOSE) up --build -d back
 
-# -----------------------------------------------------------------------------
-# Rebuild
-# -----------------------------------------------------------------------------
+##@ Rebuild
+
 re: down up ## Full rebuild of the whole stack (down + up, keeps volumes)
 
 re-front: check-env check-secrets ## Rebuild only the front service
@@ -87,9 +91,8 @@ re-back: check-env check-secrets ## Rebuild only the back service
 	$(COMPOSE) rm -f back && \
 	$(COMPOSE) up --build -d back
 
-# -----------------------------------------------------------------------------
-# Logs
-# -----------------------------------------------------------------------------
+##@ Logs & Status
+
 logs: ## Tail logs for all services
 	$(COMPOSE) logs -f
 
@@ -99,15 +102,11 @@ logs-front: ## Tail logs for the front service only
 logs-back: ## Tail logs for the back service only
 	$(COMPOSE) logs -f back
 
-# -----------------------------------------------------------------------------
-# Status
-# -----------------------------------------------------------------------------
 ps: ## Show status of running containers
 	$(COMPOSE) ps
 
-# -----------------------------------------------------------------------------
-# Cleaning
-# -----------------------------------------------------------------------------
+##@ Cleaning
+
 clean: ## Stop containers and remove associated images/networks (keeps volumes)
 	$(COMPOSE) down --rmi all
 
@@ -123,22 +122,18 @@ fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped 
 			printf "$(CYAN)Aborted.$(NC)\n"; \
 		fi
 
-# -----------------------------------------------------------------------------
-# Prisma helpers (back)
-# -----------------------------------------------------------------------------
+##@ Prisma (back)
+
 prisma-migrate: ## Run Prisma migrations inside the back container
 	$(COMPOSE) exec back npx prisma migrate dev
 
 prisma-generate: ## Regenerate Prisma client inside the back container
 	$(COMPOSE) exec back npx prisma generate
 
-# -----------------------------------------------------------------------------
-# Help
-# -----------------------------------------------------------------------------
+##@ Help
+
 help: ## Show this help message
-	@echo ""
-	@echo "Usage: make [target]"
-	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} \
+	/^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } \
+	/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 	@echo ""
