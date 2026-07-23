@@ -40,7 +40,7 @@ export class RoomService {
 
   async remove(id: number) {
     const deleteRoom = await prisma.rooms.delete({
-        where: { id: id, },
+        where: { id: id },
     });
     return deleteRoom;
   }
