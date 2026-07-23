@@ -14,11 +14,11 @@ function Profile() {
 // 		friendsCount: 3,
 // 	});
 //
-	// const friends = [
-	// 	{ id: 1, name: "SuperDario1004" },
-	// 	{ id: 2, name: "QueMp4" },
-	// 	{ id: 3, name: "MichaelKarate135" },
-	// ];
+	const friends = [
+		{ id: 1, name: "SuperDario1004" },
+		{ id: 2, name: "QueMp4" },
+		{ id: 3, name: "MichaelKarate135" },
+	];
 
 	// const games = [
 	// 	{ id: 1, room: "Room #42 - 6 joueurs", date: "25 mai · Undercover", result: "victoire" },
@@ -38,6 +38,7 @@ function Profile() {
 				<Identity username="MasterMind" Since="14/05/2026"/>
 				<Bio bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 				<Counter games={17} victories={8} winrate={47} friends={3}/>
+				<FriendList friends={friends}/>
 			</main>
 		</div>
 	);

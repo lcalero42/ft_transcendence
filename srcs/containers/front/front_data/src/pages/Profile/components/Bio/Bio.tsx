@@ -1,6 +1,5 @@
 
 import "./Bio.css";
-import editIcon from "../../../../assets/icons/pencil.svg";
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
 
