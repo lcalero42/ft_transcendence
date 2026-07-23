@@ -10,8 +10,9 @@ interface SidebarLinkItem {
 
 const links: SidebarLinkItem[] = [
 	{ label: "Home", path: "/home" },
-	{ label: "Profil", path: "/profile" },
-	{ label: "Games", path: "/gamesRoom" },
+	{ label: "Profile", path: "/profile" },
+	{ label: "Stats", path: "/stats" },
+	{ label: "Rooms", path: "/gamesRoom" },
 	{ label: "Friends", path: "/friends" },
 ];
 

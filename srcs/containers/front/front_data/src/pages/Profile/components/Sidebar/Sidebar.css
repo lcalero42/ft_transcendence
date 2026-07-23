@@ -44,6 +44,7 @@
 	inset: 0 auto 0 0;
 
 	background: #0c0838;
+	background: rgba(12, 8, 56, 0.8);
 	border-right: 1px solid #ffffff14;
 
 	transform: translateX(-100%);
