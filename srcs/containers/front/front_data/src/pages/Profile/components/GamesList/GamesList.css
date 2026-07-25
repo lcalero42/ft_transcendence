@@ -1,4 +1,4 @@
-.games-cards {
+.games-card {
 	display: flex;
 	flex-direction: column;
 
@@ -16,16 +16,9 @@
 	align-items: center;
 }
 
-.game-title-wrap {
-	display: flex;
-	gap: 3px;
-}
-
 .game-title {
+	display: flex;
 	font-weight: 700;
-}
-.game-count {
-	font-size: 0.95rem;
 }
 
 .btn-view-games {
@@ -41,48 +34,83 @@
 .game-list {
 	display: flex;
 	flex-direction: column;
-	gap: 5px;
+
+	gap: 15px;
 }
 
-.game-params {
+.one-game-card {
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border: 1px solid #8d5adf4f;
+	border-radius: 12px;
+	padding: 16px;
+	gap: 10px;
+}
+.game-info-wrap {
+	display: flex;
+	flex-direction: row;
+	text-align: left;
+	gap: 10px;
+}
+.game-icon-card {
+	display: flex;
+	justify-content: center;
 	align-items: center;
 
+	background-color: #1f1653;
+	border-radius: 12px;
+	width: 42px;
+	height:42px;
+
+}
+.game-icon {
+	width: 30px;
+	height:30px;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+	-webkit-mask-repeat: no-repeat;
+	-webkit-mask-position: center;
+	-webkit-mask-size: contain;
+	background-color: #d1b3f4;
+}
+
+.game-name-nbPlayers {
+	display: flex;
 	gap: 10px;
 }
 
-.game-icon {
-	font-size: 2rem;
-}
-
-.game-name-status-wrap {
+.game-nbPlayers {
 	display: flex;
+	justify-content: center;
+	align-items: center;
 
-	flex-direction: column;
-	text-align: left;
+	height:22px;
+	width: 22px;
+	background-color: #1f1653;
+	border-radius: 50px;
+	font-weight: 700;
 }
-
 .game-name {
 	font-size: 0.9rem;
 	font-weight: 600;
 }
 
-.game-status {
-	display: flex;
-	align-items: center;
-	gap: 5px;
+.game-time {
 	font-size: 0.75rem;
 	color: #9f9ba6;
 }
 
-.game-status::before {
-	content: "";
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background-color: #9f9ba6;
+.game-status {
+	gap: 5px;
+	font-weight: 900;
+	font-size: 0.8rem;
 }
+.game-status.victory {
+	color: #45e26d;
+}
+.game-status.defeat {
 
-.game-status.online::before {
-	background-color: #45e26d;
+	color: #c04c45;
 }

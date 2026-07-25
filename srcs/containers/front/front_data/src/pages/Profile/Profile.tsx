@@ -15,7 +15,7 @@ function Profile() {
 	const games = [
 		{ id: 1, name: "Room #42", nbPlayers: 5, date: "2026-07-25T14:30:00Z", victory: true },
 		{ id: 2, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
-		{ id: 3, name: "Room #42", nbPlayers: 2, date: "2026-07-25T14:30:00Z", true : true },
+		{ id: 3, name: "Room #42", nbPlayers: 2, date: "2026-07-25T14:30:00Z", victory : true },
 	];
 
 	const friends = [
