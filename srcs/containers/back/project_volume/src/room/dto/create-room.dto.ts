@@ -1,4 +1,4 @@
 export class CreateRoomDto {
-    name: string;
-    created_by: number;
+  name: string;
+  created_by: number;
 }
