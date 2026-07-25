@@ -1,0 +1,88 @@
+.games-cards {
+	display: flex;
+	flex-direction: column;
+
+	background-color:  #17103c;
+	border: 1px solid #8d5adf4f;
+	border-radius: 12px;
+	padding: 16px;
+	gap: 15px;
+}
+
+.game-header {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.game-title-wrap {
+	display: flex;
+	gap: 3px;
+}
+
+.game-title {
+	font-weight: 700;
+}
+.game-count {
+	font-size: 0.95rem;
+}
+
+.btn-view-games {
+	border: none;
+	cursor: pointer;
+	background: none;
+
+	color: #7860ff;
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+.game-list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.game-params {
+	display: flex;
+	align-items: center;
+
+	gap: 10px;
+}
+
+.game-icon {
+	font-size: 2rem;
+}
+
+.game-name-status-wrap {
+	display: flex;
+
+	flex-direction: column;
+	text-align: left;
+}
+
+.game-name {
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.game-status {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 0.75rem;
+	color: #9f9ba6;
+}
+
+.game-status::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #9f9ba6;
+}
+
+.game-status.online::before {
+	background-color: #45e26d;
+}

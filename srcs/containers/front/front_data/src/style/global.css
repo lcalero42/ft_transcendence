@@ -7,6 +7,10 @@
 	flex-direction: column;
 }
 
+button, input, select, textarea {
+    font-family: inherit;
+}
+
 title {
 	text-align: center;
 	margin: 0 auto;

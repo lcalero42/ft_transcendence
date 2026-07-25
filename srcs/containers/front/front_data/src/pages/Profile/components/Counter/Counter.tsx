@@ -35,7 +35,7 @@ function DisplayCounterCard({style, nb, categories, icon} : DisplayCounterCardPr
 
 function Counter({games, victories, winrate, friends} : CounterProps) {
 	return (
-		<div className="counter">
+		<div className="counter-stat">
 			<DisplayCounterCard
 				style="games"
 				nb={games.toString()}

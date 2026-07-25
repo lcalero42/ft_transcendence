@@ -1,4 +1,4 @@
-.counter {
+.counter-stat {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
@@ -52,7 +52,6 @@
 	color: #fcc314;
 	font-size: 1.8rem;
 	font-weight: 600;
-
 }
 .friends {
 	color: #2ea0e1;
