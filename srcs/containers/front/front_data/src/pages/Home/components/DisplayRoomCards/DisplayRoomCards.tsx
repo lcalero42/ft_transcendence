@@ -1,4 +1,3 @@
-import "./RoomCard/RoomCard.css";
 import CreateRoomButton from "./CreateRoomButton/CreateRoomButton";
 import RoomCard, { type RoomCardProps } from "./RoomCard/RoomCard";
 

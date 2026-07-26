@@ -1,4 +1,3 @@
-import "./LinkProfile.css";
 import { Link } from "react-router-dom";
 
 type LinkProfileProps = {

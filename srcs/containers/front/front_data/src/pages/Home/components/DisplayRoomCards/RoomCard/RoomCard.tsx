@@ -1,4 +1,3 @@
-import "./RoomCard.css";
 import { Link } from "react-router-dom";
 
 export type RoomCardProps = {

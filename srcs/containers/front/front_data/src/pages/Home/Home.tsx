@@ -1,4 +1,3 @@
-import "./Home.css";
 import DisplayRoomCards from "./components/DisplayRoomCards/DisplayRoomCards";
 import Logo from "../../components/Logo/Logo";
 import Title from "../../components/Title/Title";
@@ -20,16 +19,19 @@ function Home() {
 
 	return (
 		<div className="page">
-			<header className="header">
+			<header className="page-header">
 				<Logo />
 				<LinkProfile name={userName} />
 			</header>
 
-			<main className="main">
-				<div className="home-title">
+			<main className="page-main">
 					<Title />
-				</div>
-				<h5 className="text-left text-gray-low"> Rejoignez une partie et démasquez les imposteurs.</h5>
+				<h5 className="mb-6
+					text-left
+					font-semibold"
+					style={{color: "var(--color-gray-low)"}}>
+						Rejoignez une partie et démasquez les imposteurs.
+				</h5>
 
 				<DisplayRoomCards rooms={rooms} />
 
@@ -37,8 +39,7 @@ function Home() {
 			</main>
 
 			<Credit />
-
-		 </div>
+		</div>
   );
 }
 

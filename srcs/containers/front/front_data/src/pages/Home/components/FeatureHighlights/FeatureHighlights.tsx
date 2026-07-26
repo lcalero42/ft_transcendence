@@ -1,4 +1,3 @@
-import "./FeatureHighlights.css";
 import victoryIcon from "../../../../assets/icons/victory-svgrepo-com.svg"
 import maskIcon from "../../../../assets/icons/masks-svgrepo-com.svg"
 import friendIcon from "../../../../assets/icons/friend-svgrepo-com.svg"
