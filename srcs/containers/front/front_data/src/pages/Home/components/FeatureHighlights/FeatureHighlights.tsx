@@ -10,23 +10,28 @@ const features = [
 
 function FeatureHighlights() {
 	return (
-		<section className="feature-highlights">
+		<div className="card hidden md:flex md:border-l-2 md:border-card-accent-border
+		md:flex-row md:mt-[clamp(15px,2vw,30px)]">
 			{features.map((feature) => (
-					<div className="feature-item" key={feature.title}>
-						<div className="icon-circle">
-							<div className="feature-icon"
+					<div  key={feature.title} className="flex items-center gap-3">
+						<div className="circle-purple w-14 h-14">
+							<div className="mask-icon w-10.5 h-10.5 bg-accent-purple"
 								style={{
 									WebkitMaskImage: `url("${feature.icon}")`,
 									maskImage: `url("${feature.icon}")` }}
 							/>
 						</div>
-						<div className="feature-text">
-							<h3>{feature.title}</h3>
-							<p>{feature.description}</p>
+						<div className="text-left">
+							<h3 className="mb-1 text-gray-high font-bold">
+								{feature.title}
+							</h3>
+							<p className="text-gray-low text-xs">
+								{feature.description}
+							</p>
 						</div>
 					</div>
 			))}
-		</section>
+		</div>
 	);
 }
 

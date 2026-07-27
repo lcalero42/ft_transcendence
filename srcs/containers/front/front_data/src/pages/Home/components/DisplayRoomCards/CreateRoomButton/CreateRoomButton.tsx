@@ -10,7 +10,7 @@ function CreateRoomButton() {
 				border-[1.5px]
 				border-dashed
 				border-card-accent-border">
-			<h3 className="text-outline m-0 ">Create Room</h3>
+			<h3 className="text-outline font-bold m-0 ">Create Room</h3>
 			<span className="circle-purple w-7 h-7">+</span>
 		</Link>
 

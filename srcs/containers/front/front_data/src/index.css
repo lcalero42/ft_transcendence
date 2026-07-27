@@ -16,8 +16,8 @@
 
 	/* Texte */
 	--color-gray-low: #695e83;
+	--color-gray-high:#e1d1fc;
 	--color-text-dim: #a1a1aa;
-	--color-text-soft: #cacaca;
 	--color-stroke-accent: #a066f6;
 
 	/* Accent principal */
@@ -63,9 +63,21 @@ body {
 	bg-circle-bg
 	text-xl
 	font-bold
-	text-outline;
+	text-outline
+	shrink-0;
 }
+@utility instert-svg {
+	@apply shrink-0;
 
+}
+@utility mask-icon {
+	mask-repeat:no-repeat;
+	mask-size:contain;
+	mask-position:center;
+	-webkit-mask-repeat:no-repeat;
+	-webkit-mask-size:contain;
+	-webkit-mask-position:center;
+}
 /* ============ LAYER ============ */
 @layer components {
 	.page {
@@ -94,7 +106,6 @@ body {
 		md:pt-[10vh];
 	}
 
-
 	/* ============ USER BADGE ============ */
 
 	.user-badge {
@@ -119,113 +130,5 @@ body {
 		bg-card
 		px-5
 		py-4;
-	}
-
-	.room-list {
-		display: flex;
-		gap: 20px;
-		flex-direction: column;
-	}
-
-	@media (min-width: 768px) {
-		.room-list {
-			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: clamp(15px, 2vw, 30px);
-		}
-	}
-
-	.room-row {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		min-width: 0;
-	}
-
-	.room-name {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		min-width: 0;
-		flex: 1;
-		text-align: left;
-		-webkit-text-stroke: 0.6px var(--color-stroke-accent);
-	}
-
-	.room-mode {
-		margin: 0;
-		color: var(--color-text-dim);
-		flex-shrink: 0;
-	}
-
-	.room-count {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--color-text-dim);
-		font-size: 0.85rem;
-		margin-left: auto;
-	}
-
-	/* ============ FEATURE HIGHLIGHTS ============ */
-
-	.feature-highlights {
-		display: none;
-	}
-
-	@media (min-width: 768px) {
-		.feature-highlights {
-			background-color: var(--color-card);
-			border-left: 2px solid var(--color-card-accent-border);
-			border-radius: 12px;
-			padding: 24px;
-			gap: 24px;
-			display: flex;
-			margin-top: clamp(15px, 2vw, 30px);
-		}
-
-		.feature-item {
-			display: flex;
-			align-items: center;
-			gap: 12px;
-			flex: 1;
-		}
-
-		.icon-circle {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 42px;
-			height: 42px;
-			padding: 10px;
-			border-radius: 50%;
-			background-color: var(--color-circle-bg);
-		}
-
-		.feature-icon {
-			width: 42px;
-			height: 42px;
-			background-color: var(--color-accent-purple);
-			-webkit-mask-repeat: no-repeat;
-			mask-repeat: no-repeat;
-			-webkit-mask-size: contain;
-			mask-size: contain;
-			-webkit-mask-position: center;
-			mask-position: center;
-		}
-
-		.feature-text h3 {
-			text-align: left;
-			margin: 0 0 4px 0;
-			color: var(--color-text-soft);
-			font-size: 1rem;
-		}
-
-		.feature-text p {
-			text-align: left;
-			margin: 0;
-			color: var(--color-text-dim);
-			font-size: 0.8rem;
-		}
 	}
 }
