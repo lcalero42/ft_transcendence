@@ -66,10 +66,6 @@ body {
 	text-outline
 	shrink-0;
 }
-@utility instert-svg {
-	@apply shrink-0;
-
-}
 @utility mask-icon {
 	mask-repeat:no-repeat;
 	mask-size:contain;
