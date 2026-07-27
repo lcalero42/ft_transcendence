@@ -29,11 +29,11 @@ export class PlayerService {
 
   async update(id: number, updatePlayerDto: UpdatePlayerDto) {
     const updatePlayer = await prisma.player.update({
-      where: { id : id },
+      where: { id: id },
       data: {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
-       },
+      },
     });
     return updatePlayer;
   }
