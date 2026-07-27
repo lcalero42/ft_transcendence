@@ -1,0 +1,50 @@
+name: Refactor
+description: Improve existing code without changing its external behavior.
+title: "[REFACTOR] <short title>"
+labels: ["type:refactor", "status:to-do"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What part of the codebase needs refactoring?
+      placeholder: e.g. RoomsService mixes Prisma calls and Colyseus logic in the same methods
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this needed? What problem does the current code cause?
+      placeholder: e.g. Hard to test, hard to reuse room creation logic outside the controller
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should the code look like afterward?
+      placeholder: e.g. Split room persistence from room runtime state into separate services
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Behavior is unchanged from a user/API perspective
+        - [ ] Existing tests still pass without modification to their assertions
+        - [ ] Code is easier to read/test/extend (explain how)
+        - [ ] CI is green
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other issues or components required before starting
+      placeholder: e.g. Should happen after the room deletion feature is merged
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Architecture notes, risks, references
+      placeholder: e.g. Watch out for the onDelete SetNull relation when moving delete logic
