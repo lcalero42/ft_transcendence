@@ -1,0 +1,42 @@
+name: Test
+description: Add or improve automated tests.
+title: "[TEST] <short title>"
+labels: ["type:test", "status:to-do"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What part of the app is missing coverage or has flaky tests?
+      placeholder: e.g. RoomsController delete endpoint has no tests for the 404 and active-game cases
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should be covered by the end?
+      placeholder: e.g. Unit tests for RoomsService.remove, e2e test for DELETE /rooms/:id
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Unit tests added/updated
+        - [ ] E2E test added/updated if relevant
+        - [ ] Edge cases covered (not found, invalid input, active game, etc.)
+        - [ ] CI is green
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other issues or components required before starting
+      placeholder: e.g. Depends on room deletion feature being merged
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Test approach, mocking strategy, references
+      placeholder: e.g. Mock PrismaService, use a test database for e2e
