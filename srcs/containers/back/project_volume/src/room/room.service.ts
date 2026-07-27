@@ -9,7 +9,7 @@ export class RoomService {
     const createRoom = await prisma.rooms.create({
       data: {
         name: createRoomDto.name,
-        created_by: createRoomDto.created_by,
+        createdBy: createRoomDto.createdBy,
       },
     });
     return createRoom;

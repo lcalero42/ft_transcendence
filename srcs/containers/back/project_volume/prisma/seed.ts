@@ -37,74 +37,74 @@ async function main() {
   });
 
   const aliceRoom = await prisma.rooms.upsert({
-    where: { created_by: alice.id },
+    where: { createdBy: alice.id },
     update: {},
     create: {
       name: "alice's room",
-      created_by: alice.id,
+      createdBy: alice.id,
     },
   });
 
   const aliceRoomGame1 = await prisma.games.create({
 	data: {
 		status: "finished",
-		civilian_word: "chat",
-		undercover_word: "tigre",
-		room_id: aliceRoom.id
+		civilianWord: "chat",
+		undercoverWord: "tigre",
+		roomId: aliceRoom.id
 	}
   });
 
   const aliceRoomGame2 = await prisma.games.create({
 	data: {
 		status: "waiting",
-		civilian_word: "lapin",
-		undercover_word: "cheval",
-		room_id: aliceRoom.id
+		civilianWord: "lapin",
+		undercoverWord: "cheval",
+		roomId: aliceRoom.id
 	}
   });
 
   const aliceGamePlayer_1 = await prisma.game_Players.create({
 	data: {
 		role: "undercover",
-		game_id: aliceRoomGame1.id,
-		player_id: alice.id
+		gameId: aliceRoomGame1.id,
+		playerId: alice.id
 	}
   })
 
   const bobGamePlayer_1 = await prisma.game_Players.create({
 	data: {
 		role: "civilian",
-		game_id: aliceRoomGame1.id,
-		player_id: bob.id
+		gameId: aliceRoomGame1.id,
+		playerId: bob.id
 	}
   })
 
   const marleyGamePlayer_1 = await prisma.game_Players.create({
 	data: {
 		role: "civilian",
-		game_id: aliceRoomGame1.id,
-		player_id: marley.id
+		gameId: aliceRoomGame1.id,
+		playerId: marley.id
 	}
   })
 
   const wp_1 = await prisma.word_Pair.create({
 	data: {
-		civilian_word: "lapin",
-		undercover_word: "cheval"
+		civilianWord: "lapin",
+		undercoverWord: "cheval"
 	}
   })
 
   const wp_2 = await prisma.word_Pair.create({
 	data: {
-		civilian_word: "chat",
-		undercover_word: "tigre"
+		civilianWord: "chat",
+		undercoverWord: "tigre"
 	}
   })
 
   const wp_3 = await prisma.word_Pair.create({
 	data: {
-		civilian_word: "telephone",
-		undercover_word: "ordinateur"
+		civilianWord: "telephone",
+		undercoverWord: "ordinateur"
 	}
   })
 

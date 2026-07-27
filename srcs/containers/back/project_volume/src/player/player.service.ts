@@ -50,8 +50,8 @@ export class PlayerService {
   async countGamesPlayed(id: number) {
     const gamesPlayed = await prisma.game_Players.count({
       where: {
-        player_id: id,
-        game_id_rel: { status: 'finished' },
+        playerId: id,
+        gameIdRel: { status: 'finished' },
       },
     });
     return { playerId: id, gamesPlayed };
