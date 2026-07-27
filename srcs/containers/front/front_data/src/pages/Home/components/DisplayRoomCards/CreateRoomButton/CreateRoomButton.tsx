@@ -2,13 +2,19 @@ import { Link } from "react-router-dom";
 
 function CreateRoomButton() {
 	 return (
-		<Link to="/create-room" className="create-room-card">
-      		<h3 className="create-room-label">Create Room</h3>
-			<span className="create-room-plus">+</span>
+		<Link to="/create-room"
+		className="card
+				flex-row
+				items-center
+				justify-center
+				border-[1.5px]
+				border-dashed
+				border-card-accent-border">
+			<h3 className="text-outline m-0 ">Create Room</h3>
+			<span className="circle-purple w-7 h-7">+</span>
 		</Link>
 
   );
 }
 
 export default CreateRoomButton;
-
