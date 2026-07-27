@@ -40,10 +40,10 @@ export class PlayerService {
 
   async remove(id: number) {
     const deleteUser = await prisma.player.update({
-    where: { id : id },
-    data : {
-      deleted_at: new Date()
-    }
+      where: { id: id },
+      data: {
+        deleted_at: new Date(),
+      },
     });
     return deleteUser;
   }
