@@ -1,4 +1,4 @@
 export class CreatePlayerDto {
-	name: string;
-	email: string;
+  name: string;
+  email: string;
 }
