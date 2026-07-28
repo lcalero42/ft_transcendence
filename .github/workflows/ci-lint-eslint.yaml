@@ -38,6 +38,12 @@ jobs:
         working-directory: srcs/containers/back/project_volume
         run: npm ci
 
+      - name: Generate Prisma client
+        working-directory: srcs/containers/back/project_volume
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/db"
+        run: npx prisma generate
+
       - name: Install frontend dependencies
         working-directory: srcs/containers/front/front_data
         run: npm ci

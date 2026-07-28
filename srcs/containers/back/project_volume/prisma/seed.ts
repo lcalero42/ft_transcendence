@@ -36,10 +36,8 @@ async function main() {
 	},
   });
 
-  const aliceRoom = await prisma.rooms.upsert({
-    where: { created_by: alice.id },
-    update: {},
-    create: {
+  const aliceRoom = await prisma.rooms.create({
+    data: {
       name: "alice's room",
       created_by: alice.id,
     },

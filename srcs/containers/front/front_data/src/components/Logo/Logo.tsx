@@ -1,8 +1,9 @@
-import "./Logo.css";
 
 function Logo() {
 	return (
-		<span className="logo">UnderCover</span>
+		<span className='font-["UnifrakturMaguntia"] text-[2rem]'>
+			UnderCover
+		</span>
 	);
 }
 

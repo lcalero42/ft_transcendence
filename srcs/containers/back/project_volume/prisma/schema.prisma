@@ -3,29 +3,32 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 model Player {
   id                Int       @id @default(autoincrement())
   name              String
   email             String    @unique
-  createdAt         DateTime  @default(now())
+  created_at        DateTime  @default(now())
+  deleted_at        DateTime?
 
-  rooms             Rooms?
+  rooms             Rooms[]
   game_player       Game_Players[]
 }
 
 model Rooms {
   id                Int       @id @default(autoincrement())
   name              String
-  min_players       Int       @default(3)  
-  max_players       Int       @default(6)  
+  min_players       Int       @default(3)
+  max_players       Int       @default(6)
   colyseus_room_id  String?
   created_at        DateTime  @default(now())
-  
-  created_by        Int       @unique
+  deleted_at        DateTime?
+
+  created_by        Int
   created_by_rel    Player    @relation(fields: [created_by], references: [id])
 
   games             Games[]
@@ -63,7 +66,7 @@ model Game_Players {
 
   game_id           Int
   game_id_rel       Games       @relation(fields: [game_id], references: [id])
-  
+
   player_id         Int
   player_id_rel     Player      @relation(fields: [player_id], references: [id])
 }
