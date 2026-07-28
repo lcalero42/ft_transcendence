@@ -4,6 +4,7 @@ import Title from "../../components/Title/Title";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import Credit from "../../components/Credit/Credit";
 import FeatureHighlights from "./components/FeatureHighlights/FeatureHighlights";
+import AvailableRooms from "./components/AvailableRooms";
 import { useState } from 'react';
 
 function Home() {
@@ -33,7 +34,7 @@ function Home() {
 					style={{color: "var(--color-gray-low)"}}>
 						Rejoignez une partie et démasquez les imposteurs.
 				</h5>
-
+				<AvailableRooms />
 				<DisplayRoomCards rooms={rooms} />
 
 				<FeatureHighlights />
