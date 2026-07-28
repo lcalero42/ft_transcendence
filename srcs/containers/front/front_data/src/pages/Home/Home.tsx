@@ -12,25 +12,37 @@ function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-	const [userName] = useState("audrna");
+    const [userName] = useState("audrna");
 
     // Runs once when the component first mounts — the initial load
     useEffect(() => {
-        loadRooms();
-    }, []);
+        let ignore = false;
 
-    async function loadRooms() {
-        try {
-        setLoading(true);
-        const data = await fetchRooms();
-        console.log({data});
-        setRooms(data);
-        } catch (err) {
-        setError('Could not load rooms');
-        } finally {
-        setLoading(false);
+        async function loadRooms() {
+            try {
+                setLoading(true);
+                const data = await fetchRooms();
+                if (!ignore) {
+                    setRooms(data);
+                }
+            } catch (err) {
+                console.error(err);
+                if (!ignore) {
+                    setError('Could not load rooms');
+                }
+            } finally {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            }
         }
-    }
+
+        loadRooms();
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
 
     if (loading) return <p>Loading rooms...</p>;
     if (error) return <p>{error}</p>;
