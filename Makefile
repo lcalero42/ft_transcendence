@@ -19,7 +19,7 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all build up upd down front back re re-front re-back \
+.PHONY: all build buildd up upd down front back re re-front re-back \
         logs logs-front logs-back ps \
         clean fclean \
         prisma-migrate prisma-generate \
@@ -107,7 +107,10 @@ check-all: ## Run all checks (eslint + typecheck) and report which ones failed
 
 ##@ Build & Run
 
-build: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
+build: check-env check-secrets ## Build and start attached all services (front + back + postgres) loading in the background.
+	$(COMPOSE) up --build
+
+buildd: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
 	$(COMPOSE) up --build -d
 
 up: check-env check-secrets ## Start all services (front + back + postgres) attached
