@@ -9,14 +9,14 @@ generator client {
 }
 
 model Player {
-  id                Int       @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   name              String
-  email             String    @unique
-  created_at        DateTime  @default(now())
-  deleted_at        DateTime?
+  email             String      @unique
+  createdAt         DateTime    @default(now()) @map("created_at")
+  deletedAt         DateTime?   @map("deleted_at")
 
   rooms             Rooms[]
-  game_player       Game_Players[]
+  gamePlayers       Game_Players[]
 }
 
 model Rooms {
@@ -28,7 +28,7 @@ model Rooms {
   createdAt         DateTime  @default(now()) @map("created_at")
   deletedAt         DateTime? @map("deleted_at")
 
-  createdBy         Int       @unique @map("created_by")
+  createdBy         Int       @map("created_by")
   createdByRel      Player    @relation(fields: [createdBy], references: [id])
 
   games             Games[]

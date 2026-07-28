@@ -8,8 +8,8 @@ export class RoomService {
   async create(player_id: number, createRoomDto: CreateRoomDto) {
     const roomCount = await prisma.rooms.count({
       where: {
-        created_by: player_id,
-        deleted_at: null,
+        createdBy: player_id,
+        deletedAt: null,
       },
     });
 
@@ -24,7 +24,7 @@ export class RoomService {
     const createRoom = await prisma.rooms.create({
       data: {
         name: createRoomDto.name,
-        created_by: player_id,
+        createdBy: player_id,
       },
     });
 
@@ -57,7 +57,7 @@ export class RoomService {
     const deleteRoom = await prisma.rooms.update({
       where: { id: id },
       data: {
-        deleted_at: new Date(),
+        deletedAt: new Date(),
       },
     });
     return deleteRoom;
