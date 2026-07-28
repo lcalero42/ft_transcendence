@@ -26,25 +26,14 @@ export class RoomService {
       );
     }
 
-    try {
-      const createRoom = await prisma.rooms.create({
-        data: {
-          name: createRoomDto.name,
-          created_by: player_id,
-        },
-      });
-      return createRoom;
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        throw new ConflictException(
-          `Room name "${createRoomDto.name}" is already taken.`,
-        );
-      }
-      throw error;
-    }
+    const createRoom = await prisma.rooms.create({
+      data: {
+        name: createRoomDto.name,
+        created_by: player_id,
+      },
+    });
+    
+    return createRoom;
   }
 
   async findAll() {

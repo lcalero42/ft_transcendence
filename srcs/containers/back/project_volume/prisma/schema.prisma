@@ -21,7 +21,7 @@ model Player {
 
 model Rooms {
   id                Int       @id @default(autoincrement())
-  name              String    @unique
+  name              String
   min_players       Int       @default(3)
   max_players       Int       @default(6)
   colyseus_room_id  String?
