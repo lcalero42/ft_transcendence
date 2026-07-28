@@ -1,0 +1,36 @@
+name: Style
+description: Visual, CSS/Tailwind, or UI consistency work with no logic changes.
+title: "[STYLE] <short title>"
+labels: ["type:style", "status:to-do"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What part of the UI is this about?
+      placeholder: e.g. Room creation form still uses old raw CSS instead of Tailwind
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What should it look like or match by the end?
+      placeholder: e.g. Form is fully migrated to Tailwind utility classes and matches the homepage style
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] No visual regression on desktop and mobile
+        - [ ] No leftover unused CSS files or rules
+        - [ ] Consistent with existing design tokens/spacing
+        - [ ] CI is green
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Screenshots, mockups, Figma links, or pages to match
+      placeholder: e.g. Match the card style used on the lobby page
