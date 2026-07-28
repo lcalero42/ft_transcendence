@@ -1,0 +1,44 @@
+name: Perf
+description: Report or address a performance issue.
+title: "[PERF] <short title>"
+labels: ["type:perf", "status:to-do"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What part of the app is slow or inefficient?
+      placeholder: e.g. Room list query gets slow once there are many finished games
+    validations:
+      required: true
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current behavior
+      description: What are you observing? Include numbers if you have them
+      placeholder: e.g. GET /rooms takes ~2s with 500 rooms in the database
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What is the expected improvement?
+      placeholder: e.g. GET /rooms should respond in under 200ms with 500 rooms
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Bottleneck identified (query, N+1, missing index, etc.)
+        - [ ] Fix implemented and measured against the baseline
+        - [ ] No regression in existing tests
+        - [ ] CI is green
+  - type: textarea
+    id: notes
+    attributes:
+      label: Technical notes
+      description: Profiling data, suspected cause, references
+      placeholder: e.g. Suspect missing index on Games.room_id, or N+1 on Game_Players lookup

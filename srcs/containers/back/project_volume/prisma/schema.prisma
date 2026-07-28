@@ -12,10 +12,11 @@ model Player {
   id                Int       @id @default(autoincrement())
   name              String
   email             String    @unique
-  createdAt         DateTime  @default(now())
+  created_at        DateTime  @default(now())
+  deleted_at        DateTime?
 
-  rooms             Rooms?
-  gamePlayers       Game_Players[]
+  rooms             Rooms[]
+  game_player       Game_Players[]
 }
 
 model Rooms {
@@ -25,6 +26,7 @@ model Rooms {
   maxPlayers        Int       @default(6) @map("max_players")
   colyseusRoomId    String?   @map("colyseus_room_id")
   createdAt         DateTime  @default(now()) @map("created_at")
+  deletedAt         DateTime? @map("deleted_at")
 
   createdBy         Int       @unique @map("created_by")
   createdByRel      Player    @relation(fields: [createdBy], references: [id])
@@ -46,8 +48,8 @@ model Games {
   createdAt         DateTime    @default(now()) @map("created_at")
   finishedAt        DateTime?   @map("finished_at")
 
-  roomId            Int?        @map("room_id")
-  roomIdRel         Rooms?      @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  roomId            Int         @map("room_id")
+  roomIdRel         Rooms       @relation(fields: [roomId], references: [id])
 
   gamePlayers       Game_Players[]
 }
