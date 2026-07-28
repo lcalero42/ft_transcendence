@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 function CreateRoomButton() {
 	 return (
 		<Link to="/create-room"
-		className="card
+		className="card flex
 				flex-row
+				py-6
 				items-center
 				justify-center
 				border-[1.5px]
