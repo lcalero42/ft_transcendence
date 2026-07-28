@@ -25,6 +25,11 @@ export class RoomController {
     return this.roomService.findAll();
   }
 
+  @Get(`current`)
+  async findCurrent() {
+    return this.roomService.findCurrent();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.roomService.findOne(+id);

@@ -10,7 +10,7 @@ export interface Room {
 
 
 export async function fetchRooms(): Promise<Room[]> {
-  const res = await fetch(`${BASE_URL}/room`);
+  const res = await fetch(`${BASE_URL}/room/current`);
   if (!res.ok) throw new Error('Failed to fetch rooms');
   return res.json();
 }
