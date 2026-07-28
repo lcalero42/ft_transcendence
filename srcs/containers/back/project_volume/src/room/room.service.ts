@@ -1,12 +1,7 @@
-import {
-  Injectable,
-  ForbiddenException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { prisma } from '../../lib/prisma';
-import { Prisma } from '../generated/prisma/client';
 
 @Injectable()
 export class RoomService {
@@ -32,7 +27,7 @@ export class RoomService {
         created_by: player_id,
       },
     });
-    
+
     return createRoom;
   }
 
