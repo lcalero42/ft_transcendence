@@ -1,4 +1,3 @@
-import "./RoomCard/RoomCard.css";
 import CreateRoomButton from "./CreateRoomButton/CreateRoomButton";
 import RoomCard, { type RoomCardProps } from "./RoomCard/RoomCard";
 
@@ -8,7 +7,8 @@ type DisplayRoomCardsProps = {
 
 function DisplayRoomCards({rooms}: DisplayRoomCardsProps) {
 	return (
-		<section className="room-list">
+		<section className="flex flex-col gap-5
+		md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]">
 			<CreateRoomButton />
 			{rooms.map((room) => (
 				<RoomCard key={room.id} {...room} />

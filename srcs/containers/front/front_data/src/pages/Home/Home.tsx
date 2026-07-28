@@ -1,10 +1,10 @@
-import "./Home.css";
 import DisplayRoomCards from "./components/DisplayRoomCards/DisplayRoomCards";
 import Logo from "../../components/Logo/Logo";
 import Title from "../../components/Title/Title";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import Credit from "../../components/Credit/Credit";
 import FeatureHighlights from "./components/FeatureHighlights/FeatureHighlights";
+import AvailableRooms from "./components/AvailableRooms";
 import { useState } from 'react';
 
 function Home() {
@@ -18,27 +18,30 @@ function Home() {
 		];
 		const [userName] = useState("audrna");
 
+
 	return (
 		<div className="page">
-			<header className="header">
+			<header className="page-header">
 				<Logo />
-				<LinkProfile name={userName} />
+				<LinkProfile name={userName} icon="🥷" />
 			</header>
 
-			<main className="main">
-				<div className="home-title">
+			<main className="page-main">
 					<Title />
-				</div>
-				<h5 className="subtitle"> Rejoignez une partie et démasquez les imposteurs.</h5>
-
+				<h5 className="mb-6
+					md:text-left
+					font-semibold"
+					style={{color: "var(--color-gray-low)"}}>
+						Rejoignez une partie et démasquez les imposteurs.
+				</h5>
+				<AvailableRooms />
 				<DisplayRoomCards rooms={rooms} />
 
 				<FeatureHighlights />
 			</main>
 
 			<Credit />
-
-		 </div>
+		</div>
   );
 }
 
