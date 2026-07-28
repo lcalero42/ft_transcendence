@@ -10,8 +10,9 @@ const features = [
 
 function FeatureHighlights() {
 	return (
-		<div className="card hidden md:flex md:border-l-2 md:border-card-accent-border
-		md:flex-row md:mt-[clamp(15px,2vw,30px)]">
+		<div className="card w-full hidden md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]
+            md:border-l-2 md:border-card-accent-border
+            md:mt-[clamp(15px,2vw,30px)]">
 			{features.map((feature) => (
 					<div  key={feature.title} className="flex items-center gap-3">
 						<div className="circle-purple w-14 h-14">
