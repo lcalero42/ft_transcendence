@@ -15,9 +15,9 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
-  @Post()
-  async create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(createRoomDto);
+  @Post(':id')
+  async create(@Param('id') id: string, @Body() createRoomDto: CreateRoomDto) {
+    return this.roomService.create(+id, createRoomDto);
   }
 
   @Get()
