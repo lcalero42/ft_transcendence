@@ -5,26 +5,26 @@ import { prisma } from '../../lib/prisma';
 
 @Injectable()
 export class RoomService {
-  async create(player_id: number, createRoomDto: CreateRoomDto) {
+  async create(playerId: number, createRoomDto: CreateRoomDto) {
     const roomCount = await prisma.rooms.count({
       where: {
-        createdBy: player_id,
+        createdBy: playerId,
         deletedAt: null,
       },
     });
 
-    const max_room_per_player = 3;
+    const maxRoomPerPlayer = 3;
 
-    if (roomCount >= max_room_per_player) {
+    if (roomCount >= maxRoomPerPlayer) {
       throw new ForbiddenException(
-        `Player ${player_id} has reached the room creation limit.`,
+        `Player ${playerId} has reached the room creation limit.`,
       );
     }
 
     const createRoom = await prisma.rooms.create({
       data: {
         name: createRoomDto.name,
-        createdBy: player_id,
+        createdBy: playerId,
       },
     });
 
