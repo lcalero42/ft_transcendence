@@ -29,7 +29,7 @@ function Home() {
 			<main className="page-main">
 					<Title />
 				<h5 className="mb-6
-					text-left
+					md:text-left
 					font-semibold"
 					style={{color: "var(--color-gray-low)"}}>
 						Rejoignez une partie et démasquez les imposteurs.
