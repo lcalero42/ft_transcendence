@@ -17,11 +17,12 @@ function Home() {
 		];
 		const [userName] = useState("audrna");
 
+
 	return (
 		<div className="page">
 			<header className="page-header">
 				<Logo />
-				<LinkProfile name={userName} />
+				<LinkProfile name={userName} icon="🥷" />
 			</header>
 
 			<main className="page-main">

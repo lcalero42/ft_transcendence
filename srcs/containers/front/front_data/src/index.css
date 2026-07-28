@@ -105,12 +105,14 @@ body {
 	/* ============ USER BADGE ============ */
 
 	.user-badge {
-		@apply rounded-[20px]
+		@apply flex
+		rounded-[20px]
 		border-2
 		border-card-border
 		bg-card
 		px-4
 		py-2
+		gap-1
 		clean-link;
 	}
 
