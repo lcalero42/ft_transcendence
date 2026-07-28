@@ -19,7 +19,7 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all build up down front back re re-front re-back \
+.PHONY: all build up upd down front back re re-front re-back \
         logs logs-front logs-back ps \
         clean fclean \
         prisma-migrate prisma-generate \
@@ -107,13 +107,13 @@ check-all: ## Run all checks (eslint + typecheck) and report which ones failed
 
 ##@ Build & Run
 
-build-detached: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
+build: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
 	$(COMPOSE) up --build -d
 
-build-attached: check-env check-secrets ## Build and start all services (front + back + postgres) attached on your terminal
-	$(COMPOSE) up --build
+up: check-env check-secrets ## Start all services (front + back + postgres) attached
+	$(COMPOSE) up
 
-up: check-env check-secrets ## Start all services (front + back + postgres)
+upd: check-env check-secrets ## Start all services (front + back + postgres) detached
 	$(COMPOSE) up -d
 
 down: ## Stop and remove all containers
