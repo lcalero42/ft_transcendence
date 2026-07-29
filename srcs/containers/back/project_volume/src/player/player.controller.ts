@@ -47,4 +47,9 @@ export class PlayerController {
   async countGamesPlayed(@Param('id') id: string) {
     return this.playerService.countGamesPlayed(+id);
   }
+
+  @Get(':id/victory')
+  async countVictory(@Param('id') id: string) {
+    return this.playerService.countVictory(+id);
+  }
 }
