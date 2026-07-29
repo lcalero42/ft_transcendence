@@ -40,6 +40,11 @@ enum GameStatus {
   finished
 }
 
+enum Role {
+  civilian
+  undercover
+}
+
 model Games {
   id                Int         @id @default(autoincrement())
   status            GameStatus  @default(waiting)
@@ -47,16 +52,12 @@ model Games {
   undercoverWord    String      @map("undercover_word")
   createdAt         DateTime    @default(now()) @map("created_at")
   finishedAt        DateTime?   @map("finished_at")
+  victory           Role?
 
   roomId            Int         @map("room_id")
   roomIdRel         Rooms       @relation(fields: [roomId], references: [id])
 
   gamePlayers       Game_Players[]
-}
-
-enum Role {
-  civilian
-  undercover
 }
 
 model Game_Players {

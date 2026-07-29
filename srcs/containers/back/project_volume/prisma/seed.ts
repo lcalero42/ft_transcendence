@@ -43,14 +43,15 @@ async function main() {
 		},
 	});
 
-	const aliceRoomGame1 = await prisma.games.create({
-		data: {
-			status: "finished",
-			civilianWord: "chat",
-			undercoverWord: "tigre",
-			roomId: aliceRoom.id
-		}
-	});
+  const aliceRoomGame1 = await prisma.games.create({
+	data: {
+		status: "finished",
+		victory: "undercover",
+		civilianWord: "chat",
+		undercoverWord: "tigre",
+		roomId: aliceRoom.id
+	}
+  });
 
 	const aliceRoomGame2 = await prisma.games.create({
 		data: {

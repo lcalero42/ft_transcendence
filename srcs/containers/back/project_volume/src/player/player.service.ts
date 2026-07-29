@@ -57,4 +57,32 @@ export class PlayerService {
     });
     return { playerId: id, gamesPlayed };
   }
+
+  async countVictory(id: number) {
+    const playerVictories = await prisma.game_Players.findMany({
+      where: {
+        playerId: id,
+        gameIdRel: {
+          status: 'finished',
+        },
+      },
+      select: {
+        role: true,
+        gameIdRel: {
+          select: {
+            victory: true,
+          },
+        },
+      },
+    });
+
+    let victoriesCount = 0;
+    for (const pv of playerVictories) {
+      if (pv.role === pv.gameIdRel.victory) {
+        victoriesCount++;
+      }
+    }
+
+    return { playerId: id, victoriesCount };
+  }
 }
