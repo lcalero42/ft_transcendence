@@ -33,6 +33,7 @@ export class PlayerService {
       data: {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
+        aboutMe: updatePlayerDto.aboutMe,
       },
     });
     return updatePlayer;
@@ -84,5 +85,17 @@ export class PlayerService {
     }
 
     return { playerId: id, victoriesCount };
+  }
+
+  async getAboutMe(id: number) {
+    const aboutMe = await prisma.player.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        aboutMe: true,
+      }
+    });
+    return { playerId: id, aboutMe };
   }
 }
