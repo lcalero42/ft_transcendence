@@ -10,6 +10,7 @@ export class PlayerService {
       data: {
         email: createPlayerDto.email,
         name: createPlayerDto.name,
+        password: createPlayerDto.password,
       },
     });
     return createPlayer;

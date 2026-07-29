@@ -15,6 +15,7 @@ async function main() {
 		create: {
 			name: "Alice",
 			email: "alice@prisma.io",
+            password: "Alice1234#",
 		},
 	});
 
@@ -24,6 +25,7 @@ async function main() {
 		create: {
 			name: "Bob",
 			email: "bob@prisma.io",
+            password: "Bob1234#"
 		},
 	});
 
@@ -33,6 +35,7 @@ async function main() {
 		create: {
 			name: "Marley",
 			email: "marley@prisma.io",
+            password: "Marley1234#"
 		},
 	});
 
