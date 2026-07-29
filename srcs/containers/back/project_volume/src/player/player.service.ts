@@ -85,9 +85,9 @@ export class PlayerService {
   }
 
   async getWinrate(id: number) {
-    let victories = (await this.countVictory(id)).victoriesCount;
-    let gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
-    let winrate = (victories / gamesPlayed) * 100;
+    const victories = (await this.countVictory(id)).victoriesCount;
+    const gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
+    const winrate = (victories / gamesPlayed) * 100;
     return { playerId: id, winrate };
   }
 }
