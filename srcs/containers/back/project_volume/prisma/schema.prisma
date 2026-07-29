@@ -9,27 +9,27 @@ generator client {
 }
 
 model Player {
-  id                Int       @id @default(autoincrement())
+  id                Int         @id @default(autoincrement())
   name              String
-  email             String    @unique
-  created_at        DateTime  @default(now())
-  deleted_at        DateTime?
+  email             String      @unique
+  createdAt         DateTime    @default(now()) @map("created_at")
+  deletedAt         DateTime?   @map("deleted_at")
 
   rooms             Rooms[]
-  game_player       Game_Players[]
+  gamePlayers       Game_Players[]
 }
 
 model Rooms {
   id                Int       @id @default(autoincrement())
   name              String
-  min_players       Int       @default(3)
-  max_players       Int       @default(6)
-  colyseus_room_id  String?
-  created_at        DateTime  @default(now())
-  deleted_at        DateTime?
+  minPlayers        Int       @default(3) @map("min_players")
+  maxPlayers        Int       @default(6) @map("max_players")
+  colyseusRoomId    String?   @map("colyseus_room_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  deletedAt         DateTime? @map("deleted_at")
 
-  created_by        Int
-  created_by_rel    Player    @relation(fields: [created_by], references: [id])
+  createdBy         Int       @map("created_by")
+  createdByRel      Player    @relation(fields: [createdBy], references: [id])
 
   games             Games[]
 }
@@ -48,32 +48,32 @@ enum Role {
 model Games {
   id                Int         @id @default(autoincrement())
   status            GameStatus  @default(waiting)
-  civilian_word     String
-  undercover_word   String
-  created_at        DateTime    @default(now())
-  finished_at       DateTime?
+  civilianWord      String      @map("civilian_word")
+  undercoverWord    String      @map("undercover_word")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  finishedAt        DateTime?   @map("finished_at")
   victory           Role?
 
-  room_id           Int
-  room_id_rel       Rooms       @relation(fields: [room_id], references: [id])
+  roomId            Int         @map("room_id")
+  roomIdRel         Rooms       @relation(fields: [roomId], references: [id])
 
-  game_player       Game_Players[]
+  gamePlayers       Game_Players[]
 }
 
 model Game_Players {
   id                Int         @id @default(autoincrement())
   role              Role
-  eliminated_at     DateTime?
+  eliminatedAt      DateTime?   @map("eliminated_at")
 
-  game_id           Int
-  game_id_rel       Games       @relation(fields: [game_id], references: [id])
+  gameId            Int         @map("game_id")
+  gameIdRel         Games       @relation(fields: [gameId], references: [id])
 
-  player_id         Int
-  player_id_rel     Player      @relation(fields: [player_id], references: [id])
+  playerId          Int         @map("player_id")
+  playerIdRel       Player      @relation(fields: [playerId], references: [id])
 }
 
 model Word_Pair {
   id                Int         @id @default(autoincrement())
-  civilian_word     String
-  undercover_word   String
+  civilianWord      String      @map("civilian_word")
+  undercoverWord    String      @map("undercover_word")
 }

@@ -9,114 +9,114 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const alice = await prisma.player.upsert({
-	where: { email: "alice@prisma.io" },
-	update: {},
-	create: {
-		name: "Alice",
-		email: "alice@prisma.io",
-	},
-  });
+	const alice = await prisma.player.upsert({
+		where: { email: "alice@prisma.io" },
+		update: {},
+		create: {
+			name: "Alice",
+			email: "alice@prisma.io",
+		},
+	});
 
-  const bob = await prisma.player.upsert({
-	where: { email: "bob@prisma.io" },
-	update: {},
-	create: {
-		name: "Bob",
-		email: "bob@prisma.io",
-	},
-  });
+	const bob = await prisma.player.upsert({
+		where: { email: "bob@prisma.io" },
+		update: {},
+		create: {
+			name: "Bob",
+			email: "bob@prisma.io",
+		},
+	});
 
-  const marley = await prisma.player.upsert({
-	where: { email: "marley@prisma.io" },
-	update: {},
-	create: {
-		name: "Marley",
-		email: "marley@prisma.io",
-	},
-  });
+	const marley = await prisma.player.upsert({
+		where: { email: "marley@prisma.io" },
+		update: {},
+		create: {
+			name: "Marley",
+			email: "marley@prisma.io",
+		},
+	});
 
-  const aliceRoom = await prisma.rooms.create({
-    data: {
-      name: "alice's room",
-      created_by: alice.id,
-    },
-  });
+	const aliceRoom = await prisma.rooms.create({
+		data: {
+			name: "alice's room",
+			createdBy: 1,
+		},
+	});
 
   const aliceRoomGame1 = await prisma.games.create({
 	data: {
 		status: "finished",
 		victory: "undercover",
-		civilian_word: "chat",
-		undercover_word: "tigre",
-		room_id: aliceRoom.id
+		civilianWord: "chat",
+		undercoverWord: "tigre",
+		roomId: aliceRoom.id
 	}
   });
 
-  const aliceRoomGame2 = await prisma.games.create({
-	data: {
-		status: "waiting",
-		civilian_word: "lapin",
-		undercover_word: "cheval",
-		room_id: aliceRoom.id
-	}
-  });
+	const aliceRoomGame2 = await prisma.games.create({
+		data: {
+			status: "waiting",
+			civilianWord: "lapin",
+			undercoverWord: "cheval",
+			roomId: aliceRoom.id
+		}
+	});
 
-  const aliceGamePlayer_1 = await prisma.game_Players.create({
-	data: {
-		role: "undercover",
-		game_id: aliceRoomGame1.id,
-		player_id: alice.id
-	}
-  })
+	const aliceGamePlayer_1 = await prisma.game_Players.create({
+		data: {
+			role: "undercover",
+			gameId: aliceRoomGame1.id,
+			playerId: alice.id
+		}
+	})
 
-  const bobGamePlayer_1 = await prisma.game_Players.create({
-	data: {
-		role: "civilian",
-		game_id: aliceRoomGame1.id,
-		player_id: bob.id
-	}
-  })
+	const bobGamePlayer_1 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame1.id,
+			playerId: bob.id
+		}
+	})
 
-  const marleyGamePlayer_1 = await prisma.game_Players.create({
-	data: {
-		role: "civilian",
-		game_id: aliceRoomGame1.id,
-		player_id: marley.id
-	}
-  })
+	const marleyGamePlayer_1 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame1.id,
+			playerId: marley.id
+		}
+	})
 
-  const wp_1 = await prisma.word_Pair.create({
-	data: {
-		civilian_word: "lapin",
-		undercover_word: "cheval"
-	}
-  })
+	const wp_1 = await prisma.word_Pair.create({
+		data: {
+			civilianWord: "lapin",
+			undercoverWord: "cheval"
+		}
+	})
 
-  const wp_2 = await prisma.word_Pair.create({
-	data: {
-		civilian_word: "chat",
-		undercover_word: "tigre"
-	}
-  })
+	const wp_2 = await prisma.word_Pair.create({
+		data: {
+			civilianWord: "chat",
+			undercoverWord: "tigre"
+		}
+	})
 
-  const wp_3 = await prisma.word_Pair.create({
-	data: {
-		civilian_word: "telephone",
-		undercover_word: "ordinateur"
-	}
-  })
+	const wp_3 = await prisma.word_Pair.create({
+		data: {
+			civilianWord: "telephone",
+			undercoverWord: "ordinateur"
+		}
+	})
 
-  console.log({ alice, bob, aliceRoom });
+	console.log({ alice, bob, aliceRoom });
 }
 main()
-  .then(async () => {
-	await prisma.$disconnect();
-	await pool.end();
-  })
-  .catch(async (e) => {
-	console.error(e);
-	await prisma.$disconnect();
-	await pool.end();
-	process.exit(1);
-  });
+	.then(async () => {
+		await prisma.$disconnect();
+		await pool.end();
+	})
+	.catch(async (e) => {
+		console.error(e);
+		await prisma.$disconnect();
+		await pool.end();
+		process.exit(1);
+	});
