@@ -75,14 +75,19 @@ export class PlayerService {
         },
       },
     });
-
     let victoriesCount = 0;
     for (const pv of playerVictories) {
       if (pv.role === pv.gameIdRel.victory) {
         victoriesCount++;
       }
     }
-
     return { playerId: id, victoriesCount };
+  }
+
+  async getWinrate(id: number) {
+    let victories = (await this.countVictory(id)).victoriesCount;
+    let gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
+    let winrate = (victories / gamesPlayed) * 100;
+    return { playerId: id, winrate };
   }
 }

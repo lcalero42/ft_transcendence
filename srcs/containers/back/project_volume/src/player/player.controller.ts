@@ -52,4 +52,9 @@ export class PlayerController {
   async countVictory(@Param('id') id: string) {
     return this.playerService.countVictory(+id);
   }
+
+  @Get(':id/winrate')
+  async getWinrate(@Param('id') id: string) {
+    return this.playerService.getWinrate(+id);
+  }
 }
