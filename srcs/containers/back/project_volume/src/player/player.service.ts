@@ -90,11 +90,11 @@ export class PlayerService {
   async getAboutMe(id: number) {
     const aboutMe = await prisma.player.findUnique({
       where: {
-        id: id
+        id: id,
       },
       select: {
         aboutMe: true,
-      }
+      },
     });
     return { playerId: id, aboutMe };
   }
