@@ -38,7 +38,7 @@ export class RoomService {
 
   async findCurrent() {
     const currentRooms = await prisma.rooms.findMany({
-      where: { deleted_at: null },
+      where: { deletedAt: null },
     });
     return currentRooms;
   }
