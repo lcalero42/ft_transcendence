@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login/Login";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import GameRoom from "./pages/GameRoom/GameRoom";
@@ -9,6 +10,7 @@ function App() {
 			<Routes>
 				<Route path="/" element={<Navigate to="/home" replace />} />
 				<Route path="/home" element={<Home />} />
+				<Route path="/login" element={<Login />} />
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/create-room" element={<CreateRoom />} />
 				<Route path="/game/:id" element={<GameRoom />} />
