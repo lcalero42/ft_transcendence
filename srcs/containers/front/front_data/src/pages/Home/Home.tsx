@@ -5,19 +5,47 @@ import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import Credit from "../../components/Credit/Credit";
 import FeatureHighlights from "./components/FeatureHighlights/FeatureHighlights";
 import AvailableRooms from "./components/AvailableRooms";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchRooms, type Room } from '../../api/rooms';
 
 function Home() {
-	const rooms = [
-		    { id: 1, name: "GigaBoss Roommmmmmmmmmmmmmmmmmmmmmmmmmmmm", players: 5},
-		    { id: 2, name: "jiraf Room", players: 4},
-		    { id: 3, name: "jiji ", players: 6},
-		    { id: 4, name: "jiji ", players: 6},
-		    { id: 5, name: "jiji ", players: 6},
-		    { id: 6, name: "jiji ", players: 6},
-		];
-		const [userName] = useState("audrna");
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [userName] = useState("audrna");
 
+    // Runs once when the component first mounts — the initial load
+    useEffect(() => {
+        let ignore = false;
+
+        async function loadRooms() {
+            try {
+                setLoading(true);
+                const data = await fetchRooms();
+                if (!ignore) {
+                    setRooms(data);
+                }
+            } catch (err) {
+                console.error(err);
+                if (!ignore) {
+                    setError('Could not load rooms');
+                }
+            } finally {
+                if (!ignore) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        loadRooms();
+
+        return () => {
+            ignore = true;
+        };
+    }, []);
+
+    if (loading) return <p>Loading rooms...</p>;
+    if (error) return <p>{error}</p>;
 
 	return (
 		<div className="page">

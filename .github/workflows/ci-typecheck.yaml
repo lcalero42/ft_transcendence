@@ -1,0 +1,48 @@
+name: Typecheck
+
+on:
+  pull_request:
+    paths-ignore:
+      - .github/automation/**
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: typecheck-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck:
+    name: Typecheck core project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            srcs/containers/back/project_volume/package-lock.json
+            srcs/containers/front/front_data/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: srcs/containers/back/project_volume
+        run: npm ci
+
+      - name: Install frontend dependencies
+        working-directory: srcs/containers/front/front_data
+        run: npm ci
+
+      - name: Run TypeScript typecheck
+        env:
+          DATABASE_URL: ${{ secrets.CI_DUMMY_DATABASE_URL }}
+        run: .github/scripts/ci/ci-typecheck.sh
