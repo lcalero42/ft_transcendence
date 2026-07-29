@@ -36,6 +36,13 @@ export class RoomService {
     return rooms;
   }
 
+  async findCurrent() {
+    const currentRooms = await prisma.rooms.findMany({
+      where: { deleted_at: null },
+    });
+    return currentRooms;
+  }
+
   async findOne(id: number) {
     const room = await prisma.rooms.findUnique({
       where: { id: id },
