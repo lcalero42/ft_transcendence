@@ -1,5 +1,3 @@
-import "../../style/global.css";
-import "./Profile.css";
 import Logo from "../../components/Logo/Logo";
 import Sidebar from "./components/Sidebar/Sidebar";
 import Identity from "./components/Identity/Identity";
@@ -24,16 +22,15 @@ function Profile() {
 		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 		{ id: 4, name: "jiraaaaf", icon: "🦒", isOnLine: true},
 	];
-
 	return (
 		<div className="page">
-			<div className="header profile-header">
-				<div className="profile-logo">
+			<div className="page-header justify-center border-b py-2 border-head-border">
+				<div className="text-[1.3rem] md:hidden">
 					<Logo />
 				</div>
 			</div>
 			<Sidebar />
-			<main className="profile-main">
+			<main className="page-main">
 				<Identity username="MasterMind" Since="14/05/2026"/>
 				<Bio bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 				<Counter games={17} victories={8} winrate={47} friends={3}/>

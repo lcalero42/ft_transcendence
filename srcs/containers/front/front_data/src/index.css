@@ -10,6 +10,7 @@
 	--color-bg-deep: #020221;
 	--color-bg-deep-end: #170e48;
 	--color-card: #17103c;
+	--color-head-border: #928ea4;
 	--color-card-border: #26174e;
 	--color-card-accent-border: #8e5adf;
 	--color-circle-bg: #45237f;
@@ -129,4 +130,5 @@ body {
 		px-5
 		py-4;
 	}
+	
 }

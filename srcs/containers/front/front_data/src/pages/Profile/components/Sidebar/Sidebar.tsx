@@ -20,9 +20,8 @@ function Sidebar() {
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 	const closeMenu = () => setIsMenuOpen(false);
-
 	return (
-		<div className="sidebar-wrapper">
+		<div className="group relative z-100">
 			<div className="sidebar-topbar">
 				<button
 					className="burger-btn"
