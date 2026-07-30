@@ -1,6 +1,7 @@
 import "./GamesList.css";
 import { useState } from "react";
 import gamesIcon from "../../../../assets/icons/users-group 1.svg"
+
 type RecentGamesProps = {
 	id: number;
 	name: string;
@@ -32,35 +33,35 @@ function GamesList({games}: RecentGamesListProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const topThree = games.slice(0, 3);
 	return (
-		<div className="games-card">
-			<div className="game-header">
-				<div className="game-title"> Recent games </div>
+		<div className="card mb-5 border border-card-border-2">
+			<div className="flex justify-between">
+				<div className="font-bold"> Recent games </div>
 				<button
-					className="btn-view-games"
+					className="clean-btn font-medium text-accent hoverable hover:font-black"
 					aria-label="View all games"
 					onClick={() => setIsPopupOpen(true)}
 				>
 					View all
 				</button>
 			</div>
-			<div className="game-list">
+			<div className="flex flex-col gap-3">
 				{topThree.map((g) => (
-					<div className="one-game-card" key={g.id}>
-						<div className="game-info-wrap">
-							<div className="game-icon-card">
-								<span className="game-icon"
+					<div className="card flex-row justify-between items-center border border-card-border-2" key={g.id}>
+						<div className="flex text-left gap-3">
+							<div className="circle-purple  w-10.5 h-10.5 rounded-xl">
+								<span className="mask-icon w-8 h-8 bg-accent-purple"
 										style={{
 											WebkitMaskImage: `url("${gamesIcon}")`,
 											maskImage: `url("${gamesIcon}")`,
 										}}
 								/>
 							</div>
-							<div className="game-name-nbPlayers">
-								<div className="game-name-date-wrap">
-									<div className="game-name">{g.name}</div>
-									<div className="game-time">{timeAgo(g.date)}</div>
+							<div className="flex gap-3">
+								<div>
+									<div className="font-semibold truncate">{g.name}</div>
+									<div className="text-xs text-text-dim">{timeAgo(g.date)}</div>
 								</div>
-								<span className="game-nbPlayers">{g.nbPlayers}</span>
+								<span className="circle-purple text-xs w-4.5 h-4.5">{g.nbPlayers}</span>
 							</div>
 
 						</div>

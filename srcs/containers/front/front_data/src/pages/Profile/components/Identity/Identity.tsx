@@ -1,6 +1,5 @@
-import "./Identity.css";
 import Icon from "../../../../assets/icons/calendar-time.svg";
-import avatar from "../../../../assets/profile-photo/moon.png";
+import Avatar from "../../../../assets/profile-photo/moon.png";
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
 
@@ -12,30 +11,33 @@ type IdentityProps = {
 function Identity({username, Since}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	return (
-		<div className="identity">
-			<div className="avatar">
+		<div className="flex justify-between pb-5">
+			<div className="relative">
 
-				<img src={avatar} alt={username} className="avatar-img"/>
+				<img src={Avatar} alt={username}/>
 				<button
-					className="btn-edit-avatar"
+					className=" flex justify-center items-center
+					absolute bottom-4 right-4.5
+					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
+					clean-ptn hoverable hover:bg-card/52"
 					aria-label="Modify"
 					onClick={() => setIsPopupOpen(true)}
 				>
 					<EditIcon/>
 				</button>
 			</div>
-			<div className="identity-wrapper">
-				<div className="user-name">
+			<div className="flex flex-col pt-5 gap-2">
+				<div className="flex font-black text-2xl">
 					{username}
 				</div>
-				<div className="user-since">
-					<div className="date-icon"
+				<div className="flex gap-2 font-medium">
+					<div className="mask-icon w-4 h-4 bg-text-dim"
 						style={{
 							WebkitMaskImage: `url("${Icon}")`,
 							maskImage: `url("${Icon}")`,
 						}}
 					/>
-					<div className="user-date">
+					<div className="text-left text-text-dim text-xs">
 						member since {Since}
 					</div>
 				</div>

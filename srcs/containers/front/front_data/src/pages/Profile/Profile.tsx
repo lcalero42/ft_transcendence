@@ -24,13 +24,13 @@ function Profile() {
 	];
 	return (
 		<div className="page">
-			<div className="page-header justify-center border-b py-2 border-head-border">
+			<div className="page-header z-100 fixed top-0 left-0 right-0 justify-center border-b py-2 bg-bg-deep border-head-border">
 				<div className="text-[1.3rem] md:hidden">
 					<Logo />
 				</div>
 			</div>
 			<Sidebar />
-			<main className="page-main">
+			<main className="page-main pt-18">
 				<Identity username="MasterMind" Since="14/05/2026"/>
 				<Bio bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 				<Counter games={17} victories={8} winrate={47} friends={3}/>

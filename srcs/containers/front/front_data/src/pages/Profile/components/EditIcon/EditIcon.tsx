@@ -1,4 +1,3 @@
-import "./EditIcon.css"
 import editIcon from "../../../../assets/icons/pencil.svg";
 
 
@@ -9,11 +8,11 @@ type EditIconProps = {
 function EditIcon({color="white"}: EditIconProps) {
 	return (
 		<span
-			className="edit-icon"
+			className="mask-icon w-6 h-6 hoverable bg-(--icon-color) hover:bg-white"
 			style={{
 				WebkitMaskImage: `url("${editIcon}")`,
 				maskImage: `url("${editIcon}")`,
-				backgroundColor: color,
+				"--icon-color": color,
 			}}
 		/>
 	);

@@ -1,4 +1,3 @@
-import "./FriendList.css";
 import { useState } from "react";
 type FriendProps = {
 	id: number;
@@ -15,29 +14,33 @@ function FriendList({friends}: FriendListProps) {
 	const topThree = friends.slice(0, 3);
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	return (
-		<div className="friends-cards">
-			<div className="friend-header">
-				<div className="friend-title-wrap">
-					<div className="friend-title"> My friends </div>
-					<span className="friend-count"> ({friends.length})  </span>
+		<div className="card mb-5 border border-card-border-2">
+			<div className="flex justify-between">
+				<div className="flex gap-1">
+					<div className="font-bold"> My friends </div>
+					<span> ({friends.length}) </span>
 				</div>
 				<button
-					className="btn-view-friends"
+					className="clean-btn font-medium text-accent hoverable hover:font-black"
 					aria-label="View all friends"
 					onClick={() => setIsPopupOpen(true)}
 				>
 					View all
 				</button>
 			</div>
-			<div className="friend-list">
+			<div className="flex flex-col gap-3">
 				{topThree.map((f) => (
-					<div className="friend-params" key={f.id}>
-						<div className="friend-icon"> {f.icon} </div>
-						<div className="friend-name-status-wrap">
-							<div className="friend-name">{f.name}</div>
-							<div className={`friend-status ${f.isOnLine ? "online" : "offline"}`}>
+					<div className="flex items-center gap-4" key={f.id}>
+						<div className="text-3xl"> {f.icon} </div>
+						<div className="flex flex-col text-left">
+							<div className="text-sm font-semibold">{f.name}</div>
+							<div className="flex items-center gap-1.5 text-xs text-text-dim">
+								 <span
+								 	className={`w-2 h-2 rounded-full
+										${f.isOnLine ? "bg-victory" : "bg-text-dim"}`}
+								/>
 								{f.isOnLine ? "Online" : "Offline"}
-						</div>
+							</div>
 						</div>
 					</div>
 				))}

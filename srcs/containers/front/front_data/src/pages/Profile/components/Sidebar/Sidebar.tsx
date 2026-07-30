@@ -1,4 +1,3 @@
-import "./Sidebar.css";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import Logo from "../../../../components/Logo/Logo";
@@ -22,31 +21,36 @@ function Sidebar() {
 	const closeMenu = () => setIsMenuOpen(false);
 	return (
 		<div className="group relative z-100">
-			<div className="sidebar-topbar">
+			<div className="z-101 fixed top-5 left-6">
 				<button
-					className="burger-btn"
+					className="flex flex-col justify-between clean-btn w-7 h-5"
 					onClick={toggleMenu}
 					aria-label="Open the menu"
 					aria-expanded={isMenuOpen}
 					>
-					<span className="burger-line" />
-					<span className="burger-line" />
-					<span className="burger-line" />
+					{[0,1,2].map((i) => (
+					<span key={i} className="w-full h-0.5 bg-white rounded-full" />
+					))}
 				</button>
 
-				<div className="sidebar-logo">
+				<div className="hidden md:flex md:items-center">
 					<Logo />
 				</div>
 			</div>
-			<aside className={`sidebar-drawer ${isMenuOpen ? "sidebar-drawer--open" : ""}`}>
-				<nav className={`sidebar-nav ${isMenuOpen ? "sidebar-nav--open" : ""}`}>
+			<aside className={`fixed inset-y-0 left-0
+			bg-card/65 hoverable transition-transform px-8 pt-20 pb-8
+			md:min-w-30 md:group-hover:translate-x-0
+				 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+
+				<nav className="flex flex-col gap-5">
 					{links.map((link) => (
 						<NavLink
 							key={link.path}
 							to={link.path}
 							onClick={closeMenu}
 							className={({isActive}) =>
-								`sidebar-link ${isActive ? "sidebar-link--active" : ""}`
+								`flex items-center clean-link font-medium hoverable hover:text-white
+							${isActive ? "text-gold" : "text-text-dim"}`
 							}
 						>
 							{link.label}
