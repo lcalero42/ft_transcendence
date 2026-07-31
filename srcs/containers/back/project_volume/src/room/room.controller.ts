@@ -15,14 +15,22 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
-  @Post(':id')
-  async create(@Param('id') id: string, @Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(+id, createRoomDto);
+  @Post(':playerId')
+  async create(
+    @Param('playerId') playerId: string,
+    @Body() createRoomDto: CreateRoomDto,
+  ) {
+    return this.roomService.create(+playerId, createRoomDto);
   }
 
   @Get()
   async findAll() {
     return this.roomService.findAll();
+  }
+
+  @Get(`current`)
+  async findCurrent() {
+    return this.roomService.findCurrent();
   }
 
   @Get(':id')

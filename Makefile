@@ -7,7 +7,10 @@ COMPOSE      := docker compose -f $(COMPOSE_FILE)
 LOG_DIR      := logs
 PROJECT_NAME := $(shell basename $$(pwd))
 
-ENV_FILE     := srcs/.env
+ROOT_ENV_FILE := srcs/.env
+BACK_ENV_FILE := srcs/containers/back/project_volume/.env
+ENV_FILES     := $(ROOT_ENV_FILE) $(BACK_ENV_FILE)
+
 SECRETS_DIR  := srcs/secrets
 SECRETS      := db_user.txt db_password.txt db_name.txt
 
@@ -16,32 +19,40 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all build up down front back re re-front re-back \
+.PHONY: all build buildd up upd down front back re re-front re-back \
         logs logs-front logs-back ps \
-		clean fclean \
-		prisma-migrate prisma-generate \
-		check-env check-secrets \
-		check-lint check-lint-fix \
-		help
+        clean fclean \
+        prisma-migrate prisma-generate \
+        check-env check-secrets \
+        check-lint check-lint-fix check-typecheck check-all \
+        help
+
+.DEFAULT_GOAL := help
 
 # -----------------------------------------------------------------------------
 # Default target
 # -----------------------------------------------------------------------------
 all: help
 
-# -----------------------------------------------------------------------------
-# Safety checks
-# -----------------------------------------------------------------------------
-check-env: ## Verify srcs/.env exists and PROJECT_PATH is set inside it
-	@if [ ! -f "$(ENV_FILE)" ]; then \
-		printf "$(RED)Error:$(NC) $(ENV_FILE) not found.\n"; \
-		printf "$(YELLOW)Fix:$(NC) create $(ENV_FILE) before running make (see README).\n"; \
-		exit 1; \
-	fi
-	@value=$$(grep -E '^PROJECT_PATH=' $(ENV_FILE) | cut -d '=' -f2-); \
+##@ Safety Checks
+
+check-env: ## Verify all required .env files exist and PROJECT_PATH is set in srcs/.env
+	@for f in $(ENV_FILES); do \
+		if [ ! -f "$$f" ]; then \
+			printf "$(RED)Error:$(NC) $$f not found.\n"; \
+			printf "$(YELLOW)Fix:$(NC) create $$f before running make (see README).\n"; \
+			exit 1; \
+		fi; \
+		if [ ! -s "$$f" ]; then \
+			printf "$(RED)Error:$(NC) $$f is empty.\n"; \
+			printf "$(YELLOW)Fix:$(NC) fill in $$f before running make (see README).\n"; \
+			exit 1; \
+		fi; \
+	done
+	@value=$$(grep -E '^PROJECT_PATH=' $(ROOT_ENV_FILE) | cut -d '=' -f2-); \
 	if [ -z "$$value" ]; then \
-		printf "$(RED)Error:$(NC) PROJECT_PATH is missing or empty in $(ENV_FILE)\n"; \
-		printf "$(YELLOW)Fix:$(NC) add this line to $(ENV_FILE):\n"; \
+		printf "$(RED)Error:$(NC) PROJECT_PATH is missing or empty in $(ROOT_ENV_FILE)\n"; \
+		printf "$(YELLOW)Fix:$(NC) add this line to $(ROOT_ENV_FILE):\n"; \
 		printf "  PROJECT_PATH=$$(pwd)\n"; \
 		exit 1; \
 	fi
@@ -58,23 +69,54 @@ check-secrets: ## Verify secret files exist and are not empty
 		fi; \
 	done
 
-# -----------------------------------------------------------------------------
-# Safety checks
-# -----------------------------------------------------------------------------
+##@ CI / Checks
 
-check-lint: ## Execute eslint script to check style/format of our front & back
-		./.github/scripts/ci/ci-lint-eslint.sh
 
-check-lint-fix: ## Execute eslint script to check style/format and fix our front & back
-		./.github/scripts/ci/ci-lint-eslint.sh --fix
+check-lint: ## Execute eslint check script on our front & back
+	./.github/scripts/ci/ci-lint-eslint.sh
 
-# -----------------------------------------------------------------------------
-# Build & run
-# -----------------------------------------------------------------------------
-build: check-env check-secrets ## Build and start all services (front + back + postgres)
+check-lint-fix: ## Execute eslint check then fix script on our front & back
+	./.github/scripts/ci/ci-lint-eslint.sh --fix
+
+check-typecheck: ## Execute typecheck script on our front & back
+	./.github/scripts/ci/ci-typecheck.sh
+
+check-all: ## Run all checks (eslint + typecheck) and report which ones failed
+	@FAILED=""; \
+	LINT_LOG=$$(mktemp); \
+	TYPECHECK_LOG=$$(mktemp); \
+	printf "$(CYAN)Running lint...$(NC)\n"; \
+	if ! ./.github/scripts/ci/ci-lint-eslint.sh > "$$LINT_LOG" 2>&1; then \
+		FAILED="$$FAILED lint"; \
+		printf "$(RED)--- lint output ---$(NC)\n"; \
+		cat "$$LINT_LOG"; \
+	fi; \
+	printf "$(CYAN)Running typecheck...$(NC)\n"; \
+	if ! ./.github/scripts/ci/ci-typecheck.sh > "$$TYPECHECK_LOG" 2>&1; then \
+		FAILED="$$FAILED typecheck"; \
+		printf "$(RED)--- typecheck output ---$(NC)\n"; \
+		cat "$$TYPECHECK_LOG"; \
+	fi; \
+	rm -f "$$LINT_LOG" "$$TYPECHECK_LOG"; \
+	if [ -n "$$FAILED" ]; then \
+		printf "$(RED)Failed checks:$(NC)%s\n" "$$FAILED"; \
+		exit 1; \
+	else \
+		printf "$(YELLOW)All checks passed.$(NC)\n"; \
+	fi
+
+##@ Build & Run
+
+build: check-env check-secrets ## Build and start attached all services (front + back + postgres) loading in the background.
+	$(COMPOSE) up --build
+
+buildd: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
 	$(COMPOSE) up --build -d
 
-up: check-env check-secrets ## Start all services (front + back + postgres)
+up: check-env check-secrets ## Start all services (front + back + postgres) attached
+	$(COMPOSE) up
+
+upd: check-env check-secrets ## Start all services (front + back + postgres) detached
 	$(COMPOSE) up -d
 
 down: ## Stop and remove all containers
@@ -86,9 +128,8 @@ front: check-env check-secrets ## Build and start only the front service
 back: check-env check-secrets ## Build and start only the back service (+ postgres if needed)
 	$(COMPOSE) up --build -d back
 
-# -----------------------------------------------------------------------------
-# Rebuild
-# -----------------------------------------------------------------------------
+##@ Rebuild
+
 re: down up ## Full rebuild of the whole stack (down + up, keeps volumes)
 
 re-front: check-env check-secrets ## Rebuild only the front service
@@ -101,9 +142,8 @@ re-back: check-env check-secrets ## Rebuild only the back service
 	$(COMPOSE) rm -f back && \
 	$(COMPOSE) up --build -d back
 
-# -----------------------------------------------------------------------------
-# Logs
-# -----------------------------------------------------------------------------
+##@ Logs & Status
+
 logs: ## Tail logs for all services
 	$(COMPOSE) logs -f
 
@@ -113,15 +153,19 @@ logs-front: ## Tail logs for the front service only
 logs-back: ## Tail logs for the back service only
 	$(COMPOSE) logs -f back
 
-# -----------------------------------------------------------------------------
-# Status
-# -----------------------------------------------------------------------------
 ps: ## Show status of running containers
 	$(COMPOSE) ps
 
-# -----------------------------------------------------------------------------
-# Cleaning
-# -----------------------------------------------------------------------------
+##@ Prisma (back)
+
+prisma-migrate: ## Run Prisma migrations inside the back container
+	$(COMPOSE) exec back npx prisma migrate dev
+
+prisma-generate: ## Regenerate Prisma client inside the back container
+	$(COMPOSE) exec back npx prisma generate
+
+##@ Cleaning
+
 clean: ## Stop containers and remove associated images/networks (keeps volumes)
 	$(COMPOSE) down --rmi all
 
@@ -137,22 +181,10 @@ fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped 
 			printf "$(CYAN)Aborted.$(NC)\n"; \
 		fi
 
-# -----------------------------------------------------------------------------
-# Prisma helpers (back)
-# -----------------------------------------------------------------------------
-prisma-migrate: ## Run Prisma migrations inside the back container
-	$(COMPOSE) exec back npx prisma migrate dev
+##@ Help
 
-prisma-generate: ## Regenerate Prisma client inside the back container
-	$(COMPOSE) exec back npx prisma generate
-
-# -----------------------------------------------------------------------------
-# Help
-# -----------------------------------------------------------------------------
 help: ## Show this help message
-	@echo ""
-	@echo "Usage: make [target]"
-	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} \
+	/^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } \
+	/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 	@echo ""
