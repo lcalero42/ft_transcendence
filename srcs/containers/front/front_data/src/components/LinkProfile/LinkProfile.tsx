@@ -7,7 +7,7 @@ type LinkProfileProps = {
 
 function LinkProfile({name, icon}: LinkProfileProps) {
 	return (
-		<Link to="/profile" className="user-badge">
+		<Link to="/profile" className="badge">
 				<span>{icon}</span>
 				<span>{name}</span>
 		</Link>

@@ -11,10 +11,10 @@ type FriendListProps = {
 };
 
 function FriendList({friends}: FriendListProps) {
-	const topThree = friends.slice(0, 3);
+	const top = friends.slice(0, 5);
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	return (
-		<div className="card mb-5 border border-card-border-2">
+		<div className="card md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between">
 				<div className="flex gap-1">
 					<div className="font-bold"> My friends </div>
@@ -28,9 +28,11 @@ function FriendList({friends}: FriendListProps) {
 					View all
 				</button>
 			</div>
-			<div className="flex flex-col gap-3">
-				{topThree.map((f) => (
-					<div className="flex items-center gap-4" key={f.id}>
+			<div className="flex flex-col gap-5">
+				{top.map((f, index) => (
+					<div className={`flex items-center text-left gap-4
+					${index >= 3 ? "hidden md:flex" : ""}`}
+					key={f.id}>
 						<div className="text-3xl"> {f.icon} </div>
 						<div className="flex flex-col text-left">
 							<div className="text-sm font-semibold">{f.name}</div>

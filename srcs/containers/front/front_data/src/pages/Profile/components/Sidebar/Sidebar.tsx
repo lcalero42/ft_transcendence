@@ -13,6 +13,7 @@ const links: SidebarLinkItem[] = [
 	{ label: "Stats", path: "/stats" },
 	{ label: "Rooms", path: "/gamesRoom" },
 	{ label: "Friends", path: "/friends" },
+	{ label: "Logout", path: "/connection" },
 ];
 
 function Sidebar() {
@@ -33,13 +34,14 @@ function Sidebar() {
 					))}
 				</button>
 
-				<div className="hidden md:flex md:items-center">
-					<Logo />
-				</div>
+				{/* <div className="hidden md:flex md:items-center"> */}
+					{/* <Logo /> */}
+				{/* </div> */}
 			</div>
 			<aside className={`fixed inset-y-0 left-0
-			bg-card/65 hoverable transition-transform px-8 pt-20 pb-8
-			md:min-w-30 md:group-hover:translate-x-0
+			bg-card/65 hoverable transition-transform p-8 pt-20
+			md:w-[clamp(110px,16vw,280px)]
+			md:group-hover:translate-x-0
 				 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
 
 				<nav className="flex flex-col gap-5">

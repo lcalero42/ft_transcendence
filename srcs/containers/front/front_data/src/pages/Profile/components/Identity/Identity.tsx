@@ -11,15 +11,15 @@ type IdentityProps = {
 function Identity({username, Since}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	return (
-		<div className="flex justify-between pb-5">
-			<div className="relative">
+		<div className="flex pb-5">
+			<div className="relative w-32 h-32 shrink-0">
 
 				<img src={Avatar} alt={username}/>
 				<button
-					className=" flex justify-center items-center
+					className=" flex clean-btn justify-center items-center
 					absolute bottom-4 right-4.5
 					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
-					clean-ptn hoverable hover:bg-card/52"
+					 hoverable hover:bg-card/52"
 					aria-label="Modify"
 					onClick={() => setIsPopupOpen(true)}
 				>

@@ -11,6 +11,7 @@
 	--color-bg-deep-end: #170e48;
 	--color-card: #17103c;
 	--color-head-border: #928ea4;
+	--color-grey-border: #3c3c52;
 	--color-card-border: #26174e;
 	--color-card-border-2: #8d5adf4f;
 	--color-card-accent-border: #8e5adf;
@@ -65,7 +66,6 @@ body {
 
 @utility clean-btn {
 	@apply bg-none
-	border-none
 	cursor-pointer;
 }
 
@@ -119,17 +119,18 @@ body {
 		md:pt-[10vh];
 	}
 
-	/* ============ USER BADGE ============ */
+	/* ============ BADGE ============ */
 
-	.user-badge {
+	.badge {
 		@apply flex
 		rounded-[20px]
 		border-2
 		border-card-border
 		bg-card
-		px-4
-		py-2
+		px-2
 		gap-1
+		text-sm
+		items-center
 		clean-link;
 	}
 
@@ -144,7 +145,8 @@ body {
 		rounded-xl
 		bg-card
 		px-5
-		py-4;
+		py-4
+		mb-5;
 	}
 
 }

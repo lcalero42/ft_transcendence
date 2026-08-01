@@ -1,4 +1,3 @@
-import "./GamesList.css";
 import { useState } from "react";
 import gamesIcon from "../../../../assets/icons/users-group 1.svg"
 
@@ -33,7 +32,7 @@ function GamesList({games}: RecentGamesListProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const topThree = games.slice(0, 3);
 	return (
-		<div className="card mb-7 px-3 border border-card-border-2">
+		<div className="card w-full  border border-card-border-2 ">
 			<div className="flex justify-between">
 				<div className="font-bold"> Recent games </div>
 				<button
@@ -44,9 +43,9 @@ function GamesList({games}: RecentGamesListProps) {
 					View all
 				</button>
 			</div>
-			<div className="flex flex-col gap-3">
+			<div className="flex flex-col">
 				{topThree.map((g) => (
-					<div className="card px-2 flex-row justify-between items-center border border-card-border-2" key={g.id}>
+					<div className="card px-2 gap-5 flex-row justify-between items-center border border-card-border-2" key={g.id}>
 						<div className="flex flex-1 min-w-0 text-left gap-3">
 							<div className="circle-purple w-9 h-9 rounded-xl">
 								<span className="mask-icon w-7 h-7 bg-accent-purple"
@@ -56,18 +55,23 @@ function GamesList({games}: RecentGamesListProps) {
 										}}
 								/>
 							</div>
-							<div className="flex flex-1 min-w-0 items-center gap-3">
-								<div className="flex-1 min-w-0">
-									<div className="font-semibold truncate">{g.name}</div>
-									<div className="text-xs text-text-dim">{timeAgo(g.date)}</div>
-								</div>
-								<span className="circle-purple text-sm w-5 h-5">{g.nbPlayers}</span>
-							</div>
 
+							<div className="flex flex-1 gap-2 min-w-0 justify-between items-center">
+
+								<div className="flex-col min-w-0">
+									<div className="flex items-end gap-3">
+										<div className="font-semibold truncate">{g.name}</div>
+										<span className="circle-purple text-sm w-5 h-5">{g.nbPlayers}</span>
+									</div>
+									<span className="text-xs text-text-dim">{timeAgo(g.date)}</span>
+								</div>
+
+
+								<div className={`font-black text-xs ${g.victory ? "text-victory" : "text-defeat"}`}>
+									{g.victory ? "Victory" : "Defeat"}
+								</div>
 						</div>
-						<div className={`pl-1 font-black text-xs shrink-0 ${g.victory ? "text-victory" : "text-defeat"}`}>
-							{g.victory ? "Victory" : "Defeat"}
-						</div>
+							</div>
 					</div>
 				))}
 			</div>
