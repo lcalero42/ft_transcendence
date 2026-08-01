@@ -29,7 +29,7 @@ function timeAgo(dateString: string): string {
 }
 
 function GamesList({games}: RecentGamesListProps) {
-	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [, setIsPopupOpen] = useState(false);
 	const topThree = games.slice(0, 3);
 	return (
 		<div className="card w-full  border border-card-border-2 ">

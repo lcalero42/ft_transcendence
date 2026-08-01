@@ -7,7 +7,7 @@ type BioProps = {
 };
 
 function Bio({bio}: BioProps) {
-	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [, setIsPopupOpen] = useState(false);
 	return (
 		<div className="card gap-0 pr-2 pt-2 border border-card-border-2
 		md:bg-transparent md:border-none md:pb-0">

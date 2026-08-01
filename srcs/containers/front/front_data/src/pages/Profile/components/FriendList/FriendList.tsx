@@ -12,7 +12,7 @@ type FriendListProps = {
 
 function FriendList({friends}: FriendListProps) {
 	const top = friends.slice(0, 5);
-	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [, setIsPopupOpen] = useState(false);
 	return (
 		<div className="card md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between">

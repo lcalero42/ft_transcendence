@@ -5,6 +5,10 @@ type EditIconProps = {
 	color?: string;
 };
 
+type CSSPropertiesWithVars = React.CSSProperties & {
+	"--icon-color"?: string;
+};
+
 function EditIcon({color="white"}: EditIconProps) {
 	return (
 		<span
@@ -13,7 +17,7 @@ function EditIcon({color="white"}: EditIconProps) {
 				WebkitMaskImage: `url("${editIcon}")`,
 				maskImage: `url("${editIcon}")`,
 				"--icon-color": color,
-			}}
+			} as CSSPropertiesWithVars}
 		/>
 	);
 }

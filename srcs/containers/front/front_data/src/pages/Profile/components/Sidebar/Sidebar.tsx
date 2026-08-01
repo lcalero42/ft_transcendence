@@ -1,6 +1,5 @@
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-import Logo from "../../../../components/Logo/Logo";
 
 interface SidebarLinkItem {
 	label: string;

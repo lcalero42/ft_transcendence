@@ -9,7 +9,7 @@ type IdentityProps = {
 };
 
 function Identity({username, Since}: IdentityProps) {
-	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [, setIsPopupOpen] = useState(false);
 	return (
 		<div className="flex pb-5">
 			<div className="relative w-32 h-32 shrink-0">
