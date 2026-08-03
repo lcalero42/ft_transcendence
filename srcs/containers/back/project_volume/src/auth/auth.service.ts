@@ -14,12 +14,17 @@ export class AuthService {
   constructor(private jwtService: JwtService) {}
 
   async register(dto: RegisterDto) {
-    const existing = await prisma.player.findUnique({
+    const existingEmail = await prisma.player.findUnique({
       where: { email: dto.email },
     });
-    if (existing) {
+    if (existingEmail) {
       throw new ConflictException('Email already registered');
     }
+    const existingName = await prisma.player.findUnique({
+        where: { name: dto.name },
+    });
+    if (existingName)
+        throw new ConflictException('Username already taken');
     const hashed = await bcrypt.hash(dto.password, 10);
     const player = await prisma.player.create({
       data: { email: dto.email, name: dto.name, password: hashed },
