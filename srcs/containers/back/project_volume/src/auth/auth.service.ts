@@ -21,10 +21,9 @@ export class AuthService {
       throw new ConflictException('Email already registered');
     }
     const existingName = await prisma.player.findUnique({
-        where: { name: dto.name },
+      where: { name: dto.name },
     });
-    if (existingName)
-        throw new ConflictException('Username already taken');
+    if (existingName) throw new ConflictException('Username already taken');
     const hashed = await bcrypt.hash(dto.password, 10);
     const player = await prisma.player.create({
       data: { email: dto.email, name: dto.name, password: hashed },
