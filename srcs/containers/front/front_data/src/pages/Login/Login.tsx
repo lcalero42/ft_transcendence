@@ -31,7 +31,7 @@ function Login() {
 						Bienvenue sur <span style={{color: "var(--color-accent-purple)"}}>Undercover</span>
 					</h1>
 
-					<h5 className="mb-3 md:text-center font-semibold" style={{color: "var(--color-gray-low)"}}>
+					<h5 className="mb-3 md:text-center text-sm md:text-xl font-semibold" style={{color: "var(--color-gray-low)"}}>
 						Connecte toi pour continuer ton aventure !
 					</h5>
 
