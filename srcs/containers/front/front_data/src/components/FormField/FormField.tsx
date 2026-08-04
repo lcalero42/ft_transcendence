@@ -10,7 +10,7 @@ type FormFieldProps = {
 function FormField({ label, iconSrc, type = "text", placeholder }: FormFieldProps) {
   return (
     <div>
-      <p className="text-left py-3 px-4 text-gray-high text-xs font-bold">
+      <p className="text-left py-3 px-2 text-gray-high font-bold">
         {label}
       </p>
       <InputField iconSrc={iconSrc} type={type} placeholder={placeholder} />

@@ -32,7 +32,7 @@ function InputField({
       <input
         type={inputType}
         placeholder={placeholder}
-        className="w-full bg-transparent outline-none"
+        className="w-full bg-transparent outline-none text-sm"
       />
 
       {isPassword && (
