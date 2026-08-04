@@ -11,7 +11,7 @@ type IdentityProps = {
 function Identity({username, Since}: IdentityProps) {
 	const [, setIsPopupOpen] = useState(false);
 	return (
-		<div className="flex pb-5">
+		<div className="flex items-center md:gap-2 mb-5 md:mb-0">
 			<div className="relative w-32 h-32 shrink-0">
 
 				<img src={Avatar} alt={username}/>
@@ -26,7 +26,7 @@ function Identity({username, Since}: IdentityProps) {
 					<EditIcon/>
 				</button>
 			</div>
-			<div className="flex flex-col pt-5 gap-2">
+			<div className="flex flex-col pb-5 gap-2">
 				<div className="flex font-black text-2xl">
 					{username}
 				</div>

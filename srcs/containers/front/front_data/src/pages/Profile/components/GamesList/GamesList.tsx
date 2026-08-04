@@ -33,7 +33,7 @@ function GamesList({games}: RecentGamesListProps) {
 	const topThree = games.slice(0, 3);
 	return (
 		<div className="card w-full  border border-card-border-2 ">
-			<div className="flex justify-between">
+			<div className="flex justify-between mb-3">
 				<div className="font-bold"> Recent games </div>
 				<button
 					className="clean-btn font-medium text-accent hoverable hover:font-black"
@@ -67,7 +67,7 @@ function GamesList({games}: RecentGamesListProps) {
 								</div>
 
 
-								<div className={`font-black text-xs ${g.victory ? "text-victory" : "text-defeat"}`}>
+								<div className={`font-black text-xs md:text-sm ${g.victory ? "text-victory" : "text-defeat"}`}>
 									{g.victory ? "Victory" : "Defeat"}
 								</div>
 							</div>

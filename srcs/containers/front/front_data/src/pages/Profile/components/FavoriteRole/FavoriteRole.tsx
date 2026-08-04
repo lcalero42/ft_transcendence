@@ -8,7 +8,7 @@ function FavoriteRole({role, icon} : RoleProps) {
 	return (
 	<div className="card gap-0 py-3 border border-card-border-2
 		md:bg-transparent md:border-none md:py-0 md:flex-row">
-		<div className="flex pb-1 justify-between">
+		<div className="flex pb-3 md:pb-0 justify-between">
 			<div className="text-left font-bold self-center">
 				Favorite role
 				<span className="hidden md:inline"> :</span>
