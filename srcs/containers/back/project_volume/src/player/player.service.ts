@@ -34,6 +34,7 @@ export class PlayerService {
       data: {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
+        aboutMe: updatePlayerDto.aboutMe,
       },
     });
     return updatePlayer;
@@ -57,5 +58,50 @@ export class PlayerService {
       },
     });
     return { playerId: id, gamesPlayed };
+  }
+
+  async countVictory(id: number) {
+    const playerVictories = await prisma.game_Players.findMany({
+      where: {
+        playerId: id,
+        gameIdRel: {
+          status: 'finished',
+        },
+      },
+      select: {
+        role: true,
+        gameIdRel: {
+          select: {
+            victory: true,
+          },
+        },
+      },
+    });
+    let victoriesCount = 0;
+    for (const pv of playerVictories) {
+      if (pv.role === pv.gameIdRel.victory) {
+        victoriesCount++;
+      }
+    }
+    return { playerId: id, victoriesCount };
+  }
+
+  async getWinrate(id: number) {
+    const victories = (await this.countVictory(id)).victoriesCount;
+    const gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
+    const winrate = (victories / gamesPlayed) * 100;
+    return { playerId: id, winrate };
+  }
+
+  async getAboutMe(id: number) {
+    const aboutMe = await prisma.player.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        aboutMe: true,
+      },
+    });
+    return { playerId: id, aboutMe };
   }
 }
