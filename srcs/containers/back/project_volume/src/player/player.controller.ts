@@ -57,4 +57,9 @@ export class PlayerController {
   async getWinrate(@Param('id') id: string) {
     return this.playerService.getWinrate(+id);
   }
+
+  @Get(':id/about-me')
+  async getAboutMe(@Param('id') id: string) {
+    return this.playerService.getAboutMe(+id);
+  }
 }
