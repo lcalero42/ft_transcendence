@@ -15,7 +15,7 @@ function FriendList({friends}: FriendListProps) {
 	const [, setIsPopupOpen] = useState(false);
 	return (
 		<div className="card md:w-[80%] border border-card-border-2">
-			<div className="flex justify-between">
+			<div className="flex justify-between mb-3">
 				<div className="flex gap-1">
 					<div className="font-bold"> My friends </div>
 					<span> ({friends.length}) </span>
