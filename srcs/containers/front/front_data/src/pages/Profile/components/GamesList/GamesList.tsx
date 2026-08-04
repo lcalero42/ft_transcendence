@@ -45,8 +45,8 @@ function GamesList({games}: RecentGamesListProps) {
 			</div>
 			<div className="flex flex-col">
 				{topThree.map((g) => (
-					<div className="card px-2 gap-5 flex-row justify-between items-center border border-card-border-2" key={g.id}>
-						<div className="flex flex-1 min-w-0 text-left gap-3">
+					<div className="card flex-row justify-between items-center border border-card-border-2" key={g.id}>
+						<div className="flex flex-1 min-w-0 text-left gap-3 items-center">
 							<div className="circle-purple w-9 h-9 rounded-xl">
 								<span className="mask-icon w-7 h-7 bg-accent-purple"
 										style={{
@@ -70,8 +70,8 @@ function GamesList({games}: RecentGamesListProps) {
 								<div className={`font-black text-xs ${g.victory ? "text-victory" : "text-defeat"}`}>
 									{g.victory ? "Victory" : "Defeat"}
 								</div>
-						</div>
 							</div>
+						</div>
 					</div>
 				))}
 			</div>
