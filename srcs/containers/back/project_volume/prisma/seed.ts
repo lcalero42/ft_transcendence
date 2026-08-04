@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { finished } from "stream";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
@@ -9,6 +10,9 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+
+	//players
+
 	const alice = await prisma.player.upsert({
 		where: { email: "alice@prisma.io" },
 		update: {},
@@ -39,6 +43,8 @@ async function main() {
 		},
 	});
 
+	// rooms
+
 	const aliceRoom = await prisma.rooms.create({
 		data: {
 			name: "alice's room",
@@ -46,24 +52,42 @@ async function main() {
 		},
 	});
 
-  const aliceRoomGame1 = await prisma.games.create({
-	data: {
-		status: "finished",
-		victory: "undercover",
-		civilianWord: "chat",
-		undercoverWord: "tigre",
-		roomId: aliceRoom.id
-	}
-  });
+	// games
+
+	const aliceRoomGame1 = await prisma.games.create({
+		data: {
+			status: "finished",
+			victory: "undercover",
+			civilianWord: "chat",
+			undercoverWord: "tigre",
+			roomId: aliceRoom.id,
+			finishedAt: new Date(),
+		}
+	});
 
 	const aliceRoomGame2 = await prisma.games.create({
 		data: {
-			status: "waiting",
+			status: "finished",
+			victory: "undercover",
 			civilianWord: "lapin",
 			undercoverWord: "cheval",
-			roomId: aliceRoom.id
+			roomId: aliceRoom.id,
+			finishedAt: new Date(),
 		}
 	});
+
+	const aliceRoomGame3 = await prisma.games.create({
+		data: {
+			status: "finished",
+			victory: "undercover",
+			civilianWord: "volcan",
+			undercoverWord: "montagne",
+			roomId: aliceRoom.id,
+			finishedAt: new Date(),
+		}
+	});
+
+	// gamePlayers
 
 	const aliceGamePlayer_1 = await prisma.game_Players.create({
 		data: {
@@ -88,6 +112,56 @@ async function main() {
 			playerId: marley.id
 		}
 	})
+
+	const aliceGamePlayer_2 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame3.id,
+			playerId: alice.id
+		}
+	})
+
+	const bobGamePlayer_2 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame3.id,
+			playerId: bob.id
+		}
+	})
+
+	const marleyGamePlayer_2 = await prisma.game_Players.create({
+		data: {
+			role: "undercover",
+			gameId: aliceRoomGame3.id,
+			playerId: marley.id
+		}
+	})
+
+	const aliceGamePlayer_3 = await prisma.game_Players.create({
+		data: {
+			role: "undercover",
+			gameId: aliceRoomGame3.id,
+			playerId: alice.id
+		}
+	})
+
+	const bobGamePlayer_3 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame3.id,
+			playerId: bob.id
+		}
+	})
+
+	const marleyGamePlayer_3 = await prisma.game_Players.create({
+		data: {
+			role: "civilian",
+			gameId: aliceRoomGame3.id,
+			playerId: marley.id
+		}
+	})
+
+	// wordPairs
 
 	const wp_1 = await prisma.word_Pair.create({
 		data: {
