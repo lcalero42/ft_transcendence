@@ -1,10 +1,11 @@
-import { Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -25,9 +26,8 @@ export class GameController {
   }
   @Get('count')
   async countGames() {
-	return this.gameService.countGames();
+    return this.gameService.countGames();
   }
-
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -35,10 +35,7 @@ export class GameController {
   }
 
   @Patch(':id')
-  async update(
-		@Param('id') id: string,
-		@Body() updateGameDto: UpdateGameDto
-	) {
+  async update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
     return this.gameService.update(+id, updateGameDto);
   }
 

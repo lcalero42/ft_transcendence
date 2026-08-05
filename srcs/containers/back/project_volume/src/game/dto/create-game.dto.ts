@@ -1,5 +1,5 @@
 export class CreateGameDto {
-	civilianWord: string;
-	undercoverWord: string;
-	roomId: number;
+  civilianWord: string;
+  undercoverWord: string;
+  roomId: number;
 }
