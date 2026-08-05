@@ -20,15 +20,15 @@ export class GameService {
     const games = await prisma.games.findMany();
     return games;
   }
-  
+
   async countGames() {
     const i = await prisma.games.count({
-		where: {
-			finishedAt: {
-				not: null
-			},
-		},
-	});
+      where: {
+        finishedAt: {
+          not: null,
+        },
+      },
+    });
     return i;
   }
 
