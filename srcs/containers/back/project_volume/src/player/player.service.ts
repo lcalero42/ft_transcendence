@@ -21,10 +21,10 @@ export class PlayerService {
   }
 
   async countPlayerActiv() {
-	  const i = await prisma.player.count({
-		where: { deletedAt: null }
-	  })
-	return i;
+    const i = await prisma.player.count({
+      where: { deletedAt: null },
+    });
+    return i;
   }
 
   async findOne(id: number) {

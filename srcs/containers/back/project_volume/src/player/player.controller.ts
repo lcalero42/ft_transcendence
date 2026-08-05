@@ -30,7 +30,6 @@ export class PlayerController {
     return this.playerService.countPlayerActiv();
   }
 
-
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);
