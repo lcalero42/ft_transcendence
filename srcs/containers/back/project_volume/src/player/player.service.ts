@@ -20,6 +20,13 @@ export class PlayerService {
     return players;
   }
 
+  async countPlayerActiv() {
+	  const i = await prisma.player.count({
+		where: { deletedAt: null }
+	  })
+	return i;
+  }
+
   async findOne(id: number) {
     const player = await prisma.player.findUnique({
       where: { id: id },
