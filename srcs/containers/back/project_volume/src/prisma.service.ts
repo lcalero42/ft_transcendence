@@ -7,9 +7,11 @@ export class PrismaService extends PrismaClient {
   private readonly logger = new Logger('PrismaQuery');
 
   constructor() {
-    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+    const adapter = new PrismaPg({
+      connectionString: process.env.DATABASE_URL,
+    });
     super({
-      adapter
+      adapter,
     });
   }
 }
