@@ -1,4 +1,4 @@
 export class CreateWordPairDto {
-	civilianWord: string;
-  	undercoverWord: string;
+  civilianWord: string;
+  undercoverWord: string;
 }

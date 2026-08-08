@@ -1,11 +1,11 @@
 import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
 } from '@nestjs/common';
 import { WordPairService } from './word_pair.service';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
@@ -16,9 +16,7 @@ export class WordPairController {
   constructor(private readonly wordPairService: WordPairService) {}
 
   @Post()
-  async create(
-	@Body() createWordPairDto: CreateWordPairDto
-  ) {
+  async create(@Body() createWordPairDto: CreateWordPairDto) {
     return this.wordPairService.create(createWordPairDto);
   }
 
@@ -33,10 +31,12 @@ export class WordPairController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateWordPairDto: UpdateWordPairDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateWordPairDto: UpdateWordPairDto,
+  ) {
     return this.wordPairService.update(+id, updateWordPairDto);
   }
-
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
