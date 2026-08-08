@@ -26,13 +26,13 @@ const handleAvatarSave = async (file: File) => {
 	}
 };
 	return (
-		<div className="flex items-center md:gap-2 mb-5 md:mb-0">
-			<div className="relative w-32 h-32 shrink-0">
+		<div className="flex items-center gap-2 mb-5 md:mb-0">
+			<div className="relative w-24 h-24 shrink-0">
 
-				<img src={avatar} alt={username}/>
+				<img src={avatar} alt={username} className="w-full h-full rounded-full object-cover"/>
 				<button
 					className=" flex clean-btn justify-center items-center
-					absolute bottom-4 right-4.5
+					absolute bottom-1 right-1
 					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
 					 hoverable hover:bg-card/52"
 					aria-label="Modify"
