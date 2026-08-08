@@ -32,7 +32,7 @@ function GamesList({games}: RecentGamesListProps) {
 	const [, setIsPopupOpen] = useState(false);
 	const topThree = games.slice(0, 3);
 	return (
-		<div className="card w-full  border border-card-border-2 ">
+		<div className="card w-full md:bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
 				<div className="font-bold"> Recent games </div>
 				<button
