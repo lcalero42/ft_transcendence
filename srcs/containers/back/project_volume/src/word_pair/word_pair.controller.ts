@@ -38,10 +38,8 @@ export class WordPairController {
   }
 
 
-// ====== NO DELETEDAT JFK ======
-//   @Delete(':id')
-//   async remove(@Param('id') id: string) {
-//     return this.wordPairService.remove(+id);
-//   }
-
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return this.wordPairService.remove(+id);
+  }
 }

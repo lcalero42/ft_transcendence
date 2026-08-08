@@ -38,10 +38,8 @@ export class WordPairService {
 	return updtateWordPlayer;
   }
 
-// ====NO LIGNE DELETEDAT====
-//   async remove(id: number) {
-//     const = await prisma.wordPair.
-// 	return `This action removes a #${id} wordPair`;
-//   }
-
+  async remove(id: number) {
+    const rmWordPair= await prisma.word_Pair.delete({where: { id: id }});
+	return rmWordPair;
+  }
 }
