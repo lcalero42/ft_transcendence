@@ -6,10 +6,15 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('player')
 export class PlayerController {
@@ -62,4 +67,26 @@ export class PlayerController {
   async getAboutMe(@Param('id') id: string) {
     return this.playerService.getAboutMe(+id);
   }
+
+  @Patch(':id/avatar')
+  @UseInterceptors(
+	FileInterceptor('avatar', {
+		storage: diskStorage({
+			destination: './uploads/avatars',
+			filename: (req, file, callback) => {
+				const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+				callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+			},
+		}),
+	}),
+  )
+  async updateAvatar(
+	@Param('id') id: string,
+	@UploadedFile() file: Express.Multer.File,
+  ) {
+		const avatarUrl = `/uploads/avatars/${file.filename}`;
+		return this.playerService.updateAvatar(+id, avatarUrl);
+  }
 }
+
+

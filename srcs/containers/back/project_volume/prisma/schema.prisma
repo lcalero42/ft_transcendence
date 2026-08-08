@@ -13,6 +13,7 @@ model Player {
   name              String
   email             String      @unique
   aboutMe           String?     @map("about_me")
+  avatarUrl			String?		@map("avatar_url")
   createdAt         DateTime    @default(now()) @map("created_at")
   deletedAt         DateTime?   @map("deleted_at")
 
