@@ -1,26 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
 import { UpdateWordPairDto } from './dto/update-word_pair.dto';
+import { prisma } from '../../lib/prisma';
 
 @Injectable()
 export class WordPairService {
-  create(createWordPairDto: CreateWordPairDto) {
-    return 'This action adds a new wordPair';
+  async create(createWordPairDto: CreateWordPairDto) {
+    const createWordPair = await prisma.word_Pair.create({
+		data: {
+			civilianWord: createWordPairDto.civilianWord,
+			undercoverWord: createWordPairDto.undercoverWord,
+		},
+	});
+	return createWordPair;
   }
 
-  findAll() {
-    return `This action returns all wordPair`;
+  async findAll() {
+    const wordPairs = await prisma.word_Pair.findMany();
+	return wordPairs;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wordPair`;
+  async findOne(id: number) {
+    const wordPair= await prisma.word_Pair.findUnique({
+		where: { id: id },
+	});
+	return wordPair;
   }
 
-  update(id: number, updateWordPairDto: UpdateWordPairDto) {
-    return `This action updates a #${id} wordPair`;
+  async update(id: number, updateWordPairDto: UpdateWordPairDto) {
+    const updtateWordPlayer = await prisma.word_Pair.update({
+		where: { id: id },
+		data: {
+			civilianWord: updateWordPairDto.civilianWord,
+			undercoverWord: updateWordPairDto.undercoverWord,
+		},
+	});
+	return updtateWordPlayer;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wordPair`;
-  }
+// ====NO LIGNE DELETEDAT====
+//   async remove(id: number) {
+//     const = await prisma.wordPair.
+// 	return `This action removes a #${id} wordPair`;
+//   }
+
 }
