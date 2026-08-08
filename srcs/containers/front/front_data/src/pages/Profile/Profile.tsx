@@ -37,7 +37,7 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity username="MasterMind" Since="14/05/2026"/>
+					<Identity playerId={1} username="MasterMind" Since="14/05/2026"/>
 					<div className="md:flex md:flex-col">
 						<Bio bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>

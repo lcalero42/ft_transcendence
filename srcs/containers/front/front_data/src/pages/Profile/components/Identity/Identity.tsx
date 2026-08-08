@@ -7,28 +7,29 @@ import EditAvatar from "./EditAvatar";
 
 
 type IdentityProps = {
-	PlayerId: number;
+	playerId: number;
 	username: string;
 	Since: string;
 };
 
-function Identity({PlayerId, username, Since}: IdentityProps) {
+function Identity({playerId, username, Since}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [avatar, setAvatar] = useState(Avatar);
 
-	const handleAvatarSave = async (file: File) => {
-		try {
-			const updatedPlayer = await updateAvatar(PlayerId, file);
-			setAvatar(updatedPlayer.avatarUrl);
-		} catch (err) {
-			console.error(err);
-		}
-	};
+const handleAvatarSave = async (file: File) => {
+	try {
+		const updatedPlayer = await updateAvatar(playerId, file);
+		const fullUrl = `${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`;
+		setAvatar(fullUrl);
+	} catch (err) {
+		console.error(err);
+	}
+};
 	return (
 		<div className="flex items-center md:gap-2 mb-5 md:mb-0">
 			<div className="relative w-32 h-32 shrink-0">
 
-				<img src={Avatar} alt={username}/>
+				<img src={avatar} alt={username}/>
 				<button
 					className=" flex clean-btn justify-center items-center
 					absolute bottom-4 right-4.5
