@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
+  Req
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
@@ -17,6 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
+type AuthenticatedRequest = Request & { user: { id: number; email: string } };
 
 @Controller('player')
 export class PlayerController {
@@ -37,6 +40,12 @@ export class PlayerController {
   async findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+	async getMe(@Req() req: AuthenticatedRequest) {
+		return this.playerService.findOne(req.user.id);
+	}
 
   @Patch(':id')
   async update(
