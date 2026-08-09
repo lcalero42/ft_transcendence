@@ -40,7 +40,7 @@ describe('PlayerController', () => {
       };
       jest
         .spyOn(playerService, 'create')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.create(createDto)).toBe(result);
       expect(playerService.create).toHaveBeenCalledWith(createDto);
@@ -67,7 +67,7 @@ describe('PlayerController', () => {
       ];
       jest
         .spyOn(playerService, 'findAll')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.findAll()).toBe(result);
       expect(playerService.findAll).toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe('PlayerController', () => {
       };
       jest
         .spyOn(playerService, 'findOne')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.findOne('5')).toBe(result);
       expect(playerService.findOne).toHaveBeenCalledWith(5);
@@ -107,7 +107,7 @@ describe('PlayerController', () => {
       };
       jest
         .spyOn(playerService, 'update')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.update('5', updateDto)).toBe(result);
       expect(playerService.update).toHaveBeenCalledWith(5, updateDto);
@@ -125,7 +125,7 @@ describe('PlayerController', () => {
       };
       jest
         .spyOn(playerService, 'remove')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.remove('5')).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
@@ -136,11 +136,11 @@ describe('PlayerController', () => {
     it('should count a player finished games and return it', async () => {
       const result = {
         playerId: 5,
-        gamesPlayed: 3
+        gamesPlayed: 3,
       };
       jest
         .spyOn(playerService, 'countGamesPlayed')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.countGamesPlayed('5')).toBe(result);
       expect(playerService.countGamesPlayed).toHaveBeenCalledWith(5);
@@ -151,11 +151,11 @@ describe('PlayerController', () => {
     it('should count a player games victory and return it', async () => {
       const result = {
         playerId: 5,
-        victoriesCount: 3
+        victoriesCount: 3,
       };
       jest
         .spyOn(playerService, 'countVictory')
-        .mockImplementation(async () => result);
+        .mockImplementation(() => Promise.resolve(result));
 
       expect(await playerController.countVictory('5')).toBe(result);
       expect(playerService.countVictory).toHaveBeenCalledWith(5);
