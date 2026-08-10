@@ -153,8 +153,20 @@ describe('PlayerService', () => {
         victoriesCount: 2,
       });
       expect(prismaMock.game_Players.findMany).toHaveBeenCalledWith({
-        where: { playerId: 5, gameIdRel: { status: 'finished' } },
-        select: { role: true, gameIdRel: { select: { victory: true } } },
+        where: {
+          playerId: 5,
+          gameIdRel: {
+            status: 'finished',
+          },
+        },
+        select: {
+          role: true,
+          gameIdRel: {
+            select: {
+              victory: true,
+            },
+          },
+        },
       });
     });
 
