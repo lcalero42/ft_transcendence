@@ -1,4 +1,3 @@
-import { useState } from "react";
 import gamesIcon from "../../../../assets/icons/users-group 1.svg"
 
 type RecentGamesProps = {

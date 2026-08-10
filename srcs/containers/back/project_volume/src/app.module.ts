@@ -9,13 +9,13 @@ import { join } from 'path';
 
 @Module({
   imports: [
-	ServeStaticModule.forRoot({
-		rootPath: join(process.cwd(), 'uploads'),
-		serveRoot: '/uploads',
-	}),
-	PlayerModule,
-	RoomModule,
-	AuthModule
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
+    PlayerModule,
+    RoomModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

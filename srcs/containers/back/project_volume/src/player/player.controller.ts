@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   UseGuards,
-  Req
+  Req,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
@@ -43,9 +43,9 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-	async getMe(@Req() req: AuthenticatedRequest) {
-		return this.playerService.findOne(req.user.id);
-	}
+  async getMe(@Req() req: AuthenticatedRequest) {
+    return this.playerService.findOne(req.user.id);
+  }
 
   @Patch(':id')
   async update(
@@ -82,23 +82,22 @@ export class PlayerController {
 
   @Patch(':id/avatar')
   @UseInterceptors(
-	FileInterceptor('avatar', {
-		storage: diskStorage({
-			destination: './uploads/avatars',
-			filename: (req, file, callback) => {
-				const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-				callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
-			},
-		}),
-	}),
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './uploads/avatars',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
   )
   async updateAvatar(
-	@Param('id') id: string,
-	@UploadedFile() file: Express.Multer.File,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-		const avatarUrl = `/uploads/avatars/${file.filename}`;
-		return this.playerService.updateAvatar(+id, avatarUrl);
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    return this.playerService.updateAvatar(+id, avatarUrl);
   }
 }
-
-

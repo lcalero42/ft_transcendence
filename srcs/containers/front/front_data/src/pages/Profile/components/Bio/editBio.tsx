@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import Edit from "../../../../components/Popup/Edit";
 
 type EditBioProps = {

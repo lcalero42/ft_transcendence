@@ -35,18 +35,18 @@ export class PlayerService {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
         aboutMe: updatePlayerDto.aboutMe,
-		avatarUrl: updatePlayerDto.avatarUrl,
+        avatarUrl: updatePlayerDto.avatarUrl,
       },
     });
     return updatePlayer;
   }
 
   async updateAvatar(id: number, avatarUrl: string) {
-	const updatedPlayer = await prisma.player.update({
-		where: { id: id },
-		data: { avatarUrl },
-	});
-	return updatedPlayer;
+    const updatedPlayer = await prisma.player.update({
+      where: { id: id },
+      data: { avatarUrl },
+    });
+    return updatedPlayer;
   }
   async remove(id: number) {
     const deleteUser = await prisma.player.update({
