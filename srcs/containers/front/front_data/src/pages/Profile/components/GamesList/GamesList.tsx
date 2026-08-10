@@ -29,22 +29,13 @@ function timeAgo(dateString: string): string {
 }
 
 function GamesList({games}: RecentGamesListProps) {
-	const [, setIsPopupOpen] = useState(false);
-	const topThree = games.slice(0, 3);
 	return (
 		<div className="card w-full md:bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
 				<div className="font-bold"> Recent games </div>
-				<button
-					className="clean-btn font-medium text-accent hoverable hover:font-black"
-					aria-label="View all games"
-					onClick={() => setIsPopupOpen(true)}
-				>
-					View all
-				</button>
 			</div>
-			<div className="flex flex-col">
-				{topThree.map((g) => (
+			<div className="flex flex-col max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
+				{games.map((g) => (
 					<div className="card flex-row justify-between items-center border border-card-border-2" key={g.id}>
 						<div className="flex flex-1 min-w-0 text-left gap-3 items-center">
 							<div className="circle-purple w-9 h-9 rounded-xl">

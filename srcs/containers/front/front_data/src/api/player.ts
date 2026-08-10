@@ -1,3 +1,4 @@
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export interface Player {
@@ -19,3 +20,14 @@ export async function updateAvatar(playerId: number, file: File): Promise<Player
 	if (!res.ok) throw new Error('Failed to update avatar');
 	return res.json();
 }
+
+export async function updateBio(playerId: number, aboutMe: string): Promise<Player> {
+	const res = await fetch(`${BASE_URL}/player/${playerId}`, {
+		method: 'PATCH',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ aboutMe }),
+	});
+	if (!res.ok) throw new Error('Failed to update bio');
+	return res.json();
+}
+

@@ -17,15 +17,20 @@ function Profile() {
 		{ id: 1, name: "Room #42", nbPlayers: 5, date: "2026-07-25T14:30:00Z", victory: true },
 		{ id: 2, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
 		{ id: 3, name: "Room #42", nbPlayers: 2, date: "2026-07-25T14:30:00Z", victory : true },
+		{ id: 4, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
+		{ id: 5, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
 	];
 
 	const friends = [
 		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true},
 		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false},
 		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 4, name: "jiraaaaf", icon: "🦒", isOnLine: true},
+		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false},
+		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false},
+		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false},
+		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true},
+		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
+		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 	];
 	return (
 		<div className="page">
@@ -39,7 +44,7 @@ function Profile() {
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
 					<Identity playerId={1} username="MasterMind" Since="14/05/2026"/>
 					<div className="md:flex md:flex-col">
-						<Bio bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
+						<Bio playerId={1} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>
 					</div>
 				</div>

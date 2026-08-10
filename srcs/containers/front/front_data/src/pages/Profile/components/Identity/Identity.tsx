@@ -16,15 +16,15 @@ function Identity({playerId, username, Since}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [avatar, setAvatar] = useState(Avatar);
 
-const handleAvatarSave = async (file: File) => {
-	try {
-		const updatedPlayer = await updateAvatar(playerId, file);
-		const fullUrl = `${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`;
-		setAvatar(fullUrl);
-	} catch (err) {
-		console.error(err);
-	}
-};
+	const handleAvatarSave = async (file: File) => {
+		try {
+			const updatedPlayer = await updateAvatar(playerId, file);
+			const fullUrl = `${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`;
+			setAvatar(fullUrl);
+		} catch (err) {
+			console.error(err);
+		}
+	};
 	return (
 		<div className="flex items-center gap-2 mb-5 md:mb-0">
 			<div className="relative w-24 h-24 shrink-0">
