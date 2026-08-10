@@ -5,6 +5,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { requireEnv } from '../common/require-env';
+import { PrismaService } from '../prisma.service';
 
 @Module({
   imports: [
@@ -16,6 +17,6 @@ import { requireEnv } from '../common/require-env';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, PrismaService],
 })
 export class AuthModule {}

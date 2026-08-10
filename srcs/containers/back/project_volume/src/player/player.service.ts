@@ -96,7 +96,7 @@ export class PlayerService {
   }
 
   async getAboutMe(id: number) {
-    const aboutMe = await prisma.player.findUnique({
+    const aboutMe = await this.prisma.player.findUnique({
       where: {
         id: id,
       },
