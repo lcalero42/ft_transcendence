@@ -4,9 +4,15 @@ set -e
 DB_USER=$(cat /run/secrets/db_user)
 DB_PASSWORD=$(cat /run/secrets/db_password)
 DB_NAME=$(cat /run/secrets/db_name)
+JWT_SECRET=$(cat /run/secrets/jwt_secret)
 
 export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?schema=public"
-echo "DATABASE_URL=${DATABASE_URL}" > /app/.env
+
+{
+  echo "DATABASE_URL=${DATABASE_URL}"
+  echo "JWT_SECRET=${JWT_SECRET}"
+  echo "JWT_EXPIRES_IN=1d"
+} > /app/.env
 
 npm ci
 npx prisma migrate deploy

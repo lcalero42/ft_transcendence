@@ -12,6 +12,7 @@ export class PlayerService {
       data: {
         email: createPlayerDto.email,
         name: createPlayerDto.name,
+        password: createPlayerDto.password,
       },
     });
     return createPlayer;
@@ -35,6 +36,7 @@ export class PlayerService {
       data: {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
+        aboutMe: updatePlayerDto.aboutMe,
       },
     });
     return updatePlayer;
@@ -84,5 +86,24 @@ export class PlayerService {
       }
     }
     return { playerId: id, victoriesCount };
+  }
+
+  async getWinrate(id: number) {
+    const victories = (await this.countVictory(id)).victoriesCount;
+    const gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
+    const winrate = (victories / gamesPlayed) * 100;
+    return { playerId: id, winrate };
+  }
+
+  async getAboutMe(id: number) {
+    const aboutMe = await prisma.player.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        aboutMe: true,
+      },
+    });
+    return { playerId: id, aboutMe };
   }
 }

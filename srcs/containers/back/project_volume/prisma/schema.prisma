@@ -10,8 +10,10 @@ generator client {
 
 model Player {
   id                Int         @id @default(autoincrement())
-  name              String
+  name              String      @unique
   email             String      @unique
+  password          String
+  aboutMe           String?     @map("about_me")
   createdAt         DateTime    @default(now()) @map("created_at")
   deletedAt         DateTime?   @map("deleted_at")
 

@@ -10,17 +10,19 @@
 	--color-bg-deep: #020221;
 	--color-bg-deep-end: #170e48;
 	--color-card: #17103c;
+	--color-head-border: #928ea4;
+	--color-grey-border: #3c3c52;
 	--color-card-border: #26174e;
+	--color-card-border-2: #8d5adf4f;
 	--color-card-accent-border: #8e5adf;
 	--color-circle-bg: #45237f;
-
 	/* Texte */
 	--color-gray-low: #695e83;
 	--color-gray-high:#e1d1fc;
 	--color-text-dim: #a1a1aa;
 	--color-stroke-accent: #a066f6;
 
-	/* Accent principal */
+	/* Accent principal #d1b3f4*/
 	--color-accent: #7860ff;
 	--color-accent-hover: #6c2bd9;
 	--color-accent-purple: #bc8df7;
@@ -30,6 +32,9 @@
 	--color-defeat: #f04c4c;
 	--color-winrate: #fcc314;
 	--color-friends: #2ea0e1;
+	--color-games: #7e43f5;
+
+
 
 	/* Rôle favori / couronne */
 	--color-gold: #d9a441;
@@ -49,7 +54,19 @@ body {
 
 /* ============ UTILITY ============ */
 @utility clean-link {
-	@apply text-inherit no-underline;
+	@apply text-inherit
+	no-underline
+}
+
+@utility hoverable {
+	@apply transition-colors
+	duration-200
+	ease-in-out;
+}
+
+@utility clean-btn {
+	@apply bg-none
+	cursor-pointer;
 }
 
 @utility text-outline {
@@ -102,17 +119,18 @@ body {
 		md:pt-[10vh];
 	}
 
-	/* ============ USER BADGE ============ */
+	/* ============ BADGE ============ */
 
-	.user-badge {
+	.badge {
 		@apply flex
 		rounded-[20px]
 		border-2
 		border-card-border
 		bg-card
-		px-4
-		py-2
+		px-2
 		gap-1
+		text-sm
+		items-center
 		clean-link;
 	}
 
@@ -127,6 +145,8 @@ body {
 		rounded-xl
 		bg-card
 		px-5
-		py-4;
+		py-4
+		mb-5;
 	}
+
 }
