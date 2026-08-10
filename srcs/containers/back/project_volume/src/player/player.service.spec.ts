@@ -29,11 +29,18 @@ describe('PlayerService', () => {
 
   describe('create', () => {
     it('should create a player', async () => {
-      const createDto = { name: 'Bob', email: 'bob@test.com' };
+      const createDto = {
+        name: 'Bob',
+        email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
+      };
       const result = {
         id: 5,
         name: 'Bob',
         email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -41,7 +48,11 @@ describe('PlayerService', () => {
 
       expect(await service.create(createDto)).toBe(result);
       expect(prismaMock.player.create).toHaveBeenCalledWith({
-        data: { email: createDto.email, name: createDto.name },
+        data: {
+          email: createDto.email,
+          name: createDto.name,
+          password: createDto.password,
+        },
       });
     });
   });
@@ -53,6 +64,8 @@ describe('PlayerService', () => {
           id: 5,
           name: 'Bob',
           email: 'bob@test.com',
+          password: 'password123',
+          aboutMe: 'Hello there',
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -70,6 +83,8 @@ describe('PlayerService', () => {
         id: 5,
         name: 'Bob',
         email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -89,6 +104,8 @@ describe('PlayerService', () => {
         id: 5,
         name: 'Bob',
         email: 'boblebricoleur@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -97,7 +114,11 @@ describe('PlayerService', () => {
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.player.update).toHaveBeenCalledWith({
         where: { id: 5 },
-        data: { email: updateDto.email, name: updateDto.name },
+        data: {
+          email: updateDto.email,
+          name: updateDto.name,
+          aboutMe: undefined,
+        },
       });
     });
   });
@@ -108,6 +129,8 @@ describe('PlayerService', () => {
         id: 5,
         name: 'Bob',
         email: 'boblebricoleur@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: new Date(),
       };

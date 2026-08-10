@@ -30,11 +30,15 @@ describe('PlayerController', () => {
       const createDto = {
         name: 'Bob',
         email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
       };
       const result = {
         id: 5,
         name: 'Bob',
         email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -54,6 +58,8 @@ describe('PlayerController', () => {
           id: 5,
           name: 'Bob',
           email: 'bob@test.com',
+          password: 'password123',
+          aboutMe: 'Hello there',
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -61,6 +67,8 @@ describe('PlayerController', () => {
           id: 6,
           name: 'Jean',
           email: 'valjean@test.com',
+          password: 'password123',
+          aboutMe: 'Hello there',
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -80,6 +88,8 @@ describe('PlayerController', () => {
         id: 5,
         name: 'Bob',
         email: 'bob@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -102,6 +112,8 @@ describe('PlayerController', () => {
         id: 5,
         name: 'Bob',
         email: 'boblebricoleur@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -120,6 +132,8 @@ describe('PlayerController', () => {
         id: 5,
         name: 'Bob',
         email: 'boblebricoleur@test.com',
+        password: 'password123',
+        aboutMe: 'Hello there',
         createdAt: new Date(),
         deletedAt: new Date(),
       };
