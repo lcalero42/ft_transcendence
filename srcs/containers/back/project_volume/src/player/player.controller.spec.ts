@@ -175,4 +175,34 @@ describe('PlayerController', () => {
       expect(playerService.countVictory).toHaveBeenCalledWith(5);
     });
   });
+
+  describe('getWinrate', () => {
+    it('should return a player winrate and return it', async () => {
+      const result = {
+        playerId: 5,
+        winrate: 50,
+      };
+      jest
+        .spyOn(playerService, 'getWinrate')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await playerController.getWinrate('5')).toBe(result);
+      expect(playerService.getWinrate).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('getAboutMe', () => {
+    it('should return a player about me section and return it', async () => {
+      const result = {
+        playerId: 5,
+        aboutMe: { aboutMe: 'Hello there' },
+      };
+      jest
+        .spyOn(playerService, 'getAboutMe')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await playerController.getAboutMe('5')).toBe(result);
+      expect(playerService.getAboutMe).toHaveBeenCalledWith(5);
+    });
+  });
 });

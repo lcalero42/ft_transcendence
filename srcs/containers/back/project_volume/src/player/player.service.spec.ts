@@ -5,6 +5,10 @@ import { PrismaService } from '../prisma.service';
 import { PrismaClient, Role } from '../generated/prisma/client';
 
 type VictoryRow = { role: Role; gameIdRel: { victory: Role | null } };
+type GamePlayersRows = Awaited<
+  ReturnType<PrismaClient['game_Players']['findMany']>
+>;
+type PlayerRow = Awaited<ReturnType<PrismaClient['player']['findUnique']>>;
 
 describe('PlayerService', () => {
   let service: PlayerService;
@@ -166,9 +170,7 @@ describe('PlayerService', () => {
         { role: Role.civilian, gameIdRel: { victory: Role.civilian } },
       ];
       prismaMock.game_Players.findMany.mockResolvedValue(
-        rows as unknown as Awaited<
-          ReturnType<PrismaClient['game_Players']['findMany']>
-        >,
+        rows as unknown as GamePlayersRows,
       );
 
       expect(await service.countVictory(5)).toEqual({
@@ -198,14 +200,80 @@ describe('PlayerService', () => {
         { role: Role.civilian, gameIdRel: { victory: Role.undercover } },
       ];
       prismaMock.game_Players.findMany.mockResolvedValue(
-        rows as unknown as Awaited<
-          ReturnType<PrismaClient['game_Players']['findMany']>
-        >,
+        rows as unknown as GamePlayersRows,
       );
 
       expect(await service.countVictory(5)).toEqual({
         playerId: 5,
         victoriesCount: 0,
+      });
+    });
+  });
+
+  describe('getWinrate', () => {
+    it('should return the winrate as a percentage', async () => {
+      const rows: VictoryRow[] = [
+        { role: Role.civilian, gameIdRel: { victory: Role.civilian } },
+        { role: Role.civilian, gameIdRel: { victory: Role.civilian } },
+        { role: Role.undercover, gameIdRel: { victory: Role.civilian } },
+        { role: Role.civilian, gameIdRel: { victory: Role.undercover } },
+      ];
+      prismaMock.game_Players.findMany.mockResolvedValue(
+        rows as unknown as GamePlayersRows,
+      );
+      prismaMock.game_Players.count.mockResolvedValue(4);
+
+      expect(await service.getWinrate(5)).toEqual({ playerId: 5, winrate: 50 });
+    });
+
+    it('should return a winrate of 100 when every game was won', async () => {
+      const rows: VictoryRow[] = [
+        { role: Role.undercover, gameIdRel: { victory: Role.undercover } },
+        { role: Role.civilian, gameIdRel: { victory: Role.civilian } },
+      ];
+      prismaMock.game_Players.findMany.mockResolvedValue(
+        rows as unknown as GamePlayersRows,
+      );
+      prismaMock.game_Players.count.mockResolvedValue(2);
+
+      expect(await service.getWinrate(5)).toEqual({
+        playerId: 5,
+        winrate: 100,
+      });
+    });
+
+    // Documents current behaviour: dividing by zero games yields NaN.
+    it('should return NaN when the player has never finished a game', async () => {
+      prismaMock.game_Players.findMany.mockResolvedValue([]);
+      prismaMock.game_Players.count.mockResolvedValue(0);
+
+      const { winrate } = await service.getWinrate(5);
+      expect(winrate).toBeNaN();
+    });
+  });
+
+  describe('getAboutMe', () => {
+    it('should return the player about me section', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        aboutMe: 'Hello there',
+      } as unknown as PlayerRow);
+
+      expect(await service.getAboutMe(5)).toEqual({
+        playerId: 5,
+        aboutMe: { aboutMe: 'Hello there' },
+      });
+      expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
+        where: { id: 5 },
+        select: { aboutMe: true },
+      });
+    });
+
+    it('should return a null about me when the player does not exist', async () => {
+      prismaMock.player.findUnique.mockResolvedValue(null);
+
+      expect(await service.getAboutMe(5)).toEqual({
+        playerId: 5,
+        aboutMe: null,
       });
     });
   });
