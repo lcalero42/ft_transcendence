@@ -2,6 +2,7 @@ import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import FormField from "../../components/FormField/FormField";
 import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
+import { toast, Toaster } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 
@@ -70,6 +71,11 @@ function Register() {
 			return;
 		}
 
+		toast.add({
+		  title: "Account registered",
+		  description: "You can now enjoy the best experience of your life.",
+		})
+
 		console.log("submit fired", form);
 	}
 
@@ -133,6 +139,7 @@ function Register() {
 				onChange={handleChange}
 				error={errors.confirmPassword}
 			/>
+ 		    <Toaster />
 		</AuthLayout>
 	);
 }
