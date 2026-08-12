@@ -44,7 +44,7 @@ export class PlayerService {
   }
 
   async updateAvatar(id: number, avatarUrl: string) {
-    const updatedPlayer = await prisma.player.update({
+    const updatedPlayer = await this.prisma.player.update({
       where: { id: id },
       data: { avatarUrl },
     });

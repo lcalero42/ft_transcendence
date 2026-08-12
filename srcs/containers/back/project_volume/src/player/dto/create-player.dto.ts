@@ -19,5 +19,6 @@ export class CreatePlayerDto {
   @MaxLength(72)
   aboutMe: string;
 
+  @IsString()
   avatarUrl: string;
 }
