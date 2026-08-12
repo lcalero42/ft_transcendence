@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -49,6 +50,14 @@ export default tseslint.config(
         { selector: 'variable', modifiers: ['const', 'global'], format: ['camelCase', 'UPPER_CASE'] },
       ],
       'no-console': 'error',
+    },
+  },
+  {
+    files: ['**/*.spec.ts'],
+    plugins: { jest: eslintPluginJest },
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+      'jest/unbound-method': 'error',
     },
   },
 );

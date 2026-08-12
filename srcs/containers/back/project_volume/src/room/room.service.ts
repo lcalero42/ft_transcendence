@@ -1,12 +1,14 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { prisma } from '../../lib/prisma';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class RoomService {
+  constructor(private prisma: PrismaService) {}
+
   async create(playerId: number, createRoomDto: CreateRoomDto) {
-    const roomCount = await prisma.rooms.count({
+    const roomCount = await this.prisma.rooms.count({
       where: {
         createdBy: playerId,
         deletedAt: null,
@@ -21,7 +23,7 @@ export class RoomService {
       );
     }
 
-    const createRoom = await prisma.rooms.create({
+    const createRoom = await this.prisma.rooms.create({
       data: {
         name: createRoomDto.name,
         createdBy: playerId,
@@ -32,26 +34,26 @@ export class RoomService {
   }
 
   async findAll() {
-    const rooms = await prisma.rooms.findMany();
+    const rooms = await this.prisma.rooms.findMany();
     return rooms;
   }
 
   async findCurrent() {
-    const currentRooms = await prisma.rooms.findMany({
+    const currentRooms = await this.prisma.rooms.findMany({
       where: { deletedAt: null },
     });
     return currentRooms;
   }
 
   async findOne(id: number) {
-    const room = await prisma.rooms.findUnique({
+    const room = await this.prisma.rooms.findUnique({
       where: { id: id },
     });
     return room;
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {
-    const updateRoom = await prisma.rooms.update({
+    const updateRoom = await this.prisma.rooms.update({
       where: { id: id },
       data: {
         name: updateRoomDto.name,
@@ -61,7 +63,7 @@ export class RoomService {
   }
 
   async remove(id: number) {
-    const deleteRoom = await prisma.rooms.update({
+    const deleteRoom = await this.prisma.rooms.update({
       where: { id: id },
       data: {
         deletedAt: new Date(),

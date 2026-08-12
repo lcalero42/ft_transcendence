@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { prisma } from '../../lib/prisma';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class PlayerService {
+  constructor(private prisma: PrismaService) {}
+
   async create(createPlayerDto: CreatePlayerDto) {
-    const createPlayer = await prisma.player.create({
+    const createPlayer = await this.prisma.player.create({
       data: {
         email: createPlayerDto.email,
         name: createPlayerDto.name,
@@ -17,19 +19,19 @@ export class PlayerService {
   }
 
   async findAll() {
-    const players = await prisma.player.findMany();
+    const players = await this.prisma.player.findMany();
     return players;
   }
 
   async findOne(id: number) {
-    const player = await prisma.player.findUnique({
+    const player = await this.prisma.player.findUnique({
       where: { id: id },
     });
     return player;
   }
 
   async update(id: number, updatePlayerDto: UpdatePlayerDto) {
-    const updatePlayer = await prisma.player.update({
+    const updatePlayer = await this.prisma.player.update({
       where: { id: id },
       data: {
         email: updatePlayerDto.email,
@@ -49,7 +51,7 @@ export class PlayerService {
     return updatedPlayer;
   }
   async remove(id: number) {
-    const deleteUser = await prisma.player.update({
+    const deleteUser = await this.prisma.player.update({
       where: { id: id },
       data: {
         deletedAt: new Date(),
@@ -59,7 +61,7 @@ export class PlayerService {
   }
 
   async countGamesPlayed(id: number) {
-    const gamesPlayed = await prisma.game_Players.count({
+    const gamesPlayed = await this.prisma.game_Players.count({
       where: {
         playerId: id,
         gameIdRel: { status: 'finished' },
@@ -69,7 +71,7 @@ export class PlayerService {
   }
 
   async countVictory(id: number) {
-    const playerVictories = await prisma.game_Players.findMany({
+    const playerVictories = await this.prisma.game_Players.findMany({
       where: {
         playerId: id,
         gameIdRel: {
@@ -102,7 +104,7 @@ export class PlayerService {
   }
 
   async getAboutMe(id: number) {
-    const aboutMe = await prisma.player.findUnique({
+    const aboutMe = await this.prisma.player.findUnique({
       where: {
         id: id,
       },
