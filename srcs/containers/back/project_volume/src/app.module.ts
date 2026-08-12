@@ -3,11 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PlayerModule } from './player/player.module';
 import { RoomModule } from './room/room.module';
+import { GameModule } from './game/game.module';
 import { WordPairModule } from './word_pair/word_pair.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PlayerModule, RoomModule, AuthModule, WordPairModule],
+  imports: [PlayerModule, RoomModule, GameModule, AuthModule, WordPairModule],
   controllers: [AppController],
   providers: [AppService],
 })
