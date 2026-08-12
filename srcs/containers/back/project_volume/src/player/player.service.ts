@@ -24,7 +24,7 @@ export class PlayerService {
   }
 
   async countPlayerActiv() {
-    const i = await prisma.player.count({
+    const i = await this.prisma.player.count({
       where: { deletedAt: null },
     });
     return i;
