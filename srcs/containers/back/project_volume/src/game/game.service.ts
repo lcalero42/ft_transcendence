@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
-import { prisma } from '../../lib/prisma';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class GameService {
+
+  constructor(private prisma: PrismaService) {}
+
   async create(createGameDto: CreateGameDto) {
-    const createGame = await prisma.games.create({
+    const createGame = await this.prisma.games.create({
       data: {
         civilianWord: createGameDto.civilianWord,
         undercoverWord: createGameDto.undercoverWord,
@@ -17,12 +20,12 @@ export class GameService {
   }
 
   async findAll() {
-    const games = await prisma.games.findMany();
+    const games = await this.prisma.games.findMany();
     return games;
   }
 
   async countGames() {
-    const i = await prisma.games.count({
+    const i = await this.prisma.games.count({
       where: {
         finishedAt: {
           not: null,
@@ -33,13 +36,13 @@ export class GameService {
   }
 
   async findOne(id: number) {
-    const game = await prisma.games.findUnique({
+    const game = await this.prisma.games.findUnique({
       where: { id: id },
     });
     return game;
   }
   async update(id: number, updateGameDto: UpdateGameDto) {
-    const updateGame = await prisma.games.update({
+    const updateGame = await this.prisma.games.update({
       where: { id: id },
       data: {
         civilianWord: updateGameDto.civilianWord,
@@ -50,7 +53,7 @@ export class GameService {
     return updateGame;
   }
   async remove(id: number) {
-    const deleteGame = await prisma.games.update({
+    const deleteGame = await this.prisma.games.update({
       where: { id: id },
       data: {
         finishedAt: new Date(),
