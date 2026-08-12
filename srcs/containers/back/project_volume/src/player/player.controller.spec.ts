@@ -86,6 +86,17 @@ describe('PlayerController', () => {
     });
   });
 
+  describe('countPlayerActiv', () => {
+    it('should return the active players count', async () => {
+      jest
+        .spyOn(playerService, 'countPlayerActiv')
+        .mockImplementation(() => Promise.resolve(3));
+
+      expect(await playerController.countPlayerActiv()).toBe(3);
+      expect(playerService.countPlayerActiv).toHaveBeenCalled();
+    });
+  });
+
   describe('findOne', () => {
     it('should return a player', async () => {
       const result = {
