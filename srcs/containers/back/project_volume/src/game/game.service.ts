@@ -5,7 +5,6 @@ import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class GameService {
-
   constructor(private prisma: PrismaService) {}
 
   async create(createGameDto: CreateGameDto) {

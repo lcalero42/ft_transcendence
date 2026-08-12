@@ -1,7 +1,6 @@
 import { IsInt, IsPositive, IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateGameDto {
-
   @IsString()
   @IsNotEmpty()
   civilianWord: string;
