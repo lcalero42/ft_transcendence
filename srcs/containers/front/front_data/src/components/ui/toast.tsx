@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import * as React from "react"
 import { Toast as ToastPrimitive } from "@base-ui/react/toast"
 
@@ -85,7 +86,7 @@ function ToastDescription({
   return (
     <ToastPrimitive.Description
       data-slot="toast-description"
-      className={cn("text-sm text-text-dim", className)}
+      className={cn("text-sm text-text-dim ", className)}
       {...props}
     />
   )
