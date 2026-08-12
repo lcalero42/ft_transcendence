@@ -21,6 +21,7 @@ services:
       - db_user
       - db_password
       - db_name
+      - jwt_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -64,3 +65,5 @@ secrets:
     file: ./secrets/db_password.txt
   db_name:
     file: ./secrets/db_name.txt
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt

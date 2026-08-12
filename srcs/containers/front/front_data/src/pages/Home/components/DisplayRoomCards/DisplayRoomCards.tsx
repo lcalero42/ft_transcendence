@@ -8,7 +8,7 @@ type Rooms = {
 
 function DisplayRoomCards({ rooms }: Rooms) {
     return (
-        <section className="flex flex-col gap-5
+        <section className="flex flex-col
         md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]">
             <CreateRoomButton />
             {rooms.map((room) => (
