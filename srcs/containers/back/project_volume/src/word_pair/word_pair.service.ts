@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
 import { UpdateWordPairDto } from './dto/update-word_pair.dto';
-import { prisma } from '../../lib/prisma';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WordPairService {
+  constructor(private prisma: PrismaService) {}
+
   async create(createWordPairDto: CreateWordPairDto) {
-    const createWordPair = await prisma.word_Pair.create({
+    const createWordPair = await this.prisma.word_Pair.create({
       data: {
         civilianWord: createWordPairDto.civilianWord,
         undercoverWord: createWordPairDto.undercoverWord,
@@ -16,19 +18,19 @@ export class WordPairService {
   }
 
   async findAll() {
-    const wordPairs = await prisma.word_Pair.findMany();
+    const wordPairs = await this.prisma.word_Pair.findMany();
     return wordPairs;
   }
 
   async findOne(id: number) {
-    const wordPair = await prisma.word_Pair.findUnique({
+    const wordPair = await this.prisma.word_Pair.findUnique({
       where: { id: id },
     });
     return wordPair;
   }
 
   async update(id: number, updateWordPairDto: UpdateWordPairDto) {
-    const updtateWordPlayer = await prisma.word_Pair.update({
+    const updtateWordPlayer = await this.prisma.word_Pair.update({
       where: { id: id },
       data: {
         civilianWord: updateWordPairDto.civilianWord,
@@ -39,7 +41,9 @@ export class WordPairService {
   }
 
   async remove(id: number) {
-    const rmWordPair = await prisma.word_Pair.delete({ where: { id: id } });
+    const rmWordPair = await this.prisma.word_Pair.delete({
+      where: { id: id },
+    });
     return rmWordPair;
   }
 }
