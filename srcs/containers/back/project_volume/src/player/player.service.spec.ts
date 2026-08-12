@@ -84,6 +84,23 @@ describe('PlayerService', () => {
     });
   });
 
+  describe('countPlayerActiv', () => {
+    it('should count the non deleted players and return it', async () => {
+      prismaMock.player.count.mockResolvedValue(3);
+
+      expect(await service.countPlayerActiv()).toBe(3);
+      expect(prismaMock.player.count).toHaveBeenCalledWith({
+        where: { deletedAt: null },
+      });
+    });
+
+    it('should return zero when every player has been deleted', async () => {
+      prismaMock.player.count.mockResolvedValue(0);
+
+      expect(await service.countPlayerActiv()).toBe(0);
+    });
+  });
+
   describe('findOne', () => {
     it('should return a player', async () => {
       const result = {
