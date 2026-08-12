@@ -32,6 +32,7 @@ describe('PlayerController', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: '/uploads/avatars/bob.png',
       };
       const result = {
         id: 5,
@@ -39,6 +40,7 @@ describe('PlayerController', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -60,6 +62,7 @@ describe('PlayerController', () => {
           email: 'bob@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -69,6 +72,7 @@ describe('PlayerController', () => {
           email: 'valjean@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -90,6 +94,7 @@ describe('PlayerController', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -114,6 +119,7 @@ describe('PlayerController', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -134,6 +140,7 @@ describe('PlayerController', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
