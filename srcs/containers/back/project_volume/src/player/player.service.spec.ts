@@ -38,6 +38,7 @@ describe('PlayerService', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: '/uploads/avatars/bob.png',
       };
       const result = {
         id: 5,
@@ -45,6 +46,7 @@ describe('PlayerService', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -70,6 +72,7 @@ describe('PlayerService', () => {
           email: 'bob@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -89,6 +92,7 @@ describe('PlayerService', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -110,6 +114,7 @@ describe('PlayerService', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -135,6 +140,7 @@ describe('PlayerService', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: new Date(),
       };

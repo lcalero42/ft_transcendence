@@ -3,11 +3,24 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PlayerModule } from './player/player.module';
 import { RoomModule } from './room/room.module';
+import { GameModule } from './game/game.module';
 import { WordPairModule } from './word_pair/word_pair.module';
 import { AuthModule } from './auth/auth.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [PlayerModule, RoomModule, AuthModule, WordPairModule],
+  imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+      serveRoot: '/uploads',
+    }),
+    PlayerModule,
+    RoomModule,
+    AuthModule,
+    WordPairModule,
+    GameModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
