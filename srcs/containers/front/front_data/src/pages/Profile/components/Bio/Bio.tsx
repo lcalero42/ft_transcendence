@@ -3,7 +3,7 @@ import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
 import {updateBio} from "../../../../api/player"
 import EditBio from "./editBio";
-
+import { toast } from "@/components/ui/toast";
 type BioProps = {
 	playerId: number;
 	bio: string;
@@ -12,13 +12,16 @@ type BioProps = {
 function Bio({playerId, bio}: BioProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [currentBio, setCurrentBio] = useState(bio);
-
 	const handleBioSave = async (newBio: string) => {
 		try {
 			const updatedPlayer = await updateBio(playerId, newBio);
 			setCurrentBio(updatedPlayer.aboutMe);
 		} catch (err) {
-			console.error(err);
+			const message = err instanceof Error ? err.message : "An error occured";
+    		toast.add({
+      			title: "Failed to update bio",
+			    description: message,
+    		});
 		}
 	};
 	return (
@@ -35,7 +38,9 @@ function Bio({playerId, bio}: BioProps) {
 					<EditIcon color="var(--color-text-dim)"/>
 				</button>
 			</div>
-			<div className="text-text-dim text-xs text-left md:max-w-[75%]">{currentBio}</div>
+			<p className="text-text-dim text-xs text-left max-w-[75%] break-all">
+					{currentBio}
+			</p>
 			{isPopupOpen && (
 				<EditBio
 					currentBio={currentBio}

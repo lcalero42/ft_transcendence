@@ -27,7 +27,13 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ aboutMe }),
 	});
-	if (!res.ok) throw new Error('Failed to update bio');
+	if (!res.ok) {
+		const errorBody = await res.json().catch(() => null);
+		const message = Array.isArray(errorBody?.message)
+			? errorBody.message.join(', ')
+			: errorBody?.message ?? 'Failed to update bio';
+		throw new Error(message);
+	}
 	return res.json();
 }
 

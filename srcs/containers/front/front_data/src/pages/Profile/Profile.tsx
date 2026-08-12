@@ -10,6 +10,7 @@ import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 
 
 import IconDetective from "../../assets/icons/brand-redhat.svg";
+import { Toaster } from "@/components/ui/toast";
 
 function Profile() {
 
@@ -57,6 +58,7 @@ function Profile() {
 				</div>
 			</main>
 			<Credit />
+			<Toaster />
 		</div>
 	);
 }
