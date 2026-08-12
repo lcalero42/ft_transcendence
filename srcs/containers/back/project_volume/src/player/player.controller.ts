@@ -6,10 +6,20 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Request } from 'express';
+type AuthenticatedRequest = Request & { user: { id: number; email: string } };
 
 @Controller('player')
 export class PlayerController {
@@ -30,9 +40,16 @@ export class PlayerController {
     return this.playerService.countPlayerActiv();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getMe(@Req() req: AuthenticatedRequest) {
+    return this.playerService.findOne(req.user.id);
   }
 
   @Patch(':id')
@@ -66,5 +83,26 @@ export class PlayerController {
   @Get(':id/about-me')
   async getAboutMe(@Param('id') id: string) {
     return this.playerService.getAboutMe(+id);
+  }
+
+  @Patch(':id/avatar')
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './uploads/avatars',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async updateAvatar(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    return this.playerService.updateAvatar(+id, avatarUrl);
   }
 }
