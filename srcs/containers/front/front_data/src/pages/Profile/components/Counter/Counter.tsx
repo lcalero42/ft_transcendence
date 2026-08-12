@@ -19,7 +19,7 @@ type CounterProps = {
 
 function DisplayCounterCard({color, nb, categories, icon} : DisplayCounterCardProps) {
 	return (
-		<div className="card md:bg-transparent px-0 py-0 w-36 h-30 border md:border-transparent
+		<div className="card md:bg-transparent px-0 py-0 w-36 md:flex-1 md:w-full h-30 border md:border-transparent
 		justify-center items-center bg-card border-card-border-2 md:hoverable md:hover:bg-card  md:hover:border-card-border-2
 		md:mb-0">
 			<div className={` text-4xl font-semibold ${color}`}>{nb}</div>
