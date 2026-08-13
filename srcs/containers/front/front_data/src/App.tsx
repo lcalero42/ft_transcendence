@@ -5,6 +5,7 @@ import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
+import TestColyseus from "./pages/testColyseus/TestColyseus";
 function App() {
 	return (
 		<BrowserRouter>
@@ -16,6 +17,7 @@ function App() {
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/create-room" element={<CreateRoom />} />
 				<Route path="/game/:id" element={<GameRoom />} />
+				<Route path="/testColyseus" element={<TestColyseus />} />
 			</Routes>
 		</BrowserRouter>
 	)

@@ -14,8 +14,7 @@ describe('RoomService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        RoomService,
-        { provide: PrismaService, useValue: prismaMock },
+        RoomService, { provide: PrismaService, useValue: prismaMock },
       ],
     }).compile();
 

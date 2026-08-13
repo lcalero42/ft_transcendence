@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "vite-plugin-svgr": "^5.2.0"
+  },
+  "dependencies": {
+    "colyseus": "^0.17.10"
   }
 }
