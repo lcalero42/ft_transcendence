@@ -12,6 +12,7 @@ const links: SidebarLinkItem[] = [
 	{ label: "Stats", path: "/stats" },
 	{ label: "Rooms", path: "/gamesRoom" },
 	{ label: "Friends", path: "/friends" },
+	{ label: "Admin", path: "/Admin" },
 	{ label: "Logout", path: "/connection" },
 ];
 

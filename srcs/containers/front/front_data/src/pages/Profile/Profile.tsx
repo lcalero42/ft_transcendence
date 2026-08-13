@@ -1,6 +1,6 @@
-import Logo from "../../components/Logo/Logo";
-import Credit from "../../components/Credit/Credit";
-import Sidebar from "./components/Sidebar/Sidebar";
+import Logo from "@/components/Logo/Logo";
+import Credit from "@/components/Credit/Credit";
+import Sidebar from "@/components/Sidebar/Sidebar";
 import Identity from "./components/Identity/Identity";
 import Bio from "./components/Bio/Bio";
 import Counter from "./components/Counter/Counter";
@@ -9,7 +9,7 @@ import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 
 
-import IconDetective from "../../assets/icons/brand-redhat.svg";
+import IconDetective from "@/assets/icons/brand-redhat.svg";
 import { Toaster } from "@/components/ui/toast";
 
 function Profile() {

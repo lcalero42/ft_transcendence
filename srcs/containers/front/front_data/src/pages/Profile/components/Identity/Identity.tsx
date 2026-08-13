@@ -2,7 +2,7 @@ import Icon from "../../../../assets/icons/calendar-time.svg";
 import Avatar from "../../../../assets/profile-photo/moon.png";
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
-import { updateAvatar} from '../../../../api/player';
+import { updateAvatar} from '@/api/player';
 import EditAvatar from "./EditAvatar";
 
 

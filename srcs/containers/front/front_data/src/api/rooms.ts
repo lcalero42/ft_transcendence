@@ -9,6 +9,12 @@ export interface Room {
 }
 
 
+export async function countRoomActives() {
+	const res = await fetch(`${BASE_URL}/room/count-activ`);
+	if (!res.ok) throw new Error('failed to count rooms actives');
+	return res.json();
+}
+
 export async function fetchRooms(): Promise<Room[]> {
   const res = await fetch(`${BASE_URL}/room/current`);
   if (!res.ok) throw new Error('Failed to fetch rooms');

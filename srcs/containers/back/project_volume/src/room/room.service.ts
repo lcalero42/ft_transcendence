@@ -52,6 +52,13 @@ export class RoomService {
     return room;
   }
 
+	async countActiv() {
+		const i = await this.prisma.rooms.count({
+			where: {deletedAt: null},
+		});
+		return i;
+	}
+
   async update(id: number, updateRoomDto: UpdateRoomDto) {
     const updateRoom = await this.prisma.rooms.update({
       where: { id: id },
