@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { Client } from "@colyseus/sdk";
 import { useRoom } from "@colyseus/react";
 import GameView from "./components/GameView";
@@ -13,17 +12,8 @@ export default function TestColyseus() {
 		() => client.joinOrCreate<Rooms>("udv_room"),
 	);
 
-	useEffect(() => {
-		if (!room) return;
-
-		return room.onMessage("welcome", (message) => {
-			console.log("message received from server");
-			console.log(message);
-		});
-	}, [room]);
-
 	if (isConnecting) return <p>Connecting...</p>;
-	if (error) return <p>Error: {error.message}</p>;
+	if (error) return <p>My_Error: {error.message}</p>;
 
 	return <GameView room={room} />;
 }

@@ -1,4 +1,4 @@
-// import { useRoomState } from "@colyseus/react";
+import { useRoomState } from "@colyseus/react";
 import { useEffect, useRef } from "react";
 import type { Room } from "@colyseus/sdk";
 import type { Rooms } from "../../../../../../back/project_volume/src/colyseus/rooms/Rooms";
@@ -21,18 +21,27 @@ function GameView({ room }: GameViewProps) {
 		name: "coucou"
 	}
 
-	const hasSentRef = useRef(false);
+	useEffect(() => {
+		if (!room) return;
 
+		return room.onMessage("welcome", (message) => {
+			console.log("message received from server");
+			console.log(message);
+		});
+	}, [room]);
+
+	const hasSentRef = useRef(false);
 	useEffect(() => {
 		if (hasSentRef.current) return;
 		hasSentRef.current = true;
 		room.send("do", payload);
 	}, [room]);
 
-	return <p>GameView</p>
-
 	// const state = useRoomState(room);
-	// return <p>Players: {state.players.size}</p>;
+	// if (!state?.players) return <p>Waiting for state...</p>;
+
+	// return <p>Players: {Object.keys(state.players).length}</p>;
+	return <p>okok</p>
 }
 
 export default GameView;
