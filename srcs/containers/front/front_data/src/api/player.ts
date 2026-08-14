@@ -8,11 +8,24 @@ export interface Player {
 	aboutMe: string;
 	avatarUrl: string;
 }
-export async function countPlayer() {
-	const res = await fetch(`${BASE_URL}/player/count-activ`);
-	if (!res.ok) throw new Error('failed to fetch player count');
+
+export async function getPlayers() {
+	const res = await fetch(`${BASE_URL}/player`);
+	if (!res.ok) throw new Error('Failed to fetch list players');
 	return res.json();
 }
+
+export async function countPlayer() {
+	const res = await fetch(`${BASE_URL}/player/count-activ`);
+	if (!res.ok) throw new Error('Failed to fetch players count');
+	return res.json();
+}
+
+export function getAvatarUrl(path: string | null): string | null {
+	if (!path) return null;
+	return `${BASE_URL}${path}`;
+}
+
 export async function updateAvatar(playerId: number, file: File): Promise<Player> {
 	const formData = new FormData();
 	formData.append('avatar', file);
