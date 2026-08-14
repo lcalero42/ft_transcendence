@@ -5,11 +5,11 @@ import { Rooms } from "./rooms/Rooms";
 
 export const httpServer = createServer();
 
-export const server = defineServer({
+export const colyseusServer = defineServer({
   transport: new WebSocketTransport({
     server: httpServer,
   }),
   rooms: {
-    my_rooms: defineRoom(Rooms),
+    udv_room: defineRoom(Rooms),
   },
 });
