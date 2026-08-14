@@ -7,8 +7,14 @@ export interface Game {
 
 }
 
+export async function getGames() {
+	const res = await fetch(`${BASE_URL}/game`);
+	if (!res.ok) throw new Error('Failed to fetch games');
+	return res.json();
+}
+
 export async function countGames() {
 	const res = await fetch(`${BASE_URL}/game/count`);
-	if (!res.ok) throw new Error('failed to count games');
+	if (!res.ok) throw new Error('Failed to count games');
 	return res.json();
 }

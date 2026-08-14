@@ -24,6 +24,7 @@ export class GameController {
   async findAll() {
     return this.gameService.findAll();
   }
+
   @Get('count')
   async countGames() {
     return this.gameService.countGames();

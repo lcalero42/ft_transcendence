@@ -27,7 +27,7 @@ function PlayerList() {
 	return (
 		<div className="card w-full md:bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
-				<div className="font-bold"> Users </div>
+				<div className="font-bold text-xl"> Users </div>
 			</div>
 			<div className="flex flex-col max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
 				{players.map((player) => (
@@ -59,9 +59,17 @@ function PlayerList() {
 										profile create at : {new Date(player.createdAt).toLocaleDateString()}
 									</span>
 								</div>
-
-								<div className={`font-semibold text-xs md:text-sm ${player.isLog ? "text-victory" : "text-text-dim"}`}>
-									{player.isLog ? "connected" : "disconnect"}
+								<div className="flex items-center">
+									<span
+										className={`md:hidden w-4 h-4 rounded-full ${
+											player.isLog ? "bg-victory" : "bg-text-dim"}`}
+									/>
+									<span
+										className={`hidden md:inline font-semibold text-xs md:text-sm ${
+											player.isLog ? "text-victory" : "text-text-dim"}`}
+									>
+										{player.isLog ? "connected" : "disconnect"}
+									</span>
 								</div>
 							</div>
 						</div>
