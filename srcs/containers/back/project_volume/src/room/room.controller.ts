@@ -38,6 +38,11 @@ export class RoomController {
     return this.roomService.findOne(+id);
   }
 
+  @Get(':id/games')
+  async getGames(@Param('id') id: string) {
+	return this.roomService.getGames(+id);
+  }
+
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
     return this.roomService.update(+id, updateRoomDto);

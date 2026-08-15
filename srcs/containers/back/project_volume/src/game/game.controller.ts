@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -32,6 +33,11 @@ export class GameController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.gameService.findOne(+id);
+  }
+
+  @Get(':id/players')
+  async getPlayersByGame(@Param('id') id: string) {
+	return this.gameService.getPlayersByGame(+id);
   }
 
   @Patch(':id')
