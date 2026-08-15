@@ -42,22 +42,22 @@ export class GameService {
   }
 
   async getPlayersByGame(gameId: number) {
-	const gamePlayers = await this.prisma.game_Players.findMany({
-		where: {gameId},
-		include: {
-			playerIdRel: {
-				select: {
-					id: true,
-					name: true,
-					avatarUrl: true,
-				},
-			},
-		},
-	});
-	return gamePlayers.map((gp) => ({
-		...gp.playerIdRel,
-		role: gp.role,
-	}));
+    const gamePlayers = await this.prisma.game_Players.findMany({
+      where: { gameId },
+      include: {
+        playerIdRel: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    });
+    return gamePlayers.map((gp) => ({
+      ...gp.playerIdRel,
+      role: gp.role,
+    }));
   }
 
   async update(id: number, updateGameDto: UpdateGameDto) {

@@ -40,7 +40,7 @@ export class RoomController {
 
   @Get(':id/games')
   async getGames(@Param('id') id: string) {
-	return this.roomService.getGames(+id);
+    return this.roomService.getGames(+id);
   }
 
   @Patch(':id')
