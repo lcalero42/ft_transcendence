@@ -3,6 +3,7 @@ import Logo from "@/components/Logo/Logo";
 import CountCards from "./components/CountCards";
 import PlayerList from "./components/PlayerList";
 // import GameList from "./components/GameList";
+import WordPairList from "./components/WordPairList";
 import Credit from "@/components/Credit/Credit";
 import { Toaster } from "@/components/ui/toast";
 
@@ -20,6 +21,7 @@ function Admin() {
 				<CountCards />
 				<PlayerList />
 				{/* <GameList /> */}
+				<WordPairList />
 			</main>
 			<Credit />
 			<Toaster />
