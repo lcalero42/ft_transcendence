@@ -18,3 +18,9 @@ export async function countGames() {
 	if (!res.ok) throw new Error('Failed to count games');
 	return res.json();
 }
+
+export async function getPlayersByGame(id: number) {
+	const res = await fetch(`${BASE_URL}/game/${id}/players`);
+	if (!res.ok) throw new Error('Failed to fetch players of game');
+	return res.json();
+}

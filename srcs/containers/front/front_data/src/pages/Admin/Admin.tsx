@@ -2,7 +2,7 @@ import Sidebar from "@/components/Sidebar/Sidebar";
 import Logo from "@/components/Logo/Logo";
 import CountCards from "./components/CountCards";
 import PlayerList from "./components/PlayerList";
-// import GameList from "./components/GameList";
+import RoomList from "./components/RoomList";
 import WordPairList from "./components/WordPairList";
 import Credit from "@/components/Credit/Credit";
 import { Toaster } from "@/components/ui/toast";
@@ -20,7 +20,7 @@ function Admin() {
 				<div className=" text-left text-xl font-black pb-4"> Administrator dashboard</div>
 				<CountCards />
 				<PlayerList />
-				{/* <GameList /> */}
+				<RoomList />
 				<WordPairList />
 			</main>
 			<Credit />

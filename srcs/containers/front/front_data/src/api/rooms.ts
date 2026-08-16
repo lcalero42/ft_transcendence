@@ -6,6 +6,7 @@ export interface Room {
     name: string;
     min_player: number;
     max_player: number;
+	createdAt: string;
 }
 
 
@@ -34,4 +35,10 @@ export async function createRoom(data: { name: string }): Promise<Room> {
 export async function deleteRoom(id: number): Promise<void> {
   const res = await fetch(`${BASE_URL}/room/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete room');
+}
+
+export async function getGamesByRoom(id: number) {
+	const res = await fetch(`${BASE_URL}/room/${id}/games`);
+	if (!res.ok) throw new Error('Failed to fetch games of room');
+  	return res.json();
 }
