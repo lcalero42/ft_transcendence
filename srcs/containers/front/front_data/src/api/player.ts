@@ -21,8 +21,8 @@ export async function countPlayer() {
 	return res.json();
 }
 
-export function getAvatarUrl(path: string | null): string | null {
-	if (!path) return null;
+export function getAvatarUrl(path: string | null): string | undefined {
+	if (!path) return undefined;
 	return `${BASE_URL}${path}`;
 }
 
