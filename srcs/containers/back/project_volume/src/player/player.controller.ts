@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseGuards,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
@@ -19,7 +20,9 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
-type AuthenticatedRequest = Request & { user: { id: number; email: string } };
+export type AuthenticatedRequest = Request & {
+  user: { id: number; email: string };
+};
 
 @Controller('player')
 export class PlayerController {
@@ -52,16 +55,25 @@ export class PlayerController {
     return this.playerService.findOne(req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
     @Body() updatePlayerDto: UpdatePlayerDto,
+    @Req() req: AuthenticatedRequest,
   ) {
+    if (req.user.id !== +id) {
+      throw new ForbiddenException('Cannot edit another player');
+    }
     return this.playerService.update(+id, updatePlayerDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    if (req.user.id !== +id) {
+      throw new ForbiddenException('Cannot delete another player');
+    }
     return this.playerService.remove(+id);
   }
 
@@ -85,6 +97,7 @@ export class PlayerController {
     return this.playerService.getAboutMe(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
@@ -101,7 +114,11 @@ export class PlayerController {
   async updateAvatar(
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
+    @Req() req: AuthenticatedRequest,
   ) {
+    if (req.user.id !== +id) {
+      throw new ForbiddenException('Cannot edit another player');
+    }
     const avatarUrl = `/uploads/avatars/${file.filename}`;
     return this.playerService.updateAvatar(+id, avatarUrl);
   }

@@ -1,7 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PlayerController } from './player.controller';
+import {
+  PlayerController,
+  AuthenticatedRequest,
+} from './player.controller';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
+
+function requestAs(id: number, email: string): AuthenticatedRequest {
+  return { user: { id, email } } as AuthenticatedRequest;
+}
 
 describe('PlayerController', () => {
   let playerController: PlayerController;
@@ -138,8 +145,22 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.update('5', updateDto)).toBe(result);
+      const req = requestAs(5, 'bob@test.com');
+      expect(await playerController.update('5', updateDto, req)).toBe(
+        result,
+      );
       expect(playerService.update).toHaveBeenCalledWith(5, updateDto);
+    });
+
+    it('should reject updating another player', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(
+        playerController.update(
+          '5',
+          { name: 'Bob', email: 'boblebricoleur@test.com' },
+          req,
+        ),
+      ).rejects.toThrow('Cannot edit another player');
     });
   });
 
@@ -159,8 +180,16 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.remove('5')).toBe(result);
+      const req = requestAs(5, 'bob@test.com');
+      expect(await playerController.remove('5', req)).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
+    });
+
+    it('should reject deleting another player', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(playerController.remove('5', req)).rejects.toThrow(
+        'Cannot delete another player',
+      );
     });
   });
 
