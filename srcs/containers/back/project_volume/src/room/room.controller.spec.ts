@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoomController } from './room.controller';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
+import { GameStatus, Role } from '../generated/prisma/enums';
 
 describe('RoomController', () => {
   let roomController: RoomController;
@@ -123,6 +124,36 @@ describe('RoomController', () => {
 
       expect(await roomController.findOne('5')).toBe(result);
       expect(roomService.findOne).toHaveBeenCalledWith(5);
+    });
+  });
+
+  describe('getGames', () => {
+    it('should reutnr games of room', async () => {
+      const res = [
+        {
+          id: 1,
+          status: GameStatus.finished,
+          civilianWord: 'cat',
+          undercoverWord: 'tiger',
+          createdAt: new Date(),
+          finishedAt: new Date(),
+          victory: Role.civilian,
+          roomId: 3,
+        },
+      ];
+      jest
+        .spyOn(roomService, 'getGames')
+        .mockImplementation(() => Promise.resolve(res));
+
+      expect(await roomController.getGames('3')).toBe(res);
+      expect(roomService.getGames).toHaveBeenCalledWith(3);
+    });
+
+    it('should return void tab when room has no games', async () => {
+      jest
+        .spyOn(roomService, 'getGames')
+        .mockImplementation(() => Promise.resolve([]));
+      expect(await roomController.getGames('404')).toEqual([]);
     });
   });
 
