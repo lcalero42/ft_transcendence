@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  PlayerController,
-  AuthenticatedRequest,
-} from './player.controller';
+import { PlayerController } from './player.controller';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
 
@@ -146,9 +144,7 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.update('5', updateDto, req)).toBe(
-        result,
-      );
+      expect(await playerController.update('5', updateDto, req)).toBe(result);
       expect(playerService.update).toHaveBeenCalledWith(5, updateDto);
     });
 

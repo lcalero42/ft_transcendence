@@ -11,28 +11,34 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Request } from 'express';
-export type AuthenticatedRequest = Request & {
-  user: { id: number; email: string };
-};
+import type { AuthenticatedRequest } from '../common/authenticated-request';
+
+const AVATAR_MIME_TO_EXT = new Map<string, string>([
+  ['image/png', '.png'],
+  ['image/jpeg', '.jpg'],
+  ['image/webp', '.webp'],
+  ['image/gif', '.gif'],
+]);
 
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createPlayerDto: CreatePlayerDto) {
     return this.playerService.create(createPlayerDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
     return this.playerService.findAll();
@@ -77,21 +83,25 @@ export class PlayerController {
     return this.playerService.remove(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id/games-played')
   async countGamesPlayed(@Param('id') id: string) {
     return this.playerService.countGamesPlayed(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id/victory')
   async countVictory(@Param('id') id: string) {
     return this.playerService.countVictory(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id/winrate')
   async getWinrate(@Param('id') id: string) {
     return this.playerService.getWinrate(+id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id/about-me')
   async getAboutMe(@Param('id') id: string) {
     return this.playerService.getAboutMe(+id);
@@ -106,9 +116,23 @@ export class PlayerController {
         filename: (req, file, callback) => {
           const uniqueSuffix =
             Date.now() + '-' + Math.round(Math.random() * 1e9);
-          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+          const ext = AVATAR_MIME_TO_EXT.get(file.mimetype);
+          callback(null, `${uniqueSuffix}${ext}`);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        if (!AVATAR_MIME_TO_EXT.has(file.mimetype)) {
+          callback(
+            new UnsupportedMediaTypeException(
+              'Avatar must be a PNG, JPEG, WEBP, or GIF image',
+            ),
+            false,
+          );
+          return;
+        }
+        callback(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   async updateAvatar(
