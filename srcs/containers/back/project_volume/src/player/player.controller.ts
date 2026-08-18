@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -14,7 +13,6 @@ import {
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
-import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -31,12 +29,6 @@ const AVATAR_MIME_TO_EXT = new Map<string, string>([
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  async create(@Body() createPlayerDto: CreatePlayerDto) {
-    return this.playerService.create(createPlayerDto);
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get()

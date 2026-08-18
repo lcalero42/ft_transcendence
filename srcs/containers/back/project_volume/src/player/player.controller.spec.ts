@@ -30,34 +30,6 @@ describe('PlayerController', () => {
     expect(playerService).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a player', async () => {
-      const createDto = {
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-        avatarUrl: '/uploads/avatars/bob.png',
-      };
-      const result = {
-        id: 5,
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-        avatarUrl: null,
-        createdAt: new Date(),
-        deletedAt: null,
-      };
-      jest
-        .spyOn(playerService, 'create')
-        .mockImplementation(() => Promise.resolve(result));
-
-      expect(await playerController.create(createDto)).toBe(result);
-      expect(playerService.create).toHaveBeenCalledWith(createDto);
-    });
-  });
-
   describe('findAll', () => {
     it('should return a player array', async () => {
       const result = [
