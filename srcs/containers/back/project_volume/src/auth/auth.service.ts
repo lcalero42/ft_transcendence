@@ -9,6 +9,11 @@ import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
+// A precomputed bcrypt hash with no matching plaintext, compared against on a
+// login miss so the response time doesn't reveal whether the email exists.
+const DUMMY_PASSWORD_HASH =
+  '$2b$10$6Q5D0vqYWA5tSynigYdJZed9BeYujQsIBIMl7bXra16kqaaGSepiG';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -39,7 +44,11 @@ export class AuthService {
       where: { email: dto.email },
       omit: { password: false },
     });
-    if (!player || !(await bcrypt.compare(dto.password, player.password))) {
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      player?.password ?? DUMMY_PASSWORD_HASH,
+    );
+    if (!player || !isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
     return this.signToken(player.id, player.email);
