@@ -23,7 +23,7 @@ NC     := \033[0m
         logs logs-front logs-back ps \
         clean fclean \
         prisma-migrate prisma-generate \
-        check-env check-secrets \
+        check-env check-secrets check-containers-up \
         check-lint check-lint-fix check-typecheck check-all \
         help
 
@@ -71,33 +71,44 @@ check-secrets: ## Verify secret files exist and are not empty
 
 ##@ CI / Checks
 
+check-containers-up: ## Verify front & back containers are running (checks execute inside them)
+	@running="$$($(COMPOSE) ps --status running --services)"; \
+	for svc in front back; do \
+		if ! printf '%s\n' "$$running" | grep -qx "$$svc"; then \
+			printf "$(RED)Error:$(NC) '$$svc' container is not running.\n"; \
+			printf "$(YELLOW)Fix:$(NC) run 'make up' or 'make buildd' first.\n"; \
+			exit 1; \
+		fi; \
+	done
 
-check-lint: ## Execute eslint check script on our front & back
-	./.github/scripts/ci/ci-lint-eslint.sh
+check-lint: check-containers-up ## Run eslint inside the front & back containers
+	@printf "$(CYAN)Linting back...$(NC)\n"
+	$(COMPOSE) exec back npm run lint:check
+	@printf "$(CYAN)Linting front...$(NC)\n"
+	$(COMPOSE) exec front npm run lint
 
-check-lint-fix: ## Execute eslint check then fix script on our front & back
-	./.github/scripts/ci/ci-lint-eslint.sh --fix
+check-lint-fix: check-containers-up ## Run eslint --fix inside the front & back containers
+	@printf "$(CYAN)Linting (fix) back...$(NC)\n"
+	$(COMPOSE) exec back npm run lint
+	@printf "$(CYAN)Linting (fix) front...$(NC)\n"
+	$(COMPOSE) exec front npm run lint:fix
 
-check-typecheck: ## Execute typecheck script on our front & back
-	./.github/scripts/ci/ci-typecheck.sh
+check-typecheck: check-containers-up ## Run typecheck inside the front & back containers
+	@printf "$(CYAN)Type-checking back...$(NC)\n"
+	$(COMPOSE) exec back npm run typecheck
+	@printf "$(CYAN)Type-checking front...$(NC)\n"
+	$(COMPOSE) exec front npm run typecheck
 
-check-all: ## Run all checks (eslint + typecheck) and report which ones failed
+check-all: check-containers-up ## Run all checks (eslint + typecheck) inside the containers and report which ones failed
 	@FAILED=""; \
-	LINT_LOG=$$(mktemp); \
-	TYPECHECK_LOG=$$(mktemp); \
-	printf "$(CYAN)Running lint...$(NC)\n"; \
-	if ! ./.github/scripts/ci/ci-lint-eslint.sh > "$$LINT_LOG" 2>&1; then \
-		FAILED="$$FAILED lint"; \
-		printf "$(RED)--- lint output ---$(NC)\n"; \
-		cat "$$LINT_LOG"; \
-	fi; \
-	printf "$(CYAN)Running typecheck...$(NC)\n"; \
-	if ! ./.github/scripts/ci/ci-typecheck.sh > "$$TYPECHECK_LOG" 2>&1; then \
-		FAILED="$$FAILED typecheck"; \
-		printf "$(RED)--- typecheck output ---$(NC)\n"; \
-		cat "$$TYPECHECK_LOG"; \
-	fi; \
-	rm -f "$$LINT_LOG" "$$TYPECHECK_LOG"; \
+	printf "$(CYAN)Running lint (back)...$(NC)\n"; \
+	$(COMPOSE) exec back npm run lint:check || FAILED="$$FAILED lint(back)"; \
+	printf "$(CYAN)Running lint (front)...$(NC)\n"; \
+	$(COMPOSE) exec front npm run lint || FAILED="$$FAILED lint(front)"; \
+	printf "$(CYAN)Running typecheck (back)...$(NC)\n"; \
+	$(COMPOSE) exec back npm run typecheck || FAILED="$$FAILED typecheck(back)"; \
+	printf "$(CYAN)Running typecheck (front)...$(NC)\n"; \
+	$(COMPOSE) exec front npm run typecheck || FAILED="$$FAILED typecheck(front)"; \
 	if [ -n "$$FAILED" ]; then \
 		printf "$(RED)Failed checks:$(NC)%s\n" "$$FAILED"; \
 		exit 1; \
