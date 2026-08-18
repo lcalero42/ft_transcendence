@@ -12,7 +12,7 @@ BACK_ENV_FILE := srcs/containers/back/project_volume/.env
 ENV_FILES     := $(ROOT_ENV_FILE) $(BACK_ENV_FILE)
 
 SECRETS_DIR  := srcs/secrets
-SECRETS      := db_user.txt db_password.txt db_name.txt
+SECRETS      := db_user.txt db_password.txt db_name.txt jwt_secret.txt internal_api_key.txt
 
 RED    := \033[0;31m
 YELLOW := \033[0;33m
