@@ -110,11 +110,15 @@ function GameList({roomId}: {roomId: number}) {
 							<p className="hidden md:inline">game of</p>
 							<p>{new Date(game.createdAt).toLocaleDateString()}</p>
 						</div>
+						<div className={`font-semibold text-xs md:text-base ${game.victory === "undercover" ? "text-orange-400" : "text-blue-400"}`}>
+						 	<p className="md:text-text-dim inline"> victory </p>
+							<p className="hidden text-text-dim md:inline"> : </p>
+							<p className="hidden md:inline"> {game.victory} </p>
+						 </div>
 						<span className="text-sm md:text-base hoverable text-accent hover:font-black">
 							{openGameId === game.id ? "Hide" : "View"}
 						</span>
 					</button>
-
 					{openGameId === game.id && <PlayerList gameId={game.id} wUnderCover={game.undercoverWord} wCivil={game.civilianWord}/>}
 				</div>
 			))}
