@@ -5,6 +5,8 @@ import PassIcon from "../../assets/icons/lock.svg";
 import { toast, Toaster } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +29,11 @@ const initialForm: RegisterForm = {
 function Register() {
 	const [form, setForm] = useState<RegisterForm>(initialForm);
 	const [errors, setErrors] = useState<RegisterErrors>({});
+	//for auth
+	const { register } = useAuth();
+ 	const navigate = useNavigate();
+	const [isSubmitting, setIsSubmitting] = useState(false);
+
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
@@ -61,7 +68,7 @@ function Register() {
 		return nextErrors;
 	}
 
-	function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 
 		const nextErrors = validate();
@@ -71,10 +78,21 @@ function Register() {
 			return;
 		}
 
-		toast.add({
-		  title: "Account registered",
-		  description: "You can now enjoy the best experience of your life.",
-		})
+		setIsSubmitting(true);
+		try {
+			await register(form.email, form.password, form.username);
+			toast.add({
+			  title: "Account registered",
+			  description: "You can now enjoy the best experience of your life.",
+			})
+		} catch (err) {
+			toast.add({
+				title: "Registration failed",
+				description: err instanceof Error ? err.message : "Something went wrong." //for compilo but its not hapy
+			})
+		} finally {
+			setIsSubmitting(false);
+		}
 
 		console.log("submit fired", form);
 	}
