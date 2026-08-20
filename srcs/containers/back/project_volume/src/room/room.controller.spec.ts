@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoomController } from './room.controller';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
+
+function requestAs(id: number, email: string): AuthenticatedRequest {
+  return { user: { id, email } } as AuthenticatedRequest;
+}
 
 describe('RoomController', () => {
   let roomController: RoomController;
@@ -44,7 +49,8 @@ describe('RoomController', () => {
         .spyOn(roomService, 'create')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await roomController.create('3', createDto)).toBe(result);
+      const req = requestAs(3, 'creator@test.com');
+      expect(await roomController.create(createDto, req)).toBe(result);
       expect(roomService.create).toHaveBeenCalledWith(3, createDto);
     });
   });
@@ -142,11 +148,40 @@ describe('RoomController', () => {
         deletedAt: null,
       };
       jest
+        .spyOn(roomService, 'findOne')
+        .mockImplementation(() => Promise.resolve(result));
+      jest
         .spyOn(roomService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await roomController.update('5', updateDto)).toBe(result);
+      const req = requestAs(3, 'creator@test.com');
+      expect(await roomController.update('5', updateDto, req)).toBe(result);
       expect(roomService.update).toHaveBeenCalledWith(5, updateDto);
+    });
+
+    it('should reject updating a room created by another player', async () => {
+      const result = {
+        id: 5,
+        name: 'Room1',
+        minPlayers: 3,
+        maxPlayers: 6,
+        colyseusRoomId: null,
+        createdBy: 3,
+        createdAt: new Date(),
+        deletedAt: null,
+      };
+      jest
+        .spyOn(roomService, 'findOne')
+        .mockImplementation(() => Promise.resolve(result));
+      jest
+        .spyOn(roomService, 'update')
+        .mockImplementation(() => Promise.resolve(result));
+
+      const req = requestAs(4, 'other@test.com');
+      await expect(
+        roomController.update('5', { name: 'RoomRenamed' }, req),
+      ).rejects.toThrow('Cannot edit a room you did not create');
+      expect(roomService.update).not.toHaveBeenCalled();
     });
   });
 
@@ -163,11 +198,40 @@ describe('RoomController', () => {
         deletedAt: new Date(),
       };
       jest
+        .spyOn(roomService, 'findOne')
+        .mockImplementation(() => Promise.resolve(result));
+      jest
         .spyOn(roomService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await roomController.remove('5')).toBe(result);
+      const req = requestAs(3, 'creator@test.com');
+      expect(await roomController.remove('5', req)).toBe(result);
       expect(roomService.remove).toHaveBeenCalledWith(5);
+    });
+
+    it('should reject deleting a room created by another player', async () => {
+      const result = {
+        id: 5,
+        name: 'Room1',
+        minPlayers: 3,
+        maxPlayers: 6,
+        colyseusRoomId: null,
+        createdBy: 3,
+        createdAt: new Date(),
+        deletedAt: null,
+      };
+      jest
+        .spyOn(roomService, 'findOne')
+        .mockImplementation(() => Promise.resolve(result));
+      jest
+        .spyOn(roomService, 'remove')
+        .mockImplementation(() => Promise.resolve(result));
+
+      const req = requestAs(4, 'other@test.com');
+      await expect(roomController.remove('5', req)).rejects.toThrow(
+        'Cannot delete a room you did not create',
+      );
+      expect(roomService.remove).not.toHaveBeenCalled();
     });
   });
 });
