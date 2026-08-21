@@ -15,10 +15,11 @@ export function clearToken() {
 
 export async function apiFetch(path:string, options: RequestInit = {}) {
 	const token = getToken();
+	const isFormData = options.body instanceof FormData;
 	const res = await fetch(`${BASE_URL}${path}`, {
 		...options,
 		headers: {
-			"Content-Type": "application/json",
+			...(isFormData ? {} : {"Content-Type": "application/json"}),
 			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...options.headers,
 		},
@@ -27,7 +28,8 @@ export async function apiFetch(path:string, options: RequestInit = {}) {
 	if (!res.ok) {
 		const body = await res.json().catch(() => null);
 		if (res.status === 401) clearToken();
-		throw new Error(body?.message ?? `Request failed (${res.status})`);
+		const msg  = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
+		throw new Error(msg ?? `Request failed (${res.status})`);
 	}
 
 	return res.status === 204 ? null : res.json();

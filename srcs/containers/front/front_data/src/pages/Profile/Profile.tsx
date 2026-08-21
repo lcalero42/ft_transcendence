@@ -7,12 +7,18 @@ import Counter from "./components/Counter/Counter";
 import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
-
-
 import IconDetective from "../../assets/icons/brand-redhat.svg";
 import { Toaster } from "@/components/ui/toast";
 
+import { useAuth } from "../../context/AuthContext";
+
 function Profile() {
+
+	const { user } = useAuth();
+	if (!user) {
+		return null;
+	}
+
 
 	const games = [
 		{ id: 1, name: "Room #42", nbPlayers: 5, date: "2026-07-25T14:30:00Z", victory: true },
@@ -43,9 +49,9 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity playerId={1} username="MasterMind" Since="14/05/2026"/>
+					<Identity playerId={user.id} username="MasterMind" Since="14/05/2026"/>
 					<div className="md:flex md:flex-col">
-						<Bio playerId={1} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
+						<Bio playerId={user.id} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>
 					</div>
 				</div>

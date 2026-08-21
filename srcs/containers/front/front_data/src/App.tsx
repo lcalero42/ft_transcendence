@@ -6,6 +6,8 @@ import Profile from "./pages/Profile/Profile";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
 import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./context/ProtectedRoute";
+
 function App() {
 	return (
 		<AuthProvider>
@@ -15,9 +17,11 @@ function App() {
 					<Route path="/home" element={<Home />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
-					<Route path="/profile" element={<Profile />} />
-					<Route path="/create-room" element={<CreateRoom />} />
-					<Route path="/game/:id" element={<GameRoom />} />
+
+
+					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+					<Route path="/create-room" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
+					<Route path="/game/:id" element={<ProtectedRoute><GameRoom /></ProtectedRoute>} />
 				</Routes>
 			</BrowserRouter>
 		</AuthProvider>
