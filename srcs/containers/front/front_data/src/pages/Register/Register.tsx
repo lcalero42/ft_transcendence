@@ -2,7 +2,7 @@ import AuthLayout from "../../components/AuthLayout/AuthLayout";
 import FormField from "../../components/FormField/FormField";
 import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
-import { toast, Toaster } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -157,7 +157,6 @@ function Register() {
 				onChange={handleChange}
 				error={errors.confirmPassword}
 			/>
- 		    <Toaster />
 		</AuthLayout>
 	);
 }

@@ -7,11 +7,13 @@ import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
+import { Toaster} from "@/components/ui/toast";
 
 function App() {
 	return (
 		<AuthProvider>
 			<BrowserRouter>
+				<Toaster />
 				<Routes>
 					<Route path="/" element={<Navigate to="/home" replace />} />
 					<Route path="/home" element={<Home />} />

@@ -8,7 +8,6 @@ import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 import IconDetective from "../../assets/icons/brand-redhat.svg";
-import { Toaster } from "@/components/ui/toast";
 
 import { useAuth } from "../../context/AuthContext";
 
@@ -64,7 +63,6 @@ function Profile() {
 				</div>
 			</main>
 			<Credit />
-			<Toaster />
 		</div>
 	);
 }

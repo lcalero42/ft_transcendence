@@ -1,5 +1,6 @@
 import { useAuth } from "./AuthContext";
 import {Navigate} from "react-router-dom"
+import {toast} from "@/components/ui/toast";
 
 function ProtectedRoute({children}:{children: React.ReactNode}){
 	const {isAuth, isLoading} = useAuth();
@@ -7,9 +8,9 @@ function ProtectedRoute({children}:{children: React.ReactNode}){
 		return null
 	}
 	if (!isAuth) {
-		return <Navigate to="/login" replace />;
+		toast.add({title: "you're not logged"})
+		return (<Navigate to="/login" replace />);
 	}
-
 	return <> {children} </>
 }
 

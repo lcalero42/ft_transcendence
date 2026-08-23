@@ -26,3 +26,6 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 	});
 }
 
+export async function getMe() {
+	return apiFetch("/player/me");
+}

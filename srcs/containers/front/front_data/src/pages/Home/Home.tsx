@@ -7,17 +7,30 @@ import FeatureHighlights from "./components/FeatureHighlights/FeatureHighlights"
 import AvailableRooms from "./components/AvailableRooms";
 import { useEffect, useState } from 'react';
 import { fetchRooms, type Room } from '../../api/rooms';
+import { getMe, type Player}  from '../../api/player';
+import { useAuth } from "@/context/AuthContext";
 
 function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [userName] = useState("audrna");
+	const {isAuth} = useAuth();
+	const [username, setUsername] = useState<string | null>(null);
 
     // Runs once when the component first mounts — the initial load
-    useEffect(() => {
+
+	useEffect(() => {
         let ignore = false;
 
+		async function getUsername() {
+				if (isAuth) {
+					const player: Player = await getMe();
+					setUsername(player.name);
+				}
+				else {
+					setUsername(null);
+				}
+		}
         async function loadRooms() {
             try {
                 setLoading(true);
@@ -36,9 +49,8 @@ function Home() {
                 }
             }
         }
-
         loadRooms();
-
+		getUsername();
         return () => {
             ignore = true;
         };
@@ -51,7 +63,8 @@ function Home() {
 		<div className="page">
 			<header className="page-header">
 				<Logo />
-				<LinkProfile name={userName} icon="🥷" />
+				<LinkProfile
+				name={username ? username : "login"} icon="🥷" />
 			</header>
 
 			<main className="page-main">
