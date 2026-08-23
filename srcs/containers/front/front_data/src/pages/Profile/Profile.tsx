@@ -9,7 +9,7 @@ import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 import IconDetective from "../../assets/icons/brand-redhat.svg";
 
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 function Profile() {
 

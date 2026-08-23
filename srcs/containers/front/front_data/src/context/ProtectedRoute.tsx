@@ -1,4 +1,4 @@
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./useAuth";
 import {Navigate} from "react-router-dom"
 import {toast} from "@/components/ui/toast";
 

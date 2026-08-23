@@ -8,7 +8,7 @@ import AvailableRooms from "./components/AvailableRooms";
 import { useEffect, useState } from 'react';
 import { fetchRooms, type Room } from '../../api/rooms';
 import { getMe, type Player}  from '../../api/player';
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/useAuth";
 
 function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -54,7 +54,7 @@ function Home() {
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [isAuth]);
 
     if (loading) return <p>Loading rooms...</p>;
     if (error) return <p>{error}</p>;

@@ -5,7 +5,7 @@ import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate} from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../context/useAuth";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -86,7 +86,8 @@ function Login() {
 			heading="Log in to your account"
 			description="Enter your credentials to access your account."
 			onSubmit={handleSubmit}
-			submitLabel="Log in"
+			submitLabel={isSubmitting ? "Logging in..." : "Log in"}
+			// submitLabel="Log in"
 			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
 					Don't have an account ?{" "}

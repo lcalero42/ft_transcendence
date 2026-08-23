@@ -1,12 +1,11 @@
-import AuthLayout from "../../components/AuthLayout/AuthLayout";
-import FormField from "../../components/FormField/FormField";
-import UserIcon from "../../assets/icons/user.svg";
-import PassIcon from "../../assets/icons/lock.svg";
+import AuthLayout from "@/components/AuthLayout/AuthLayout";
+import FormField from "@/components/FormField/FormField";
+import UserIcon from "@/assets/icons/user.svg";
+import PassIcon from "@/assets/icons/lock.svg";
 import { toast } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/useAuth.ts";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,7 +30,6 @@ function Register() {
 	const [errors, setErrors] = useState<RegisterErrors>({});
 	//for auth
 	const { register } = useAuth();
- 	const navigate = useNavigate();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 
@@ -104,8 +102,8 @@ function Register() {
 			heading="Register your account"
 			description="Enter your credentials to access to your new account."
 			onSubmit={handleSubmit}
-			submitLabel="Register"
-			footer={
+  			submitLabel={isSubmitting ? "Registering..." : "Register"}
+  			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
 					Already have an account ?{" "}
 					<Link to="/login" className="font-semibold text-accent-purple hover:underline">
