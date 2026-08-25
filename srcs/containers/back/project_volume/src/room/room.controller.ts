@@ -44,6 +44,11 @@ export class RoomController {
     return this.roomService.findOne(+id);
   }
 
+  @Get(':id/games')
+  async getGames(@Param('id') id: string) {
+    return this.roomService.getGames(+id);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(

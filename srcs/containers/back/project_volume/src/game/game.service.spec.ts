@@ -120,6 +120,71 @@ describe('GameService', () => {
     });
   });
 
+  describe('getPlayersByGame', () => {
+    it('should return players mapped with role', async () => {
+      const gamePlayers = [
+        {
+          id: 10,
+          role: Role.civilian,
+          eliminatedAt: null,
+          gameId: 5,
+          playerId: 1,
+          playerIdRel: {
+            id: 1,
+            name: 'Alice',
+            avatarUrl: null,
+          },
+        },
+        {
+          id: 11,
+          role: Role.undercover,
+          eliminatedAt: null,
+          gameId: 5,
+          playerId: 2,
+          playerIdRel: {
+            id: 2,
+            name: 'Bob',
+            avatarUrl: '/uploads/avatars/bob.png',
+          },
+        },
+      ];
+      prismaMock.game_Players.findMany.mockResolvedValue(gamePlayers);
+      const res = await service.getPlayersByGame(5);
+
+      expect(res).toEqual([
+        {
+          id: 1,
+          name: 'Alice',
+          avatarUrl: null,
+          role: Role.civilian,
+        },
+        {
+          id: 2,
+          name: 'Bob',
+          avatarUrl: '/uploads/avatars/bob.png',
+          role: Role.undercover,
+        },
+      ]);
+      expect(prismaMock.game_Players.findMany).toHaveBeenCalledWith({
+        where: { gameId: 5 },
+        include: {
+          playerIdRel: {
+            select: {
+              id: true,
+              name: true,
+              avatarUrl: true,
+            },
+          },
+        },
+      });
+    });
+
+    it('should return a void tab when the game has no players', async () => {
+      prismaMock.game_Players.findMany.mockResolvedValue([]);
+      expect(await service.getPlayersByGame(404)).toEqual([]);
+    });
+  });
+
   describe('update', () => {
     it('should update a game and return it', async () => {
       const updateDto = {
