@@ -5,7 +5,7 @@ export interface AuthResponse {
 }
 
 export async function login(email: string, password: string) {
-	const data: AuthResponse = await apiFetch("/auth/login", {
+	const data = await apiFetch<AuthResponse>("/auth/login", {
 		method: "POST",
 		body: JSON.stringify({email, password}),
 	});
@@ -14,7 +14,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function register(email:string, password:string, name:string) {
-	const data: AuthResponse = await apiFetch("/auth/register", {
+	const data = await apiFetch<AuthResponse>("/auth/register", {
 		method: "POST",
 		body: JSON.stringify({email,password,name}),
 	});

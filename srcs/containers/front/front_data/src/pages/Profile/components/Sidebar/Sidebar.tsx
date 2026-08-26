@@ -25,7 +25,7 @@ function Sidebar() {
 	function handleLogout() {
     	logout();
     	closeMenu();
-    	navigate("/login");
+    	void navigate("/login");
   	}
 
 	return (

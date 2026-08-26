@@ -12,20 +12,20 @@ export async function updateAvatar(playerId: number, file: File): Promise<Player
 	const formData = new FormData();
 	formData.append('avatar', file);
 
-	return apiFetch(`/player/${playerId}/avatar`, {
+	return apiFetch<Player>(`/player/${playerId}/avatar`, {
 		method: 'PATCH',
 		body: formData,
 	});
 }
 
 export async function updateBio(playerId: number, aboutMe: string): Promise<Player> {
-	return apiFetch(`/player/${playerId}`, {
+	return apiFetch<Player>(`/player/${playerId}`, {
 		method: 'PATCH',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ aboutMe }),
 	});
 }
 
-export async function getMe() {
-	return apiFetch("/player/me");
+export async function getMe(): Promise<Player> {
+	return apiFetch<Player>("/player/me");
 }
