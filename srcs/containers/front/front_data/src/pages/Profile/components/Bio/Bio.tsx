@@ -19,6 +19,7 @@ function Bio({playerId, bio}: BioProps) {
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "An error occured";
     		toast.add({
+      			type: "error",
       			title: "Failed to update bio",
 			    description: message,
     		});

@@ -42,15 +42,15 @@ export class PlayerController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.playerService.findOne(+id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() req: AuthenticatedRequest) {
     return this.playerService.findOne(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.playerService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
