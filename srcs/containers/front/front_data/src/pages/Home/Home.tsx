@@ -60,7 +60,7 @@ function Home() {
 					md:text-left
 					font-semibold"
 					style={{color: "var(--color-gray-low)"}}>
-						Rejoignez une partie et démasquez les imposteurs.
+						Join a game and unmask the impostors.
 				</h5>
 				<AvailableRooms />
 				<DisplayRoomCards rooms={rooms} />
