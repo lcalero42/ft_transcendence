@@ -7,7 +7,7 @@ type GameViewProps = {
 	room: Room<Rooms>;
 };
 
-interface Payload {
+type Payload = {
 	x: number;
 	y: number;
 	name: string;
