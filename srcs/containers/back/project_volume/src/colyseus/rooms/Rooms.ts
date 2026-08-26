@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Room, Client } from '@colyseus/core';
-import { RoomState } from './RoomState';
+import { RoomState, Player } from './RoomState';
 
 export interface Payload {
   x: number;
@@ -35,7 +35,7 @@ export class Rooms extends Room {
   // Called when a client joins the room
   onJoin(client: Client) {
     this.logger.log('room joined');
-    // this.state.players.set(client.sessionId, new Player());
+    this.state.players.set(client.sessionId, new Player());
     client.send('welcome', 'Welcome to the room!');
   }
 

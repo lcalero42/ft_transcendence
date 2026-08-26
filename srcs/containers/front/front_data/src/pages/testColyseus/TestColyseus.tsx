@@ -9,7 +9,7 @@ const client = new Client<typeof colyseusServer>("ws://localhost:2567");
 export default function TestColyseus() {
 
 	const { room, error, isConnecting } = useRoom(
-		() => client.joinOrCreate<Rooms>("udv_room"),
+		() => client.joinOrCreate<Rooms>("udvRoom"),
 	);
 
 	if (isConnecting) return <p>Connecting...</p>;
