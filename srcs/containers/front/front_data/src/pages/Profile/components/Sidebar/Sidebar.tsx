@@ -1,5 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate} from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "@/context/useAuth";
 
 interface SidebarLinkItem {
 	label: string;
@@ -12,13 +13,21 @@ const links: SidebarLinkItem[] = [
 	{ label: "Stats", path: "/stats" },
 	{ label: "Rooms", path: "/gamesRoom" },
 	{ label: "Friends", path: "/friends" },
-	{ label: "Logout", path: "/connection" },
 ];
 
 function Sidebar() {
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 	const closeMenu = () => setIsMenuOpen(false);
+  	const { logout } = useAuth();
+	const navigate = useNavigate();
+
+	function handleLogout() {
+    	logout();
+    	closeMenu();
+    	navigate("/login");
+  	}
+
 	return (
 		<div className="group relative z-100">
 			<div className="z-101 fixed top-5 left-6">
@@ -32,10 +41,6 @@ function Sidebar() {
 					<span key={i} className="w-full h-0.5 bg-white rounded-full" />
 					))}
 				</button>
-
-				{/* <div className="hidden md:flex md:items-center"> */}
-					{/* <Logo /> */}
-				{/* </div> */}
 			</div>
 			<aside className={`fixed inset-y-0 left-0
 			bg-card/65 hoverable transition-transform p-8 pt-20
@@ -57,6 +62,12 @@ function Sidebar() {
 							{link.label}
 						</NavLink>
 					))}
+					<button
+          				onClick={handleLogout}
+          				className="flex items-center clean-link font-medium hoverable hover:text-white text-text-dim text-left"
+          			>
+          				Logout
+          			</button>
 				</nav>
 			</aside>
 		</div>
