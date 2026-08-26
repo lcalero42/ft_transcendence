@@ -1,7 +1,7 @@
-import { defineServer, defineRoom } from "@colyseus/core";
-import { WebSocketTransport } from "@colyseus/ws-transport";
-import { createServer } from "http";
-import { Rooms } from "./rooms/Rooms";
+import { defineServer, defineRoom } from '@colyseus/core';
+import { WebSocketTransport } from '@colyseus/ws-transport';
+import { createServer } from 'http';
+import { Rooms } from './rooms/Rooms';
 
 export const httpServer = createServer();
 
@@ -10,6 +10,6 @@ export const colyseusServer = defineServer({
     server: httpServer,
   }),
   rooms: {
-    udv_room: defineRoom(Rooms),
+    udvRoom: defineRoom(Rooms),
   },
 });

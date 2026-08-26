@@ -4,8 +4,8 @@
     "vite-plugin-svgr": "^5.2.0"
   },
   "dependencies": {
-    "@nestjs/platform-express": "^11.1.28",
     "colyseus": "^0.17.10",
+    "@nestjs/platform-express": "^11.1.28",
     "multer": "^2.2.0"
   }
 }
