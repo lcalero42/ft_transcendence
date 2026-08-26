@@ -5,6 +5,7 @@ import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
+import TestColyseus from "./pages/testColyseus/TestColyseus";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./context/ProtectedRoute";
 import { Toaster} from "@/components/ui/toast";
@@ -19,6 +20,8 @@ function App() {
 					<Route path="/home" element={<Home />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
+			
+					<Route path="/testColyseus" element={<TestColyseus />} />
 
 
 					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
