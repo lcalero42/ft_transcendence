@@ -12,6 +12,11 @@ export class PrismaService extends PrismaClient {
     });
     super({
       adapter,
+      omit: {
+        player: {
+          password: true,
+        },
+      },
     });
   }
 }

@@ -2,22 +2,37 @@ import Icon from "../../../../assets/icons/calendar-time.svg";
 import Avatar from "../../../../assets/profile-photo/moon.png";
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
+import { updateAvatar} from '../../../../api/player';
+import EditAvatar from "./EditAvatar";
+
 
 type IdentityProps = {
+	playerId: number;
 	username: string;
 	Since: string;
 };
 
-function Identity({username, Since}: IdentityProps) {
-	const [, setIsPopupOpen] = useState(false);
-	return (
-		<div className="flex items-center md:gap-2 mb-5 md:mb-0">
-			<div className="relative w-32 h-32 shrink-0">
+function Identity({playerId, username, Since}: IdentityProps) {
+	const [isPopupOpen, setIsPopupOpen] = useState(false);
+	const [avatar, setAvatar] = useState(Avatar);
 
-				<img src={Avatar} alt={username}/>
+	const handleAvatarSave = async (file: File) => {
+		try {
+			const updatedPlayer = await updateAvatar(playerId, file);
+			const fullUrl = `${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`;
+			setAvatar(fullUrl);
+		} catch (err) {
+			console.error(err);
+		}
+	};
+	return (
+		<div className="flex items-center gap-2 mb-5 md:mb-0">
+			<div className="relative w-24 h-24 shrink-0">
+
+				<img src={avatar} alt={username} className="w-full h-full rounded-full object-cover"/>
 				<button
 					className=" flex clean-btn justify-center items-center
-					absolute bottom-4 right-4.5
+					absolute bottom-1 right-1
 					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
 					 hoverable hover:bg-card/52"
 					aria-label="Modify"
@@ -42,6 +57,13 @@ function Identity({username, Since}: IdentityProps) {
 					</div>
 				</div>
 			</div>
+			{isPopupOpen && (
+				<EditAvatar
+					currentAvatar={avatar}
+					onClose={() => setIsPopupOpen(false)}
+					onSave={handleAvatarSave}
+				/>
+			)}
 		</div>
 
 	);

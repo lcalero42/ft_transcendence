@@ -1,17 +1,25 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import EyeIcon from "../../assets/icons/eye.svg";
 import EyeOffIcon from "../../assets/icons/eye-off.svg";
 
 type InputFieldProps = {
+  id?: string;
+  name?: string;
   iconSrc?: string;
   type?: string;
   placeholder?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 function InputField({
+  id,
+  name,
   iconSrc,
   type = "text",
   placeholder,
+  value,
+  onChange,
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = type === "password";
@@ -30,8 +38,12 @@ function InputField({
       )}
 
       <input
+        id={id}
+        name={name}
         type={inputType}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
         className="w-full bg-transparent outline-none text-sm"
       />
 

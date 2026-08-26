@@ -1,7 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlayerController } from './player.controller';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
+
+function requestAs(id: number, email: string): AuthenticatedRequest {
+  return { user: { id, email } } as AuthenticatedRequest;
+}
 
 describe('PlayerController', () => {
   let playerController: PlayerController;
@@ -25,32 +30,6 @@ describe('PlayerController', () => {
     expect(playerService).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a player', async () => {
-      const createDto = {
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-      };
-      const result = {
-        id: 5,
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-        createdAt: new Date(),
-        deletedAt: null,
-      };
-      jest
-        .spyOn(playerService, 'create')
-        .mockImplementation(() => Promise.resolve(result));
-
-      expect(await playerController.create(createDto)).toBe(result);
-      expect(playerService.create).toHaveBeenCalledWith(createDto);
-    });
-  });
-
   describe('findAll', () => {
     it('should return a player array', async () => {
       const result = [
@@ -60,6 +39,7 @@ describe('PlayerController', () => {
           email: 'bob@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -69,6 +49,7 @@ describe('PlayerController', () => {
           email: 'valjean@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -82,6 +63,17 @@ describe('PlayerController', () => {
     });
   });
 
+  describe('countPlayerActiv', () => {
+    it('should return the active players count', async () => {
+      jest
+        .spyOn(playerService, 'countPlayerActiv')
+        .mockImplementation(() => Promise.resolve(3));
+
+      expect(await playerController.countPlayerActiv()).toBe(3);
+      expect(playerService.countPlayerActiv).toHaveBeenCalled();
+    });
+  });
+
   describe('findOne', () => {
     it('should return a player', async () => {
       const result = {
@@ -90,6 +82,7 @@ describe('PlayerController', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -114,6 +107,7 @@ describe('PlayerController', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -121,8 +115,20 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.update('5', updateDto)).toBe(result);
+      const req = requestAs(5, 'bob@test.com');
+      expect(await playerController.update('5', updateDto, req)).toBe(result);
       expect(playerService.update).toHaveBeenCalledWith(5, updateDto);
+    });
+
+    it('should reject updating another player', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(
+        playerController.update(
+          '5',
+          { name: 'Bob', email: 'boblebricoleur@test.com' },
+          req,
+        ),
+      ).rejects.toThrow('Cannot edit another player');
     });
   });
 
@@ -134,6 +140,7 @@ describe('PlayerController', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
@@ -141,8 +148,16 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.remove('5')).toBe(result);
+      const req = requestAs(5, 'bob@test.com');
+      expect(await playerController.remove('5', req)).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
+    });
+
+    it('should reject deleting another player', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(playerController.remove('5', req)).rejects.toThrow(
+        'Cannot delete another player',
+      );
     });
   });
 

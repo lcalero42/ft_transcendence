@@ -48,6 +48,14 @@ export class RoomService {
     return room;
   }
 
+  async getGames(id: number) {
+    const games = await this.prisma.rooms.findUnique({
+      where: { id: id },
+      include: { games: true },
+    });
+    return games?.games ?? [];
+  }
+
   async update(id: number, updateRoomDto: UpdateRoomDto) {
     const updateRoom = await this.prisma.rooms.update({
       where: { id: id },

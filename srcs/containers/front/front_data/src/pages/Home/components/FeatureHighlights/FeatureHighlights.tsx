@@ -3,9 +3,9 @@ import maskIcon from "../../../../assets/icons/masks-svgrepo-com.svg"
 import friendIcon from "../../../../assets/icons/friend-svgrepo-com.svg"
 
 const features = [
-	{ icon: victoryIcon, title: "Stratégie", description: "Usez de ruse et d'observation pour gagner" },
-	{ icon: maskIcon, title: "Suspense", description: "Qui est l'imposteur ? À vous de la découvrir" },
-	{ icon: friendIcon, title: "Amis", description: "Invitez vos amis et amusez-vous ensemble" },
+	{ icon: victoryIcon, title: "Strategy", description: "Use cunning and observation to win" },
+	{ icon: maskIcon, title: "Suspense", description: "Who is the impostor? It's up to you to find out" },
+	{ icon: friendIcon, title: "Friends", description: "Invite your friends and have fun together" },
 ];
 
 function FeatureHighlights() {
