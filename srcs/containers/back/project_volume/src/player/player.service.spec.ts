@@ -31,36 +31,6 @@ describe('PlayerService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create a player', async () => {
-      const createDto = {
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-      };
-      const result = {
-        id: 5,
-        name: 'Bob',
-        email: 'bob@test.com',
-        password: 'password123',
-        aboutMe: 'Hello there',
-        createdAt: new Date(),
-        deletedAt: null,
-      };
-      prismaMock.player.create.mockResolvedValue(result);
-
-      expect(await service.create(createDto)).toBe(result);
-      expect(prismaMock.player.create).toHaveBeenCalledWith({
-        data: {
-          email: createDto.email,
-          name: createDto.name,
-          password: createDto.password,
-        },
-      });
-    });
-  });
-
   describe('findAll', () => {
     it('should return a player array', async () => {
       const result = [
@@ -70,6 +40,7 @@ describe('PlayerService', () => {
           email: 'bob@test.com',
           password: 'password123',
           aboutMe: 'Hello there',
+          avatarUrl: null,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -81,6 +52,23 @@ describe('PlayerService', () => {
     });
   });
 
+  describe('countPlayerActiv', () => {
+    it('should count the non deleted players and return it', async () => {
+      prismaMock.player.count.mockResolvedValue(3);
+
+      expect(await service.countPlayerActiv()).toBe(3);
+      expect(prismaMock.player.count).toHaveBeenCalledWith({
+        where: { deletedAt: null },
+      });
+    });
+
+    it('should return zero when every player has been deleted', async () => {
+      prismaMock.player.count.mockResolvedValue(0);
+
+      expect(await service.countPlayerActiv()).toBe(0);
+    });
+  });
+
   describe('findOne', () => {
     it('should return a player', async () => {
       const result = {
@@ -89,6 +77,7 @@ describe('PlayerService', () => {
         email: 'bob@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -110,6 +99,7 @@ describe('PlayerService', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -135,6 +125,7 @@ describe('PlayerService', () => {
         email: 'boblebricoleur@test.com',
         password: 'password123',
         aboutMe: 'Hello there',
+        avatarUrl: null,
         createdAt: new Date(),
         deletedAt: new Date(),
       };

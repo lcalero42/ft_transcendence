@@ -1,6 +1,6 @@
-import GoogleIcon from "../../../../assets/icons/google.svg";
-import DiscordIcon from "../../../../assets/icons/discord.svg";
-import FortyTwoIcon from "../../../../assets/icons/42.svg";
+import GoogleIcon from "../../assets/icons/google.svg";
+import DiscordIcon from "../../assets/icons/discord.svg";
+import FortyTwoIcon from "../../assets/icons/42.svg";
 
 const providers = [
 	{ name: "google", icon: GoogleIcon },

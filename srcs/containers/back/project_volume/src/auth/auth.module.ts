@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ThrottlerModule } from '@nestjs/throttler';
 import type { StringValue } from 'ms';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -15,6 +16,7 @@ import { PrismaService } from '../prisma.service';
         expiresIn: (process.env.JWT_EXPIRES_IN ?? '1d') as StringValue,
       },
     }),
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60000, limit: 5 }]),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy, PrismaService],
