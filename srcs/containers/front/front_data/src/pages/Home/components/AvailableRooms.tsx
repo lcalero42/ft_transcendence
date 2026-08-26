@@ -14,10 +14,10 @@ function AvailableRooms() {
 			</div>
 			<div className="text-left">
 				<h3 className="text-gray-high font-bold text-lg">
-					Salles disponibles
+					Available Rooms
 				</h3>
 				<p className="text-gray-low text-xs font-bold">
-					Rejoignez une salle et commencez à jouer
+					Join a room and start playing
 				</p>
 			</div>
 		</div>
