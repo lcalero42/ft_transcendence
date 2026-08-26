@@ -10,9 +10,7 @@ export interface Room {
 
 
 export async function countRoomActives() {
-	const res = await fetch(`${BASE_URL}/room/count-activ`);
-	if (!res.ok) throw new Error('failed to count rooms actives');
-	return res.json();
+	return apiFetch("/room/count-activ");
 }
 
 export async function fetchRooms(): Promise<Room[]> {
@@ -31,7 +29,5 @@ export async function deleteRoom(id: number): Promise<void> {
 }
 
 export async function getGamesByRoom(id: number) {
-	const res = await fetch(`${BASE_URL}/room/${id}/games`);
-	if (!res.ok) throw new Error('Failed to fetch games of room');
-  	return res.json();
+  return apiFetch(`/room/${id}/games`);
 }
