@@ -80,12 +80,14 @@ function Register() {
 		try {
 			await register(form.email, form.password, form.username);
 			toast.add({
+			  type: "success",
 			  title: "Account registered",
 			  description: "You can now enjoy the best experience of your life.",
 			})
 			navigate("/home");
 		} catch (err) {
 			toast.add({
+				type: "error",
 				title: "Registration failed",
 				description: err instanceof Error ? err.message : "Something went wrong." //for compilo but its not hapy
 			})

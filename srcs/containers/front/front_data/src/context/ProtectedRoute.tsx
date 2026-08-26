@@ -8,7 +8,7 @@ function ProtectedRoute({children}:{children: React.ReactNode}){
 
 	useEffect(() => {
 		if (!isLoading && !isAuth) {
-			toast.add({id: "not-logged-in", title: "you're not logged"})
+			toast.add({id: "not-logged-in", type: "warning", title: "you're not logged"})
 		}
 	}, [isLoading, isAuth]);
 
