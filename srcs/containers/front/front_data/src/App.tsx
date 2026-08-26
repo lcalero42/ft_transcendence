@@ -6,20 +6,29 @@ import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./context/ProtectedRoute";
+import { Toaster} from "@/components/ui/toast";
+
 function App() {
 	return (
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<Navigate to="/home" replace />} />
-				<Route path="/home" element={<Home />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/register" element={<Register />} />
-				<Route path="/profile" element={<Profile />} />
-				<Route path="/admin" element={<Admin />} />
-				<Route path="/create-room" element={<CreateRoom />} />
-				<Route path="/game/:id" element={<GameRoom />} />
-			</Routes>
-		</BrowserRouter>
+		<AuthProvider>
+			<BrowserRouter>
+				<Toaster />
+				<Routes>
+					<Route path="/" element={<Navigate to="/home" replace />} />
+					<Route path="/home" element={<Home />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/register" element={<Register />} />
+
+					<Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+
+					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+					<Route path="/create-room" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
+					<Route path="/game/:id" element={<ProtectedRoute><GameRoom /></ProtectedRoute>} />
+				</Routes>
+			</BrowserRouter>
+		</AuthProvider>
 	)
 }
 

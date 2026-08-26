@@ -1,5 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL;
-
+import { apiFetch } from "./auth/client";
 
 export interface Room {
     id: number;
@@ -17,24 +16,18 @@ export async function countRoomActives() {
 }
 
 export async function fetchRooms(): Promise<Room[]> {
-  const res = await fetch(`${BASE_URL}/room/current`);
-  if (!res.ok) throw new Error('Failed to fetch rooms');
-  return res.json();
+  return apiFetch("/room/current");
 }
 
 export async function createRoom(data: { name: string }): Promise<Room> {
-  const res = await fetch(`${BASE_URL}/room`, {
+  return apiFetch("/room", {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error('Failed to create room');
-  return res.json();
 }
 
 export async function deleteRoom(id: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/room/${id}`, { method: 'DELETE' });
-  if (!res.ok) throw new Error('Failed to delete room');
+  return apiFetch(`/room/${id}`, { method: 'DELETE' });
 }
 
 export async function getGamesByRoom(id: number) {

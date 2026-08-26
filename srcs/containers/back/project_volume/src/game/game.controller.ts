@@ -38,6 +38,11 @@ export class GameController {
     return this.gameService.findOne(+id);
   }
 
+  @Get(':id/players')
+  async getPlayersByGame(@Param('id') id: string) {
+    return this.gameService.getPlayersByGame(+id);
+  }
+
   @UseGuards(InternalApiKeyGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {

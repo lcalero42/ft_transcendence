@@ -1,5 +1,4 @@
-
-const BASE_URL = import.meta.env.VITE_API_URL;
+import { apiFetch } from "./auth/client";
 
 export interface Player {
 	id: number;
@@ -30,27 +29,20 @@ export async function updateAvatar(playerId: number, file: File): Promise<Player
 	const formData = new FormData();
 	formData.append('avatar', file);
 
-	const res = await fetch(`${BASE_URL}/player/${playerId}/avatar`, {
+	return apiFetch(`/player/${playerId}/avatar`, {
 		method: 'PATCH',
 		body: formData,
 	});
-	if (!res.ok) throw new Error('Failed to update avatar');
-	return res.json();
 }
 
 export async function updateBio(playerId: number, aboutMe: string): Promise<Player> {
-	const res = await fetch(`${BASE_URL}/player/${playerId}`, {
+	return apiFetch(`/player/${playerId}`, {
 		method: 'PATCH',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ aboutMe }),
 	});
-	if (!res.ok) {
-		const errorBody = await res.json().catch(() => null);
-		const message = Array.isArray(errorBody?.message)
-			? errorBody.message.join(', ')
-			: errorBody?.message ?? 'Failed to update bio';
-		throw new Error(message);
-	}
-	return res.json();
 }
 
+export async function getMe() {
+	return apiFetch("/player/me");
+}

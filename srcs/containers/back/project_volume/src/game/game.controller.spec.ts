@@ -117,6 +117,37 @@ describe('GameController', () => {
     });
   });
 
+  describe('getPlayersByGame', () => {
+    it('should return players of game', async () => {
+      const res = [
+        {
+          id: 1,
+          name: 'Alice',
+          avatarUrl: null,
+          role: Role.undercover,
+        },
+        {
+          id: 2,
+          name: 'blob',
+          avatarUrl: '/uploads/avatars/bob.png',
+          role: Role.undercover,
+        },
+      ];
+      jest
+        .spyOn(gameService, 'getPlayersByGame')
+        .mockImplementation(() => Promise.resolve(res));
+
+      expect(await gameController.getPlayersByGame('5')).toBe(res);
+      expect(gameService.getPlayersByGame).toHaveBeenCalledWith(5);
+    });
+    it('should return void tab when the game has no players', async () => {
+      jest
+        .spyOn(gameService, 'getPlayersByGame')
+        .mockImplementation(() => Promise.resolve([]));
+      expect(await gameController.getPlayersByGame('404')).toEqual([]);
+    });
+  });
+
   describe('update', () => {
     it('should update a game and return it', async () => {
       const updateDto = {

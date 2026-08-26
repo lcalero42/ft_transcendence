@@ -3,7 +3,13 @@ import { ForbiddenException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
-import { PrismaClient } from '../generated/prisma/client';
+import {
+  Games,
+  GameStatus,
+  PrismaClient,
+  Role,
+  Rooms,
+} from '../generated/prisma/client';
 
 describe('RoomService', () => {
   let service: RoomService;
@@ -124,6 +130,49 @@ describe('RoomService', () => {
       expect(prismaMock.rooms.findUnique).toHaveBeenCalledWith({
         where: { id: 5 },
       });
+    });
+  });
+
+  describe('getGames', () => {
+    it('should return games tab of an existing room', async () => {
+      const games: Games[] = [
+        {
+          id: 1,
+          status: GameStatus.finished,
+          civilianWord: 'cat',
+          undercoverWord: 'tiger',
+          createdAt: new Date(),
+          finishedAt: new Date(),
+          victory: Role.civilian,
+          roomId: 3,
+        },
+      ];
+      const roomWithGames: Rooms & { games: Games[] } = {
+        id: 3,
+        name: "alice's room",
+        minPlayers: 3,
+        maxPlayers: 6,
+        colyseusRoomId: null,
+        createdAt: new Date(),
+        deletedAt: null,
+        createdBy: 1,
+        games,
+      };
+
+      prismaMock.rooms.findUnique.mockResolvedValue(roomWithGames);
+
+      const res = await service.getGames(3);
+
+      expect(res).toBe(games);
+      expect(prismaMock.rooms.findUnique).toHaveBeenCalledWith({
+        where: { id: 3 },
+        include: { games: true },
+      });
+    });
+
+    it('should return void tab when room not exist', async () => {
+      prismaMock.rooms.findUnique.mockResolvedValue(null);
+      expect(await service.getGames(404)).toEqual([]);
     });
   });
 
