@@ -4,8 +4,8 @@ import UserIcon from "@/assets/icons/user.svg";
 import PassIcon from "@/assets/icons/lock.svg";
 import { toast } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/context/useAuth.ts";
+import { Link, useNavigate } from "react-router-dom";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,7 +31,7 @@ function Register() {
 	//for auth
 	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-
+	const navigate = useNavigate();
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
@@ -83,6 +83,7 @@ function Register() {
 			  title: "Account registered",
 			  description: "You can now enjoy the best experience of your life.",
 			})
+			navigate("/home");
 		} catch (err) {
 			toast.add({
 				title: "Registration failed",
