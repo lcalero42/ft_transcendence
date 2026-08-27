@@ -25,7 +25,7 @@ function App() {
 
 
 					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-					<Route path="/create-room" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
+					<Route path="/create-room/:roomId?" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
 					<Route path="/game/:id" element={<ProtectedRoute><GameRoom /></ProtectedRoute>} />
 				</Routes>
 			</BrowserRouter>

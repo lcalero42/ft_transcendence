@@ -1,10 +1,7 @@
-import { Client } from "@colyseus/sdk";
 import { useRoom } from "@colyseus/react";
-import GameView from "./components/GameView";
-import type { colyseusServer } from "@back/colyseus/server"
+import GameView from "@/components/colyseus/GameView";
+import { client } from "@/lib/colyseusClient";
 import type { Rooms } from "@back/colyseus/rooms/Rooms"
-
-const client = new Client<typeof colyseusServer>("ws://localhost:2567");
 
 export default function TestColyseus() {
 

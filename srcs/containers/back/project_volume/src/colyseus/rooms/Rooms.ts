@@ -10,6 +10,7 @@ export interface Payload {
 
 export class Rooms extends Room {
   maxClients = 4;
+  autoDispose = false;
   state = new RoomState();
 
   private readonly logger = new Logger('Rooms');
