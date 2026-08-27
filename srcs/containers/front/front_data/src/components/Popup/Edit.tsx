@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 type EditProps = {
 	onClose: () => void;
@@ -12,10 +12,10 @@ function Edit({onClose, children}: EditProps) {
 		return () => clearTimeout(timer);
 	}, []);
 
-	const handleClose = () => {
+	const handleClose = useCallback(() => {
 		setIsVisible(false);
 		setTimeout(onClose, 200);
-	};
+	}, [onClose]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -25,7 +25,7 @@ function Edit({onClose, children}: EditProps) {
 		};
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, []);
+	}, [handleClose]);
 
 
 	return (

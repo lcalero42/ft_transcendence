@@ -4,7 +4,8 @@ import Checkbox from "./components/Checkbox/Checkbox";
 import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import { useAuth } from "../../context/useAuth";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -21,9 +22,17 @@ const initialForm: LoginForm = {
 };
 
 function Login() {
+
+	const {login} = useAuth();
+	const navigate = useNavigate();
+
+
 	const [form, setForm] = useState<LoginForm>(initialForm);
 	const [errors, setErrors] = useState<LoginErrors>({});
 	const [rememberMe, setRememberMe] = useState(false);
+
+	const [authError, setAuthError] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
@@ -46,14 +55,25 @@ function Login() {
 		return nextErrors;
 	}
 
-	function handleSubmit(e: FormEvent<HTMLFormElement>) {
+	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
+		setAuthError(null);
 
 		const nextErrors = validate();
 		setErrors(nextErrors);
 
 		if (Object.keys(nextErrors).length > 0) {
 			return;
+		}
+
+		setIsSubmitting(true);
+		try {
+			await login(form.email, form.password);
+			navigate("/");
+		} catch (err) {
+      		setAuthError(err instanceof Error ? err.message : "Login failed");
+		} finally {
+			setIsSubmitting(false);
 		}
 
 		console.log("submit fired", { ...form, rememberMe });
@@ -66,7 +86,8 @@ function Login() {
 			heading="Log in to your account"
 			description="Enter your credentials to access your account."
 			onSubmit={handleSubmit}
-			submitLabel="Log in"
+			submitLabel={isSubmitting ? "Logging in..." : "Log in"}
+			// submitLabel="Log in"
 			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
 					Don't have an account ?{" "}
@@ -106,6 +127,11 @@ function Login() {
 					onChange={setRememberMe}
 				/>
 			</div>
+			{authError && (
+				<p className="mt-2 text-center text-sm" style={{color:"var(--color-defeat)"}}>
+					{authError}
+				</p>
+			)}
 		</AuthLayout>
 	);
 }
