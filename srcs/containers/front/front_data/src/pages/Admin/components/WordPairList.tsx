@@ -1,8 +1,7 @@
 import { useEffect,useState  } from "react";
-import {getWordPairs} from "@/api/word-pair"
-import { deleteWordPair } from "@/api/word-pair";
-import { createWordPair } from "@/api/word-pair";
+import {getWordPairs, deleteWordPair, createWordPair} from "@/api/word-pair"
 import { toast } from "@/components/ui/toast";
+
 type WordPairListPros = {
 	id: number;
 	civilianWord: string;

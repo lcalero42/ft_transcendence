@@ -14,7 +14,6 @@ const links: SidebarLinkItem[] = [
 	{ label: "Rooms", path: "/gamesRoom" },
 	{ label: "Friends", path: "/friends" },
 	{ label: "Admin", path: "/Admin" },
-	{ label: "Logout", path: "/connection" },
 ];
 
 function Sidebar() {
