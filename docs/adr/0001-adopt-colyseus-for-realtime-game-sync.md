@@ -2,9 +2,10 @@
 
 ## Status
 
-Accepted — dependency and data model reserved; server-side implementation
-not yet built (tracked separately from this decision; see
-[architecture.md](../architecture.md#realtime-game-state--not-yet-implemented)).
+Accepted — a Colyseus server now runs, but only as a generic starter-template
+scaffold, not the actual game loop; see
+[architecture.md](../architecture.md#realtime-game-state) for the current
+state.
 
 ## Context
 
@@ -64,10 +65,15 @@ the existing NestJS REST API rather than replacing it:
   Contributors need to know which one owns a given piece of data before
   touching it.
 - `Rooms.colyseusRoomId` links the two, but nothing enforces that link is
-  kept consistent yet (no Colyseus server exists in Compose today) — the
-  `/game/:id` frontend page is currently a placeholder
-  (`GameRoom.tsx`) pending that implementation.
-- Once implemented, the Colyseus process will need its own Compose service
-  entry, its own exposed port, and a decision on how/whether it
-  authenticates against the same JWTs issued by `back` — none of that is
-  decided yet and should get a follow-up ADR when it's built.
+  kept consistent yet — the actual game loop isn't built, and the
+  `/game/:id` frontend page is currently a placeholder (`GameRoom.tsx`)
+  pending that implementation.
+- **Update:** the Colyseus server was added running *in-process* inside
+  the `back` container (started from `main.ts`, listening on its own port
+  `2567`) rather than as its own Compose service as this ADR originally
+  anticipated. That sidesteps the "own Compose service entry" question
+  below for now, but the JWT-authentication question is still open — the
+  current scaffold's `onJoin` performs no authentication at all, so
+  deciding how a Colyseus connection authenticates against the same JWTs
+  `back` already issues remains open and should still get a follow-up ADR
+  once real gameplay is implemented.

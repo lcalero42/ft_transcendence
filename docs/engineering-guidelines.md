@@ -18,8 +18,10 @@
 - Fill out the PR template (`.github/pull_request_template.md`) — Summary,
   Why, Changes, Tests, Risks, and `Closes #<issue-number>` so the automation
   can resolve the linked issue.
-- `.github/CODEOWNERS` currently routes `.github/` changes through
-  `@lcalero42` for review.
+- `.github/CODEOWNERS` sets a default owner (`@lcalero42`) for anything not
+  matched below it, plus per-directory owners for `srcs/containers/back/`
+  and `srcs/containers/front/` — check that file for the current list
+  before assuming who gets auto-requested on a given PR.
 
 ## Before opening a PR
 

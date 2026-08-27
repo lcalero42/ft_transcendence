@@ -27,8 +27,19 @@ the browser talks directly to the back container's exposed port.
 - React 19 + TypeScript, built with Vite, styled with Tailwind CSS 4.
 - Client-side routing via `react-router-dom` (see `src/App.tsx` for the route
   table: `/home`, `/login`, `/register`, `/profile`, `/create-room`,
-  `/game/:id`).
-- Talks to the backend exclusively over `fetch()` calls in `src/api/*.ts`,
+  `/game/:id`, plus a dev-only `/testColyseus` page — see
+  [Realtime game state](#realtime-game-state) below). `/profile`,
+  `/create-room`, and `/game/:id` are wrapped in `ProtectedRoute`
+  (`src/context/ProtectedRoute.tsx`), which redirects to `/login` when
+  there's no authenticated user.
+- Auth state is a React context (`src/context/AuthContext.tsx`): it holds
+  the decoded JWT payload as `user`, and `login`/`register`/`logout`
+  delegate to `src/api/auth/auth.ts`. The token itself lives in
+  `localStorage` (`src/api/auth/client.ts`), and every request goes through
+  a shared `apiFetch()` helper there that attaches
+  `Authorization: Bearer <token>` automatically — `src/api/player.ts` and
+  `src/api/rooms.ts` are both thin wrappers around it.
+- Talks to the backend exclusively over `fetch()` calls (via `apiFetch()`),
   using the `VITE_API_URL` env var as the base URL (see
   [runbook.md](runbook.md) for the env-file gotcha around this).
 - Dev server runs `vite` directly inside the container (`npm run dev`), so
@@ -50,8 +61,9 @@ the browser talks directly to the back container's exposed port.
   and `POST /auth/login` issue a bearer token; protected routes use
   `JwtAuthGuard` (see `src/auth/`). A separate `InternalApiKeyGuard`
   (`x-internal-api-key` header) protects service-to-service routes such as
-  `word-pair` creation — intended for the future realtime game server to
-  call back into the API without a user token.
+  `word-pair` creation — intended for the realtime layer (Colyseus, see
+  below) to call back into the API without a user token, though the
+  current Colyseus scaffold doesn't call any REST routes yet.
 - `ServeStaticModule` serves uploaded files (e.g. avatars) from
   `/uploads`.
 - CORS is currently hardcoded to `http://localhost:5173` in `src/main.ts`
@@ -110,13 +122,32 @@ Routes without a guard annotation are currently public; most mutating
 routes require a valid JWT, and room/game ownership is enforced
 service-side (e.g. only the room's creator can `PATCH`/`DELETE` it).
 
-## Realtime game state — not yet implemented
+## Realtime game state
 
-`@colyseus/sdk` is a backend dependency and `Rooms.colyseusRoomId` exists in
-the schema, but there is no Colyseus server or gateway wired up yet — the
-`/game/:id` frontend page (`GameRoom.tsx`) is a placeholder. See
-[ADR 0001](adr/0001-adopt-colyseus-for-realtime-game-sync.md) for the
-reasoning behind the choice ahead of the implementation.
+A Colyseus server now runs (see [ADR 0001](adr/0001-adopt-colyseus-for-realtime-game-sync.md)
+for why Colyseus), but it's still an early scaffold, not the actual game
+loop:
+
+- `back/src/colyseus/server.ts` defines the server and starts it
+  alongside the REST API in the same process — `main.ts` calls
+  `colyseusServer.listen(2567)` right before `app.listen(...)`. It is
+  **not** a separate Compose service; `docker-compose.yml` just publishes
+  the extra port (`2567:2567`) on the existing `back` container.
+- `back/src/colyseus/rooms/Rooms.ts` (registered as room type `udvRoom`)
+  and `RoomState.ts` are still generic Colyseus-starter-template code —
+  players are tracked by `x`/`y`/`name`, messages are named
+  `doSomething`/`do`, and none of it is wired to Undercover's actual
+  mechanics (word assignment, roles, elimination, voting). `onJoin`
+  performs no authentication — any client can join `udvRoom` up to
+  `maxClients`.
+- The frontend's `/testColyseus` page (`TestColyseus.tsx` + `GameView.tsx`)
+  connects to it via `@colyseus/react`'s `useRoom()` hook, purely to
+  exercise the plumbing — it's not linked from the app's normal
+  navigation. The real `/game/:id` page (`GameRoom.tsx`) is still a
+  placeholder and isn't hooked up to Colyseus yet.
+- `Rooms.colyseusRoomId` in the Prisma schema (populated once a lobby's
+  game actually starts) is still unused by any of the above — nothing yet
+  links a `Rooms` DB row to a live Colyseus room instance.
 
 ## Configuration & secrets
 

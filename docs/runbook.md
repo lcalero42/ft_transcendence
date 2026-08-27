@@ -64,6 +64,17 @@ make ps                  # container status
   named volumes including Postgres data, then `make buildd` reseeds from
   scratch.
 
+## Realtime (Colyseus)
+
+- The Colyseus server runs inside the `back` container alongside the REST
+  API, listening on `ws://localhost:2567` (published in
+  `docker-compose.yml`). There's no separate container/service for it.
+- It's a bare scaffold today — see
+  [architecture.md](architecture.md#realtime-game-state) — reachable from
+  the frontend's `/testColyseus` dev page. If that page hangs on
+  "Connecting...", check `make logs-back` for Colyseus errors and confirm
+  port `2567` isn't already in use on the host.
+
 ## Checks (mirrors CI)
 
 ```bash
@@ -107,6 +118,18 @@ disconnected even though `back` is healthy.
   (the `depends_on: condition: service_healthy` should prevent this, but a
   stale/corrupt volume can still cause migration errors — try
   `make fclean && make buildd` as a last resort, it wipes DB data).
+
+### UI still shows me as logged in, but requests fail
+
+- The JWT lives in `localStorage` under the key `accessToken`
+  (`src/api/auth/client.ts`) and is decoded client-side to populate
+  `AuthContext`'s `user`. A `401` response clears that stored token, but
+  doesn't currently update `AuthContext`'s in-memory state — so the UI can
+  keep rendering as logged in (nav shows your name, protected routes don't
+  redirect) while every request is actually failing, until you hit
+  "Logout" or reload the page. If you hit this while developing, clearing
+  `localStorage` (DevTools → Application → Local Storage) and reloading is
+  the quick fix.
 
 ### `401 Unauthorized` on routes that used to work
 
