@@ -6,7 +6,7 @@ import { AuthContext, type User } from "./auth-context";
 function decodeToken(token: string): User | null {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
-    return { id: payload.sub, email: payload.email };
+    return { id: payload.sub, email: payload.email, name: payload.name };
   } catch {
     return null;
   }

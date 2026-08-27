@@ -13,8 +13,8 @@ export default function CreateRoom() {
 
 	const { room, error, isConnecting } = useRoom(
 		roomId
-			? () => client.joinById<LobbyRoom>(roomId, { name: user?.email })
-			: () => client.create<LobbyRoom>("lobby", { name: user?.email }),
+			? () => client.joinById<LobbyRoom>(roomId, { name: user?.name })
+			: () => client.create<LobbyRoom>("lobby", { name: user?.name }),
 		[roomId],
 	);
 
