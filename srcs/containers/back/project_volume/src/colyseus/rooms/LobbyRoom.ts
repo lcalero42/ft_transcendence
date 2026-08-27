@@ -4,6 +4,7 @@ import { LobbyState, LobbyPlayer } from './LobbyState';
 
 export interface JoinOptions {
   name?: string;
+  avatarUrl?: string;
 }
 
 const GAME_ROOM_NAME = 'udvRoom';
@@ -42,6 +43,7 @@ export class LobbyRoom extends Room {
     this.logger.log('lobby joined');
     const player = new LobbyPlayer();
     player.name = options?.name?.trim() || 'Player';
+    player.avatarUrl = options?.avatarUrl?.trim() || '';
     this.state.players.set(client.sessionId, player);
 
     if (!this.state.hostSessionId) {

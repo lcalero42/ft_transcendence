@@ -36,7 +36,7 @@ export class AuthService {
     const player = await this.prisma.player.create({
       data: { email: dto.email, name: dto.name, password: hashed },
     });
-    return this.signToken(player.id, player.email, player.name);
+    return this.signToken(player.id, player.email);
   }
 
   async login(dto: LoginDto) {
@@ -51,10 +51,10 @@ export class AuthService {
     if (!player || !isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.signToken(player.id, player.email, player.name);
+    return this.signToken(player.id, player.email);
   }
 
-  private signToken(sub: number, email: string, name: string) {
-    return { accessToken: this.jwtService.sign({ sub, email, name }) };
+  private signToken(sub: number, email: string) {
+    return { accessToken: this.jwtService.sign({ sub, email }) };
   }
 }

@@ -5,17 +5,24 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
 import { client } from "@/lib/colyseusClient";
 import { useAuth } from "@/context/useAuth";
+import DefaultAvatar from "@/assets/profile-photo/moon.png";
+
+function resolveAvatar(avatarUrl: string) {
+	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
+}
 
 export default function CreateRoom() {
-	const { user } = useAuth();
+	const { profile, profileLoading } = useAuth();
 	const { roomId } = useParams();
 	const navigate = useNavigate();
 
 	const { room, error, isConnecting } = useRoom(
-		roomId
-			? () => client.joinById<LobbyRoom>(roomId, { name: user?.name })
-			: () => client.create<LobbyRoom>("lobby", { name: user?.name }),
-		[roomId],
+		profileLoading
+			? null
+			: roomId
+				? () => client.joinById<LobbyRoom>(roomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
+				: () => client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl }),
+		[roomId, profileLoading],
 	);
 
 	const players = useRoomState(room, (s) => s.players);
@@ -29,6 +36,7 @@ export default function CreateRoom() {
 		});
 	}, [room, navigate]);
 
+	if (profileLoading) return <p>Connecting...</p>;
 	if (isConnecting) return <p>Connecting...</p>;
 	if (error) return <p>My_Error: {error.message}</p>;
 	if (!room) return <p>My_Error: room unavailable</p>;
@@ -56,7 +64,12 @@ export default function CreateRoom() {
 			<h2>Joueurs ({playerEntries.length})</h2>
 			<ul>
 				{playerEntries.map(([sessionId, player]) => (
-					<li key={sessionId}>
+					<li key={sessionId} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+						<img
+							src={resolveAvatar(player.avatarUrl)}
+							alt={player.name}
+							style={{ width: "2rem", height: "2rem", borderRadius: "9999px", objectFit: "cover" }}
+						/>
 						{player.name}
 						{sessionId === room.sessionId ? " (toi)" : ""}
 					</li>

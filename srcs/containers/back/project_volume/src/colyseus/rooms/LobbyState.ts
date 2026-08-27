@@ -2,6 +2,7 @@ import { Schema, MapSchema, type } from '@colyseus/schema';
 
 export class LobbyPlayer extends Schema {
   @type('string') name: string = '';
+  @type('string') avatarUrl: string = '';
 }
 
 export class LobbyState extends Schema {
