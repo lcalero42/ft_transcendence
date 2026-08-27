@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Room, Client } from '@colyseus/core';
+import { Room, type Client } from '@colyseus/core';
 import { RoomState, Player } from './RoomState';
 
 export interface Payload {
