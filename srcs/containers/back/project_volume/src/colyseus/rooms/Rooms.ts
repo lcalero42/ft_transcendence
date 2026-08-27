@@ -8,6 +8,10 @@ export interface Payload {
   name: string;
 }
 
+export interface JoinOptions {
+  name?: string;
+}
+
 export class Rooms extends Room {
   maxClients = 4;
   autoDispose = false;
@@ -34,9 +38,11 @@ export class Rooms extends Room {
   }
 
   // Called when a client joins the room
-  onJoin(client: Client) {
+  onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
-    this.state.players.set(client.sessionId, new Player());
+    const player = new Player();
+    player.name = options?.name?.trim() || 'Player';
+    this.state.players.set(client.sessionId, player);
     client.send('welcome', 'Welcome to the room!');
   }
 
