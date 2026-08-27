@@ -1,6 +1,12 @@
-# CODEOWNERS for ft_IRC
+# CODEOWNERS for ft_transcendence
+
+# Default owner for anything not matched below
+*                                @lcalero42
 
 # Github repository configuration and actions
 /.github/                       @lcalero42
-.env
-.vscode
+
+/srcs/containers/back/          @lcalero42 @Thibaud-M326
+/srcs/containers/front/         @eterrale  @audraaan
+
+/.editorconfig                  @lcalero42

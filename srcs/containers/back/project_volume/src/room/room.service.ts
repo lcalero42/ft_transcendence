@@ -14,22 +14,18 @@ export class RoomService {
         deletedAt: null,
       },
     });
-
     const maxRoomPerPlayer = 3;
-
     if (roomCount >= maxRoomPerPlayer) {
       throw new ForbiddenException(
         `Player ${playerId} has reached the room creation limit.`,
       );
     }
-
     const createRoom = await this.prisma.rooms.create({
       data: {
         name: createRoomDto.name,
         createdBy: playerId,
       },
     });
-
     return createRoom;
   }
 
