@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { Room } from "@colyseus/sdk";
-import type { Rooms } from "../../../../../../back/project_volume/src/colyseus/rooms/Rooms";
+import type { Rooms } from "@back/colyseus/rooms/Rooms";
 
 type GameViewProps = {
 	room: Room<Rooms>;
