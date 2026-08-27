@@ -40,7 +40,7 @@ export class RoomController {
   }
   @Get('count-activ')
   async countActiv() {
-	return this.roomService.countActiv();
+    return this.roomService.countActiv();
   }
 
   @Get(':id')

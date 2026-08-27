@@ -48,12 +48,12 @@ export class RoomService {
     return room;
   }
 
-	async countActiv() {
-		const i = await this.prisma.rooms.count({
-			where: {deletedAt: null},
-		});
-		return i;
-	}
+  async countActiv() {
+    const i = await this.prisma.rooms.count({
+      where: { deletedAt: null },
+    });
+    return i;
+  }
   async getGames(id: number) {
     const games = await this.prisma.rooms.findUnique({
       where: { id: id },
