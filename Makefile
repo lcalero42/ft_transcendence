@@ -24,7 +24,7 @@ NC     := \033[0m
         clean fclean \
         prisma-migrate prisma-generate \
         check-env check-secrets check-containers-up \
-        check-lint check-lint-fix check-typecheck check-all \
+        check-lint check-lint-fix check-typecheck check-all test \
         help
 
 .DEFAULT_GOAL := help
@@ -115,6 +115,10 @@ check-all: check-containers-up ## Run all checks (eslint + typecheck) inside the
 	else \
 		printf "$(YELLOW)All checks passed.$(NC)\n"; \
 	fi
+
+test: check-containers-up ## Run backend Jest tests inside the back container
+	@printf "$(CYAN)Running backend tests...$(NC)\n"
+	$(COMPOSE) exec back npm run test
 
 ##@ Build & Run
 
