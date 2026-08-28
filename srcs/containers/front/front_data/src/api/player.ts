@@ -23,19 +23,6 @@ export function getAvatarUrl(path: string | null): string | undefined {
 	return `${BASE_URL}${path}`;
 }
 
-export async function getPlayers() {
-	return apiFetch("/player");
-}
-
-export async function countPlayer() {
-	return apiFetch("/player/count-activ");
-}
-
-export function getAvatarUrl(path: string | null): string | undefined {
-	if (!path) return undefined;
-	return `${BASE_URL}${path}`;
-}
-
 export async function updateAvatar(playerId: number, file: File): Promise<Player> {
 	const formData = new FormData();
 	formData.append('avatar', file);
@@ -57,5 +44,3 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 export async function getMe() {
 	return apiFetch("/player/me");
 }
-
-

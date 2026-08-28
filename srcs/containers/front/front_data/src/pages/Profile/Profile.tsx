@@ -88,7 +88,7 @@ function Profile() {
 					</div>
 				</div>
 
-				<Counter games={17} victories={8} winrate={47} friends={3}/>
+				<Counter games={17} victories={8} winrate={5} friends={-1}/>
 
 				<div className="md:gap-3 md:flex">
 					<FriendList friends={friends}/>

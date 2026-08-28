@@ -10,12 +10,12 @@ type IdentityProps = {
 	playerId: number;
 	username: string;
 	Since: string;
-	urlAvatar: string;
+	urlAvatar: string | undefined;
 };
 
 function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
-	const [avatar, setAvatar] = useState(urlAvatar ? urlAvatar : AvatarDefault);
+	const [avatar, setAvatar] = useState(urlAvatar);
 
 	const handleAvatarSave = async (file: File) => {
 		try {
