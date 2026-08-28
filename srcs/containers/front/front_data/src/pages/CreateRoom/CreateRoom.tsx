@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
-import type { SeatReservation } from "@colyseus/sdk";
+import type { Room, SeatReservation } from "@colyseus/sdk";
 import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
 import { client } from "@/lib/colyseusClient";
 import { useAuth } from "@/context/useAuth";
@@ -11,18 +11,63 @@ function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
 }
 
+const RECONNECTION_STORAGE_KEY = "lobby-reconnection";
+
+function readStoredReconnection(): { roomId: string; token: string } | null {
+	try {
+		const raw = sessionStorage.getItem(RECONNECTION_STORAGE_KEY);
+		return raw ? JSON.parse(raw) : null;
+	} catch {
+		return null;
+	}
+}
+
+function storeReconnection(room: Room) {
+	try {
+		sessionStorage.setItem(
+			RECONNECTION_STORAGE_KEY,
+			JSON.stringify({ roomId: room.roomId, token: room.reconnectionToken }),
+		);
+	} catch {
+		// ignore storage failures (e.g. private browsing)
+	}
+}
+
+function clearReconnection() {
+	try {
+		sessionStorage.removeItem(RECONNECTION_STORAGE_KEY);
+	} catch {
+		// ignore storage failures
+	}
+}
+
 export default function CreateRoom() {
 	const { profile, profileLoading } = useAuth();
-	const { roomId } = useParams();
+	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
+
+	// Frozen at mount so that our own `navigate()` call below (which updates
+	// the URL to include the created room's id) doesn't retrigger useRoom.
+	const targetRoomIdRef = useRef(routeRoomId);
 
 	const { room, error, isConnecting } = useRoom(
 		profileLoading
 			? null
-			: roomId
-				? () => client.joinById<LobbyRoom>(roomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-				: () => client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl }),
-		[roomId, profileLoading],
+			: async () => {
+					const targetRoomId = targetRoomIdRef.current;
+					const stored = readStoredReconnection();
+					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
+						try {
+							return await client.reconnect<LobbyRoom>(stored.token);
+						} catch {
+							clearReconnection();
+						}
+					}
+					return targetRoomId
+						? client.joinById<LobbyRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
+						: client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+				},
+		[profileLoading],
 	);
 
 	const players = useRoomState(room, (s) => s.players);
@@ -31,7 +76,16 @@ export default function CreateRoom() {
 
 	useEffect(() => {
 		if (!room) return;
+		storeReconnection(room);
+		if (routeRoomId !== room.roomId) {
+			navigate(`/create-room/${room.roomId}`, { replace: true });
+		}
+	}, [room, routeRoomId, navigate]);
+
+	useEffect(() => {
+		if (!room) return;
 		return room.onMessage("seatReservation", (reservation: SeatReservation) => {
+			clearReconnection();
 			navigate(`/game/${reservation.roomId}`, { state: { reservation } });
 		});
 	}, [room, navigate]);

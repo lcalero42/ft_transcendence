@@ -8,10 +8,10 @@ export interface JoinOptions {
 }
 
 const GAME_ROOM_NAME = 'udvRoom';
+const RECONNECTION_WINDOW_SECONDS = 20;
 
 export class LobbyRoom extends Room {
   maxClients = 4;
-  autoDispose = false;
   state = new LobbyState();
 
   private readonly logger = new Logger('LobbyRoom');
@@ -51,10 +51,26 @@ export class LobbyRoom extends Room {
     }
   }
 
-  // Called when a client leaves the lobby
+  // Called when a client disconnects without leaving on purpose (e.g. page refresh, dropped connection)
+  onDrop(client: Client) {
+    this.logger.log('lobby connection dropped, awaiting reconnection');
+    this.allowReconnection(client, RECONNECTION_WINDOW_SECONDS);
+  }
+
+  // Called when a dropped client successfully reconnects
+  onReconnect() {
+    this.logger.log('lobby reconnected');
+  }
+
+  // Called when a client permanently leaves the lobby (consented leave, or reconnection window expired)
   onLeave(client: Client) {
     this.logger.log('lobby left');
     this.state.players.delete(client.sessionId);
+
+    if (this.state.hostSessionId === client.sessionId) {
+      const [nextHost] = Array.from(this.state.players.keys());
+      this.state.hostSessionId = nextHost ?? '';
+    }
   }
 
   // Called when the lobby is disposed
