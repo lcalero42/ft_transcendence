@@ -1,5 +1,6 @@
 import Icon from "../../../../assets/icons/calendar-time.svg";
-import Avatar from "../../../../assets/profile-photo/moon.png";
+import AvatarDefault from "../../../../assets/profile-photo/avatar-default.svg";
+
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
 import { updateAvatar} from '../../../../api/player';
@@ -10,11 +11,12 @@ type IdentityProps = {
 	playerId: number;
 	username: string;
 	Since: string;
+	urlAvatar: string;
 };
 
-function Identity({playerId, username, Since}: IdentityProps) {
+function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
-	const [avatar, setAvatar] = useState(Avatar);
+	const [avatar, setAvatar] = useState(urlAvatar ? urlAvatar : AvatarDefault);
 
 	const handleAvatarSave = async (file: File) => {
 		try {

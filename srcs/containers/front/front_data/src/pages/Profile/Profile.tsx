@@ -72,10 +72,11 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity 
+					<Identity
 						playerId={user.id}
 						username={player.name} 
 						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
+						urlAvatar={player.avatarUrl}
 					/>
 					<div className="md:flex md:flex-col">
 						<Bio
