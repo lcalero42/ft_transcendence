@@ -71,6 +71,7 @@ export class GameService {
     });
     return updateGame;
   }
+
   async remove(id: number) {
     const deleteGame = await this.prisma.games.update({
       where: { id: id },
