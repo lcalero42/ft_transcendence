@@ -9,14 +9,38 @@ import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 import IconDetective from "../../assets/icons/brand-redhat.svg";
 
+import { useState, useEffect } from "react";
+
 import { useAuth } from "../../context/useAuth";
+import { getMe, type Player}  from '../../api/player';
 
 function Profile() {
-
+	const [player, setPlayer] = useState<Player | null>(null);
+	const [loading, setLoading] = useState(true);
+  	const [error, setError] = useState<string | null>(null);
+	
 	const { user } = useAuth();
+
 	if (!user) {
 		return null;
 	}
+	useEffect(() => {
+		async function getPlayer() {
+			try {
+				const data: Player = await getMe();
+				setPlayer(data);
+		  	} catch (err) {
+				setError("Erreur lors du chargement du joueur");
+		  	} finally {
+				setLoading(false);
+		  	}
+		}
+		getPlayer();		
+	},[]);
+
+ 	if (loading) return <p>Chargement...</p>;
+  	if (error) return <p>{error}</p>;
+  	if (!player) return null;
 
 
 	const games = [
@@ -48,7 +72,11 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity playerId={user.id} username="MasterMind" Since="14/05/2026"/>
+					<Identity 
+						playerId={user.id}
+						username={player.name} 
+						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
+					/>
 					<div className="md:flex md:flex-col">
 						<Bio playerId={user.id} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>

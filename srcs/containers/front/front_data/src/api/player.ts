@@ -6,6 +6,7 @@ export interface Player {
 	email: string;
 	aboutMe: string;
 	avatarUrl: string;
+	createdAt: string;
 }
 
 export async function updateAvatar(playerId: number, file: File): Promise<Player> {
