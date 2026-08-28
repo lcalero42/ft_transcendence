@@ -8,11 +8,12 @@ import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 import IconDetective from "../../assets/icons/brand-redhat.svg";
+import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 
 import { useState, useEffect } from "react";
 
 import { useAuth } from "../../context/useAuth";
-import { getMe, type Player}  from '../../api/player';
+import { getMe, getAvatarUrl, type Player}  from '../../api/player';
 
 function Profile() {
 	const [player, setPlayer] = useState<Player | null>(null);
@@ -76,7 +77,7 @@ function Profile() {
 						playerId={user.id}
 						username={player.name} 
 						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
-						urlAvatar={player.avatarUrl}
+						urlAvatar={getAvatarUrl(player.avatarUrl) ? getAvatarUrl(player.avatarUrl) : AvatarDefault}
 					/>
 					<div className="md:flex md:flex-col">
 						<Bio
