@@ -10,7 +10,7 @@ type IdentityProps = {
 	playerId: number;
 	username: string;
 	Since: string;
-	urlAvatar: string | undefined;
+	urlAvatar: string;
 };
 
 function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {

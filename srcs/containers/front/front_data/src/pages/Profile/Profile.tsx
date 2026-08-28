@@ -78,6 +78,7 @@ function Profile() {
 		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 	];
+	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
 			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
@@ -92,7 +93,7 @@ function Profile() {
 						playerId={user.id}
 						username={player.name} 
 						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
-						urlAvatar={getAvatarUrl(player.avatarUrl) ? getAvatarUrl(player.avatarUrl) : AvatarDefault}
+						urlAvatar={avatarUrl}
 					/>
 					<div className="md:flex md:flex-col">
 						<Bio

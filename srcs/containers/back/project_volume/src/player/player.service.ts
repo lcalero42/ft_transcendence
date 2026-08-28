@@ -27,7 +27,7 @@ export class PlayerService {
 
   async getGamesList(id: number) {
     const gamePlayers = await this.prisma.game_Players.findMany({
-      where: {playerId: id},
+      where: { playerId: id },
       include: {
         gameIdRel: {
           include: {
@@ -40,7 +40,7 @@ export class PlayerService {
         gameIdRel: { createdAt: 'desc' },
       },
     });
-     return gamePlayers.map((gp) => ({
+    return gamePlayers.map((gp) => ({
       id: gp.gameIdRel.id,
       name: gp.gameIdRel.roomIdRel.name,
       nbPlayers: gp.gameIdRel.gamePlayers.length,
