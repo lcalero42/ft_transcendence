@@ -9,6 +9,13 @@ export interface Player {
 	avatarUrl: string;
 	createdAt: string;
 }
+export interface GameListOfPlayer {
+  id: number;
+  name: string;
+  nbPlayers: number;
+  date: string;
+  victory: boolean;
+}
 
 export async function getPlayers() {
 	return apiFetch("/player");
@@ -43,6 +50,10 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 
 export async function getMe() {
 	return apiFetch("/player/me");
+}
+
+export async function getGamesList(playerId: number): Promise<GameListOfPlayer[]> {
+  return apiFetch(`/player/${playerId}/games`);
 }
 
 export async function getCountGamesPlayed(playerId: number): Promise<number> {
