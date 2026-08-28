@@ -78,7 +78,10 @@ function Profile() {
 						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
 					/>
 					<div className="md:flex md:flex-col">
-						<Bio playerId={user.id} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
+						<Bio
+							playerId={user.id}
+							bio={player.aboutMe ? player.aboutMe : "not description"}
+						/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>
 					</div>
 				</div>
