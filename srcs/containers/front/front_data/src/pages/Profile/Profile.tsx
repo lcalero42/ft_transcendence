@@ -13,33 +13,45 @@ import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 
 import { useAuth } from "../../context/useAuth";
-import { getMe, getAvatarUrl, type Player}  from '../../api/player';
-
+import { getMe, getAvatarUrl, type Player, getCountGamesPlayed, getCountVictory, getWinRate}  from '../../api/player';
 function Profile() {
 	const [player, setPlayer] = useState<Player | null>(null);
+	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
+	const [victory, setVictory] = useState<number>(0);
+	const [winrate, setWinrate] = useState<number>(0);
 	const [loading, setLoading] = useState(true);
   	const [error, setError] = useState<string | null>(null);
 	
 	const { user } = useAuth();
 
-	if (!user) {
-		return null;
-	}
+	
 	useEffect(() => {
-		async function getPlayer() {
+		if (!user) return;
+		const cpUser = user;
+		async function loadData() {
 			try {
-				const data: Player = await getMe();
-				setPlayer(data);
+				const [me, games, victories, winrate] = await Promise.all([
+					getMe(),
+					getCountGamesPlayed(cpUser.id),
+					getCountVictory(cpUser.id),
+					getWinRate(cpUser.id),
+				])
+				setPlayer(me);
+				setGamesPlayed(games);
+				setVictory(victories);
+				setWinrate(winrate);
 		  	} catch (err) {
-				setError("Erreur lors du chargement du joueur");
+				console.error("Profile load error:", err);
+				setError("Error when loading the player");
 		  	} finally {
 				setLoading(false);
 		  	}
 		}
-		getPlayer();		
-	},[]);
 
- 	if (loading) return <p>Chargement...</p>;
+		loadData();
+	},[user]);
+	if (!user) return null;
+ 	if (loading) return <p>Loading...</p>;
   	if (error) return <p>{error}</p>;
   	if (!player) return null;
 
@@ -88,7 +100,12 @@ function Profile() {
 					</div>
 				</div>
 
-				<Counter games={17} victories={8} winrate={5} friends={-1}/>
+				<Counter
+					games={gamesPlayed}
+					victories={victory}
+					winrate={Number(winrate.toFixed(2))}
+					friends={-1}
+				/>
 
 				<div className="md:gap-3 md:flex">
 					<FriendList friends={friends}/>

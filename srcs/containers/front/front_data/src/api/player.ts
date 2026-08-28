@@ -44,3 +44,18 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 export async function getMe() {
 	return apiFetch("/player/me");
 }
+
+export async function getCountGamesPlayed(playerId: number): Promise<number> {
+	const res = await apiFetch(`/player/${playerId}/games-played`);
+	return res.gamesPlayed;
+}
+
+export async function getCountVictory(playerId: number): Promise<number> {
+	const res = await apiFetch(`/player/${playerId}/victory`);
+	return res.victoriesCount;
+}
+
+export async function getWinRate(playerId: number): Promise<number> {
+	const res = await apiFetch(`/player/${playerId}/winrate`);
+	return res.winrate;
+}
