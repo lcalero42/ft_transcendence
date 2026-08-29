@@ -95,6 +95,34 @@ describe('PlayerController', () => {
     });
   });
 
+  describe('getGamesList', () => {
+    it('should return a player games list', async () => {
+      const result = [
+        {
+          id: 1,
+          name: 'Room #42',
+          nbPlayers: 5,
+          date: new Date('2026-07-25T14:30:00Z'),
+          victory: true,
+        },
+      ];
+      jest
+        .spyOn(playerService, 'getGamesList')
+        .mockImplementation(() => Promise.resolve(result));
+
+      const req = requestAs(5, 'bob@test.com');
+      expect(await playerController.getGamesList('5', req)).toBe(result);
+      expect(playerService.getGamesList).toHaveBeenCalledWith(5);
+    });
+
+    it('should reject viewing another player games', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(playerController.getGamesList('5', req)).rejects.toThrow(
+        'Cannot view games of another player',
+      );
+    });
+  });
+
   describe('update', () => {
     it('should update a player and return it', async () => {
       const updateDto = {
