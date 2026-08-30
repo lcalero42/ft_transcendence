@@ -7,6 +7,7 @@ services:
       - "5173:5173"
     volumes:
       - front_data:/app
+      - back_src_readonly:/back/project_volume/src:ro
 
   back:
     build: ./containers/back
@@ -15,6 +16,7 @@ services:
     ports:
       - "3000:3000"
       - "51212:51212"
+      - "2567:2567"
     volumes:
       - back_project:/app
     secrets:
@@ -58,6 +60,13 @@ volumes:
       type: none
       o: bind
       device: ${PROJECT_PATH}/srcs/containers/back/project_volume
+
+  back_src_readonly:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/back/project_volume/src
 
 secrets:
   db_user:

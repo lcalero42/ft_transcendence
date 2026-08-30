@@ -1,4 +1,5 @@
 import { apiFetch } from "./auth/client";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export interface Player {
 	id: number;
@@ -6,6 +7,19 @@ export interface Player {
 	email: string;
 	aboutMe: string;
 	avatarUrl: string;
+}
+
+export async function getPlayers() {
+	return apiFetch("/player");
+}
+
+export async function countPlayer() {
+	return apiFetch("/player/count-activ");
+}
+
+export function getAvatarUrl(path: string | null): string | undefined {
+	if (!path) return undefined;
+	return `${BASE_URL}${path}`;
 }
 
 export async function updateAvatar(playerId: number, file: File): Promise<Player> {
@@ -29,3 +43,5 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 export async function getMe(): Promise<Player> {
 	return apiFetch<Player>("/player/me");
 }
+
+

@@ -4,15 +4,21 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM"],
     "module": "esnext",
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "allowArbitraryExtensions": true,
     "skipLibCheck": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@back/*": ["../../back/project_volume/src/*"],
+      "@colyseus/core": ["./node_modules/@colyseus/core"],
+      "@colyseus/schema": ["./node_modules/@colyseus/schema"],
+      "@colyseus/ws-transport": ["./node_modules/@colyseus/ws-transport"],
+      "@nestjs/common": ["./node_modules/@nestjs/common"]
     },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "experimentalDecorators": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
