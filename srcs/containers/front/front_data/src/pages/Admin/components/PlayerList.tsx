@@ -17,10 +17,10 @@ function PlayerList() {
 	useEffect(() => {
 	getPlayers()
 		.then((data) => setPlayers(data))
-		.catch((err) =>
+		.catch((err: unknown) =>
 			toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			})
 		);
 }, []);

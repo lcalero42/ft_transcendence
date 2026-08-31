@@ -69,7 +69,7 @@ function Login() {
 		setIsSubmitting(true);
 		try {
 			await login(form.email, form.password);
-			navigate("/");
+			void navigate("/");
 		} catch (err) {
       		setAuthError(err instanceof Error ? err.message : "Login failed");
 		} finally {
@@ -85,7 +85,7 @@ function Login() {
 			icon="🥷"
 			heading="Log in to your account"
 			description="Enter your credentials to access your account."
-			onSubmit={handleSubmit}
+			onSubmit={(e) => { void handleSubmit(e); }}
 			submitLabel={isSubmitting ? "Logging in..." : "Log in"}
 			// submitLabel="Log in"
 			footer={

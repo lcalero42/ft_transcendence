@@ -7,14 +7,21 @@ export interface Game {
 
 }
 
+export interface GamePlayer {
+	id: number;
+	name: string;
+	avatarUrl: string | null;
+	role: string;
+}
+
 export async function getGames() {
-	return apiFetch("/game");
+	return apiFetch<Game[]>("/game");
 }
 
 export async function countGames() {
-	return apiFetch("/game/count");
+	return apiFetch<number>("/game/count");
 }
 
 export async function getPlayersByGame(id: number) {
-	return apiFetch(`/game/${id}/players`);
+	return apiFetch<GamePlayer[]>(`/game/${id}/players`);
 }
