@@ -4,12 +4,17 @@
 
 COMPOSE_FILE := srcs/docker-compose.yml
 COMPOSE      := docker compose -f $(COMPOSE_FILE)
-LOG_DIR      := logs
-PROJECT_NAME := $(shell basename $$(pwd))
 
-ROOT_ENV_FILE := srcs/.env
-BACK_ENV_FILE := srcs/containers/back/project_volume/.env
-ENV_FILES     := $(ROOT_ENV_FILE) $(BACK_ENV_FILE)
+# Docker Compose defaults the project name to the basename of the directory
+# containing the compose file (not the repo root / cwd) — must match that
+# so the `docker ... prune --filter label=com.docker.compose.project=...`
+# calls in fclean actually match the running stack's resources.
+PROJECT_NAME := $(notdir $(patsubst %/,%,$(dir $(COMPOSE_FILE))))
+
+ROOT_ENV_FILE  := srcs/.env
+BACK_ENV_FILE  := srcs/containers/back/project_volume/.env
+FRONT_ENV_FILE := srcs/containers/front/front_data/.env
+ENV_FILES      := $(ROOT_ENV_FILE) $(BACK_ENV_FILE) $(FRONT_ENV_FILE)
 
 SECRETS_DIR  := srcs/secrets
 SECRETS      := db_user.txt db_password.txt db_name.txt jwt_secret.txt internal_api_key.txt
@@ -71,9 +76,9 @@ check-secrets: ## Verify secret files exist and are not empty
 
 ##@ CI / Checks
 
-check-containers-up: ## Verify front & back containers are running (checks execute inside them)
+check-containers-up: ## Verify front, back & postgres containers are running (checks execute inside them)
 	@running="$$($(COMPOSE) ps --status running --services)"; \
-	for svc in front back; do \
+	for svc in front back postgres; do \
 		if ! printf '%s\n' "$$running" | grep -qx "$$svc"; then \
 			printf "$(RED)Error:$(NC) '$$svc' container is not running.\n"; \
 			printf "$(YELLOW)Fix:$(NC) run 'make up' or 'make buildd' first.\n"; \
@@ -99,22 +104,8 @@ check-typecheck: check-containers-up ## Run typecheck inside the front & back co
 	@printf "$(CYAN)Type-checking front...$(NC)\n"
 	$(COMPOSE) exec front npm run typecheck
 
-check-all: check-containers-up ## Run all checks (eslint + typecheck) inside the containers and report which ones failed
-	@FAILED=""; \
-	printf "$(CYAN)Running lint (back)...$(NC)\n"; \
-	$(COMPOSE) exec back npm run lint:check || FAILED="$$FAILED lint(back)"; \
-	printf "$(CYAN)Running lint (front)...$(NC)\n"; \
-	$(COMPOSE) exec front npm run lint || FAILED="$$FAILED lint(front)"; \
-	printf "$(CYAN)Running typecheck (back)...$(NC)\n"; \
-	$(COMPOSE) exec back npm run typecheck || FAILED="$$FAILED typecheck(back)"; \
-	printf "$(CYAN)Running typecheck (front)...$(NC)\n"; \
-	$(COMPOSE) exec front npm run typecheck || FAILED="$$FAILED typecheck(front)"; \
-	if [ -n "$$FAILED" ]; then \
-		printf "$(RED)Failed checks:$(NC)%s\n" "$$FAILED"; \
-		exit 1; \
-	else \
-		printf "$(YELLOW)All checks passed.$(NC)\n"; \
-	fi
+check-all: check-containers-up ## Run all checks (eslint + typecheck) inside the containers, continuing past failures
+	@$(MAKE) --no-print-directory -k check-lint check-typecheck
 
 test: check-containers-up ## Run backend Jest tests inside the back container
 	@printf "$(CYAN)Running backend tests...$(NC)\n"
@@ -122,7 +113,7 @@ test: check-containers-up ## Run backend Jest tests inside the back container
 
 ##@ Build & Run
 
-build: check-env check-secrets ## Build and start attached all services (front + back + postgres) loading in the background.
+build: check-env check-secrets ## Build and start all services (front + back + postgres) attached
 	$(COMPOSE) up --build
 
 buildd: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.

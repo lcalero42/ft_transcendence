@@ -13,7 +13,11 @@ export function clearToken() {
 	localStorage.removeItem(TOKEN_KEY);
 }
 
-export async function apiFetch(path:string, options: RequestInit = {}) {
+interface ErrorBody {
+	message?: string | string[];
+}
+
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
 	const token = getToken();
 	const isFormData = options.body instanceof FormData;
 	const res = await fetch(`${BASE_URL}${path}`, {
@@ -26,11 +30,11 @@ export async function apiFetch(path:string, options: RequestInit = {}) {
 	});
 
 	if (!res.ok) {
-		const body = await res.json().catch(() => null);
+		const body = (await res.json().catch(() => null)) as ErrorBody | null;
 		if (res.status === 401) clearToken();
 		const msg  = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
 		throw new Error(msg ?? `Request failed (${res.status})`);
 	}
 
-	return res.status === 204 ? null : res.json();
+	return res.status === 204 ? (null as T) : ((await res.json()) as T);
 }
