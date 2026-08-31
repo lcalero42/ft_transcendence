@@ -49,8 +49,8 @@ function Home() {
                 }
             }
         }
-        loadRooms();
-		getUsername();
+        void loadRooms();
+		void getUsername();
         return () => {
             ignore = true;
         };

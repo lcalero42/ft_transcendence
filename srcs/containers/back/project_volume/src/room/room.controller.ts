@@ -38,6 +38,10 @@ export class RoomController {
   async findCurrent() {
     return this.roomService.findCurrent();
   }
+  @Get('count-activ')
+  async countActiv() {
+    return this.roomService.countActiv();
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {

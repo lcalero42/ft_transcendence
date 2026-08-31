@@ -46,7 +46,7 @@ function Bio({playerId, bio}: BioProps) {
 				<EditBio
 					currentBio={currentBio}
 					onClose={() => setIsPopupOpen(false)}
-					onSave={handleBioSave}
+					onSave={(newBio) => { void handleBioSave(newBio); }}
 				/>
 			)}
 		</div>

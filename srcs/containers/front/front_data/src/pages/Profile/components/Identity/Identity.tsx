@@ -2,7 +2,7 @@ import Icon from "../../../../assets/icons/calendar-time.svg";
 import Avatar from "../../../../assets/profile-photo/moon.png";
 import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
-import { updateAvatar} from '../../../../api/player';
+import { updateAvatar} from '@/api/player';
 import EditAvatar from "./EditAvatar";
 
 
@@ -61,7 +61,7 @@ function Identity({playerId, username, Since}: IdentityProps) {
 				<EditAvatar
 					currentAvatar={avatar}
 					onClose={() => setIsPopupOpen(false)}
-					onSave={handleAvatarSave}
+					onSave={(file) => { void handleAvatarSave(file); }}
 				/>
 			)}
 		</div>
