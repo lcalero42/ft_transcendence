@@ -25,6 +25,30 @@ export class PlayerService {
     return player;
   }
 
+  async getGamesList(id: number) {
+    const gamePlayers = await this.prisma.game_Players.findMany({
+      where: { playerId: id },
+      include: {
+        gameIdRel: {
+          include: {
+            roomIdRel: true,
+            gamePlayers: true,
+          },
+        },
+      },
+      orderBy: {
+        gameIdRel: { createdAt: 'desc' },
+      },
+    });
+    return gamePlayers.map((gp) => ({
+      id: gp.gameIdRel.id,
+      name: gp.gameIdRel.roomIdRel.name,
+      nbPlayers: gp.gameIdRel.gamePlayers.length,
+      date: gp.gameIdRel.createdAt,
+      victory: gp.role === gp.gameIdRel.victory,
+    }));
+  }
+
   async update(id: number, updatePlayerDto: UpdatePlayerDto) {
     const updatePlayer = await this.prisma.player.update({
       where: { id: id },
@@ -94,8 +118,8 @@ export class PlayerService {
   async getWinrate(id: number) {
     const victories = (await this.countVictory(id)).victoriesCount;
     const gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
-    const winrate = (victories / gamesPlayed) * 100;
-    return { playerId: id, winrate };
+    if (gamesPlayed === 0) return { playerId: id, winrate: 0 };
+    else return { playerId: id, winrate: (victories / gamesPlayed) * 100 };
   }
 
   async getAboutMe(id: number) {

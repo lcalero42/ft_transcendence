@@ -90,6 +90,73 @@ describe('PlayerService', () => {
     });
   });
 
+  describe('getGamesList', () => {
+    it('should return the formatted games list for a player', async () => {
+      const rows = [
+        {
+          role: Role.civilian,
+          gameIdRel: {
+            id: 1,
+            victory: Role.civilian,
+            createdAt: new Date('2026-07-25T14:30:00Z'),
+            roomIdRel: { name: 'Room #42' },
+            gamePlayers: [{}, {}, {}, {}, {}],
+          },
+        },
+        {
+          role: Role.undercover,
+          gameIdRel: {
+            id: 2,
+            victory: Role.civilian,
+            createdAt: new Date('2026-02-25T14:30:00Z'),
+            roomIdRel: { name: 'giga boss Room' },
+            gamePlayers: [{}, {}, {}, {}, {}, {}],
+          },
+        },
+      ];
+      prismaMock.game_Players.findMany.mockResolvedValue(
+        rows as unknown as GamePlayersRows,
+      );
+
+      expect(await service.getGamesList(5)).toEqual([
+        {
+          id: 1,
+          name: 'Room #42',
+          nbPlayers: 5,
+          date: new Date('2026-07-25T14:30:00Z'),
+          victory: true,
+        },
+        {
+          id: 2,
+          name: 'giga boss Room',
+          nbPlayers: 6,
+          date: new Date('2026-02-25T14:30:00Z'),
+          victory: false,
+        },
+      ]);
+      expect(prismaMock.game_Players.findMany).toHaveBeenCalledWith({
+        where: { playerId: 5 },
+        include: {
+          gameIdRel: {
+            include: {
+              roomIdRel: true,
+              gamePlayers: true,
+            },
+          },
+        },
+        orderBy: {
+          gameIdRel: { createdAt: 'desc' },
+        },
+      });
+    });
+
+    it('should return an empty array when the player has no games', async () => {
+      prismaMock.game_Players.findMany.mockResolvedValue([]);
+
+      expect(await service.getGamesList(5)).toEqual([]);
+    });
+  });
+
   describe('update', () => {
     it('should update a player and return it', async () => {
       const updateDto = { name: 'Bob', email: 'boblebricoleur@test.com' };
@@ -231,15 +298,6 @@ describe('PlayerService', () => {
         playerId: 5,
         winrate: 100,
       });
-    });
-
-    // Documents current behaviour: dividing by zero games yields NaN.
-    it('should return NaN when the player has never finished a game', async () => {
-      prismaMock.game_Players.findMany.mockResolvedValue([]);
-      prismaMock.game_Players.count.mockResolvedValue(0);
-
-      const { winrate } = await service.getWinrate(5);
-      expect(winrate).toBeNaN();
     });
   });
 

@@ -8,24 +8,67 @@ import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
 import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
 import IconDetective from "../../assets/icons/brand-redhat.svg";
-
+import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 
+import {
+	getMe,
+	getAvatarUrl,
+	getCountGamesPlayed,
+	getCountVictory,
+	getWinRate,
+	getGamesList,
+	type Player,
+	type GameListOfPlayer
+}  from '../../api/player';
+import { clearToken } from "@/api/auth/client";
+import { useNavigate } from "react-router-dom";
+
 function Profile() {
-
 	const { user } = useAuth();
-	if (!user) {
-		return null;
-	}
+	const [player, setPlayer] = useState<Player | null>(null);
+	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
+	const [victory, setVictory] = useState<number>(0);
+	const [winrate, setWinrate] = useState<number>(0);
+	const [gameList, setGamesList] = useState<GameListOfPlayer[]>([]);
 
+	const [loading, setLoading] = useState(true);
+  	const [error, setError] = useState<string | null>(null);
+  	const navigate = useNavigate();
+	useEffect(() => {
+		if (!user) return;
+		const cpUser = user;
+		async function loadData() {
+			try {
+				const [me, games, victories, winrate, gameslist] = await Promise.all([
+					getMe(),
+					getCountGamesPlayed(cpUser.id),
+					getCountVictory(cpUser.id),
+					getWinRate(cpUser.id),
+					getGamesList(cpUser.id),
+				])
+				setPlayer(me);
+				setGamesPlayed(games);
+				setVictory(victories);
+				setWinrate(winrate);
+				setGamesList(gameslist);
+		  	} catch (err) {
+				console.error("Profile load error:", err); //debug
+				setError("Error when loading the player");
+				clearToken();
+				void navigate("/login", { replace: true });
+		  	} finally {
+				setLoading(false);
+		  	}
+		}
 
-	const games = [
-		{ id: 1, name: "Room #42", nbPlayers: 5, date: "2026-07-25T14:30:00Z", victory: true },
-		{ id: 2, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
-		{ id: 3, name: "Room #42", nbPlayers: 2, date: "2026-07-25T14:30:00Z", victory : true },
-		{ id: 4, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
-		{ id: 5, name: "giga boss Room", nbPlayers: 6, date: "2026-02-25T14:30:00Z", victory: false },
-	];
+		void loadData();
+	},[user, navigate]);
+	if (!user) return null;
+ 	if (loading) return <p>Loading...</p>;
+  	if (error) return <p>{error}</p>;
+  	if (!player) return null;
 
 	const friends = [
 		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true},
@@ -38,6 +81,7 @@ function Profile() {
 		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
 	];
+	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
 			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
@@ -48,18 +92,31 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity playerId={user.id} username="MasterMind" Since="14/05/2026"/>
+					<Identity
+						playerId={user.id}
+						username={player.name}
+						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
+						urlAvatar={avatarUrl}
+					/>
 					<div className="md:flex md:flex-col">
-						<Bio playerId={user.id} bio="jiraf bleu labla blablabla blablabla blablablabl ablablablablabla blablabla blablabla "/>
+						<Bio
+							playerId={user.id}
+							bio={player.aboutMe ? player.aboutMe : "not description"}
+						/>
 						<FavoriteRole role="Detective" icon={IconDetective}/>
 					</div>
 				</div>
 
-				<Counter games={17} victories={8} winrate={47} friends={3}/>
+				<Counter
+					games={gamesPlayed}
+					victories={victory}
+					winrate={Number(winrate.toFixed(2))}
+					friends={-1}
+				/>
 
 				<div className="md:gap-3 md:flex">
 					<FriendList friends={friends}/>
-					<GamesList games={games}/>
+					<GamesList games={gameList}/>
 				</div>
 			</main>
 			<Credit />

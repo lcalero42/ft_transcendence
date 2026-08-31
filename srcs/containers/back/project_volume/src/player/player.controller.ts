@@ -54,6 +54,18 @@ export class PlayerController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id/games')
+  async getGamesList(
+    @Param('id') id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    if (req.user.id !== +id) {
+      throw new ForbiddenException('Cannot view games of another player');
+    }
+    return this.playerService.getGamesList(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
     @Param('id') id: string,
