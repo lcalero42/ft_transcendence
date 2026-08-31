@@ -118,8 +118,8 @@ export class PlayerService {
   async getWinrate(id: number) {
     const victories = (await this.countVictory(id)).victoriesCount;
     const gamesPlayed = (await this.countGamesPlayed(id)).gamesPlayed;
-    const winrate = (victories / gamesPlayed) * 100;
-    return { playerId: id, winrate };
+    if (gamesPlayed === 0) return { playerId: id, winrate: 0 };
+    else return { playerId: id, winrate: (victories / gamesPlayed) * 100 };
   }
 
   async getAboutMe(id: number) {

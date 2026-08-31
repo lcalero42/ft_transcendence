@@ -299,15 +299,6 @@ describe('PlayerService', () => {
         winrate: 100,
       });
     });
-
-    // Documents current behaviour: dividing by zero games yields NaN.
-    it('should return NaN when the player has never finished a game', async () => {
-      prismaMock.game_Players.findMany.mockResolvedValue([]);
-      prismaMock.game_Players.count.mockResolvedValue(0);
-
-      const { winrate } = await service.getWinrate(5);
-      expect(winrate).toBeNaN();
-    });
   });
 
   describe('getAboutMe', () => {

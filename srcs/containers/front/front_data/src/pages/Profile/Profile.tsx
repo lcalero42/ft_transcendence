@@ -22,6 +22,8 @@ import {
 	type Player,
 	type GameListOfPlayer
 }  from '../../api/player';
+import { clearToken } from "@/api/auth/client";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
 	const { user } = useAuth();
@@ -33,8 +35,7 @@ function Profile() {
 
 	const [loading, setLoading] = useState(true);
   	const [error, setError] = useState<string | null>(null);
-
-
+  	const navigate = useNavigate();
 	useEffect(() => {
 		if (!user) return;
 		const cpUser = user;
@@ -55,13 +56,15 @@ function Profile() {
 		  	} catch (err) {
 				console.error("Profile load error:", err); //debug
 				setError("Error when loading the player");
+				clearToken();
+				void navigate("/login", { replace: true });
 		  	} finally {
 				setLoading(false);
 		  	}
 		}
 
 		void loadData();
-	},[user]);
+	},[user, navigate]);
 	if (!user) return null;
  	if (loading) return <p>Loading...</p>;
   	if (error) return <p>{error}</p>;
