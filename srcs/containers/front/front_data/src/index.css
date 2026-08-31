@@ -50,7 +50,7 @@
 body {
 	@apply m-0
 	min-h-screen
-	bg-gradient-to-b from-bg-deep to-bg-deep-end
+	bg-linear-to-b from-bg-deep to-bg-deep-end
 	font-poppins
 	text-white;
 }

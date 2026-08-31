@@ -3,6 +3,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
+import Admin from "./pages/Admin/Admin";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
 import TestColyseus from "./pages/testColyseus/TestColyseus";
@@ -23,6 +24,7 @@ function App() {
 			
 					<Route path="/testColyseus" element={<TestColyseus />} />
 
+					<Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
 
 					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 					<Route path="/create-room" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
