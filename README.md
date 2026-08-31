@@ -17,7 +17,13 @@ See `make help` for the full list of targets (front/back specific builds, logs, 
 
 ## Stack
 
-<!-- TODO: fill once decided -->
+- **Frontend** — React + TypeScript, Vite, Tailwind CSS
+- **Backend** — NestJS + TypeScript, Prisma ORM
+- **Database** — PostgreSQL
+- **Realtime** (early scaffold) — Colyseus, see [ADR 0001](docs/adr/0001-adopt-colyseus-for-realtime-game-sync.md)
+- **Infra** — Docker Compose, Docker secrets for credentials
+
+See [`docs/architecture.md`](docs/architecture.md) for the full breakdown.
 
 ## Team
 
