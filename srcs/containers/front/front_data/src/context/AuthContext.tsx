@@ -4,9 +4,14 @@ import * as authApi from "../api/auth/auth";
 import { getMe, type Player } from "../api/player";
 import { AuthContext, type User } from "./auth-context";
 
+interface JwtPayload {
+  sub: number;
+  email: string;
+}
+
 function decodeToken(token: string): User | null {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
+    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
     return { id: payload.sub, email: payload.email };
   } catch {
     return null;
