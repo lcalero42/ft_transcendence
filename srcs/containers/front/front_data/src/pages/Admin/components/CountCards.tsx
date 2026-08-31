@@ -29,21 +29,21 @@ function CountCards() {
 	useEffect(() => {
 		countPlayer()
 			.then((count) => setPlayerCount(count))
-			.catch((err) => toast.add({
+			.catch((err: unknown) => toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			}));
 		countRoomActives()
 			.then((count) => setRoomCount(count))
-			.catch((err) => toast.add({
+			.catch((err: unknown) => toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			}));
 		countGames()
 			.then((count) => setGameCount(count))
-			.catch((err) => toast.add({
+			.catch((err: unknown) => toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			}));
 
 	}, []);

@@ -12,11 +12,11 @@ type CreateWordPairDto = {
 };
 
 export async function getWordPairs() {
-	return apiFetch("/word-pair");
+	return apiFetch<WordPair[]>("/word-pair");
 }
 
 export async function createWordPair(data: CreateWordPairDto) {
-  return apiFetch("/word-pair", {
+  return apiFetch<WordPair>("/word-pair", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -24,7 +24,7 @@ export async function createWordPair(data: CreateWordPairDto) {
 
 
 export async function deleteWordPair(id: number) {
-  return apiFetch(`/word-pair/${id}`, {
+  return apiFetch<void>(`/word-pair/${id}`, {
     method: "DELETE",
   });
 }

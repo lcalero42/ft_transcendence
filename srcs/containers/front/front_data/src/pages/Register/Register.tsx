@@ -84,7 +84,7 @@ function Register() {
 			  title: "Account registered",
 			  description: "You can now enjoy the best experience of your life.",
 			})
-			navigate("/home");
+			void navigate("/home");
 		} catch (err) {
 			toast.add({
 				type: "error",
@@ -104,7 +104,7 @@ function Register() {
 			icon="🥷"
 			heading="Register your account"
 			description="Enter your credentials to access to your new account."
-			onSubmit={handleSubmit}
+			onSubmit={(e) => { void handleSubmit(e); }}
   			submitLabel={isSubmitting ? "Registering..." : "Register"}
   			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">

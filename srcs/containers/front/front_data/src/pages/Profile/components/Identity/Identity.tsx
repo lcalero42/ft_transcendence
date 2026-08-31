@@ -62,7 +62,7 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 				<EditAvatar
 					currentAvatar={avatar}
 					onClose={() => setIsPopupOpen(false)}
-					onSave={handleAvatarSave}
+					onSave={(file) => { void handleAvatarSave(file); }}
 				/>
 			)}
 		</div>

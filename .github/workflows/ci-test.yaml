@@ -1,0 +1,49 @@
+name: Test
+
+on:
+  pull_request:
+    paths-ignore:
+      - .github/automation/**
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Run backend unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: srcs/containers/back/project_volume/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: srcs/containers/back/project_volume
+        run: npm ci
+
+# NO FRONTEND DEPENDENCIES INSTALL FOR NOW SINCE WE DONT HAVE TESTS FOR IT
+
+      - name: Generate Prisma client
+        working-directory: srcs/containers/back/project_volume
+        env:
+          DATABASE_URL: "postgresql://user:password@localhost:5432/db"
+        run: npx prisma generate
+
+      - name: Run backend unit tests
+        working-directory: srcs/containers/back/project_volume
+        run: npm run test
