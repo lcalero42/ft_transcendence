@@ -25,6 +25,19 @@ export interface PlayerSummary {
 	isLog: boolean;
 }
 
+interface GamesPlayedResponse {
+  gamesPlayed: number;
+}
+
+interface VictoryResponse {
+  victoriesCount: number;
+}
+
+interface WinRateResponse {
+  winrate: number;
+}
+
+
 export async function getPlayers() {
 	return apiFetch<PlayerSummary[]>("/player");
 }
@@ -65,16 +78,16 @@ export async function getGamesList(playerId: number): Promise<GameListOfPlayer[]
 }
 
 export async function getCountGamesPlayed(playerId: number): Promise<number> {
-	const res = await apiFetch(`/player/${playerId}/games-played`);
+	const res = await apiFetch<GamesPlayedResponse>(`/player/${playerId}/games-played`);
 	return res.gamesPlayed;
 }
 
 export async function getCountVictory(playerId: number): Promise<number> {
-	const res = await apiFetch(`/player/${playerId}/victory`);
+	const res = await apiFetch<VictoryResponse>(`/player/${playerId}/victory`);
 	return res.victoriesCount;
 }
 
 export async function getWinRate(playerId: number): Promise<number> {
-	const res = await apiFetch(`/player/${playerId}/winrate`);
+	const res = await apiFetch<WinRateResponse>(`/player/${playerId}/winrate`);
 	return res.winrate;
 }

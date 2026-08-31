@@ -12,7 +12,7 @@ import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 
-import { 
+import {
 	getMe,
 	getAvatarUrl,
 	getCountGamesPlayed,
@@ -34,7 +34,7 @@ function Profile() {
 	const [loading, setLoading] = useState(true);
   	const [error, setError] = useState<string | null>(null);
 
-	
+
 	useEffect(() => {
 		if (!user) return;
 		const cpUser = user;
@@ -60,7 +60,7 @@ function Profile() {
 		  	}
 		}
 
-		loadData();
+		void loadData();
 	},[user]);
 	if (!user) return null;
  	if (loading) return <p>Loading...</p>;
@@ -91,7 +91,7 @@ function Profile() {
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
 					<Identity
 						playerId={user.id}
-						username={player.name} 
+						username={player.name}
 						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
 						urlAvatar={avatarUrl}
 					/>
