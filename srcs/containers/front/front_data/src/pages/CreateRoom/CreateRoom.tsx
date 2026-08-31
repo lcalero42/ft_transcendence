@@ -16,7 +16,7 @@ const RECONNECTION_STORAGE_KEY = "lobby-reconnection";
 function readStoredReconnection(): { roomId: string; token: string } | null {
 	try {
 		const raw = sessionStorage.getItem(RECONNECTION_STORAGE_KEY);
-		return raw ? JSON.parse(raw) : null;
+		return raw ? (JSON.parse(raw) as { roomId: string; token: string }) : null;
 	} catch {
 		return null;
 	}
@@ -78,7 +78,7 @@ export default function CreateRoom() {
 		if (!room) return;
 		storeReconnection(room);
 		if (routeRoomId !== room.roomId) {
-			navigate(`/create-room/${room.roomId}`, { replace: true });
+			void navigate(`/create-room/${room.roomId}`, { replace: true });
 		}
 	}, [room, routeRoomId, navigate]);
 
@@ -86,7 +86,7 @@ export default function CreateRoom() {
 		if (!room) return;
 		return room.onMessage("seatReservation", (reservation: SeatReservation) => {
 			clearReconnection();
-			navigate(`/game/${reservation.roomId}`, { state: { reservation } });
+			void navigate(`/game/${reservation.roomId}`, { state: { reservation } });
 		});
 	}, [room, navigate]);
 
@@ -113,7 +113,7 @@ export default function CreateRoom() {
 			<h1>Room créée</h1>
 			<p>Partage ce lien pour inviter des joueurs :</p>
 			<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
-			<button onClick={handleCopy}>{copied ? "Copié !" : "Copier le lien"}</button>
+			<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
 
 			<h2>Joueurs ({playerEntries.length})</h2>
 			<ul>
