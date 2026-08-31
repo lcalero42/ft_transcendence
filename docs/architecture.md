@@ -10,11 +10,11 @@ undercover through discussion and voting.
 The system is three Docker services orchestrated by Compose:
 
 ```
-┌──────────────┐        HTTP (JSON)        ┌──────────────┐        SQL        ┌──────────────┐
-│    front     │ ────────────────────────► │     back     │ ─────────────────►│  postgres    │
+┌──────────────┐        HTTP (JSON)        ┌──────────────┐        SQL         ┌──────────────┐
+│    front     │ ────────────────────────► │     back     │ ─────────────────► │  postgres    │
 │  React + Vite│ ◄──────────────────────── │ NestJS + REST│ ◄───────────────── │  (Postgres 16│
 │  :5173       │        CORS-allowed       │  :3000       │      Prisma        │   in Docker) │
-└──────────────┘                            └──────────────┘                    └──────────────┘
+└──────────────┘                           └──────────────┘                    └──────────────┘
 ```
 
 There is no reverse proxy / gateway in front of the two app containers yet;
