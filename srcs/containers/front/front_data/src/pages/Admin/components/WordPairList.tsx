@@ -44,10 +44,10 @@ function CreateWordPair({ onAdded }: { onAdded: (newPair: WordPairListPros) => v
 				setCivilianWord("");
 				setUndercoverWord("");
 			})
-			.catch((err) =>
+			.catch((err: unknown) =>
 				toast.add({
 					title: "An error occured",
-					description: err.message,
+					description: err instanceof Error ? err.message : "Something went wrong.",
 				})
 			);
 			toast.add({
@@ -94,10 +94,10 @@ function WordPairList() {
 	useEffect(() => {
 	getWordPairs()
 		.then((data) => setWordPairs(data))
-		.catch((err) =>
+		.catch((err: unknown) =>
 			toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			})
 		);
 	}, []);
@@ -111,10 +111,10 @@ function WordPairList() {
 					description: "Word pair deleted",
 				});
 			})
-			.catch((err) =>
+			.catch((err: unknown) =>
 				toast.add({
 					title: "An error occured",
-					description: err.message,
+					description: err instanceof Error ? err.message : "Something went wrong.",
 				})
 			);
 	}

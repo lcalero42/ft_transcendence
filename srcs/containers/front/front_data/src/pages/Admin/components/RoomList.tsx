@@ -29,8 +29,11 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 	useEffect(() => {
 		getPlayersByGame(gameId)
 			.then((data) => setPlayers(data))
-			.catch((err) =>
-				toast.add({ title: "An error occured", description: err.message })
+			.catch((err: unknown) =>
+				toast.add({
+					title: "An error occured",
+					description: err instanceof Error ? err.message : "Something went wrong.",
+				})
 			)
 			.finally(() => setLoading(false));
 	}, [gameId]);
@@ -85,10 +88,10 @@ function GameList({roomId}: {roomId: number}) {
 	useEffect(() => {
 	getGamesByRoom(roomId)
 		.then((data) => setGames(data))
-		.catch((err) =>
+		.catch((err: unknown) =>
 			toast.add({
 				title: "An error occured",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			})
 		)
 		.finally(() =>setLoading(false));
@@ -135,10 +138,10 @@ function RoomList() {
 	useEffect(() => {
 		fetchRooms()
 		.then((data) => setRooms(data))
-		.catch((err) =>
+		.catch((err: unknown) =>
 			toast.add({
 				title: "An error occured:",
-				description: err.message,
+				description: err instanceof Error ? err.message : "Something went wrong.",
 			})
 		);
 	}, []);

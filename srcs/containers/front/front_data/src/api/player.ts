@@ -9,12 +9,20 @@ export interface Player {
 	avatarUrl: string;
 }
 
+export interface PlayerSummary {
+	id: number;
+	name: string;
+	createdAt: string;
+	avatarUrl: string | null;
+	isLog: boolean;
+}
+
 export async function getPlayers() {
-	return apiFetch("/player");
+	return apiFetch<PlayerSummary[]>("/player");
 }
 
 export async function countPlayer() {
-	return apiFetch("/player/count-activ");
+	return apiFetch<number>("/player/count-activ");
 }
 
 export function getAvatarUrl(path: string | null): string | undefined {

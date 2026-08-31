@@ -8,9 +8,17 @@ export interface Room {
 	createdAt: string;
 }
 
+export interface RoomGame {
+	id: number;
+	createdAt: string;
+	roomId: number;
+	victory: string;
+	civilianWord: string;
+	undercoverWord: string;
+}
 
 export async function countRoomActives() {
-	return apiFetch("/room/count-activ");
+	return apiFetch<number>("/room/count-activ");
 }
 
 export async function fetchRooms(): Promise<Room[]> {
@@ -29,5 +37,5 @@ export async function deleteRoom(id: number): Promise<void> {
 }
 
 export async function getGamesByRoom(id: number) {
-  return apiFetch(`/room/${id}/games`);
+  return apiFetch<RoomGame[]>(`/room/${id}/games`);
 }
