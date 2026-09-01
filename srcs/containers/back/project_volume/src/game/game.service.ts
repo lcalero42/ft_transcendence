@@ -1,12 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
-import { Prisma } from '../generated/prisma/client';
+import type { Games } from '../generated/prisma/client';
+
+// A game as it's safe to hand to a client: the two words are the whole secret
+// of the round, so they stay null until the game is over.
+export type GameView = Omit<Games, 'civilianWord' | 'undercoverWord'> & {
+  civilianWord: string | null;
+  undercoverWord: string | null;
+};
 
 @Injectable()
 export class GameService {
   constructor(private prisma: PrismaService) {}
+
+  private toGameView(game: Games): GameView {
+    return game.status === 'finished'
+      ? game
+      : { ...game, civilianWord: null, undercoverWord: null };
+  }
 
   async create(createGameDto: CreateGameDto) {
     const createGame = await this.prisma.games.create({
@@ -19,19 +32,9 @@ export class GameService {
     return createGame;
   }
 
-  async findAll() {
-    const [revealed, hidden] = await this.prisma.$transaction(
-      [
-        this.prisma.games.findMany({ where: { status: 'finished' } }),
-        this.prisma.games.findMany({
-          where: { status: { not: 'finished' } },
-          omit: { civilianWord: true, undercoverWord: true },
-        }),
-      ],
-      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
-    );
-
-    return [...revealed, ...hidden];
+  async findAll(): Promise<GameView[]> {
+    const games = await this.prisma.games.findMany();
+    return games.map((game) => this.toGameView(game));
   }
 
   async countGames() {
@@ -45,11 +48,12 @@ export class GameService {
     return i;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<GameView> {
     const game = await this.prisma.games.findUnique({
       where: { id: id },
     });
-    return game;
+    if (!game) throw new NotFoundException(`Game ${id} not found`);
+    return this.toGameView(game);
   }
 
   async getPlayersByGame(gameId: number) {
