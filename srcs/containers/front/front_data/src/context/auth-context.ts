@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { Player } from "../api/player";
 
 export interface User {
   id: number;
@@ -7,6 +8,8 @@ export interface User {
 
 export interface AuthContextValue {
   user: User | null;
+  profile: Player | null;
+  profileLoading: boolean;
   isAuth: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
