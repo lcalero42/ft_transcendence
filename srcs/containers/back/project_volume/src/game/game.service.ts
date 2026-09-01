@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
+import { Prisma } from '../generated/prisma/client';
 
 @Injectable()
 export class GameService {
@@ -19,8 +20,18 @@ export class GameService {
   }
 
   async findAll() {
-    const games = await this.prisma.games.findMany();
-    return games;
+    const [revealed, hidden] = await this.prisma.$transaction(
+      [
+        this.prisma.games.findMany({ where: { status: 'finished' } }),
+        this.prisma.games.findMany({
+          where: { status: { not: 'finished' } },
+          omit: { civilianWord: true, undercoverWord: true },
+        }),
+      ],
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
+
+    return [...revealed, ...hidden];
   }
 
   async countGames() {
