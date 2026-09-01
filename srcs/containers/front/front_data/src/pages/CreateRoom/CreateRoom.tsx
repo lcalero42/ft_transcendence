@@ -6,6 +6,9 @@ import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
 import { client } from "@/lib/colyseusClient";
 import { useAuth } from "@/context/useAuth";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
+import LinkProfile from "../../components/LinkProfile/LinkProfile";
+import Logo from "../../components/Logo/Logo";
+import FriendList from "../Profile/components/FriendList/FriendList";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
@@ -54,19 +57,19 @@ export default function CreateRoom() {
 		profileLoading
 			? null
 			: async () => {
-					const targetRoomId = targetRoomIdRef.current;
-					const stored = readStoredReconnection();
-					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
-						try {
-							return await client.reconnect<LobbyRoom>(stored.token);
-						} catch {
-							clearReconnection();
-						}
+				const targetRoomId = targetRoomIdRef.current;
+				const stored = readStoredReconnection();
+				if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
+					try {
+						return await client.reconnect<LobbyRoom>(stored.token);
+					} catch {
+						clearReconnection();
 					}
-					return targetRoomId
-						? client.joinById<LobbyRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-						: client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl });
-				},
+				}
+				return targetRoomId
+					? client.joinById<LobbyRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
+					: client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+			},
 		[profileLoading],
 	);
 
@@ -108,29 +111,53 @@ export default function CreateRoom() {
 		room.send("start");
 	};
 
+	const friends = [
+		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true },
+		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false },
+		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
+		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false },
+		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false },
+		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false },
+		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true },
+		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
+		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
+	];
+
 	return (
 		<div className="page">
-			<h1>Room créée</h1>
-			<p>Partage ce lien pour inviter des joueurs :</p>
-			<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
-			<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
+			<header className="page-header">
+				<Logo />
+				<LinkProfile
+					name={profile?.name ? profile.name : "login"} icon="🥷" />
+			</header>
+			<main>
+				<h1>Room créée</h1>
+				<p>Partage ce lien pour inviter des joueurs :</p>
+				<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
+				<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
 
-			<h2>Joueurs ({playerEntries.length})</h2>
-			<ul>
-				{playerEntries.map(([sessionId, player]) => (
-					<li key={sessionId} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-						<img
-							src={resolveAvatar(player.avatarUrl)}
-							alt={player.name}
-							style={{ width: "2rem", height: "2rem", borderRadius: "9999px", objectFit: "cover" }}
-						/>
-						{player.name}
-						{sessionId === room.sessionId ? " (toi)" : ""}
-					</li>
-				))}
-			</ul>
+				<div className="md:gap-3 md:flex">
+					<FriendList friends={friends} />
+					<FriendList friends={friends} />
+				</div>
 
-			{isHost && <button onClick={handleStart}>Lancer la partie</button>}
+				<h2>Joueurs ({playerEntries.length})</h2>
+				<ul>
+					{playerEntries.map(([sessionId, player]) => (
+						<li key={sessionId} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+							<img
+								src={resolveAvatar(player.avatarUrl)}
+								alt={player.name}
+								style={{ width: "2rem", height: "2rem", borderRadius: "9999px", objectFit: "cover" }}
+							/>
+							{player.name}
+							{sessionId === room.sessionId ? " (toi)" : ""}
+						</li>
+					))}
+				</ul>
+
+				{isHost && <button onClick={handleStart}>Lancer la partie</button>}
+			</main>
 		</div>
 	);
 }
