@@ -3,12 +3,16 @@ import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
 import type { Games } from '../generated/prisma/client';
+import type { Player } from '../generated/prisma/client';
+import type { Role } from '../generated/prisma/client';
 
-// A game as it's safe to hand to a client: the two words are the whole secret
-// of the round, so they stay null until the game is over.
 export type GameView = Omit<Games, 'civilianWord' | 'undercoverWord'> & {
   civilianWord: string | null;
   undercoverWord: string | null;
+};
+
+export type GamePlayerView = Pick<Player, 'id' | 'name' | 'avatarUrl'> & {
+  role: Role | null;
 };
 
 @Injectable()
@@ -56,22 +60,25 @@ export class GameService {
     return this.toGameView(game);
   }
 
-  async getPlayersByGame(gameId: number) {
-    const gamePlayers = await this.prisma.game_Players.findMany({
-      where: { gameId },
-      include: {
-        playerIdRel: {
+  async getPlayersByGame(gameId: number): Promise<GamePlayerView[]> {
+    const game = await this.prisma.games.findUnique({
+      where: { id: gameId },
+      select: {
+        status: true,
+        gamePlayers: {
           select: {
-            id: true,
-            name: true,
-            avatarUrl: true,
+            role: true,
+            playerIdRel: { select: { id: true, name: true, avatarUrl: true } },
           },
         },
       },
     });
-    return gamePlayers.map((gp) => ({
+    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+
+    const revealRoles = game.status === 'finished';
+    return game.gamePlayers.map((gp) => ({
       ...gp.playerIdRel,
-      role: gp.role,
+      role: revealRoles ? gp.role : null,
     }));
   }
 
