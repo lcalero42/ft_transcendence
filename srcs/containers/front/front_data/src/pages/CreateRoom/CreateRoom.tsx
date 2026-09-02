@@ -131,15 +131,22 @@ export default function CreateRoom() {
 					name={profile?.name ? profile.name : "login"} icon="🥷" />
 			</header>
 			<main>
-				<h1>Room créée</h1>
-				<p>Partage ce lien pour inviter des joueurs :</p>
-				<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
-				<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
-
-				<div className="md:gap-3 md:flex">
-					<FriendList friends={friends} />
-					<FriendList friends={friends} />
+				<div className="h-[7vh] w-screen flex items-center justify-center bg-banner-bg">
+					<p className="text-sm">
+						en attente de 2 joueurs supplementaire ...
+					</p>
 				</div>
+				<div>
+					<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
+					<p>Partage ce lien pour inviter des joueurs :</p>
+					<div className="md:gap-3 md:flex">
+						<FriendList friends={friends} />
+						<FriendList friends={friends} />
+					</div>
+
+				</div>
+				<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
+
 
 				<h2>Joueurs ({playerEntries.length})</h2>
 				<ul>

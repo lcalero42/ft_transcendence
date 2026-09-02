@@ -11,7 +11,7 @@
 	--font-poppins: "Poppins", sans-serif;
 	--font-logo: "UnifrakturMaguntia", serif;
 
-	/* Fonds */
+	/* Backgrounds */
 	--color-bg-deep: #020221;
 	--color-bg-deep-end: #170e48;
 	--color-card: #17103c;
@@ -21,25 +21,26 @@
 	--color-card-border-2: #8d5adf4f;
 	--color-card-accent-border: #8e5adf;
 	--color-circle-bg: #45237f;
-	/* Texte */
+	--color-banner-bg: #141433;
+	/* Text */
 	--color-gray-low: #695e83;
 	--color-gray-high:#e1d1fc;
 	--color-text-dim: #a1a1aa;
 	--color-stroke-accent: #a066f6;
 
-	/* Accent principal #d1b3f4*/
+	/* Main accent #d1b3f4*/
 	--color-accent: #7860ff;
 	--color-accent-hover: #6c2bd9;
 	--color-accent-purple: #bc8df7;
 	--color-accent-orange: #f5a623;
-	/* États de jeu */
+	/* Game states */
 	--color-victory: #45e26d;
 	--color-defeat: #f04c4c;
 	--color-winrate: #fcc314;
 	--color-friends: #2ea0e1;
 	--color-games: #7e43f5;
 
-	/* Rôle favori / couronne */
+	/* Favorite role / crown */
 	--color-gold: #d9a441;
 }
 
