@@ -7,12 +7,14 @@ import {
   Param,
   Delete,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
 
 @Controller('game')
 export class GameController {
@@ -46,6 +48,12 @@ export class GameController {
   @Get(':id/players')
   async getPlayersByGame(@Param('id') id: string) {
     return this.gameService.getPlayersByGame(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/my-word')
+  async getMyWord(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+    return this.gameService.getMyWord(+id, req.user.id);
   }
 
   @UseGuards(InternalApiKeyGuard)

@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { GameService } from './game.service';
@@ -243,6 +243,100 @@ describe('GameService', () => {
       prismaMock.games.findUnique.mockResolvedValue(null);
 
       await expect(service.getPlayersByGame(404)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('getMyWord', () => {
+    it('should return the civilian word for a civilian player while playing', async () => {
+      const game = {
+        status: GameStatus.playing,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
+        gamePlayers: [{ role: Role.civilian }],
+      };
+      prismaMock.games.findUnique.mockResolvedValue(
+        game as unknown as GameForPlayers,
+      );
+
+      expect(await service.getMyWord(5, 1)).toEqual({ word: 'cat' });
+      expect(prismaMock.games.findUnique).toHaveBeenCalledWith({
+        where: { id: 5 },
+        select: {
+          status: true,
+          civilianWord: true,
+          undercoverWord: true,
+          gamePlayers: {
+            where: { playerId: 1 },
+            select: { role: true },
+          },
+        },
+      });
+    });
+
+    it('should return the undercover word for an undercover player while playing', async () => {
+      const game = {
+        status: GameStatus.playing,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
+        gamePlayers: [{ role: Role.undercover }],
+      };
+      prismaMock.games.findUnique.mockResolvedValue(
+        game as unknown as GameForPlayers,
+      );
+
+      expect(await service.getMyWord(5, 2)).toEqual({ word: 'tiger' });
+    });
+
+    it('should still return the word once the game is finished', async () => {
+      const game = {
+        status: GameStatus.finished,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
+        gamePlayers: [{ role: Role.civilian }],
+      };
+      prismaMock.games.findUnique.mockResolvedValue(
+        game as unknown as GameForPlayers,
+      );
+
+      expect(await service.getMyWord(5, 1)).toEqual({ word: 'cat' });
+    });
+
+    it('should throw ForbiddenException while the game is still waiting', async () => {
+      const game = {
+        status: GameStatus.waiting,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
+        gamePlayers: [{ role: Role.civilian }],
+      };
+      prismaMock.games.findUnique.mockResolvedValue(
+        game as unknown as GameForPlayers,
+      );
+
+      await expect(service.getMyWord(5, 1)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should throw ForbiddenException when the requester is not a player in the game', async () => {
+      const game = {
+        status: GameStatus.playing,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
+        gamePlayers: [],
+      };
+      prismaMock.games.findUnique.mockResolvedValue(
+        game as unknown as GameForPlayers,
+      );
+
+      await expect(service.getMyWord(5, 99)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('should throw NotFoundException when the game does not exist', async () => {
+      prismaMock.games.findUnique.mockResolvedValue(null);
+
+      await expect(service.getMyWord(404, 1)).rejects.toThrow(
         NotFoundException,
       );
     });

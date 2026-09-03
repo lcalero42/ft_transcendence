@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
@@ -80,6 +84,38 @@ export class GameService {
       ...gp.playerIdRel,
       role: revealRoles ? gp.role : null,
     }));
+  }
+
+  async getMyWord(gameId: number, playerId: number): Promise<{ word: string }> {
+    const game = await this.prisma.games.findUnique({
+      where: { id: gameId },
+      select: {
+        status: true,
+        civilianWord: true,
+        undercoverWord: true,
+        gamePlayers: {
+          where: { playerId },
+          select: { role: true },
+        },
+      },
+    });
+    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+
+    const myGamePlayer = game.gamePlayers[0];
+    if (!myGamePlayer) {
+      throw new ForbiddenException('You are not a player in this game');
+    }
+    if (game.status === 'waiting') {
+      throw new ForbiddenException(
+        'Word is not available until the game starts',
+      );
+    }
+
+    const word =
+      myGamePlayer.role === 'civilian'
+        ? game.civilianWord
+        : game.undercoverWord;
+    return { word };
   }
 
   async update(id: number, updateGameDto: UpdateGameDto) {
