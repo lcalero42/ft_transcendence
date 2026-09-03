@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
@@ -115,6 +116,16 @@ describe('GameController', () => {
       expect(await gameController.findOne('5')).toBe(result);
       expect(gameService.findOne).toHaveBeenCalledWith(5);
     });
+
+    it('should propagate NotFoundException when the game does not exist', async () => {
+      jest
+        .spyOn(gameService, 'findOne')
+        .mockRejectedValue(new NotFoundException('Game 404 not found'));
+
+      await expect(gameController.findOne('404')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 
   describe('getPlayersByGame', () => {
@@ -144,7 +155,17 @@ describe('GameController', () => {
       jest
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve([]));
-      expect(await gameController.getPlayersByGame('404')).toEqual([]);
+      expect(await gameController.getPlayersByGame('5')).toEqual([]);
+    });
+
+    it('should propagate NotFoundException when the game does not exist', async () => {
+      jest
+        .spyOn(gameService, 'getPlayersByGame')
+        .mockRejectedValue(new NotFoundException('Game 404 not found'));
+
+      await expect(
+        gameController.getPlayersByGame('404'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
