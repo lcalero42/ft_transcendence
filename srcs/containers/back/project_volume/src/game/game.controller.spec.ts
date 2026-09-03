@@ -163,9 +163,9 @@ describe('GameController', () => {
         .spyOn(gameService, 'getPlayersByGame')
         .mockRejectedValue(new NotFoundException('Game 404 not found'));
 
-      await expect(
-        gameController.getPlayersByGame('404'),
-      ).rejects.toThrow(NotFoundException);
+      await expect(gameController.getPlayersByGame('404')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

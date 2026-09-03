@@ -200,7 +200,9 @@ describe('GameService', () => {
           gamePlayers: {
             select: {
               role: true,
-              playerIdRel: { select: { id: true, name: true, avatarUrl: true } },
+              playerIdRel: {
+                select: { id: true, name: true, avatarUrl: true },
+              },
             },
           },
         },
