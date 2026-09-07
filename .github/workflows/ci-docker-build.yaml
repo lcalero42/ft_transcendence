@@ -35,6 +35,12 @@ jobs:
           EOF
 
       - name: Create frontend .env file
+        run: |
+          cat <<EOF > srcs/containers/front/front_data/.env
+          VITE_API_URL=http://localhost:3000
+          EOF
+
+      - name: Create frontend .env file
         run: touch srcs/containers/front/front_data/.env
 
       - name: Create secrets files
