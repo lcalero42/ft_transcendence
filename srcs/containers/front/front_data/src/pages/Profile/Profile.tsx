@@ -26,6 +26,11 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
 	const { user } = useAuth();
+	const { logout } = useAuth();
+	function handleLogout() {
+    	logout();
+    	void navigate("/login");
+  	}
 	const [player, setPlayer] = useState<Player | null>(null);
 	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
 	const [victory, setVictory] = useState<number>(0);
@@ -116,6 +121,12 @@ function Profile() {
 					<FriendList friends={friends}/>
 					<GamesList games={gameList}/>
 				</div>
+				<button
+				    onClick={handleLogout}
+				    className="fixed bottom-4 left-4 z-100 flex items-center gap-2 rounded-lg px-3 py-2 font-small text-red-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
+				>
+				    logout
+				</button>
 			</main>
 			<Credit />
 		</div>
