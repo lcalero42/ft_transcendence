@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
 import type { Room, SeatReservation } from "@colyseus/sdk";
 import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
 import { client } from "@/lib/colyseusClient";
+import { toast } from "@/components/ui/toast";
 import { useAuth } from "@/context/useAuth";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
@@ -75,7 +76,6 @@ export default function CreateRoom() {
 
 	const players = useRoomState(room, (s) => s.players);
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
-	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
 		if (!room) return;
@@ -104,7 +104,11 @@ export default function CreateRoom() {
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(inviteLink);
-		setCopied(true);
+		toast.add({
+			type: "success",
+			title: "Lien copié !",
+			description: "Partage-le pour inviter des joueurs.",
+		});
 	};
 
 	const handleStart = () => {
@@ -137,11 +141,22 @@ export default function CreateRoom() {
 					</p>
 				</div>
 				<div>
-					<button onClick={() => void handleCopy()}>{copied ? "Copié !" : "Copier le lien"}</button>
-					<p>Partage ce lien pour inviter des joueurs :</p>
-					<div className="md:gap-3 md:flex">
-						<FriendList friends={friends} />
-						<FriendList friends={friends} />
+					<div className="w-screen flex flex-col items-center gap-3 py-6">
+						<button
+							onClick={() => void handleCopy()}
+							className="clean-btn hoverable rounded-lg bg-linear-to-r from-btn-gradient-start to-btn-gradient-end px-4 py-2 text-sm text-white whitespace-nowrap sm:px-6 sm:py-3 sm:text-base"
+						>
+							Copier le lien de la Partie
+						</button>
+						<p>ajoutez des joueurs depuis votre liste d'amis ou envoyez leur le lien </p>
+					</div>
+					<div className="px-[10vw] py-5 md:flex">
+						<div className="w-full md:flex md:flex-1 md:justify-center">
+							<FriendList friends={friends} />
+						</div>
+						<div className="w-full md:flex md:flex-1 md:justify-center">
+							<FriendList friends={friends} />
+						</div>
 					</div>
 
 				</div>
