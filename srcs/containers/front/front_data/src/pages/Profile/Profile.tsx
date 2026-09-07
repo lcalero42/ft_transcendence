@@ -1,6 +1,5 @@
 import Logo from "@/components/Logo/Logo";
 import Credit from "@/components/Credit/Credit";
-import Sidebar from "@/components/Sidebar/Sidebar";
 import Identity from "./components/Identity/Identity";
 import Bio from "./components/Bio/Bio";
 import Counter from "./components/Counter/Counter";
@@ -85,7 +84,6 @@ function Profile() {
 	return (
 		<div className="page">
 			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
-				<Sidebar />
 				<div className="text-[1.3rem]">
 					<Logo />
 				</div>
