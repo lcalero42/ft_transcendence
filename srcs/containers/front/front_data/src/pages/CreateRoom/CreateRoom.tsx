@@ -10,6 +10,7 @@ import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import Logo from "../../components/Logo/Logo";
 import FriendList from "../Profile/components/FriendList/FriendList";
+import PlayerList from "./components/PlayerList";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
@@ -76,6 +77,7 @@ export default function CreateRoom() {
 
 	const players = useRoomState(room, (s) => s.players);
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
+	const maxClients = useRoomState(room, (s) => s.maxClients);
 
 	useEffect(() => {
 		if (!room) return;
@@ -93,21 +95,42 @@ export default function CreateRoom() {
 		});
 	}, [room, navigate]);
 
+	useEffect(() => {
+		if (!error) return;
+		clearReconnection();
+		toast.add({
+			type: "error",
+			title: "Unable to join the game",
+			description: error.message,
+		});
+		void navigate("/home", { replace: true });
+	}, [error, navigate]);
+
 	if (profileLoading) return <p>Connecting...</p>;
 	if (isConnecting) return <p>Connecting...</p>;
-	if (error) return <p>My_Error: {error.message}</p>;
+	if (error) return null;
 	if (!room) return <p>My_Error: room unavailable</p>;
 
 	const inviteLink = `${window.location.origin}/create-room/${room.roomId}`;
 	const playerEntries = Object.entries(players ?? {});
 	const isHost = room.sessionId === hostSessionId;
 
+	const missingPlayers = Math.max((maxClients ?? 0) - playerEntries.length, 0);
+
+	const roomPlayers = playerEntries.map(([sessionId, player]) => ({
+		sessionId,
+		name: player.name,
+		avatarUrl: resolveAvatar(player.avatarUrl),
+		isHost: sessionId === hostSessionId,
+		isMe: sessionId === room.sessionId,
+	}));
+
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(inviteLink);
 		toast.add({
 			type: "success",
-			title: "Lien copié !",
-			description: "Partage-le pour inviter des joueurs.",
+			title: "Link copied!",
+			description: "Share it to invite players.",
 		});
 	};
 
@@ -134,10 +157,12 @@ export default function CreateRoom() {
 				<LinkProfile
 					name={profile?.name ? profile.name : "login"} icon="🥷" />
 			</header>
-			<main>
+			<main className="flex flex-1 flex-col">
 				<div className="h-[7vh] w-screen flex items-center justify-center bg-banner-bg">
 					<p className="text-sm">
-						en attente de 2 joueurs supplementaire ...
+						{missingPlayers > 0
+							? `waiting for ${missingPlayers} more player${missingPlayers > 1 ? "s" : ""} ...`
+							: "room is full"}
 					</p>
 				</div>
 				<div>
@@ -146,39 +171,28 @@ export default function CreateRoom() {
 							onClick={() => void handleCopy()}
 							className="clean-btn hoverable rounded-lg bg-linear-to-r from-btn-gradient-start to-btn-gradient-end px-4 py-2 text-sm text-white whitespace-nowrap sm:px-6 sm:py-3 sm:text-base"
 						>
-							Copier le lien de la Partie
+							Copy the game link
 						</button>
-						<p>ajoutez des joueurs depuis votre liste d'amis ou envoyez leur le lien </p>
+						<p>add players from your friend list or send them the link </p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						<div className="w-full md:flex md:flex-1 md:justify-center">
+						<div className="w-full md:flex md:justify-center">
 							<FriendList friends={friends} />
 						</div>
-						<div className="w-full md:flex md:flex-1 md:justify-center">
-							<FriendList friends={friends} />
+						<div className="w-full md:flex md:justify-center">
+							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>
 					</div>
-
 				</div>
-				<input readOnly value={inviteLink} onFocus={(e) => e.target.select()} />
 
-
-				<h2>Joueurs ({playerEntries.length})</h2>
-				<ul>
-					{playerEntries.map(([sessionId, player]) => (
-						<li key={sessionId} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-							<img
-								src={resolveAvatar(player.avatarUrl)}
-								alt={player.name}
-								style={{ width: "2rem", height: "2rem", borderRadius: "9999px", objectFit: "cover" }}
-							/>
-							{player.name}
-							{sessionId === room.sessionId ? " (toi)" : ""}
-						</li>
-					))}
-				</ul>
-
-				{isHost && <button onClick={handleStart}>Lancer la partie</button>}
+				{isHost && <div className="max-w-2xl m-10 mx-auto flex flex-1 items-center justify-center">
+					<button
+						onClick={handleStart}
+						className="clean-btn hoverable btn-glow-start rounded-lg bg-linear-to-r from-start-gradient-start to-start-gradient-end px-6 py-3 text-base font-bold text-black"
+					>
+						Start the game
+					</button>
+				</div>}
 			</main>
 		</div>
 	);

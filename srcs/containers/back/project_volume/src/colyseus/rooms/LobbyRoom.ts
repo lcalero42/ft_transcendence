@@ -36,6 +36,7 @@ export class LobbyRoom extends Room {
   // Called when the lobby is created
   onCreate() {
     this.logger.log('lobby created');
+    this.state.maxClients = this.maxClients;
   }
 
   // Called when a client joins the lobby

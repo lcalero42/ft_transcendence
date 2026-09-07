@@ -8,4 +8,5 @@ export class LobbyPlayer extends Schema {
 export class LobbyState extends Schema {
   @type({ map: LobbyPlayer }) players = new MapSchema<LobbyPlayer>();
   @type('string') hostSessionId: string = '';
+  @type('number') maxClients: number = 0;
 }
