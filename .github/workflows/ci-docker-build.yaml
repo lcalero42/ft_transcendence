@@ -1,0 +1,54 @@
+name: Docker Build
+
+on:
+  pull_request:
+    paths-ignore:
+      - .github/automation/**
+  workflow_dispatch:
+
+concurrency:
+  group: docker-build-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    name: Build & launch containers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create root .env file
+        run: |
+          cat <<EOF > srcs/.env
+          PROJECT_PATH=${{ github.workspace }}
+          EOF
+
+      - name: Create backend .env file
+        run: |
+          cat <<EOF > srcs/containers/back/project_volume/.env
+          DATABASE_URL=${{ secrets.CI_DUMMY_DATABASE_URL }}
+          EOF
+
+      - name: Create frontend .env file
+        run: touch srcs/containers/front/front_data/.env
+
+      - name: Create secrets files
+        run: |
+          mkdir -p srcs/secrets
+          echo "ci_user"             > srcs/secrets/db_user.txt
+          echo "ci_password"         > srcs/secrets/db_password.txt
+          echo "ci_db"               > srcs/secrets/db_name.txt
+          echo "ci_jwt_secret"       > srcs/secrets/jwt_secret.txt
+          echo "ci_internal_api_key" > srcs/secrets/internal_api_key.txt
+
+      - name: Build stack and verify containers launch
+        run: make check-build
+
+      - name: Dump container logs on failure
+        if: failure()
+        run: docker compose -f srcs/docker-compose.yml logs --no-color

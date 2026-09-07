@@ -29,7 +29,7 @@ NC     := \033[0m
         clean fclean \
         prisma-migrate prisma-generate \
         check-env check-secrets check-containers-up \
-        check-lint check-lint-fix check-typecheck check-all test \
+        check-lint check-lint-fix check-typecheck check-all check-build check-build test \
         help
 
 .DEFAULT_GOAL := help
@@ -104,8 +104,15 @@ check-typecheck: check-containers-up ## Run typecheck inside the front & back co
 	@printf "$(CYAN)Type-checking front...$(NC)\n"
 	$(COMPOSE) exec front npm run typecheck
 
-check-all: check-containers-up ## Run all checks (eslint + typecheck) inside the containers, continuing past failures
+check-all: check-containers-up test ## Run all checks (eslint + typecheck) inside the containers, continuing past failures
 	@$(MAKE) --no-print-directory -k check-lint check-typecheck
+
+check-build: check-env check-secrets ## Build the stack, verify all services build & launch properly, then tear down (CI)
+	@printf "$(CYAN)Building and starting stack...$(NC)\n"
+	$(COMPOSE) up --build -d --wait --wait-timeout 120
+	@$(MAKE) --no-print-directory check-containers-up
+	@printf "$(CYAN)Stack built and launched successfully. Tearing down...$(NC)\n"
+	$(COMPOSE) down
 
 test: check-containers-up ## Run backend Jest tests inside the back container
 	@printf "$(CYAN)Running backend tests...$(NC)\n"
