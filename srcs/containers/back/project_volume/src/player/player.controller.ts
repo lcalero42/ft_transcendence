@@ -50,69 +50,69 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: string) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games')
   async getGamesList(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
   ) {
-    if (req.user.id !== +id) {
+    if (req.user.id !== id) {
       throw new ForbiddenException('Cannot view games of another player');
     }
-    return this.playerService.getGamesList(+id);
+    return this.playerService.getGamesList(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updatePlayerDto: UpdatePlayerDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    if (req.user.id !== +id) {
+    if (req.user.id !== id) {
       throw new ForbiddenException('Cannot edit another player');
     }
-    return this.playerService.update(+id, updatePlayerDto);
+    return this.playerService.update(id, updatePlayerDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
   ) {
-    if (req.user.id !== +id) {
+    if (req.user.id !== id) {
       throw new ForbiddenException('Cannot delete another player');
     }
-    return this.playerService.remove(+id);
+    return this.playerService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games-played')
-  async countGamesPlayed(@Param('id', ParseIntPipe) id: string) {
-    return this.playerService.countGamesPlayed(+id);
+  async countGamesPlayed(@Param('id', ParseIntPipe) id: number) {
+    return this.playerService.countGamesPlayed(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/victory')
-  async countVictory(@Param('id', ParseIntPipe) id: string) {
-    return this.playerService.countVictory(+id);
+  async countVictory(@Param('id', ParseIntPipe) id: number) {
+    return this.playerService.countVictory(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/winrate')
-  async getWinrate(@Param('id', ParseIntPipe) id: string) {
-    return this.playerService.getWinrate(+id);
+  async getWinrate(@Param('id', ParseIntPipe) id: number) {
+    return this.playerService.getWinrate(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/about-me')
-  async getAboutMe(@Param('id', ParseIntPipe) id: string) {
-    return this.playerService.getAboutMe(+id);
+  async getAboutMe(@Param('id', ParseIntPipe) id: number) {
+    return this.playerService.getAboutMe(id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -144,14 +144,14 @@ export class PlayerController {
     }),
   )
   async updateAvatar(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: AuthenticatedRequest,
   ) {
-    if (req.user.id !== +id) {
+    if (req.user.id !== id) {
       throw new ForbiddenException('Cannot edit another player');
     }
     const avatarUrl = `/uploads/avatars/${file.filename}`;
-    return this.playerService.updateAvatar(+id, avatarUrl);
+    return this.playerService.updateAvatar(id, avatarUrl);
   }
 }

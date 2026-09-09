@@ -90,7 +90,7 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.findOne('5')).toBe(result);
+      expect(await playerController.findOne(5)).toBe(result);
       expect(playerService.findOne).toHaveBeenCalledWith(5);
     });
   });
@@ -111,13 +111,13 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.getGamesList('5', req)).toBe(result);
+      expect(await playerController.getGamesList(5, req)).toBe(result);
       expect(playerService.getGamesList).toHaveBeenCalledWith(5);
     });
 
     it('should reject viewing another player games', async () => {
       const req = requestAs(6, 'other@test.com');
-      await expect(playerController.getGamesList('5', req)).rejects.toThrow(
+      await expect(playerController.getGamesList(5, req)).rejects.toThrow(
         'Cannot view games of another player',
       );
     });
@@ -144,7 +144,7 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.update('5', updateDto, req)).toBe(result);
+      expect(await playerController.update(5, updateDto, req)).toBe(result);
       expect(playerService.update).toHaveBeenCalledWith(5, updateDto);
     });
 
@@ -152,7 +152,7 @@ describe('PlayerController', () => {
       const req = requestAs(6, 'other@test.com');
       await expect(
         playerController.update(
-          '5',
+          5,
           { name: 'Bob', email: 'boblebricoleur@test.com' },
           req,
         ),
@@ -177,13 +177,13 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.remove('5', req)).toBe(result);
+      expect(await playerController.remove(5, req)).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
     });
 
     it('should reject deleting another player', async () => {
       const req = requestAs(6, 'other@test.com');
-      await expect(playerController.remove('5', req)).rejects.toThrow(
+      await expect(playerController.remove(5, req)).rejects.toThrow(
         'Cannot delete another player',
       );
     });
@@ -199,7 +199,7 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'countGamesPlayed')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.countGamesPlayed('5')).toBe(result);
+      expect(await playerController.countGamesPlayed(5)).toBe(result);
       expect(playerService.countGamesPlayed).toHaveBeenCalledWith(5);
     });
   });
@@ -214,7 +214,7 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'countVictory')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.countVictory('5')).toBe(result);
+      expect(await playerController.countVictory(5)).toBe(result);
       expect(playerService.countVictory).toHaveBeenCalledWith(5);
     });
   });
@@ -229,7 +229,7 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'getWinrate')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.getWinrate('5')).toBe(result);
+      expect(await playerController.getWinrate(5)).toBe(result);
       expect(playerService.getWinrate).toHaveBeenCalledWith(5);
     });
   });
@@ -244,7 +244,7 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'getAboutMe')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await playerController.getAboutMe('5')).toBe(result);
+      expect(await playerController.getAboutMe(5)).toBe(result);
       expect(playerService.getAboutMe).toHaveBeenCalledWith(5);
     });
   });
