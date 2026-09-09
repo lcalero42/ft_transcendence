@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
@@ -34,24 +35,24 @@ export class GameController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.gameService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.findOne(id);
   }
 
   @Get(':id/players')
-  async getPlayersByGame(@Param('id') id: string) {
-    return this.gameService.getPlayersByGame(+id);
+  async getPlayersByGame(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.getPlayersByGame(id);
   }
 
   @UseGuards(InternalApiKeyGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(+id, updateGameDto);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateGameDto: UpdateGameDto) {
+    return this.gameService.update(id, updateGameDto);
   }
 
   @UseGuards(InternalApiKeyGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.gameService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.remove(id);
   }
 }

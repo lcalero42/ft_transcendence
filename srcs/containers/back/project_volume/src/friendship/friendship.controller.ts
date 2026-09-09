@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
@@ -34,20 +35,20 @@ export class FriendshipController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.friendshipService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.friendshipService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateFriendshipDto: UpdateFriendshipDto,
   ) {
-    return this.friendshipService.update(+id, updateFriendshipDto);
+    return this.friendshipService.update(id, updateFriendshipDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.friendshipService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.friendshipService.remove(id);
   }
 }

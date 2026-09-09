@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   ForbiddenException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -44,36 +45,36 @@ export class RoomController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.roomService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id:number) {
+    return this.roomService.findOne(id);
   }
 
   @Get(':id/games')
-  async getGames(@Param('id') id: string) {
-    return this.roomService.getGames(+id);
+  async getGames(@Param('id', ParseIntPipe) id:number) {
+    return this.roomService.getGames(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id:number,
     @Body() updateRoomDto: UpdateRoomDto,
     @Req() req: AuthenticatedRequest,
   ) {
-    const room = await this.roomService.findOne(+id);
+    const room = await this.roomService.findOne(id);
     if (!room || room.createdBy !== req.user.id) {
       throw new ForbiddenException('Cannot edit a room you did not create');
     }
-    return this.roomService.update(+id, updateRoomDto);
+    return this.roomService.update(id, updateRoomDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
-    const room = await this.roomService.findOne(+id);
+  async remove(@Param('id', ParseIntPipe) id:number, @Req() req: AuthenticatedRequest) {
+    const room = await this.roomService.findOne(id);
     if (!room || room.createdBy !== req.user.id) {
       throw new ForbiddenException('Cannot delete a room you did not create');
     }
-    return this.roomService.remove(+id);
+    return this.roomService.remove(id);
   }
 }

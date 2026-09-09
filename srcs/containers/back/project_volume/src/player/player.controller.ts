@@ -51,7 +51,7 @@ export class PlayerController {
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.playerService.findOne(+id);
+    return this.playerService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
