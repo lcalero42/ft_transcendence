@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
@@ -36,12 +36,19 @@ export class GameService {
 
   async findOne(id: number) {
     const game = await this.prisma.games.findUnique({
-      where: { id: id },
+      where: { id: id, finishedAt: null },
     });
+    if (!game)
+      throw new NotFoundException('Game does not exist');
     return game;
   }
 
   async getPlayersByGame(gameId: number) {
+    const existingGame = await this.prisma.games.findFirst({
+      where: { id: gameId, finishedAt: null }
+    });
+    if (!existingGame)
+      throw new NotFoundException('Game does not exist');
     const gamePlayers = await this.prisma.game_Players.findMany({
       where: { gameId },
       include: {
@@ -62,7 +69,7 @@ export class GameService {
 
   async update(id: number, updateGameDto: UpdateGameDto) {
     const updateGame = await this.prisma.games.update({
-      where: { id: id },
+      where: { id: id, finishedAt: null },
       data: {
         civilianWord: updateGameDto.civilianWord,
         undercoverWord: updateGameDto.undercoverWord,
@@ -74,7 +81,7 @@ export class GameService {
 
   async remove(id: number) {
     const deleteGame = await this.prisma.games.update({
-      where: { id: id },
+      where: { id: id, finishedAt: null },
       data: {
         finishedAt: new Date(),
       },

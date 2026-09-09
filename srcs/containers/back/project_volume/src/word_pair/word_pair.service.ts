@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
 import { UpdateWordPairDto } from './dto/update-word_pair.dto';
 import { PrismaService } from '../prisma.service';
@@ -26,18 +26,20 @@ export class WordPairService {
     const wordPair = await this.prisma.word_Pair.findUnique({
       where: { id: id },
     });
+    if (!wordPair)
+      throw new NotFoundException('Word pair does not exist');
     return wordPair;
   }
 
   async update(id: number, updateWordPairDto: UpdateWordPairDto) {
-    const updtateWordPlayer = await this.prisma.word_Pair.update({
+    const updateWordPair = await this.prisma.word_Pair.update({
       where: { id: id },
       data: {
         civilianWord: updateWordPairDto.civilianWord,
         undercoverWord: updateWordPairDto.undercoverWord,
       },
     });
-    return updtateWordPlayer;
+    return updateWordPair;
   }
 
   async remove(id: number) {

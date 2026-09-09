@@ -124,14 +124,23 @@ export class PlayerService {
   }
 
   async getAboutMe(id: number) {
+    const player = await this.prisma.player.findUnique({
+      where: {
+        id: id,
+        deletedAt: null
+      },
+    });
+    if (!player)
+      throw new NotFoundException('Player not found');
     const aboutMe = await this.prisma.player.findUnique({
       where: {
         id: id,
+        deletedAt: null
       },
       select: {
         aboutMe: true,
       },
     });
-    return { playerId: id, aboutMe };
+    return { playerId: id, ...aboutMe };
   }
 }

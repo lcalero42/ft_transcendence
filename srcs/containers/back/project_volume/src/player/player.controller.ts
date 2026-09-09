@@ -9,6 +9,7 @@ import {
   UploadedFile,
   UseGuards,
   Req,
+  BadRequestException,
   ForbiddenException,
   UnsupportedMediaTypeException,
   ParseIntPipe,
@@ -150,6 +151,9 @@ export class PlayerController {
   ) {
     if (req.user.id !== id) {
       throw new ForbiddenException('Cannot edit another player');
+    }
+    if (!file) {
+      throw new BadRequestException('No avatar file was uploaded');
     }
     const avatarUrl = `/uploads/avatars/${file.filename}`;
     return this.playerService.updateAvatar(id, avatarUrl);

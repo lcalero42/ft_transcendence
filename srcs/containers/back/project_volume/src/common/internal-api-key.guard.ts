@@ -10,19 +10,20 @@ import { requireEnv } from './require-env';
 
 @Injectable()
 export class InternalApiKeyGuard implements CanActivate {
+  private readonly expected = Buffer.from(requireEnv('INTERNAL_API_KEY'));
+
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
     const provided = request.headers['x-internal-api-key'];
-    const expected = requireEnv('INTERNAL_API_KEY');
 
-    if (typeof provided !== 'string' || provided.length !== expected.length) {
+    if (typeof provided !== 'string') {
       throw new UnauthorizedException('Invalid internal API key');
     }
 
-    const isValid = timingSafeEqual(
-      Buffer.from(provided),
-      Buffer.from(expected),
-    );
+    const providedBuffer = Buffer.from(provided);
+    const isValid =
+      providedBuffer.length === this.expected.length &&
+      timingSafeEqual(providedBuffer, this.expected);
     if (!isValid) {
       throw new UnauthorizedException('Invalid internal API key');
     }
