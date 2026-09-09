@@ -1,6 +1,9 @@
 import { useEffect, useRef } from "react";
 import type { Room } from "@colyseus/sdk";
 import type { Rooms } from "@back/colyseus/rooms/Rooms";
+import Logo from "../../components/Logo/Logo";
+import LinkProfile from "../../components/LinkProfile/LinkProfile";
+import { useAuth } from "@/context/useAuth";
 
 type GameViewProps = {
 	room: Room<Rooms>;
@@ -13,6 +16,7 @@ type Payload = {
 }
 
 function GameView({ room }: GameViewProps) {
+	const { profile } = useAuth();
 
 	useEffect(() => {
 		if (!room) return;
@@ -35,7 +39,15 @@ function GameView({ room }: GameViewProps) {
 		room.send("do", payload);
 	}, [room]);
 
-	return <p>okok</p>
+	return (
+		<div className="page">
+			<header className="page-header">
+				<Logo />
+				<LinkProfile
+				name={profile?.name ? profile.name : "login"} icon="🥷" />
+			</header>
+		</div>
+	);
 }
 
 export default GameView;

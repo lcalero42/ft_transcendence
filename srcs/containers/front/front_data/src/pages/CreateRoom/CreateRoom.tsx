@@ -28,16 +28,16 @@ function storeReconnection(room: Room) {
 			RECONNECTION_STORAGE_KEY,
 			JSON.stringify({ roomId: room.roomId, token: room.reconnectionToken }),
 		);
-	} catch {
-		// ignore storage failures (e.g. private browsing)
+	} catch (err) {
+		console.warn("storeReconnection failed", err);
 	}
 }
 
 function clearReconnection() {
 	try {
 		sessionStorage.removeItem(RECONNECTION_STORAGE_KEY);
-	} catch {
-		// ignore storage failures
+	} catch (err) {
+		console.warn("clearReconnection failed", err);
 	}
 }
 
