@@ -11,6 +11,7 @@ import {
   Req,
   ForbiddenException,
   UnsupportedMediaTypeException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { UpdatePlayerDto } from './dto/update-player.dto';
@@ -49,14 +50,14 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseIntPipe) id: string) {
     return this.playerService.findOne(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games')
   async getGamesList(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Req() req: AuthenticatedRequest,
   ) {
     if (req.user.id !== +id) {
@@ -68,7 +69,7 @@ export class PlayerController {
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updatePlayerDto: UpdatePlayerDto,
     @Req() req: AuthenticatedRequest,
   ) {
@@ -80,7 +81,10 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
+  async remove(
+    @Param('id', ParseIntPipe) id: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
     if (req.user.id !== +id) {
       throw new ForbiddenException('Cannot delete another player');
     }
@@ -89,25 +93,25 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games-played')
-  async countGamesPlayed(@Param('id') id: string) {
+  async countGamesPlayed(@Param('id', ParseIntPipe) id: string) {
     return this.playerService.countGamesPlayed(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/victory')
-  async countVictory(@Param('id') id: string) {
+  async countVictory(@Param('id', ParseIntPipe) id: string) {
     return this.playerService.countVictory(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/winrate')
-  async getWinrate(@Param('id') id: string) {
+  async getWinrate(@Param('id', ParseIntPipe) id: string) {
     return this.playerService.getWinrate(+id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/about-me')
-  async getAboutMe(@Param('id') id: string) {
+  async getAboutMe(@Param('id', ParseIntPipe) id: string) {
     return this.playerService.getAboutMe(+id);
   }
 
@@ -140,7 +144,7 @@ export class PlayerController {
     }),
   )
   async updateAvatar(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: string,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: AuthenticatedRequest,
   ) {

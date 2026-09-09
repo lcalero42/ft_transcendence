@@ -1,7 +1,6 @@
-import { IsInt, IsPositive, } from 'class-validator';
+import { IsInt, IsPositive } from 'class-validator';
 
-export class CreateFriendshipDto
-{
+export class CreateFriendshipDto {
   @IsInt()
   @IsPositive()
   addressee: number;

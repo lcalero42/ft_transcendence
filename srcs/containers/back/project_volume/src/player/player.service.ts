@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { PrismaService } from '../prisma.service';
 
@@ -20,8 +20,9 @@ export class PlayerService {
 
   async findOne(id: number) {
     const player = await this.prisma.player.findUnique({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
     });
+    if (!player) throw new NotFoundException('Player not found');
     return player;
   }
 
