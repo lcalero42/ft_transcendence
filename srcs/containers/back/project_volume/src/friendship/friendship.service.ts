@@ -102,7 +102,17 @@ export class FriendshipService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} friendship`;
+  async remove(id: number, playerId: number) {
+    const friendship = await this.findOne(id, playerId);
+
+    if (
+      friendship.status === FriendshipStatus.BLOCKED &&
+      friendship.requesterId !== playerId
+    )
+      throw new ForbiddenException('Only the blocker can remove a block');
+
+    return this.prisma.friendship.delete({
+      where: { id, status: friendship.status },
+    });
   }
 }

@@ -63,7 +63,10 @@ export class FriendshipController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.friendshipService.remove(id);
+  remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.friendshipService.remove(id, req.user.id);
   }
 }
