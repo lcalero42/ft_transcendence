@@ -17,7 +17,10 @@ export class PrismaExceptionFilter extends BaseExceptionFilter {
       case 'P2002':
         return super.catch(new ConflictException('Already exists'), host);
       case 'P2003':
-        return super.catch(new BadRequestException('Related record does not exist'), host);
+        return super.catch(
+          new BadRequestException('Related record does not exist'),
+          host,
+        );
       default:
         return super.catch(exception, host);
     }

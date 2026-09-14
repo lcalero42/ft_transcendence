@@ -46,7 +46,10 @@ export class GameController {
 
   @UseGuards(InternalApiKeyGuard)
   @Patch(':id')
-  async update(@Param('id', ParseIntPipe) id: number, @Body() updateGameDto: UpdateGameDto) {
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateGameDto: UpdateGameDto,
+  ) {
     return this.gameService.update(id, updateGameDto);
   }
 

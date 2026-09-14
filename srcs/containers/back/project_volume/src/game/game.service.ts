@@ -38,17 +38,15 @@ export class GameService {
     const game = await this.prisma.games.findUnique({
       where: { id: id, finishedAt: null },
     });
-    if (!game)
-      throw new NotFoundException('Game does not exist');
+    if (!game) throw new NotFoundException('Game does not exist');
     return game;
   }
 
   async getPlayersByGame(gameId: number) {
     const existingGame = await this.prisma.games.findFirst({
-      where: { id: gameId, finishedAt: null }
+      where: { id: gameId, finishedAt: null },
     });
-    if (!existingGame)
-      throw new NotFoundException('Game does not exist');
+    if (!existingGame) throw new NotFoundException('Game does not exist');
     const gamePlayers = await this.prisma.game_Players.findMany({
       where: { gameId },
       include: {

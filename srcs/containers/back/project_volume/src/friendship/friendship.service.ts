@@ -7,6 +7,7 @@ import {
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { PrismaService } from '../prisma.service';
+import { FriendshipStatus } from '../generated/prisma/enums';
 
 @Injectable()
 export class FriendshipService {
@@ -42,12 +43,32 @@ export class FriendshipService {
     return createFriendship;
   }
 
-  findAll() {
-    return `This action returns all friendship`;
+  async findAll(playerId: number, status?: FriendshipStatus) {
+    return this.prisma.friendship.findMany({
+      where: {
+        status,
+        OR: [{ requesterId: playerId }, { addresseeId: playerId }],
+      },
+      include: {
+        requester: { select: { id: true, name: true, avatarUrl: true } },
+        addressee: { select: { id: true, name: true, avatarUrl: true } },
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} friendship`;
+  async findOne(id: number, playerId: number) {
+    const friendship = await this.prisma.friendship.findFirst({
+      where: {
+        id,
+        OR: [{ requesterId: playerId }, { addresseeId: playerId }],
+      },
+      include: {
+        requester: { select: { id: true, name: true, avatarUrl: true } },
+        addressee: { select: { id: true, name: true, avatarUrl: true } },
+      },
+    });
+    if (!friendship) throw new NotFoundException('Friendship not found');
+    return friendship;
   }
 
   update(id: number, updateFriendshipDto: UpdateFriendshipDto) {

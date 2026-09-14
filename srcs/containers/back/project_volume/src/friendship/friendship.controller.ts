@@ -9,12 +9,15 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  Query,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
+import { FriendshipStatus } from '../generated/prisma/enums';
 
 @Controller('friendship')
 export class FriendshipController {
@@ -31,14 +34,21 @@ export class FriendshipController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll() {
-    return this.friendshipService.findAll();
+  findAll(
+    @Req() req: AuthenticatedRequest,
+    @Query('status', new ParseEnumPipe(FriendshipStatus, { optional: true }))
+    status?: FriendshipStatus,
+  ) {
+    return this.friendshipService.findAll(req.user.id, status);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.friendshipService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.friendshipService.findOne(id, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

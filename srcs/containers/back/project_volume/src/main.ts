@@ -14,7 +14,9 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
-  app.useGlobalFilters(new PrismaExceptionFilter(app.get(HttpAdapterHost).httpAdapter));
+  app.useGlobalFilters(
+    new PrismaExceptionFilter(app.get(HttpAdapterHost).httpAdapter),
+  );
   await colyseusServer.listen(2567);
   await app.listen(process.env.PORT ?? 3000);
 }

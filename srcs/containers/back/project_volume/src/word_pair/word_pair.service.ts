@@ -26,8 +26,7 @@ export class WordPairService {
     const wordPair = await this.prisma.word_Pair.findUnique({
       where: { id: id },
     });
-    if (!wordPair)
-      throw new NotFoundException('Word pair does not exist');
+    if (!wordPair) throw new NotFoundException('Word pair does not exist');
     return wordPair;
   }
 

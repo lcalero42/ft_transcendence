@@ -127,15 +127,14 @@ export class PlayerService {
     const player = await this.prisma.player.findUnique({
       where: {
         id: id,
-        deletedAt: null
+        deletedAt: null,
       },
     });
-    if (!player)
-      throw new NotFoundException('Player not found');
+    if (!player) throw new NotFoundException('Player not found');
     const aboutMe = await this.prisma.player.findUnique({
       where: {
         id: id,
-        deletedAt: null
+        deletedAt: null,
       },
       select: {
         aboutMe: true,
