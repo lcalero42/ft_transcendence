@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 import { PrismaService } from '../prisma.service';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/client';
 
 describe('GameController', () => {
@@ -12,7 +13,10 @@ describe('GameController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GameController],
       providers: [GameService, { provide: PrismaService, useValue: {} }],
-    }).compile();
+    })
+      .overrideGuard(InternalApiKeyGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     gameController = module.get<GameController>(GameController);
     gameService = module.get<GameService>(GameService);
@@ -112,7 +116,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.findOne('5')).toBe(result);
+      expect(await gameController.findOne(5)).toBe(result);
       expect(gameService.findOne).toHaveBeenCalledWith(5);
     });
   });
@@ -137,14 +141,14 @@ describe('GameController', () => {
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve(res));
 
-      expect(await gameController.getPlayersByGame('5')).toBe(res);
+      expect(await gameController.getPlayersByGame(5)).toBe(res);
       expect(gameService.getPlayersByGame).toHaveBeenCalledWith(5);
     });
     it('should return void tab when the game has no players', async () => {
       jest
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve([]));
-      expect(await gameController.getPlayersByGame('404')).toEqual([]);
+      expect(await gameController.getPlayersByGame(404)).toEqual([]);
     });
   });
 
@@ -168,7 +172,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.update('5', updateDto)).toBe(result);
+      expect(await gameController.update(5, updateDto)).toBe(result);
       expect(gameService.update).toHaveBeenCalledWith(5, updateDto);
     });
   });
@@ -189,7 +193,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.remove('5')).toBe(result);
+      expect(await gameController.remove(5)).toBe(result);
       expect(gameService.remove).toHaveBeenCalledWith(5);
     });
   });

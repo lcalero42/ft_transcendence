@@ -128,7 +128,7 @@ describe('RoomController', () => {
         .spyOn(roomService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await roomController.findOne('5')).toBe(result);
+      expect(await roomController.findOne(5)).toBe(result);
       expect(roomService.findOne).toHaveBeenCalledWith(5);
     });
   });
@@ -151,7 +151,7 @@ describe('RoomController', () => {
         .spyOn(roomService, 'getGames')
         .mockImplementation(() => Promise.resolve(res));
 
-      expect(await roomController.getGames('3')).toBe(res);
+      expect(await roomController.getGames(3)).toBe(res);
       expect(roomService.getGames).toHaveBeenCalledWith(3);
     });
 
@@ -159,7 +159,7 @@ describe('RoomController', () => {
       jest
         .spyOn(roomService, 'getGames')
         .mockImplementation(() => Promise.resolve([]));
-      expect(await roomController.getGames('404')).toEqual([]);
+      expect(await roomController.getGames(404)).toEqual([]);
     });
   });
 
@@ -186,7 +186,7 @@ describe('RoomController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(3, 'creator@test.com');
-      expect(await roomController.update('5', updateDto, req)).toBe(result);
+      expect(await roomController.update(5, updateDto, req)).toBe(result);
       expect(roomService.update).toHaveBeenCalledWith(5, updateDto);
     });
 
@@ -210,7 +210,7 @@ describe('RoomController', () => {
 
       const req = requestAs(4, 'other@test.com');
       await expect(
-        roomController.update('5', { name: 'RoomRenamed' }, req),
+        roomController.update(5, { name: 'RoomRenamed' }, req),
       ).rejects.toThrow('Cannot edit a room you did not create');
       expect(roomService.update).not.toHaveBeenCalled();
     });
@@ -236,7 +236,7 @@ describe('RoomController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(3, 'creator@test.com');
-      expect(await roomController.remove('5', req)).toBe(result);
+      expect(await roomController.remove(5, req)).toBe(result);
       expect(roomService.remove).toHaveBeenCalledWith(5);
     });
 
@@ -259,7 +259,7 @@ describe('RoomController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(4, 'other@test.com');
-      await expect(roomController.remove('5', req)).rejects.toThrow(
+      await expect(roomController.remove(5, req)).rejects.toThrow(
         'Cannot delete a room you did not create',
       );
       expect(roomService.remove).not.toHaveBeenCalled();

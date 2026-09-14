@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
@@ -128,8 +128,14 @@ describe('RoomService', () => {
 
       expect(await service.findOne(5)).toBe(result);
       expect(prismaMock.rooms.findUnique).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
       });
+    });
+
+    it('should throw a NotFoundException when the room does not exist', async () => {
+      prismaMock.rooms.findUnique.mockResolvedValue(null);
+
+      await expect(service.findOne(404)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -165,14 +171,15 @@ describe('RoomService', () => {
 
       expect(res).toBe(games);
       expect(prismaMock.rooms.findUnique).toHaveBeenCalledWith({
-        where: { id: 3 },
+        where: { id: 3, deletedAt: null },
         include: { games: true },
       });
     });
 
-    it('should return void tab when room not exist', async () => {
+    it('should throw a NotFoundException when the room does not exist', async () => {
       prismaMock.rooms.findUnique.mockResolvedValue(null);
-      expect(await service.getGames(404)).toEqual([]);
+
+      await expect(service.getGames(404)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -193,7 +200,7 @@ describe('RoomService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.rooms.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
         data: { name: updateDto.name },
       });
     });
@@ -215,7 +222,7 @@ describe('RoomService', () => {
 
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.rooms.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
         data: { deletedAt: expect.any(Date) as Date },
       });
     });

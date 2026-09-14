@@ -238,7 +238,7 @@ describe('PlayerController', () => {
     it('should return a player about me section and return it', async () => {
       const result = {
         playerId: 5,
-        aboutMe: { aboutMe: 'Hello there' },
+        aboutMe: 'Hello there',
       };
       jest
         .spyOn(playerService, 'getAboutMe')

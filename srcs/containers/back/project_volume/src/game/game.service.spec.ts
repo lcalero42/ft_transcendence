@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { GameService } from './game.service';
 import { PrismaService } from '../prisma.service';
@@ -97,30 +98,41 @@ describe('GameService', () => {
     it('should return a game', async () => {
       const result = {
         id: 5,
-        status: GameStatus.finished,
+        status: GameStatus.playing,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
-        finishedAt: new Date(),
-        victory: Role.civilian,
+        finishedAt: null,
+        victory: null,
         roomId: 7,
       };
       prismaMock.games.findUnique.mockResolvedValue(result);
 
       expect(await service.findOne(5)).toBe(result);
       expect(prismaMock.games.findUnique).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
       });
     });
 
-    it('should return null when the game does not exist', async () => {
+    it('should throw a NotFoundException when the game does not exist', async () => {
       prismaMock.games.findUnique.mockResolvedValue(null);
 
-      expect(await service.findOne(404)).toBeNull();
+      await expect(service.findOne(404)).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('getPlayersByGame', () => {
+    const game = {
+      id: 5,
+      status: GameStatus.playing,
+      civilianWord: 'cat',
+      undercoverWord: 'tiger',
+      createdAt: new Date(),
+      finishedAt: null,
+      victory: null,
+      roomId: 7,
+    };
+
     it('should return players mapped with role', async () => {
       const gamePlayers = [
         {
@@ -148,6 +160,7 @@ describe('GameService', () => {
           },
         },
       ];
+      prismaMock.games.findFirst.mockResolvedValue(game);
       prismaMock.game_Players.findMany.mockResolvedValue(gamePlayers);
       const res = await service.getPlayersByGame(5);
 
@@ -165,6 +178,9 @@ describe('GameService', () => {
           role: Role.undercover,
         },
       ]);
+      expect(prismaMock.games.findFirst).toHaveBeenCalledWith({
+        where: { id: 5, finishedAt: null },
+      });
       expect(prismaMock.game_Players.findMany).toHaveBeenCalledWith({
         where: { gameId: 5 },
         include: {
@@ -180,8 +196,18 @@ describe('GameService', () => {
     });
 
     it('should return a void tab when the game has no players', async () => {
+      prismaMock.games.findFirst.mockResolvedValue(game);
       prismaMock.game_Players.findMany.mockResolvedValue([]);
-      expect(await service.getPlayersByGame(404)).toEqual([]);
+      expect(await service.getPlayersByGame(5)).toEqual([]);
+    });
+
+    it('should throw a NotFoundException when the game does not exist', async () => {
+      prismaMock.games.findFirst.mockResolvedValue(null);
+
+      await expect(service.getPlayersByGame(404)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(prismaMock.game_Players.findMany).not.toHaveBeenCalled();
     });
   });
 
@@ -206,7 +232,7 @@ describe('GameService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: {
           civilianWord: updateDto.civilianWord,
           undercoverWord: updateDto.undercoverWord,
@@ -231,7 +257,7 @@ describe('GameService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: {
           civilianWord: 'dog',
           undercoverWord: undefined,
@@ -259,7 +285,7 @@ describe('GameService', () => {
 
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: { finishedAt: expect.any(Date) as Date },
       });
     });
