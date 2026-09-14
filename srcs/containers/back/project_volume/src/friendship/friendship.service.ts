@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -71,8 +72,34 @@ export class FriendshipService {
     return friendship;
   }
 
-  update(id: number, updateFriendshipDto: UpdateFriendshipDto) {
-    return `This action updates a #${id} friendship`;
+  async update(id: number, dto: UpdateFriendshipDto, playerId: number) {
+    const friendship = await this.findOne(id, playerId);
+    const isAddressee = friendship.addresseeId === playerId;
+    const { status: from } = friendship;
+    const to = dto.status;
+
+    const allowed =
+      (from === FriendshipStatus.PENDING &&
+        isAddressee &&
+        (to === FriendshipStatus.ACCEPTED ||
+          to === FriendshipStatus.DECLINED)) ||
+      (from !== FriendshipStatus.BLOCKED && to === FriendshipStatus.BLOCKED);
+
+    if (!allowed)
+      throw new ForbiddenException(
+        `Cannot change status from ${from} to ${to}`,
+      );
+
+    const otherId = isAddressee
+      ? friendship.requesterId
+      : friendship.addresseeId;
+    return this.prisma.friendship.update({
+      where: { id, status: from },
+      data:
+        to === FriendshipStatus.BLOCKED
+          ? { status: to, requesterId: playerId, addresseeId: otherId }
+          : { status: to },
+    });
   }
 
   remove(id: number) {

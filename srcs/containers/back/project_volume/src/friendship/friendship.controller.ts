@@ -56,8 +56,9 @@ export class FriendshipController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateFriendshipDto: UpdateFriendshipDto,
+    @Req() req: AuthenticatedRequest,
   ) {
-    return this.friendshipService.update(id, updateFriendshipDto);
+    return this.friendshipService.update(id, updateFriendshipDto, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

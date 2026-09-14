@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFriendshipDto } from './create-friendship.dto';
+import { IsIn } from 'class-validator';
+import { FriendshipStatus } from '../../generated/prisma/client';
 
-export class UpdateFriendshipDto extends PartialType(CreateFriendshipDto) {}
+export class UpdateFriendshipDto {
+  @IsIn([
+    FriendshipStatus.ACCEPTED,
+    FriendshipStatus.DECLINED,
+    FriendshipStatus.BLOCKED,
+  ])
+  status: FriendshipStatus;
+}
