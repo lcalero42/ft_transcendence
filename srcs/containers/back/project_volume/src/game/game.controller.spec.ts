@@ -1,9 +1,15 @@
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 import { PrismaService } from '../prisma.service';
 import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/client';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
+
+function requestAs(id: number, email: string): AuthenticatedRequest {
+  return { user: { id, email } } as AuthenticatedRequest;
+}
 
 describe('GameController', () => {
   let gameController: GameController;
@@ -119,6 +125,16 @@ describe('GameController', () => {
       expect(await gameController.findOne(5)).toBe(result);
       expect(gameService.findOne).toHaveBeenCalledWith(5);
     });
+
+    it('should propagate NotFoundException when the game does not exist', async () => {
+      jest
+        .spyOn(gameService, 'findOne')
+        .mockRejectedValue(new NotFoundException('Game 404 not found'));
+
+      await expect(gameController.findOne(404)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
   });
 
   describe('getPlayersByGame', () => {
@@ -148,7 +164,54 @@ describe('GameController', () => {
       jest
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve([]));
-      expect(await gameController.getPlayersByGame(404)).toEqual([]);
+      expect(await gameController.getPlayersByGame(5)).toEqual([]);
+    });
+
+    it('should propagate NotFoundException when the game does not exist', async () => {
+      jest
+        .spyOn(gameService, 'getPlayersByGame')
+        .mockRejectedValue(new NotFoundException('Game 404 not found'));
+
+      await expect(gameController.getPlayersByGame(404)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('getMyWord', () => {
+    it("should return the requesting player's word", async () => {
+      const req = requestAs(1, 'alice@test.com');
+      const result = { word: 'cat' };
+      jest
+        .spyOn(gameService, 'getMyWord')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await gameController.getMyWord(5, req)).toBe(result);
+      expect(gameService.getMyWord).toHaveBeenCalledWith(5, 1);
+    });
+
+    it('should propagate ForbiddenException when the requester is not a player in the game', async () => {
+      const req = requestAs(99, 'mallory@test.com');
+      jest
+        .spyOn(gameService, 'getMyWord')
+        .mockRejectedValue(
+          new ForbiddenException('You are not a player in this game'),
+        );
+
+      await expect(gameController.getMyWord(5, req)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('should propagate NotFoundException when the game does not exist', async () => {
+      const req = requestAs(1, 'alice@test.com');
+      jest
+        .spyOn(gameService, 'getMyWord')
+        .mockRejectedValue(new NotFoundException('Game 404 not found'));
+
+      await expect(gameController.getMyWord(404, req)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
