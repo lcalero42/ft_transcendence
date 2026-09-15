@@ -16,6 +16,10 @@ interface PlayerCircleProps {
 
 const RADIUS_PERCENT = 40;
 
+export function getPlayerAngleDeg(index: number, total: number) {
+	return total > 0 ? (index / total) * 360 : 0;
+}
+
 function PlayerCircle({ players, children }: PlayerCircleProps) {
 	return (
 		<div className="relative mx-auto aspect-square w-full max-w-3xl">
@@ -25,7 +29,7 @@ function PlayerCircle({ players, children }: PlayerCircleProps) {
 			/>
 			<div className="absolute inset-0 flex items-center justify-center">{children}</div>
 			{players.map((player, index) => {
-				const angle = (index / players.length) * 2 * Math.PI;
+				const angle = (getPlayerAngleDeg(index, players.length) * Math.PI) / 180;
 				const left = 50 + RADIUS_PERCENT * Math.sin(angle);
 				const top = 50 - RADIUS_PERCENT * Math.cos(angle);
 
