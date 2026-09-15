@@ -1,12 +1,12 @@
 import { useRoom } from "@colyseus/react";
 import GameView from "@/components/colyseus/GameView";
 import { client } from "@/lib/colyseusClient";
-import type { Rooms } from "@back/colyseus/rooms/Rooms"
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom"
 
 export default function TestColyseus() {
 
 	const { room, error, isConnecting } = useRoom(
-		() => client.joinOrCreate<Rooms>("udvRoom"),
+		() => client.joinOrCreate<UndercoverRoom>("undercover"),
 	);
 
 	if (isConnecting) return <p>Connecting...</p>;

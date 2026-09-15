@@ -1,8 +1,8 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useRoom } from "@colyseus/react";
 import type { SeatReservation } from "@colyseus/sdk";
-import type { Rooms } from "@back/colyseus/rooms/Rooms";
-import type { RoomState } from "@back/colyseus/rooms/RoomState";
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
+import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { client } from "@/lib/colyseusClient";
 import GameView from "@/components/colyseus/GameView";
 
@@ -11,11 +11,11 @@ function GameRoom() {
 	const location = useLocation();
 	const reservation = (location.state as { reservation?: SeatReservation } | null)?.reservation;
 
-	const { room, error, isConnecting } = useRoom<Rooms>(
+	const { room, error, isConnecting } = useRoom<UndercoverRoom>(
 		reservation
-			? () => client.consumeSeatReservation<RoomState>(reservation)
+			? () => client.consumeSeatReservation<UndercoverState>(reservation)
 			: id
-				? () => client.joinById<Rooms>(id)
+				? () => client.joinById<UndercoverRoom>(id)
 				: null,
 		[id, reservation],
 	);

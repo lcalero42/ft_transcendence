@@ -1,16 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { Room } from "@colyseus/sdk";
-import type { Rooms } from "@back/colyseus/rooms/Rooms";
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 
 type GameViewProps = {
-	room: Room<Rooms>;
+	room: Room<UndercoverRoom>;
 };
-
-type Payload = {
-	x: number;
-	y: number;
-	name: string;
-}
 
 function GameView({ room }: GameViewProps) {
 
@@ -21,18 +15,6 @@ function GameView({ room }: GameViewProps) {
 			console.log("message received from server");
 			console.log(message);
 		});
-	}, [room]);
-
-	const hasSentRef = useRef(false);
-	useEffect(() => {
-		if (hasSentRef.current) return;
-		hasSentRef.current = true;
-		const payload: Payload = {
-			x: 1,
-			y: 2,
-			name: "coucou"
-		}
-		room.send("do", payload);
 	}, [room]);
 
 	return <p>okok</p>

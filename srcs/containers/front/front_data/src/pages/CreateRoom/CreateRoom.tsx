@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
 import type { Room, SeatReservation } from "@colyseus/sdk";
-import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import { client } from "@/lib/colyseusClient";
 import { useAuth } from "@/context/useAuth";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
@@ -58,14 +58,14 @@ export default function CreateRoom() {
 					const stored = readStoredReconnection();
 					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
 						try {
-							return await client.reconnect<LobbyRoom>(stored.token);
+							return await client.reconnect<UndercoverRoom>(stored.token);
 						} catch {
 							clearReconnection();
 						}
 					}
 					return targetRoomId
-						? client.joinById<LobbyRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-						: client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+						? client.joinById<UndercoverRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
+						: client.create<UndercoverRoom>("undercover", { name: profile?.name, avatarUrl: profile?.avatarUrl });
 				},
 		[profileLoading],
 	);
