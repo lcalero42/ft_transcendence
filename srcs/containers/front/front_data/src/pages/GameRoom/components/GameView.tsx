@@ -4,7 +4,7 @@ import type { Rooms } from "@back/colyseus/rooms/Rooms";
 import { getAvatarUrl } from "@/api/player";
 import GameHeader from "@/pages/GameRoom/components/GameHeader";
 import Timer from "@/pages/GameRoom/components/Timer";
-import PlayerAvatar from "@/pages/GameRoom/components/PlayerAvatar";
+import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
 
 interface GameViewProps {
 	room: Room<Rooms>;
@@ -20,11 +20,13 @@ function GameView({ room }: GameViewProps) {
 			<GameHeader />
 			<main className="page-main">
 				<Timer secondsLeft={secondsLeft} />
-				<div className="flex flex-wrap gap-6">
-					{playerEntries.map(([sessionId, player]) => (
-						<PlayerAvatar key={sessionId} name={player.name} avatarUrl={getAvatarUrl(player.avatarUrl)} />
-					))}
-				</div>
+				<PlayerCircle
+					players={playerEntries.map(([sessionId, player]) => ({
+						sessionId,
+						name: player.name,
+						avatarUrl: getAvatarUrl(player.avatarUrl),
+					}))}
+				/>
 			</main>
 		</div>
 	);
