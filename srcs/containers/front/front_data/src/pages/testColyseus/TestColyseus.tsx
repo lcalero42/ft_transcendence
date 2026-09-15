@@ -1,5 +1,5 @@
 import { useRoom } from "@colyseus/react";
-import GameView from "@/components/colyseus/GameView";
+import GameView from "@/pages/GameRoom/components/GameView";
 import { client } from "@/lib/colyseusClient";
 import type { Rooms } from "@back/colyseus/rooms/Rooms"
 

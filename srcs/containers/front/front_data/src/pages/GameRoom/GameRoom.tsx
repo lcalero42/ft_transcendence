@@ -4,7 +4,7 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { Rooms } from "@back/colyseus/rooms/Rooms";
 import type { RoomState } from "@back/colyseus/rooms/RoomState";
 import { client } from "@/lib/colyseusClient";
-import GameView from "@/components/colyseus/GameView";
+import GameView from "@/pages/GameRoom/components/GameView";
 
 function GameRoom() {
 	const { id } = useParams();
