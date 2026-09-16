@@ -17,7 +17,7 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="card mx-auto w-full max-w-2xl">
+		<form onSubmit={handleSubmit} className="card mb-0! mx-auto w-full max-w-2xl">
 			<p className="text-center text-lg font-semibold">
 				{isMyTurn ? (
 					<>

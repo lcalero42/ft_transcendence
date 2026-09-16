@@ -5,6 +5,7 @@ export class Player extends Schema {
   @type('number') y: number = 0;
   @type('string') name: string = '';
   @type('string') avatarUrl: string = '';
+  @type('boolean') isHost: boolean = false;
 }
 
 export class RoomState extends Schema {

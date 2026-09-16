@@ -25,7 +25,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 	}
 
 	return (
-		<div className="card flex h-full min-h-0 flex-col">
+		<div className="card mb-0! flex h-full min-h-0 flex-col">
 			<h2 className="text-accent-purple mb-2 text-lg font-bold">Chat</h2>
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{messages.map((message) => (

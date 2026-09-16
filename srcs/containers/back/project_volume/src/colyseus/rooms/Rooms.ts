@@ -11,6 +11,7 @@ export interface Payload {
 export interface JoinOptions {
   name?: string;
   avatarUrl?: string;
+  isHost?: boolean;
 }
 
 export class Rooms extends Room {
@@ -44,6 +45,7 @@ export class Rooms extends Room {
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
     player.avatarUrl = options?.avatarUrl?.trim() || '';
+    player.isHost = options?.isHost === true;
     this.state.players.set(client.sessionId, player);
     client.send('welcome', 'Welcome to the room!');
   }

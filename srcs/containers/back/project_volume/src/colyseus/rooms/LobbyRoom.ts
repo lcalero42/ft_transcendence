@@ -28,6 +28,7 @@ export class LobbyRoom extends Room {
         const reservation = await matchMaker.reserveSeatFor(gameRoom, {
           name: player.name,
           avatarUrl: player.avatarUrl,
+          isHost: sessionId === this.state.hostSessionId,
         });
         this.clients.getById(sessionId)?.send('seatReservation', reservation);
       }

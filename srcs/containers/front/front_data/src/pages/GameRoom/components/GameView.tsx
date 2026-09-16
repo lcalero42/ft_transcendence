@@ -1,6 +1,7 @@
 import type { Room } from "@colyseus/sdk";
 import { useRoomState } from "@colyseus/react";
 import type { Rooms } from "@back/colyseus/rooms/Rooms";
+import type { Player } from "@back/colyseus/rooms/RoomState";
 import { getAvatarUrl } from "@/api/player";
 import GameHeader from "@/pages/GameRoom/components/GameHeader";
 import Timer from "@/pages/GameRoom/components/Timer";
@@ -10,6 +11,7 @@ import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import LeaveButton from "@/pages/GameRoom/components/LeaveButton";
 import ChatBox from "@/pages/GameRoom/components/ChatBox";
+import PlayersList from "@/pages/GameRoom/components/PlayersList";
 
 interface GameViewProps {
 	room: Room<Rooms>;
@@ -18,12 +20,13 @@ interface GameViewProps {
 function GameView({ room }: GameViewProps) {
 	const secondsLeft = 20;
 	const currentWord = "PLUME";
-	const activePlayerIndex = 0;
+	const activePlayerIndex = 1;
 	const players = useRoomState(room, (s) => s.players);
-	const playerEntries = Object.entries(players ?? {});
+	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const arrowDirection = getPlayerAngleDeg(activePlayerIndex, playerEntries.length);
 	const activePlayer = playerEntries[activePlayerIndex]?.[1];
 	const isMyTurn = playerEntries[activePlayerIndex]?.[0] === room.sessionId;
+	const isHost = playerEntries.find(([sessionId]) => sessionId === room.sessionId)?.[1]?.isHost === true;
 	const chatMessages = [
 		{ id: "1", name: activePlayer?.name ?? "mastermind", text: "Hello à tous ! Je suis le meyeur.", time: "21:42" },
 	];
@@ -45,16 +48,27 @@ function GameView({ room }: GameViewProps) {
 						>
 							<CenterWord word={currentWord} direction={arrowDirection} />
 						</PlayerCircle>
-						<div className="flex items-center justify-between gap-4">
+						<div className="flex items-end justify-center gap-10">
 							<AutoJoinButton />
-							<div className="min-w-0 flex-1">
+							<div className="min-w-0 w-full max-w-xl">
 								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 							</div>
 							<LeaveButton />
 						</div>
 					</div>
-					<aside className="flex flex-col gap-6">
-						<ChatBox messages={chatMessages} />
+					<aside className="flex min-h-0 flex-col gap-6">
+						<div className="min-h-0 flex-1">
+							<ChatBox messages={chatMessages} />
+						</div>
+						<PlayersList
+							players={playerEntries.map(([sessionId, player]) => ({
+								sessionId,
+								name: player.name,
+								avatarUrl: getAvatarUrl(player.avatarUrl),
+								showProfile: sessionId !== room.sessionId,
+								showKick: isHost && sessionId !== room.sessionId,
+							}))}
+						/>
 					</aside>
 				</div>
 			</main>
