@@ -43,6 +43,7 @@ describe('AuthService', () => {
         password: 'some-bcrypt-hash',
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -66,6 +67,7 @@ describe('AuthService', () => {
         password: 'some-bcrypt-hash',
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -91,6 +93,7 @@ describe('AuthService', () => {
           password: 'some-bcrypt-hash',
           aboutMe: null,
           avatarUrl: null,
+          isAdmin: false,
           createdAt: new Date(),
           deletedAt: null,
         });
@@ -115,6 +118,7 @@ describe('AuthService', () => {
         password: 'irrelevant-for-this-test',
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -140,6 +144,7 @@ describe('AuthService', () => {
         password: 'stored-bcrypt-hash',
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -161,6 +166,7 @@ describe('AuthService', () => {
         password: 'stored-bcrypt-hash',
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });

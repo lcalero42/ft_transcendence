@@ -21,10 +21,10 @@ function App() {
 					<Route path="/home" element={<Home />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
-			
+
 					<Route path="/testColyseus" element={<TestColyseus />} />
 
-					<Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+					<Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
 
 					<Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 					<Route path="/create-room/:roomId?" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />

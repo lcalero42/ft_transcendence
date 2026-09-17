@@ -4,8 +4,12 @@ import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
 
-function requestAs(id: number, email: string): AuthenticatedRequest {
-  return { user: { id, email } } as AuthenticatedRequest;
+function requestAs(
+  id: number,
+  email: string,
+  isAdmin = false,
+): AuthenticatedRequest {
+  return { user: { id, email, isAdmin } } as AuthenticatedRequest;
 }
 
 describe('PlayerController', () => {
@@ -40,6 +44,7 @@ describe('PlayerController', () => {
           password: 'password123',
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -50,6 +55,7 @@ describe('PlayerController', () => {
           password: 'password123',
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -83,6 +89,7 @@ describe('PlayerController', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -136,6 +143,7 @@ describe('PlayerController', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -169,6 +177,7 @@ describe('PlayerController', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: new Date(),
       };

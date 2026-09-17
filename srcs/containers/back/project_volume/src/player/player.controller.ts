@@ -12,12 +12,15 @@ import {
   ForbiddenException,
   UnsupportedMediaTypeException,
 } from '@nestjs/common';
+
 import { PlayerService } from './player.service';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
+import { RolesGuard } from '../common/roles.guard';
+import { adminOnly } from '../common/roles.decorator';
 
 const AVATAR_MIME_TO_EXT = new Map<string, string>([
   ['image/png', '.png'],
@@ -30,7 +33,8 @@ const AVATAR_MIME_TO_EXT = new Map<string, string>([
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @adminOnly()
   @Get()
   async findAll() {
     return this.playerService.findAll();
@@ -47,7 +51,8 @@ export class PlayerController {
     return this.playerService.findOne(req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @adminOnly()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.playerService.findOne(+id);

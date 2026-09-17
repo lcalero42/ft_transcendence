@@ -41,6 +41,7 @@ describe('PlayerService', () => {
           password: 'password123',
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -78,6 +79,7 @@ describe('PlayerService', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -167,6 +169,7 @@ describe('PlayerService', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -193,6 +196,7 @@ describe('PlayerService', () => {
         password: 'password123',
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
