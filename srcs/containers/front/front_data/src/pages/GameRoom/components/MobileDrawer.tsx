@@ -27,7 +27,7 @@ function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 		>
 			<button
 				type="button"
-				aria-label="Fermer"
+				aria-label="Close"
 				onClick={onClose}
 				className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
 			/>
@@ -37,7 +37,7 @@ function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 				<button
 					type="button"
 					onClick={onClose}
-					aria-label="Fermer"
+					aria-label="Close"
 					className="mb-3 self-end text-white"
 				>
 					<X className="size-6" />

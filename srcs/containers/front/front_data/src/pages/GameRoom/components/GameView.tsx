@@ -25,7 +25,7 @@ interface GameViewProps {
 function GameView({ room }: GameViewProps) {
 	const secondsLeft = 20;
 	const currentWord = "PLUME";
-	const activePlayerIndex = 1;
+	const activePlayerIndex = 0;
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
@@ -37,7 +37,7 @@ function GameView({ room }: GameViewProps) {
 		{
 			id: "1",
 			name: activePlayer?.name ?? "mastermind",
-			text: "Hello à tous ! Je suis le meyeur.",
+			text: "Hello everyone! I'm the mastermind.",
 			time: "21:42",
 			avatarUrl: getAvatarUrl(activePlayer?.avatarUrl ?? null),
 		},
@@ -63,12 +63,12 @@ function GameView({ room }: GameViewProps) {
 							<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
-									label="Ouvrir le chat"
+									label="Open chat"
 									onClick={() => setDrawer("chat")}
 								/>
 								<MobileDrawerTrigger
 									icon={Users}
-									label="Ouvrir la liste des joueurs"
+									label="Open players list"
 									onClick={() => setDrawer("players")}
 								/>
 							</div>

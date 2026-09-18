@@ -9,7 +9,7 @@ function LeaveButton() {
 			onClick={() => navigate("/home")}
 			className="badge badge-action hoverable shrink-0"
 		>
-			leave
+			Leave
 		</button>
 	);
 }

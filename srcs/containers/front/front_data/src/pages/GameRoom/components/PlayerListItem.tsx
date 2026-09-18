@@ -12,7 +12,7 @@ interface PlayerListItemProps {
 
 function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
 	const showKick = expanded && canKick && !isSelf;
-	const itemRef = useRef<HTMLButtonElement>(null);
+	const itemRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		if (!expanded) return;
@@ -28,34 +28,27 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 	}, [expanded, onToggle]);
 
 	return (
-		<button
+		<div
 			ref={itemRef}
-			type="button"
-			onClick={onToggle}
-			className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left transition-colors ${expanded ? "bg-accent-hover" : ""}`}
+			className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 transition-colors ${expanded ? "bg-accent-hover" : ""}`}
 		>
-			<img src={avatarUrl} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
-			<span className="min-w-0 flex-1 truncate text-body font-semibold">{name}</span>
+			<button type="button" onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+				<img src={avatarUrl} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
+				<span className="min-w-0 flex-1 truncate text-body font-semibold">{name}</span>
+			</button>
 			{(expanded || showKick) && (
 				<div className="flex shrink-0 gap-1">
 					{expanded && (
 						<span className="badge bg-victory! border-victory! text-small">PROFILE</span>
 					)}
 					{showKick && (
-						<span
-							role="button"
-							onClick={(event) => {
-								event.stopPropagation();
-								onKick?.();
-							}}
-							className="badge bg-defeat! border-defeat! hoverable text-small"
-						>
+						<button type="button" onClick={onKick} className="badge bg-defeat! border-defeat! hoverable text-small">
 							KICK
-						</span>
+						</button>
 					)}
 				</div>
 			)}
-		</button>
+		</div>
 	);
 }
 

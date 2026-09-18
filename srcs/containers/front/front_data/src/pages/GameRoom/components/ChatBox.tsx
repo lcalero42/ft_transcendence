@@ -43,7 +43,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 					type="text"
 					value={value}
 					onChange={(event) => setValue(event.target.value)}
-					placeholder="Écrivez votre message..."
+					placeholder="Type a message..."
 					className="input"
 				/>
 			</form>

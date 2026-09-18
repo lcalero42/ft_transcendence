@@ -21,11 +21,11 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 			<p className="text-center text-[clamp(14px,1vw,24px)] font-semibold">
 				{isMyTurn ? (
 					<>
-						C'est à <span className="text-accent-purple">votre tour</span>
+						It's <span className="text-accent-purple">your turn</span>
 					</>
 				) : (
 					<>
-						C'est au tour de <span className="text-accent-purple">{activePlayerName}</span>
+						It's <span className="text-accent-purple">{activePlayerName || "a player"}</span>'s turn
 					</>
 				)}
 			</p>
@@ -34,7 +34,7 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
 				disabled={!isMyTurn}
-				placeholder="Écrivez votre message..."
+				placeholder="Type your guess..."
 				className="input disabled:opacity-50"
 			/>
 		</form>
