@@ -19,7 +19,7 @@ function PlayersList({ players, onKick }: PlayersListProps) {
 
 	return (
 		<div className="card mb-0! flex h-full min-h-0 flex-col">
-			<h2 className="text-accent-purple mb-2 text-[max(1.3vw,16px)] font-bold">Players</h2>
+			<h2 className="text-accent-purple mb-2 text-[clamp(16px,1.3vw,26px)] font-bold">Players</h2>
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{players.map((player) => (
 					<PlayerListItem

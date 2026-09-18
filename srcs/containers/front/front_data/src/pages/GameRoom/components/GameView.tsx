@@ -35,7 +35,7 @@ function GameView({ room }: GameViewProps) {
 		<div className="page h-screen overflow-hidden">
 			<GameHeader />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
-				<div className="mx-auto flex h-[70vh] max-h-[70vh] min-h-0 w-full max-w-6xl flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
+				<div className="flex h-[70vh] max-h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
 					<div className="flex min-h-0 flex-1 flex-col items-center gap-4">
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
 							<div className="absolute top-0 left-0">
@@ -64,7 +64,7 @@ function GameView({ room }: GameViewProps) {
 							</div>
 						</div>
 					</div>
-					<aside className="flex min-h-0 h-full w-full flex-col items-center gap-4 lg:w-[320px]">
+					<aside className="flex min-h-0 h-full w-full flex-col items-center gap-4 lg:w-[400px]">
 						<div className="w-full h-[70%] min-h-0">
 							<ChatBox messages={chatMessages} />
 						</div>

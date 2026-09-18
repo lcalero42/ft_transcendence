@@ -13,7 +13,7 @@ function CenterWord({ word, direction = 0 }: CenterWordProps) {
 				strokeWidth={2.5}
 				style={{ transform: `rotate(${direction}deg)` }}
 			/>
-			<span className="absolute text-[max(2.2vw,24px)] font-bold tracking-wide uppercase">
+			<span className="absolute text-[clamp(24px,2.2vw,48px)] font-bold tracking-wide uppercase">
 				{word}
 			</span>
 		</div>

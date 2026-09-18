@@ -10,7 +10,7 @@ interface PlayerAvatarProps {
 function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps) {
 	return (
 		<div className="flex flex-col items-center gap-1">
-			<span className={`text-[max(0.85vw,12px)] font-semibold ${isActive ? "text-accent-purple" : "text-white"}`}>
+			<span className={`text-[clamp(12px,0.85vw,19px)] font-semibold ${isActive ? "text-accent-purple" : "text-white"}`}>
 				{name}
 			</span>
 			<img
@@ -18,7 +18,7 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps
 				alt={name}
 				className={`size-[4.5vw] shrink-0 rounded-full border-2 object-cover ${isActive ? "border-accent-purple" : "border-transparent"}`}
 			/>
-			{hintWord && <span className="text-[max(0.85vw,12px)] font-bold">{hintWord}</span>}
+			{hintWord && <span className="text-[clamp(12px,0.85vw,19px)] font-bold">{hintWord}</span>}
 		</div>
 	);
 }

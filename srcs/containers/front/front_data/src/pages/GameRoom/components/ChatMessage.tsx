@@ -13,10 +13,10 @@ function ChatMessage({ name, text, time, avatarUrl }: ChatMessageProps) {
 			<img src={avatarUrl || AvatarDefault} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
 			<div className="flex min-w-0 flex-1 flex-col gap-1">
 				<div className="flex items-baseline justify-between gap-2">
-					<span className="text-[max(0.85vw,12px)] font-semibold">{name}</span>
-					<span className="text-gray-low text-[max(0.7vw,10px)]">{time}</span>
+					<span className="text-[clamp(12px,0.85vw,19px)] font-semibold">{name}</span>
+					<span className="text-gray-low text-[clamp(10px,0.7vw,17px)]">{time}</span>
 				</div>
-				<p className="text-[max(0.85vw,12px)] break-words">{text}</p>
+				<p className="text-[clamp(12px,0.85vw,19px)] break-words">{text}</p>
 			</div>
 		</div>
 	);

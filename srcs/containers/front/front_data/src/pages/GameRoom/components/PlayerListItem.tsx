@@ -37,11 +37,11 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 			className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left transition-colors ${expanded ? "bg-accent-hover" : ""}`}
 		>
 			<img src={avatarUrl || AvatarDefault} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
-			<span className="min-w-0 flex-1 truncate text-[max(0.85vw,12px)] font-semibold">{name}</span>
+			<span className="min-w-0 flex-1 truncate text-[clamp(12px,0.85vw,19px)] font-semibold">{name}</span>
 			{(showProfile || showKick) && (
 				<div className="flex shrink-0 gap-1">
 					{showProfile && (
-						<span className="badge bg-victory! border-victory! text-[max(0.7vw,10px)]">PROFILE</span>
+						<span className="badge bg-victory! border-victory! text-[clamp(10px,0.7vw,17px)]">PROFILE</span>
 					)}
 					{showKick && (
 						<span
@@ -50,7 +50,7 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 								event.stopPropagation();
 								onKick?.();
 							}}
-							className="badge bg-defeat! border-defeat! hoverable text-[max(0.7vw,10px)]"
+							className="badge bg-defeat! border-defeat! hoverable text-[clamp(10px,0.7vw,17px)]"
 						>
 							KICK
 						</span>

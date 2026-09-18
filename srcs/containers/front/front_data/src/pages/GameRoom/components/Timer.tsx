@@ -13,10 +13,10 @@ function formatTime(secondsLeft: number) {
 function Timer({ secondsLeft }: TimerProps) {
 	return (
 		<div className="card mb-0! w-fit flex-row items-center gap-[max(0.6vw,8px)] p-[max(0.9vw,10px)]">
-			<TimerIcon className="text-accent-purple size-[max(1.2vw,16px)] shrink-0" />
+			<TimerIcon className="text-accent-purple size-[clamp(16px,1.2vw,26px)] shrink-0" />
 			<div className="flex flex-col items-start">
-				<span className="text-gray-low text-[max(0.7vw,10px)]">Timer</span>
-				<span className="text-[max(1vw,14px)] font-bold">{formatTime(secondsLeft)}</span>
+				<span className="text-gray-low text-[clamp(10px,0.7vw,17px)]">Timer</span>
+				<span className="text-[clamp(14px,1vw,24px)] font-bold">{formatTime(secondsLeft)}</span>
 			</div>
 		</div>
 	);

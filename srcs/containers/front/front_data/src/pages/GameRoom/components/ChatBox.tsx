@@ -26,7 +26,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 
 	return (
 		<div className="card mb-0! flex h-full min-h-0 flex-col">
-			<h2 className="text-accent-purple mb-2 text-[max(1.3vw,16px)] font-bold">Chat</h2>
+			<h2 className="text-accent-purple mb-2 text-[clamp(16px,1.3vw,26px)] font-bold">Chat</h2>
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{messages.map((message) => (
 					<ChatMessage
@@ -44,7 +44,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 					value={value}
 					onChange={(event) => setValue(event.target.value)}
 					placeholder="Écrivez votre message..."
-					className="border-grey-border placeholder:text-gray-low focus:border-accent-purple w-full rounded-lg border bg-transparent px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[max(0.8vw,13px)] text-white focus:outline-none"
+					className="border-grey-border placeholder:text-gray-low focus:border-accent-purple w-full rounded-lg border bg-transparent px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[clamp(13px,0.8vw,22px)] text-white focus:outline-none"
 				/>
 			</form>
 		</div>
