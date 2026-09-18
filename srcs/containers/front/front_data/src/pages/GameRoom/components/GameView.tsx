@@ -49,28 +49,28 @@ function GameView({ room }: GameViewProps) {
 			<GameHeader />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
 				<div className="relative flex h-[70vh] max-h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
-					<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
-						<MobileDrawerTrigger
-							icon={MessageCircle}
-							label="Ouvrir le chat"
-							onClick={() => {
-								setIsChatOpen(true);
-								setIsPlayersOpen(false);
-							}}
-						/>
-						<MobileDrawerTrigger
-							icon={Users}
-							label="Ouvrir la liste des joueurs"
-							onClick={() => {
-								setIsPlayersOpen(true);
-								setIsChatOpen(false);
-							}}
-						/>
-					</div>
-					<div className="flex min-h-0 flex-1 flex-col items-center gap-4">
+					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-4 lg:w-auto">
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
 							<div className="absolute top-0 left-0">
 								<Timer secondsLeft={secondsLeft} />
+							</div>
+							<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
+								<MobileDrawerTrigger
+									icon={MessageCircle}
+									label="Ouvrir le chat"
+									onClick={() => {
+										setIsChatOpen(true);
+										setIsPlayersOpen(false);
+									}}
+								/>
+								<MobileDrawerTrigger
+									icon={Users}
+									label="Ouvrir la liste des joueurs"
+									onClick={() => {
+										setIsPlayersOpen(true);
+										setIsChatOpen(false);
+									}}
+								/>
 							</div>
 							<PlayerCircle
 								players={playerEntries.map(([sessionId, player], index) => ({
@@ -83,15 +83,17 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full items-end justify-between gap-4 md:gap-6">
-							<div className="mb-[max(1vw,12px)]">
-								<AutoJoinButton />
-							</div>
-							<div className="min-w-0 max-w-xl">
+						<div className="flex w-full flex-col items-center gap-4 lg:flex-row lg:items-end lg:justify-between md:gap-6">
+							<div className="order-1 min-w-0 w-full lg:order-2 lg:w-auto lg:max-w-xl">
 								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 							</div>
-							<div className="mb-[max(1vw,12px)]">
-								<LeaveButton />
+							<div className="order-2 flex w-full items-center justify-between gap-4 lg:contents">
+								<div className="mb-[max(1vw,12px)] lg:order-1">
+									<AutoJoinButton />
+								</div>
+								<div className="mb-[max(1vw,12px)] lg:order-3">
+									<LeaveButton />
+								</div>
 							</div>
 						</div>
 					</div>
