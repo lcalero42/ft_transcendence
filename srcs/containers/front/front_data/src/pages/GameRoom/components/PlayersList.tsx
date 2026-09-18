@@ -1,11 +1,12 @@
+import { useState } from "react";
 import PlayerListItem from "@/pages/GameRoom/components/PlayerListItem";
 
 interface PlayersListEntry {
 	sessionId: string;
 	name: string;
 	avatarUrl?: string;
-	showProfile?: boolean;
-	showKick?: boolean;
+	isSelf?: boolean;
+	canKick?: boolean;
 }
 
 interface PlayersListProps {
@@ -14,6 +15,8 @@ interface PlayersListProps {
 }
 
 function PlayersList({ players, onKick }: PlayersListProps) {
+	const [expandedId, setExpandedId] = useState<string | null>(null);
+
 	return (
 		<div className="card mb-0!">
 			<h2 className="text-accent-purple mb-2 text-lg font-bold">Players</h2>
@@ -23,8 +26,10 @@ function PlayersList({ players, onKick }: PlayersListProps) {
 						key={player.sessionId}
 						name={player.name}
 						avatarUrl={player.avatarUrl}
-						showProfile={player.showProfile}
-						showKick={player.showKick}
+						isSelf={player.isSelf}
+						canKick={player.canKick}
+						expanded={expandedId === player.sessionId}
+						onToggle={() => setExpandedId((current) => (current === player.sessionId ? null : player.sessionId))}
 						onKick={() => onKick?.(player.sessionId)}
 					/>
 				))}

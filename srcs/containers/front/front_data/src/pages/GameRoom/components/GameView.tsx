@@ -65,8 +65,8 @@ function GameView({ room }: GameViewProps) {
 								sessionId,
 								name: player.name,
 								avatarUrl: getAvatarUrl(player.avatarUrl),
-								showProfile: sessionId !== room.sessionId,
-								showKick: isHost && sessionId !== room.sessionId,
+								isSelf: sessionId === room.sessionId,
+								canKick: isHost,
 							}))}
 						/>
 					</aside>
