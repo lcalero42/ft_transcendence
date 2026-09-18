@@ -5,11 +5,7 @@ import type { Room, SeatReservation } from "@colyseus/sdk";
 import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
 import { client } from "@/lib/colyseusClient";
 import { useAuth } from "@/context/useAuth";
-import DefaultAvatar from "@/assets/profile-photo/moon.png";
-
-function resolveAvatar(avatarUrl: string) {
-	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
-}
+import { getAvatarUrl } from "@/api/player";
 
 const RECONNECTION_STORAGE_KEY = "lobby-reconnection";
 
@@ -120,7 +116,7 @@ export default function CreateRoom() {
 				{playerEntries.map(([sessionId, player]) => (
 					<li key={sessionId} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
 						<img
-							src={resolveAvatar(player.avatarUrl)}
+							src={getAvatarUrl(player.avatarUrl)}
 							alt={player.name}
 							style={{ width: "2rem", height: "2rem", borderRadius: "9999px", objectFit: "cover" }}
 						/>

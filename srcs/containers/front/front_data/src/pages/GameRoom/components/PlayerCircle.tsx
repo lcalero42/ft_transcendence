@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import PlayerAvatar from "@/pages/GameRoom/components/PlayerAvatar";
+import { getPlayerAngleDeg } from "@/pages/GameRoom/components/utils";
 
 interface PlayerCircleEntry {
 	sessionId: string;
@@ -15,10 +16,6 @@ interface PlayerCircleProps {
 }
 
 const RADIUS_PERCENT = 40;
-
-export function getPlayerAngleDeg(index: number, total: number) {
-	return total > 0 ? (index / total) * 360 : 0;
-}
 
 function PlayerCircle({ players, children }: PlayerCircleProps) {
 	return (

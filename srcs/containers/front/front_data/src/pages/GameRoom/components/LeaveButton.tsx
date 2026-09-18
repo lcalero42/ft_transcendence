@@ -7,7 +7,7 @@ function LeaveButton() {
 		<button
 			type="button"
 			onClick={() => navigate("/home")}
-			className="badge hoverable shrink-0 px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[clamp(13px,0.8vw,22px)]"
+			className="badge badge-action hoverable shrink-0"
 		>
 			leave
 		</button>

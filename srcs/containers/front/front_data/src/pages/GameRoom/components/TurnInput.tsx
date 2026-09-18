@@ -35,7 +35,7 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				onChange={(event) => setValue(event.target.value)}
 				disabled={!isMyTurn}
 				placeholder="Écrivez votre message..."
-				className="border-grey-border placeholder:text-gray-low focus:border-accent-purple w-full rounded-lg border bg-transparent px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[clamp(13px,0.8vw,22px)] text-white focus:outline-none disabled:opacity-50"
+				className="input disabled:opacity-50"
 			/>
 		</form>
 	);

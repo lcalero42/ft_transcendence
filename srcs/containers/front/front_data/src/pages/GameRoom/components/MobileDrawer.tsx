@@ -5,11 +5,10 @@ import { X } from "lucide-react";
 interface MobileDrawerProps {
 	open: boolean;
 	onClose: () => void;
-	title: string;
 	children: ReactNode;
 }
 
-function MobileDrawer({ open, onClose, title, children }: MobileDrawerProps) {
+function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 	useEffect(() => {
 		if (!open) return;
 
@@ -35,12 +34,14 @@ function MobileDrawer({ open, onClose, title, children }: MobileDrawerProps) {
 			<div
 				className={`bg-bg-deep relative flex h-full w-full max-w-sm flex-col p-4 transition-transform duration-300 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}
 			>
-				<div className="mb-3 flex items-center justify-between">
-					<h2 className="text-accent-purple text-[clamp(16px,1.3vw,26px)] font-bold">{title}</h2>
-					<button type="button" onClick={onClose} aria-label="Fermer" className="text-white">
-						<X className="size-6" />
-					</button>
-				</div>
+				<button
+					type="button"
+					onClick={onClose}
+					aria-label="Fermer"
+					className="mb-3 self-end text-white"
+				>
+					<X className="size-6" />
+				</button>
 				<div className="min-h-0 flex-1">{children}</div>
 			</div>
 		</div>

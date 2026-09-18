@@ -8,7 +8,7 @@ function AutoJoinButton() {
 		<button
 			type="button"
 			onClick={() => setAutoJoin((current) => !current)}
-			className={`badge hoverable shrink-0 gap-[max(0.6vw,8px)] px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[clamp(13px,0.8vw,22px)] ${autoJoin ? "border-accent-purple text-accent-purple" : ""}`}
+			className={`badge badge-action hoverable shrink-0 gap-[max(0.6vw,8px)] ${autoJoin ? "border-accent-purple text-accent-purple" : ""}`}
 		>
 			<UserPlus className="size-[clamp(15px,1.1vw,24px)]" />
 			Auto-Join
