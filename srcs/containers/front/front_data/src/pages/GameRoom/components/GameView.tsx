@@ -83,11 +83,11 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full items-end gap-4 md:gap-6">
+						<div className="flex w-full items-end justify-between gap-4 md:gap-6">
 							<div className="mb-[max(1vw,12px)]">
 								<AutoJoinButton />
 							</div>
-							<div className="mx-auto min-w-0 max-w-xl flex-1">
+							<div className="min-w-0 max-w-xl">
 								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 							</div>
 							<div className="mb-[max(1vw,12px)]">
