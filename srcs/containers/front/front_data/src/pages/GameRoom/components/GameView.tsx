@@ -52,12 +52,16 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full items-end justify-between gap-4 md:gap-6">
-							<AutoJoinButton />
-							<div className="min-w-0 w-full max-w-xl">
+						<div className="flex w-full items-end gap-4 md:gap-6">
+							<div className="mb-[max(1vw,12px)]">
+								<AutoJoinButton />
+							</div>
+							<div className="mx-auto min-w-0 max-w-xl flex-1">
 								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 							</div>
-							<LeaveButton />
+							<div className="mb-[max(1vw,12px)]">
+								<LeaveButton />
+							</div>
 						</div>
 					</div>
 					<aside className="flex min-h-0 h-full w-full flex-col items-center gap-4 lg:w-[320px]">

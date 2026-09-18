@@ -15,12 +15,18 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 	const showKick = expanded && canKick && !isSelf;
 
 	return (
-		<button type="button" onClick={onToggle} className="flex w-full items-center gap-2 text-left">
+		<button
+			type="button"
+			onClick={onToggle}
+			className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left transition-colors ${expanded ? "bg-accent-hover" : ""}`}
+		>
 			<img src={avatarUrl || AvatarDefault} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
-			<span className="min-w-0 flex-1 truncate text-sm font-semibold">{name}</span>
+			<span className="min-w-0 flex-1 truncate text-[max(0.85vw,12px)] font-semibold">{name}</span>
 			{(showProfile || showKick) && (
 				<div className="flex shrink-0 gap-1">
-					{showProfile && <span className="badge bg-victory! border-victory! text-xs">PROFILE</span>}
+					{showProfile && (
+						<span className="badge bg-victory! border-victory! text-[max(0.7vw,10px)]">PROFILE</span>
+					)}
 					{showKick && (
 						<span
 							role="button"
@@ -28,7 +34,7 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 								event.stopPropagation();
 								onKick?.();
 							}}
-							className="badge bg-defeat! border-defeat! hoverable text-xs"
+							className="badge bg-defeat! border-defeat! hoverable text-[max(0.7vw,10px)]"
 						>
 							KICK
 						</span>

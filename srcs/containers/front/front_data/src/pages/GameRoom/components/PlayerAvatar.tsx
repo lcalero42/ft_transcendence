@@ -10,15 +10,15 @@ interface PlayerAvatarProps {
 function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps) {
 	return (
 		<div className="flex flex-col items-center gap-1">
-			<span className={`text-base font-semibold ${isActive ? "text-accent-purple" : "text-white"}`}>
+			<span className={`text-[max(0.85vw,12px)] font-semibold ${isActive ? "text-accent-purple" : "text-white"}`}>
 				{name}
 			</span>
 			<img
 				src={avatarUrl || AvatarDefault}
 				alt={name}
-				className={`size-16 md:size-20 lg:size-24 shrink-0 rounded-full border-2 object-cover ${isActive ? "border-accent-purple" : "border-transparent"}`}
+				className={`size-[4.5vw] shrink-0 rounded-full border-2 object-cover ${isActive ? "border-accent-purple" : "border-transparent"}`}
 			/>
-			{hintWord && <span className="text-base font-bold">{hintWord}</span>}
+			{hintWord && <span className="text-[max(0.85vw,12px)] font-bold">{hintWord}</span>}
 		</div>
 	);
 }

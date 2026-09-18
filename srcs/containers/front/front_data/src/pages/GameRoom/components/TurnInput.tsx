@@ -17,8 +17,8 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className="card mb-0! mx-auto w-full max-w-2xl">
-			<p className="text-center text-lg font-semibold">
+		<form onSubmit={handleSubmit} className="card mb-0! mx-auto w-full min-w-[265px] max-w-2xl p-[max(1vw,12px)]">
+			<p className="text-center text-[max(1vw,14px)] font-semibold">
 				{isMyTurn ? (
 					<>
 						C'est à <span className="text-accent-purple">votre tour</span>
@@ -35,7 +35,7 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				onChange={(event) => setValue(event.target.value)}
 				disabled={!isMyTurn}
 				placeholder="Écrivez votre message..."
-				className="border-grey-border placeholder:text-gray-low focus:border-accent-purple w-full rounded-lg border bg-transparent px-4 py-2 text-white focus:outline-none disabled:opacity-50"
+				className="border-grey-border placeholder:text-gray-low focus:border-accent-purple w-full rounded-lg border bg-transparent px-[max(1.2vw,14px)] py-[max(0.7vw,8px)] text-[max(0.8vw,13px)] text-white focus:outline-none disabled:opacity-50"
 			/>
 		</form>
 	);
