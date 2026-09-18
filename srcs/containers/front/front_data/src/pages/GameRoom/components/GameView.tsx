@@ -15,6 +15,7 @@ import LeaveButton from "@/pages/GameRoom/components/LeaveButton";
 import ChatBox from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
+import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
 
 interface GameViewProps {
 	room: Room<Rooms>;
@@ -49,28 +50,22 @@ function GameView({ room }: GameViewProps) {
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
 				<div className="relative flex h-[70vh] max-h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
 					<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
-						<button
-							type="button"
+						<MobileDrawerTrigger
+							icon={MessageCircle}
+							label="Ouvrir le chat"
 							onClick={() => {
 								setIsChatOpen(true);
 								setIsPlayersOpen(false);
 							}}
-							aria-label="Ouvrir le chat"
-							className="text-white"
-						>
-							<MessageCircle className="size-6" />
-						</button>
-						<button
-							type="button"
+						/>
+						<MobileDrawerTrigger
+							icon={Users}
+							label="Ouvrir la liste des joueurs"
 							onClick={() => {
 								setIsPlayersOpen(true);
 								setIsChatOpen(false);
 							}}
-							aria-label="Ouvrir la liste des joueurs"
-							className="text-white"
-						>
-							<Users className="size-6" />
-						</button>
+						/>
 					</div>
 					<div className="flex min-h-0 flex-1 flex-col items-center gap-4">
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
