@@ -37,7 +37,7 @@ function GameView({ room }: GameViewProps) {
 		{
 			id: "1",
 			name: activePlayer?.name ?? "mastermind",
-			text: "Hello everyone! I'm the mastermind.",
+			text: "babouinette",
 			time: "21:42",
 			avatarUrl: getAvatarUrl(activePlayer?.avatarUrl ?? null),
 		},
