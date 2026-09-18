@@ -32,23 +32,27 @@ function GameView({ room }: GameViewProps) {
 	];
 
 	return (
-		<div className="page">
+		<div className="page h-screen overflow-hidden">
 			<GameHeader />
-			<main className="flex-1 px-[10vw] py-[2vh] md:px-[15vw] md:py-[10vh]">
-				<div className="grid gap-8 text-center lg:grid-cols-[1fr_320px]">
-					<div className="flex flex-col gap-6">
-						<Timer secondsLeft={secondsLeft} />
-						<PlayerCircle
-							players={playerEntries.map(([sessionId, player], index) => ({
-								sessionId,
-								name: player.name,
-								avatarUrl: getAvatarUrl(player.avatarUrl),
-								isActive: index === activePlayerIndex,
-							}))}
-						>
-							<CenterWord word={currentWord} direction={arrowDirection} />
-						</PlayerCircle>
-						<div className="flex items-end justify-center gap-10">
+			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
+				<div className="mx-auto flex h-[70vh] max-h-[70vh] min-h-0 w-full max-w-6xl flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
+					<div className="flex min-h-0 flex-1 flex-col items-center gap-4">
+						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
+							<div className="absolute top-0 left-0">
+								<Timer secondsLeft={secondsLeft} />
+							</div>
+							<PlayerCircle
+								players={playerEntries.map(([sessionId, player], index) => ({
+									sessionId,
+									name: player.name,
+									avatarUrl: getAvatarUrl(player.avatarUrl),
+									isActive: index === activePlayerIndex,
+								}))}
+							>
+								<CenterWord word={currentWord} direction={arrowDirection} />
+							</PlayerCircle>
+						</div>
+						<div className="flex w-full items-end justify-between gap-4 md:gap-6">
 							<AutoJoinButton />
 							<div className="min-w-0 w-full max-w-xl">
 								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
@@ -56,19 +60,21 @@ function GameView({ room }: GameViewProps) {
 							<LeaveButton />
 						</div>
 					</div>
-					<aside className="flex min-h-0 flex-col gap-6">
-						<div className="min-h-0 flex-1">
+					<aside className="flex min-h-0 h-full w-full flex-col items-center gap-4 lg:w-[320px]">
+						<div className="w-full h-[70%] min-h-0">
 							<ChatBox messages={chatMessages} />
 						</div>
-						<PlayersList
-							players={playerEntries.map(([sessionId, player]) => ({
-								sessionId,
-								name: player.name,
-								avatarUrl: getAvatarUrl(player.avatarUrl),
-								isSelf: sessionId === room.sessionId,
-								canKick: isHost,
-							}))}
-						/>
+						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
+							<PlayersList
+								players={playerEntries.map(([sessionId, player]) => ({
+									sessionId,
+									name: player.name,
+									avatarUrl: getAvatarUrl(player.avatarUrl),
+									isSelf: sessionId === room.sessionId,
+									canKick: isHost,
+								}))}
+							/>
+						</div>
 					</aside>
 				</div>
 			</main>

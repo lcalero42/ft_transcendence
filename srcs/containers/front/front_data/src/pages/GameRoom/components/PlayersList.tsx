@@ -18,9 +18,9 @@ function PlayersList({ players, onKick }: PlayersListProps) {
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 
 	return (
-		<div className="card mb-0!">
+		<div className="card mb-0! flex h-full min-h-0 flex-col">
 			<h2 className="text-accent-purple mb-2 text-lg font-bold">Players</h2>
-			<div className="flex flex-col gap-3">
+			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{players.map((player) => (
 					<PlayerListItem
 						key={player.sessionId}
