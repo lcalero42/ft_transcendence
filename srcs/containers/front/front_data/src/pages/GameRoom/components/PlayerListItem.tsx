@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import AvatarDefault from "@/assets/profile-photo/avatar-default.svg";
 
 interface PlayerListItemProps {
@@ -13,9 +14,24 @@ interface PlayerListItemProps {
 function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
 	const showProfile = expanded;
 	const showKick = expanded && canKick && !isSelf;
+	const itemRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (!expanded) return;
+
+		function handlePointerDown(event: PointerEvent) {
+			if (itemRef.current && !itemRef.current.contains(event.target as Node)) {
+				onToggle?.();
+			}
+		}
+
+		document.addEventListener("pointerdown", handlePointerDown);
+		return () => document.removeEventListener("pointerdown", handlePointerDown);
+	}, [expanded, onToggle]);
 
 	return (
 		<button
+			ref={itemRef}
 			type="button"
 			onClick={onToggle}
 			className={`flex w-full items-center gap-2 rounded-lg px-2 py-1 text-left transition-colors ${expanded ? "bg-accent-hover" : ""}`}

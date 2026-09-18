@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import PlayerListItem from "@/pages/GameRoom/components/PlayerListItem";
 
 interface PlayersListEntry {
@@ -16,21 +16,9 @@ interface PlayersListProps {
 
 function PlayersList({ players, onKick }: PlayersListProps) {
 	const [expandedId, setExpandedId] = useState<string | null>(null);
-	const containerRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		function handlePointerDown(event: PointerEvent) {
-			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-				setExpandedId(null);
-			}
-		}
-
-		document.addEventListener("pointerdown", handlePointerDown);
-		return () => document.removeEventListener("pointerdown", handlePointerDown);
-	}, []);
 
 	return (
-		<div ref={containerRef} className="card mb-0! flex h-full min-h-0 flex-col">
+		<div className="card mb-0! flex h-full min-h-0 flex-col">
 			<h2 className="text-accent-purple mb-2 text-[max(1.3vw,16px)] font-bold">Players</h2>
 			<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
 				{players.map((player) => (
