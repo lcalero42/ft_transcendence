@@ -16,7 +16,7 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps
 			<img
 				src={avatarUrl || AvatarDefault}
 				alt={name}
-				className={`size-[4.5vw] shrink-0 rounded-full border-2 object-cover ${isActive ? "border-accent-purple" : "border-transparent"}`}
+				className={`size-[max(4.5vw,40px)] shrink-0 rounded-full border-2 object-cover ${isActive ? "border-accent-purple" : "border-transparent"}`}
 			/>
 			{hintWord && <span className="text-[clamp(12px,0.85vw,19px)] font-bold">{hintWord}</span>}
 		</div>

@@ -1,0 +1,50 @@
+import { useEffect } from "react";
+import type { ReactNode } from "react";
+import { X } from "lucide-react";
+
+interface MobileDrawerProps {
+	open: boolean;
+	onClose: () => void;
+	title: string;
+	children: ReactNode;
+}
+
+function MobileDrawer({ open, onClose, title, children }: MobileDrawerProps) {
+	useEffect(() => {
+		if (!open) return;
+
+		function handleKeyDown(event: KeyboardEvent) {
+			if (event.key === "Escape") onClose();
+		}
+
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [open, onClose]);
+
+	return (
+		<div
+			className={`fixed inset-0 z-50 flex justify-end lg:hidden ${open ? "" : "pointer-events-none"}`}
+			aria-hidden={!open}
+		>
+			<button
+				type="button"
+				aria-label="Fermer"
+				onClick={onClose}
+				className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
+			/>
+			<div
+				className={`bg-bg-deep relative flex h-full w-full max-w-sm flex-col p-4 transition-transform duration-300 ease-out ${open ? "translate-x-0" : "translate-x-full"}`}
+			>
+				<div className="mb-3 flex items-center justify-between">
+					<h2 className="text-accent-purple text-[clamp(16px,1.3vw,26px)] font-bold">{title}</h2>
+					<button type="button" onClick={onClose} aria-label="Fermer" className="text-white">
+						<X className="size-6" />
+					</button>
+				</div>
+				<div className="min-h-0 flex-1">{children}</div>
+			</div>
+		</div>
+	);
+}
+
+export default MobileDrawer;
