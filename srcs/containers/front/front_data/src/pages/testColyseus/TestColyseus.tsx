@@ -6,7 +6,7 @@ import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom"
 export default function TestColyseus() {
 
 	const { room, error, isConnecting } = useRoom(
-		() => client.joinOrCreate<UndercoverRoom>("undercover"),
+		() => client.joinOrCreate<UndercoverRoom>("undercover", { name: `Tester-${Math.floor(Math.random() * 1000)}` }),
 	);
 
 	if (isConnecting) return <p>Connecting...</p>;
