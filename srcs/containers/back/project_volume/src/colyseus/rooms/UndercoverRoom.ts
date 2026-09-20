@@ -7,14 +7,12 @@ export interface JoinOptions {
   avatarUrl?: string;
 }
 
-// Server-side only data attached to the seat reservations sent on `start`
 interface SeatTransferAuth {
   isHost: boolean;
 }
 
 const MIN_PARTICIPANTS = 3;
 const MAX_PARTICIPANTS = 6;
-// Participants plus spectators
 const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
@@ -27,9 +25,6 @@ export class UndercoverRoom extends Room {
   private readonly logger = new Logger('UndercoverRoom');
 
   messages = {
-    // Host is done inviting: the room becomes listed and anyone can join it.
-    // The front switches page (which drops the connection), so every player
-    // gets a seat reservation in this same room to rejoin with.
     start: async (client: Client) => {
       if (!this.isHost(client) || this.state.phase !== 'setup') {
         return;
@@ -50,7 +45,6 @@ export class UndercoverRoom extends Room {
           );
           this.clients.getById(sessionId)?.send('seatReservation', reservation);
         } catch (error) {
-          // Reserved seats count towards maxClients
           this.logger.warn(
             `could not reserve a seat for ${sessionId}: ${String(error)}`,
           );
@@ -111,11 +105,8 @@ export class UndercoverRoom extends Room {
       this.logger.log(
         `game started with ${this.state.participants.length} participants`,
       );
-      // TODO: pick a word pair, assign roles and send each participant
-      // their word privately with client.send() (never through the state)
     },
 
-    // Temporary until the game loop decides by itself when a game is over
     endGame: (client: Client) => {
       if (!this.isHost(client) || this.state.phase !== 'playing') {
         return;
@@ -124,16 +115,13 @@ export class UndercoverRoom extends Room {
     },
   };
 
-  // Called when the room is created
   async onCreate() {
     this.logger.log('room created');
     this.state.minParticipants = MIN_PARTICIPANTS;
     this.state.maxParticipants = MAX_PARTICIPANTS;
-    // Only reachable through the invite link until the host launches it
     await this.setPrivate(true);
   }
 
-  // Called when a client joins the room
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
     const player = new Player();
@@ -147,7 +135,6 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  // Called when a client disconnects without leaving on purpose (e.g. page refresh, dropped connection)
   onDrop(client: Client) {
     this.logger.log('room connection dropped, awaiting reconnection');
     const player = this.state.players.get(client.sessionId);
@@ -157,7 +144,6 @@ export class UndercoverRoom extends Room {
     this.allowReconnection(client, RECONNECTION_WINDOW_SECONDS);
   }
 
-  // Called when a dropped client successfully reconnects
   onReconnect(client: Client) {
     this.logger.log('room reconnected');
     const player = this.state.players.get(client.sessionId);
@@ -166,7 +152,6 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  // Called when a client permanently leaves the room (consented leave, or reconnection window expired)
   onLeave(client: Client) {
     this.logger.log('room left');
     this.state.players.delete(client.sessionId);
@@ -186,7 +171,6 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  // Called when the room is disposed
   onDispose() {
     this.logger.log('room disposed');
   }
@@ -202,7 +186,6 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  // Back to the chat, everyone has to register again for the next game
   private finishGame() {
     this.state.phase = 'open';
     this.state.participants.clear();
