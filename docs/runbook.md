@@ -69,11 +69,13 @@ make ps                  # container status
 - The Colyseus server runs inside the `back` container alongside the REST
   API, listening on `ws://localhost:2567` (published in
   `docker-compose.yml`). There's no separate container/service for it.
-- It's a bare scaffold today — see
-  [architecture.md](architecture.md#realtime-game-state) — reachable from
-  the frontend's `/testColyseus` dev page. If that page hangs on
-  "Connecting...", check `make logs-back` for Colyseus errors and confirm
-  port `2567` isn't already in use on the host.
+- Room logic is wired but the game loop isn't — see
+  [architecture.md](architecture.md#realtime-game-state). To exercise it,
+  log in and create a room from the Home page: you land on
+  `/create-room/<roomId>`, and the invite link shown there lets a second
+  account join the same room. If a page hangs on "Connecting...", check
+  `make logs-back` for Colyseus errors and confirm port `2567` isn't
+  already in use on the host.
 
 ## Checks (mirrors CI)
 

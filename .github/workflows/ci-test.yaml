@@ -41,7 +41,7 @@ jobs:
       - name: Generate Prisma client
         working-directory: srcs/containers/back/project_volume
         env:
-          DATABASE_URL: "postgresql://user:password@localhost:5432/db"
+          DATABASE_URL: ${{ secrets.CI_DUMMY_DATABASE_URL }}
         run: npx prisma generate
 
       - name: Run backend unit tests

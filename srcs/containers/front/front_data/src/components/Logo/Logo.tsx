@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 
 function Logo() {
 	return (
-		<span className='font-["UnifrakturMaguntia"] text-[2rem]'>
+		<Link to="/home" className='font-["UnifrakturMaguntia"] text-[2rem]'>
 			UnderCover
-		</span>
+		</Link>
 	);
 }
 
