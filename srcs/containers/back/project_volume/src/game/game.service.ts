@@ -1,11 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
+import type { Games } from '../generated/prisma/client';
+import type { Player } from '../generated/prisma/client';
+import type { Role } from '../generated/prisma/client';
+
+export type GameView = Omit<Games, 'civilianWord' | 'undercoverWord'> & {
+  civilianWord: string | null;
+  undercoverWord: string | null;
+};
+
+export type GamePlayerView = Pick<Player, 'id' | 'name' | 'avatarUrl'> & {
+  role: Role | null;
+};
 
 @Injectable()
 export class GameService {
   constructor(private prisma: PrismaService) {}
+
+  private toGameView(game: Games): GameView {
+    return game.status === 'finished'
+      ? game
+      : { ...game, civilianWord: null, undercoverWord: null };
+  }
 
   async create(createGameDto: CreateGameDto) {
     const createGame = await this.prisma.games.create({
@@ -18,9 +40,9 @@ export class GameService {
     return createGame;
   }
 
-  async findAll() {
+  async findAll(): Promise<GameView[]> {
     const games = await this.prisma.games.findMany();
-    return games;
+    return games.map((game) => this.toGameView(game));
   }
 
   async countGames() {
@@ -34,30 +56,66 @@ export class GameService {
     return i;
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<GameView> {
     const game = await this.prisma.games.findUnique({
       where: { id: id },
     });
-    return game;
+    if (!game) throw new NotFoundException(`Game ${id} not found`);
+    return this.toGameView(game);
   }
 
-  async getPlayersByGame(gameId: number) {
-    const gamePlayers = await this.prisma.game_Players.findMany({
-      where: { gameId },
-      include: {
-        playerIdRel: {
+  async getPlayersByGame(gameId: number): Promise<GamePlayerView[]> {
+    const game = await this.prisma.games.findUnique({
+      where: { id: gameId },
+      select: {
+        status: true,
+        gamePlayers: {
           select: {
-            id: true,
-            name: true,
-            avatarUrl: true,
+            role: true,
+            playerIdRel: { select: { id: true, name: true, avatarUrl: true } },
           },
         },
       },
     });
-    return gamePlayers.map((gp) => ({
+    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+
+    const revealRoles = game.status === 'finished';
+    return game.gamePlayers.map((gp) => ({
       ...gp.playerIdRel,
-      role: gp.role,
+      role: revealRoles ? gp.role : null,
     }));
+  }
+
+  async getMyWord(gameId: number, playerId: number): Promise<{ word: string }> {
+    const game = await this.prisma.games.findUnique({
+      where: { id: gameId },
+      select: {
+        status: true,
+        civilianWord: true,
+        undercoverWord: true,
+        gamePlayers: {
+          where: { playerId },
+          select: { role: true },
+        },
+      },
+    });
+    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+
+    const myGamePlayer = game.gamePlayers[0];
+    if (!myGamePlayer) {
+      throw new ForbiddenException('You are not a player in this game');
+    }
+    if (game.status === 'waiting') {
+      throw new ForbiddenException(
+        'Word is not available until the game starts',
+      );
+    }
+
+    const word =
+      myGamePlayer.role === 'civilian'
+        ? game.civilianWord
+        : game.undercoverWord;
+    return { word };
   }
 
   async update(id: number, updateGameDto: UpdateGameDto) {

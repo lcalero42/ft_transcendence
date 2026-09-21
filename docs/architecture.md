@@ -27,7 +27,7 @@ the browser talks directly to the back container's exposed port.
 - React 19 + TypeScript, built with Vite, styled with Tailwind CSS 4.
 - Client-side routing via `react-router-dom` (see `src/App.tsx` for the route
   table: `/home`, `/login`, `/register`, `/profile`, `/create-room`,
-  `/game/:id`, plus a dev-only `/testColyseus` page — see
+  `/game/:id` — see
   [Realtime game state](#realtime-game-state) below). `/profile`,
   `/create-room`, and `/game/:id` are wrapped in `ProtectedRoute`
   (`src/context/ProtectedRoute.tsx`), which redirects to `/login` when
@@ -125,29 +125,40 @@ service-side (e.g. only the room's creator can `PATCH`/`DELETE` it).
 ## Realtime game state
 
 A Colyseus server now runs (see [ADR 0001](adr/0001-adopt-colyseus-for-realtime-game-sync.md)
-for why Colyseus), but it's still an early scaffold, not the actual game
-loop:
+for why Colyseus). The room logic is wired to the frontend, but the
+Undercover game loop itself is not implemented yet:
 
 - `back/src/colyseus/server.ts` defines the server and starts it
   alongside the REST API in the same process — `main.ts` calls
   `colyseusServer.listen(2567)` right before `app.listen(...)`. It is
   **not** a separate Compose service; `docker-compose.yml` just publishes
   the extra port (`2567:2567`) on the existing `back` container.
-- `back/src/colyseus/rooms/Rooms.ts` (registered as room type `udvRoom`)
-  and `RoomState.ts` are still generic Colyseus-starter-template code —
-  players are tracked by `x`/`y`/`name`, messages are named
-  `doSomething`/`do`, and none of it is wired to Undercover's actual
-  mechanics (word assignment, roles, elimination, voting). `onJoin`
-  performs no authentication — any client can join `udvRoom` up to
-  `maxClients`.
-- The frontend's `/testColyseus` page (`TestColyseus.tsx` + `GameView.tsx`)
-  connects to it via `@colyseus/react`'s `useRoom()` hook, purely to
-  exercise the plumbing — it's not linked from the app's normal
-  navigation. The real `/game/:id` page (`GameRoom.tsx`) is still a
-  placeholder and isn't hooked up to Colyseus yet.
+- `back/src/colyseus/rooms/UndercoverRoom.ts` (registered as room type
+  `undercover`) and `UndercoverState.ts` hold the whole lifecycle in a
+  single room type — the earlier `LobbyRoom`/`udvRoom` split is gone.
+  `state.phase` moves `setup → open → playing`, with a `players` map, a
+  `participants` list (spectators are allowed up to `maxClients`), chat
+  history, and host re-election on leave. `onJoin` still performs no
+  authentication — any client can join a room it knows the id of.
+  What's missing is the game itself: `startGame` only flips the phase; it
+  does not pick a word pair, assign roles, or run voting/elimination.
+- Two frontend pages share one Colyseus `roomId`, each owning one phase:
+  `/create-room/:roomId?` (`CreateRoom.tsx`) is the lobby for phase
+  `setup`, and `/game/:id` (`GameRoom.tsx` + `GameView.tsx`) renders
+  phases `open`/`playing`. Both connect via `@colyseus/react`'s
+  `useRoom()`. The hop between them is driven by the host's `start`
+  message: the room reserves a seat for every client
+  (`matchMaker.reserveSeatFor`) and sends each a `seatReservation`, which
+  `GameRoom` redeems with `consumeSeatReservation`. Those reserved seats
+  are what keep the room alive while every client leaves and re-joins,
+  and the reservation's `auth: { isHost }` is what preserves host
+  identity across the new `sessionId`. Deep-linking `/game/:id` while the
+  room is still in `setup` redirects back to the lobby.
 - `Rooms.colyseusRoomId` in the Prisma schema (populated once a lobby's
   game actually starts) is still unused by any of the above — nothing yet
-  links a `Rooms` DB row to a live Colyseus room instance.
+  links a `Rooms` DB row to a live Colyseus room instance. `RoomCard` on
+  the Home page consequently links to `/game/<numeric Rooms.id>`, which
+  is not a Colyseus room id and will fail to join.
 
 ## Configuration & secrets
 

@@ -81,12 +81,12 @@ async function main() {
 
 	const aliceRoomGame3 = await prisma.games.create({
 		data: {
-			status: "finished",
-			victory: "undercover",
+			status: "playing",
+			victory: null,
 			civilianWord: "volcan",
 			undercoverWord: "montagne",
 			roomId: aliceRoom.id,
-			finishedAt: new Date(),
+			finishedAt: null,
 		}
 	});
 
