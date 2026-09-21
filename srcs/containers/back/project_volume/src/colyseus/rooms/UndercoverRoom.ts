@@ -141,7 +141,16 @@ export class UndercoverRoom extends Room {
     if (player) {
       player.connected = false;
     }
-    this.allowReconnection(client, RECONNECTION_WINDOW_SECONDS);
+
+    this.allowReconnection(client, RECONNECTION_WINDOW_SECONDS).catch(
+      (reason: unknown) => {
+        this.logger.log(
+          reason === false
+            ? 'reconnection window expired'
+            : `reconnection not possible: ${reason instanceof Error ? reason.message : String(reason)}`,
+        );
+      },
+    );
   }
 
   onReconnect(client: Client) {
