@@ -1,44 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
-import type { Room, SeatReservation } from "@colyseus/sdk";
-import type { LobbyRoom } from "@back/colyseus/rooms/LobbyRoom";
+import type { SeatReservation } from "@colyseus/sdk";
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import { client } from "@/lib/colyseusClient";
+import {
+	clearReconnection,
+	readStoredReconnection,
+	storeReconnection,
+} from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
-}
-
-const RECONNECTION_STORAGE_KEY = "lobby-reconnection";
-
-function readStoredReconnection(): { roomId: string; token: string } | null {
-	try {
-		const raw = sessionStorage.getItem(RECONNECTION_STORAGE_KEY);
-		return raw ? (JSON.parse(raw) as { roomId: string; token: string }) : null;
-	} catch {
-		return null;
-	}
-}
-
-function storeReconnection(room: Room) {
-	try {
-		sessionStorage.setItem(
-			RECONNECTION_STORAGE_KEY,
-			JSON.stringify({ roomId: room.roomId, token: room.reconnectionToken }),
-		);
-	} catch {
-		// ignore storage failures (e.g. private browsing)
-	}
-}
-
-function clearReconnection() {
-	try {
-		sessionStorage.removeItem(RECONNECTION_STORAGE_KEY);
-	} catch {
-		// ignore storage failures
-	}
 }
 
 export default function CreateRoom() {
@@ -58,14 +33,14 @@ export default function CreateRoom() {
 					const stored = readStoredReconnection();
 					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
 						try {
-							return await client.reconnect<LobbyRoom>(stored.token);
+							return await client.reconnect<UndercoverRoom>(stored.token);
 						} catch {
 							clearReconnection();
 						}
 					}
 					return targetRoomId
-						? client.joinById<LobbyRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-						: client.create<LobbyRoom>("lobby", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+						? client.joinById<UndercoverRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
+						: client.create<UndercoverRoom>("undercover", { name: profile?.name, avatarUrl: profile?.avatarUrl });
 				},
 		[profileLoading],
 	);
@@ -81,6 +56,15 @@ export default function CreateRoom() {
 			void navigate(`/create-room/${room.roomId}`, { replace: true });
 		}
 	}, [room, routeRoomId, navigate]);
+
+	// The server issues a new reconnection token on every join, and the SDK's
+	// automatic retry rewrites it on the same room object, so re-store it.
+	useEffect(() => {
+		if (!room) return;
+		const onReconnect = () => storeReconnection(room);
+		room.onReconnect(onReconnect);
+		return () => room.onReconnect.remove(onReconnect);
+	}, [room]);
 
 	useEffect(() => {
 		if (!room) return;
