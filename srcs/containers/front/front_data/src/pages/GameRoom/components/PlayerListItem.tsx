@@ -36,9 +36,9 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, on
 			<button type="button" onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2 text-left">
 				<img src={avatarUrl} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
 				<span
-					className={`min-w-0 flex-1 truncate text-body font-semibold ${isHost ? "text-start-gradient-start/85 font-bold" : ""}`}
+					className={`min-w-0 flex-1 truncate text-body font-semibold`}
 				>
-					{name}
+					{isHost ? name + " 👑" : name}
 				</span>
 			</button>
 			{(expanded || showKick) && (

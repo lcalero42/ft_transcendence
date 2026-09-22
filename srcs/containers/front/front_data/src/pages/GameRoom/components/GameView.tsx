@@ -84,12 +84,10 @@ function GameView({ room }: GameViewProps) {
 			<Header compact />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
 				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
-					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-4 lg:w-auto">
-						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
-							<div className="absolute top-0 left-0">
-								<Timer secondsLeft={secondsLeft} />
-							</div>
-							<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
+					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 lg:w-auto">
+						<div className="z-10 flex w-full shrink-0 items-center justify-between">
+							<Timer secondsLeft={secondsLeft} />
+							<div className="flex items-center gap-3 lg:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label="Open chat"
@@ -101,6 +99,8 @@ function GameView({ room }: GameViewProps) {
 									onClick={() => setDrawer("players")}
 								/>
 							</div>
+						</div>
+						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
 							<PlayerCircle players={participantPlayerList}>
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>

@@ -19,7 +19,7 @@ const RADIUS_PERCENT = 40;
 
 function PlayerCircle({ players, children }: PlayerCircleProps) {
 	return (
-		<div className="relative mx-auto aspect-square w-full min-w-[352px] max-w-[500px] lg:max-w-[32vw]">
+		<div className="relative mx-auto aspect-square w-full min-w-[352px] max-w-[min(780px,64vh)] lg:max-w-[min(52vw,64vh)]">
 			<div
 				className="border-accent-purple/40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
 				style={{ width: `${RADIUS_PERCENT * 2}%`, height: `${RADIUS_PERCENT * 2}%` }}
