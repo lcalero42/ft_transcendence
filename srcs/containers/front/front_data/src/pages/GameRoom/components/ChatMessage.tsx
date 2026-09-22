@@ -7,14 +7,18 @@ interface ChatMessageProps {
 
 function ChatMessage({ name, text, time, avatarUrl }: ChatMessageProps) {
 	return (
-		<div className="flex items-start gap-2">
-			<img src={avatarUrl} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
-			<div className="flex min-w-0 flex-1 flex-col gap-1">
+		<div className="flex items-start gap-3">
+			<img
+				src={avatarUrl}
+				alt={name}
+				className="mt-1 size-8 shrink-0 rounded-full object-cover"
+			/>
+			<div className="border-card-border-2 flex min-w-0 flex-1 flex-col gap-2 rounded-2xl border bg-white/5 px-4 py-3">
 				<div className="flex items-baseline justify-between gap-2">
-					<span className="text-body font-semibold">{name}</span>
+					<span className="text-body font-bold">{name}</span>
 					<span className="text-gray-low text-small">{time}</span>
 				</div>
-				<p className="text-body break-words">{text}</p>
+				<p className="text-small text-left break-words whitespace-pre-wrap">{text}</p>
 			</div>
 		</div>
 	);
