@@ -107,7 +107,7 @@ function GameView({ room }: GameViewProps) {
 						</div>
 						<div className="flex w-full flex-col items-center gap-4 lg:flex-row lg:items-end lg:justify-between md:gap-6">
 							{phase === "open" && (
-								<div className="mb-[max(1vw,12px)] flex items-center gap-3 lg:mx-auto">
+								<div className="flex items-end gap-3 lg:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
 									{isHost && (
 										<StartGameButton
