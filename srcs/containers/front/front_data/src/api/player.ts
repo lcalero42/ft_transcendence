@@ -1,4 +1,5 @@
 import { apiFetch } from "./auth/client";
+import AvatarDefault from "@/assets/profile-photo/avatar-default.svg";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 export interface Player {
@@ -46,9 +47,8 @@ export async function countPlayer() {
 	return apiFetch<number>("/player/count-activ");
 }
 
-export function getAvatarUrl(path: string | null): string | undefined {
-	if (!path) return undefined;
-	return `${BASE_URL}${path}`;
+export function getAvatarUrl(path: string | null): string {
+	return path ? `${BASE_URL}${path}` : AvatarDefault;
 }
 
 export async function updateAvatar(playerId: number, file: File): Promise<Player> {

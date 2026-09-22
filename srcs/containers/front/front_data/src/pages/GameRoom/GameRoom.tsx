@@ -5,13 +5,13 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { client } from "@/lib/colyseusClient";
+import GameView from "@/pages/GameRoom/components/GameView";
 import {
 	clearReconnection,
 	readStoredReconnection,
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import GameView from "@/components/colyseus/GameView";
 
 function GameRoom() {
 	const { id } = useParams();
@@ -19,9 +19,6 @@ function GameRoom() {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	// Frozen at mount: the effect below strips the reservation from history.state,
-	// and useRoom compares deps by identity — an unfrozen reservation would tear
-	// down the room and rejoin.
 	const reservationRef = useRef(
 		(location.state as { reservation?: SeatReservation } | null)?.reservation,
 	);
@@ -60,14 +57,12 @@ function GameRoom() {
 	useEffect(() => {
 		if (!room) return;
 		storeReconnection(room);
-		// Drop the now-spent reservation so a reload reconnects instead of replaying it.
+
 		if (location.state) {
 			void navigate(location.pathname, { replace: true, state: null });
 		}
 	}, [room, location.state, location.pathname, navigate]);
 
-	// The server issues a new reconnection token on every join, and the SDK's
-	// automatic retry rewrites it on the same room object, so re-store it.
 	useEffect(() => {
 		if (!room) return;
 		const onReconnect = () => storeReconnection(room);
@@ -75,8 +70,6 @@ function GameRoom() {
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
 
-	// The room is still in its lobby phase: the link was shared before the host
-	// started it. Send the player to the lobby, which owns the "setup" phase.
 	const phase = useRoomState(room, (s) => s.phase);
 	useEffect(() => {
 		if (!room || phase !== "setup") return;

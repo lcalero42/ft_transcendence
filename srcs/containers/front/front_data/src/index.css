@@ -100,6 +100,15 @@ body {
 	text-outline
 	shrink-0;
 }
+@utility text-small {
+	font-size: clamp(10px, 0.7vw, 17px);
+}
+@utility text-body {
+	font-size: clamp(12px, 0.85vw, 19px);
+}
+@utility text-title {
+	font-size: clamp(16px, 1.3vw, 26px);
+}
 @utility mask-icon {
 	mask-repeat:no-repeat;
 	mask-size:contain;
@@ -149,6 +158,29 @@ body {
 		text-sm
 		items-center
 		clean-link;
+	}
+
+	.badge-action {
+		@apply px-[max(1.2vw,14px)]
+		py-[max(0.7vw,8px)]
+		text-[clamp(13px,0.8vw,22px)];
+	}
+
+	/* ============ FORM ============ */
+
+	.input {
+		@apply border-grey-border
+		placeholder:text-gray-low
+		focus:border-accent-purple
+		w-full
+		rounded-lg
+		border
+		bg-transparent
+		px-[max(1.2vw,14px)]
+		py-[max(0.7vw,8px)]
+		text-[clamp(13px,0.8vw,22px)]
+		text-white
+		focus:outline-none;
 	}
 
 	/* ============ CARDS ============ */
