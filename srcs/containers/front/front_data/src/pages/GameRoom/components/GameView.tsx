@@ -8,7 +8,7 @@ import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
@@ -34,15 +34,15 @@ function GameView({ room }: GameViewProps) {
 	const isMyTurn = playerEntries[activePlayerIndex]?.[0] === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
-	const chatMessages = [
-		{
-			id: "1",
-			name: activePlayer?.name ?? "mastermind",
-			text: "Hello everyone! I'm the mastermind.",
-			time: "21:42",
-			avatarUrl: getAvatarUrl(activePlayer?.avatarUrl ?? null),
-		},
-	];
+	const chat = useRoomState(room, (s) => s.chat);
+	const chatMessages = (chat ?? []).map((message, index) => ({
+		id: `${message.sessionId}-${message.sentAt}-${index}`,
+		name: message.name,
+		text: message.text,
+		time: formatChatTime(message.sentAt),
+		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
+	}));
+	const handleSendChat = (text: string) => room.send("chat", text);
 	const playerList = playerEntries.map(([sessionId, player], index) => ({
 		sessionId,
 		name: player.name,
@@ -93,7 +93,7 @@ function GameView({ room }: GameViewProps) {
 					</div>
 					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 lg:flex lg:w-[400px]">
 						<div className="w-full h-[70%] min-h-0">
-							<ChatBox messages={chatMessages} />
+							<ChatBox messages={chatMessages} onSend={handleSendChat} />
 						</div>
 						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
 							<PlayersList players={playerList} isHost={isHost} />
@@ -102,7 +102,7 @@ function GameView({ room }: GameViewProps) {
 				</div>
 			</main>
 			<MobileDrawer open={drawer === "chat"} onClose={() => setDrawer(null)}>
-				<ChatBox messages={chatMessages} />
+				<ChatBox messages={chatMessages} onSend={handleSendChat} />
 			</MobileDrawer>
 			<MobileDrawer open={drawer === "players"} onClose={() => setDrawer(null)}>
 				<PlayersList players={playerList} isHost={isHost} />
