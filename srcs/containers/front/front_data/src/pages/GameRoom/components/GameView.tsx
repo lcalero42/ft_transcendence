@@ -2,8 +2,8 @@ import { useState } from "react";
 import { MessageCircle, Users } from "lucide-react";
 import type { Room } from "@colyseus/sdk";
 import { useRoomState } from "@colyseus/react";
-import type { Rooms } from "@back/colyseus/rooms/Rooms";
-import type { Player } from "@back/colyseus/rooms/RoomState";
+import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
+import type { Player } from "@back/colyseus/rooms/UndercoverState";
 import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
 import Timer from "@/pages/GameRoom/components/Timer";
@@ -19,7 +19,7 @@ import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
 
 interface GameViewProps {
-	room: Room<Rooms>;
+	room: Room<UndercoverRoom>;
 }
 
 function GameView({ room }: GameViewProps) {
@@ -32,7 +32,8 @@ function GameView({ room }: GameViewProps) {
 	const arrowDirection = getPlayerAngleDeg(activePlayerIndex, playerEntries.length);
 	const activePlayer = playerEntries[activePlayerIndex]?.[1];
 	const isMyTurn = playerEntries[activePlayerIndex]?.[0] === room.sessionId;
-	const isHost = players?.[room.sessionId]?.isHost === true;
+	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
+	const isHost = hostSessionId === room.sessionId;
 	const chatMessages = [
 		{
 			id: "1",
