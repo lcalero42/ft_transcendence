@@ -12,7 +12,7 @@ function formatTime(secondsLeft: number) {
 
 function Timer({ secondsLeft }: TimerProps) {
 	return (
-		<div className="card mb-0! w-fit flex-row items-center gap-[max(0.6vw,8px)] p-[max(0.9vw,10px)]">
+		<div className="card border-card-border-2 mb-0! w-fit flex-row items-center gap-[max(0.6vw,8px)] border p-[max(0.9vw,10px)]">
 			<TimerIcon className="text-accent-purple size-[clamp(16px,1.2vw,26px)] shrink-0" />
 			<div className="flex flex-col items-start">
 				<span className="text-gray-low text-small">Timer</span>
