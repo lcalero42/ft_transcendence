@@ -8,7 +8,7 @@ interface MobileDrawerTriggerProps {
 
 function MobileDrawerTrigger({ icon: Icon, label, onClick }: MobileDrawerTriggerProps) {
 	return (
-		<button type="button" onClick={onClick} aria-label={label} className="text-white">
+		<button type="button" onClick={onClick} aria-label={label} className="text-accent-purple">
 			<Icon className="size-6" />
 		</button>
 	);

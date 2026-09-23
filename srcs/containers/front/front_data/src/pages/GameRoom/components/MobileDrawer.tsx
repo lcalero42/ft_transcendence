@@ -22,7 +22,7 @@ function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 
 	return (
 		<div
-			className={`fixed inset-0 z-50 flex justify-end lg:hidden ${open ? "" : "pointer-events-none"}`}
+			className={`fixed inset-0 z-50 flex justify-end 2xl:hidden ${open ? "" : "pointer-events-none"}`}
 			aria-hidden={!open}
 		>
 			<button

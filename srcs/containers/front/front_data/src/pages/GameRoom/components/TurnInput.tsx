@@ -34,7 +34,7 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
 				disabled={!isMyTurn}
-				placeholder="Type your guess..."
+				placeholder={isMyTurn ? "Type your guess..." : "Wait for your turn..."}
 				className="input disabled:opacity-50"
 			/>
 		</form>

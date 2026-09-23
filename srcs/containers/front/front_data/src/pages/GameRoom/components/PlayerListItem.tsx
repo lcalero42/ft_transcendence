@@ -4,13 +4,14 @@ interface PlayerListItemProps {
 	name: string;
 	avatarUrl?: string;
 	isSelf?: boolean;
+	isHost?: boolean;
 	canKick?: boolean;
 	expanded?: boolean;
 	onToggle?: () => void;
 	onKick?: () => void;
 }
 
-function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
+function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
 	const showKick = expanded && canKick && !isSelf;
 	const itemRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +35,11 @@ function PlayerListItem({ name, avatarUrl, isSelf, canKick, expanded, onToggle, 
 		>
 			<button type="button" onClick={onToggle} className="flex min-w-0 flex-1 items-center gap-2 text-left">
 				<img src={avatarUrl} alt={name} className="size-8 shrink-0 rounded-full object-cover" />
-				<span className="min-w-0 flex-1 truncate text-body font-semibold">{name}</span>
+				<span
+					className={`min-w-0 flex-1 truncate text-body font-semibold`}
+				>
+					{isHost ? name + " 👑" : name}
+				</span>
 			</button>
 			{(expanded || showKick) && (
 				<div className="flex shrink-0 gap-1">
