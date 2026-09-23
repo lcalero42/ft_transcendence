@@ -130,7 +130,7 @@ function GameView({ room }: GameViewProps) {
 							)}
 						</div>
 					</div>
-					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 lg:flex lg:w-[400px]">
+					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 lg:flex lg:w-[500px]">
 						<div className="w-full h-[70%] min-h-0">
 							<ChatBox messages={chatMessages} onSend={handleSendChat} />
 						</div>

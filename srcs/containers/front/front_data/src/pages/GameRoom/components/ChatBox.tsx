@@ -25,7 +25,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 	}
 
 	return (
-		<div className="card border-card-border-2 mb-0! flex h-full min-h-0 flex-col border-2">
+		<div className="card border-card-border-2 mb-0! flex h-full min-h-0 flex-col border-2 bg-transparent">
 			<h2 className="text-accent-purple border-card-border-2 -mx-5 mb-2 border-b px-5 pb-3 text-left text-title font-bold">
 				Chat
 			</h2>
@@ -46,7 +46,7 @@ function ChatBox({ messages, onSend }: ChatBoxProps) {
 					value={value}
 					onChange={(event) => setValue(event.target.value)}
 					placeholder="Type a message..."
-					className="input"
+					className="input h-10 py-2 text-sm"
 				/>
 			</form>
 		</div>

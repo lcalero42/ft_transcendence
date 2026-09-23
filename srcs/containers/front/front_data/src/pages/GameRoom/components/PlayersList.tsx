@@ -19,7 +19,7 @@ function PlayersList({ players, isHost, onKick }: PlayersListProps) {
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 
 	return (
-		<div className="card border-card-border-2 mb-0! flex h-full min-h-0 flex-col border-2">
+		<div className="card border-card-border-2 mb-0! flex h-full min-h-0 flex-col border-2 bg-transparent">
 			<h2 className="text-accent-purple border-card-border-2 -mx-5 mb-2 border-b px-5 pb-3 text-left text-title font-bold">
 				Players
 			</h2>

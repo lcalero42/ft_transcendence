@@ -24,6 +24,15 @@ function PlayerCircle({ players, children }: PlayerCircleProps) {
 				className="border-accent-purple/40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
 				style={{ width: `${RADIUS_PERCENT * 2}%`, height: `${RADIUS_PERCENT * 2}%` }}
 			/>
+			<div
+				className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+				style={{
+					width: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
+					height: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
+					backgroundColor: "#060C30",
+					border: "1px solid #15113A",
+				}}
+			/>
 			<div className="absolute inset-0 flex items-center justify-center">{children}</div>
 			{players.map((player, index) => {
 				const angle = (getPlayerAngleDeg(index, players.length) * Math.PI) / 180;
