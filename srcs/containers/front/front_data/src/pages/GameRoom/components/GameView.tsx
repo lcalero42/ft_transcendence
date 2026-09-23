@@ -105,7 +105,7 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full flex-col items-center gap-4 2xl:flex-row 2xl:items-end 2xl:justify-between md:gap-6">
+						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:flex-row 2xl:items-end 2xl:justify-between md:gap-6">
 							{phase === "open" && (
 								<div className="flex items-end gap-3 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
