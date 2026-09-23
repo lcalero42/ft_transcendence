@@ -1,5 +1,10 @@
 import { Logger } from '@nestjs/common';
-import { Room, type Client, matchMaker } from '@colyseus/core';
+import {
+  Room,
+  type Client,
+  type AuthContext,
+  matchMaker,
+} from '@colyseus/core';
 import { UndercoverState, Player, ChatMessage } from './UndercoverState';
 
 export interface JoinOptions {
@@ -8,7 +13,8 @@ export interface JoinOptions {
 }
 
 interface SeatTransferAuth {
-  isHost: boolean;
+  isHost?: boolean;
+  token?: string;
 }
 
 const MIN_PARTICIPANTS = 3;
@@ -17,6 +23,8 @@ const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
 const RECONNECTION_WINDOW_SECONDS = 20;
+const MAX_ROOM_NAME_LENGTH = 12;
+const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
 
 export class UndercoverRoom extends Room {
   maxClients = MAX_CLIENTS;
@@ -31,6 +39,7 @@ export class UndercoverRoom extends Room {
       }
       this.state.phase = 'open';
       await this.setPrivate(false);
+      await this.saveRoom(client);
 
       const roomCache = await matchMaker.getRoomById(this.roomId);
       for (const [sessionId, player] of this.state.players.entries()) {
@@ -122,6 +131,11 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
+  onAuth(_client: Client, _options: JoinOptions, context: AuthContext) {
+    const auth: SeatTransferAuth = { token: context.token };
+    return auth;
+  }
+
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
     const player = new Player();
@@ -182,6 +196,33 @@ export class UndercoverRoom extends Room {
 
   onDispose() {
     this.logger.log('room disposed');
+  }
+
+  private async saveRoom(host: Client) {
+    const token = (host.auth as SeatTransferAuth | undefined)?.token;
+    if (!token) {
+      this.logger.warn('host has no token, room not saved');
+      return;
+    }
+    const hostName = this.state.players.get(host.sessionId)?.name ?? '';
+    try {
+      const res = await fetch(`${API_URL}/room`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: hostName.slice(0, MAX_ROOM_NAME_LENGTH),
+          colyseusRoomId: this.roomId,
+        }),
+      });
+      if (!res.ok) {
+        this.logger.warn(`could not save room: ${res.status}`);
+      }
+    } catch (error) {
+      this.logger.warn(`could not save room: ${String(error)}`);
+    }
   }
 
   private isHost(client: Client) {

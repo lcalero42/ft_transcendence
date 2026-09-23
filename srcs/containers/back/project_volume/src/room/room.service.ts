@@ -23,6 +23,7 @@ export class RoomService {
     const createRoom = await this.prisma.rooms.create({
       data: {
         name: createRoomDto.name,
+        colyseusRoomId: createRoomDto.colyseusRoomId,
         createdBy: playerId,
       },
     });
