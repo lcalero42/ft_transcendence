@@ -10,6 +10,7 @@ import IconDetective from "../../assets/icons/brand-redhat.svg";
 import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
+import { LogOut } from "lucide-react";
 
 import {
 	getMe,
@@ -123,9 +124,10 @@ function Profile() {
 				</div>
 				<button
 				    onClick={handleLogout}
-				    className="fixed bottom-4 left-4 z-100 flex items-center gap-2 rounded-lg px-3 py-2 font-small text-red-500 transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400"
+				    className="mt-3 ml-auto flex items-center gap-2 rounded-xl border border-card-border bg-card px-4 py-2 text-sm font-medium text-gray-high transition-colors duration-150 hover:border-defeat hover:text-defeat"
 				>
-				    logout
+				    <LogOut size={16} />
+				    Logout
 				</button>
 			</main>
 			<Credit />
