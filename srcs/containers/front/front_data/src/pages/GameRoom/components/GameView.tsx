@@ -46,9 +46,8 @@ function GameView({ room }: GameViewProps) {
 	useEffect(() => {
 		if (phase === "open" && autoJoin && !isParticipant) {
 			room.send("joinGame");
-			setAutoJoin(false);
 		}
-	}, [phase]);
+	}, [phase, autoJoin, isParticipant, room]);
 
 	const handleToggleParticipant = () => room.send(isParticipant ? "leaveGame" : "joinGame");
 	const handleStartGame = () => room.send("startGame");
@@ -105,9 +104,9 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:flex-row 2xl:items-end 2xl:justify-between md:gap-6">
+						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
 							{phase === "open" && (
-								<div className="flex items-end gap-3 2xl:mx-auto">
+								<div className="flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
 									{isHost && (
 										<StartGameButton
@@ -119,12 +118,12 @@ function GameView({ room }: GameViewProps) {
 							)}
 							{phase === "playing" && (
 								<>
-									<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:w-auto 2xl:max-w-xl">
+									<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto">
 										<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 									</div>
-									<div className="order-2 mb-[max(1vw,12px)] flex items-center gap-3 2xl:order-1">
-										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
+									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
 										{isHost && <EndGameButton onClick={handleEndGame} />}
+										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 									</div>
 								</>
 							)}
