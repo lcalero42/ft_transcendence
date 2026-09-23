@@ -12,36 +12,39 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
 
   //players
+  const alicePassword = await bcrypt.hash("Alice1234#", 10);
+  const bobPassword = await bcrypt.hash("Bob1234#", 10);
+  const marleyPassword = await bcrypt.hash("Marley1234#", 10);
 
   const alice = await prisma.player.upsert({
     where: { email: "alice@prisma.io" },
-    update: {},
+    update: { password: alicePassword },
     create: {
       name: "Alice",
       email: "alice@prisma.io",
-            password: await bcrypt.hash("Alice1234#", 10),
+            password: alicePassword,
       aboutMe: "im a princess",
     },
   });
 
   const bob = await prisma.player.upsert({
     where: { email: "bob@prisma.io" },
-    update: {},
+    update: { password: bobPassword },
     create: {
       name: "Bob",
       email: "bob@prisma.io",
-            password: await bcrypt.hash("Bob1234#", 10),
+            password: bobPassword,
       aboutMe: "im a king",
     },
   });
 
   const marley = await prisma.player.upsert({
     where: { email: "marley@prisma.io" },
-    update: {},
+    update: { password: marleyPassword },
     create: {
       name: "Marley",
       email: "marley@prisma.io",
-      password: await bcrypt.hash("Marley1234#", 10),
+      password: await marleyPassword,
       aboutMe: "i pull on main every morning",
     },
   });
