@@ -9,7 +9,7 @@ function CenterWord({ word, direction = 0 }: CenterWordProps) {
 	return (
 		<div className="relative flex items-center justify-center">
 			<ArrowUp
-				className="size-[max(15vw,120px)]"
+				className="h-[max(11vw,120px)] w-[max(15vw,120px)]"
 				strokeWidth={1.5}
 				style={{ transform: `rotate(${direction}deg)`, color: "#8B57FB" }}
 			/>
