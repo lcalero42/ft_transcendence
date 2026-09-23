@@ -83,11 +83,11 @@ function GameView({ room }: GameViewProps) {
 		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
 			<Header compact />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
-				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
-					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 lg:w-auto">
+				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center 2xl:flex-row 2xl:items-stretch">
+					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
 						<div className="z-10 flex w-full shrink-0 items-center justify-between">
 							<Timer secondsLeft={secondsLeft} />
-							<div className="flex items-center gap-3 lg:hidden">
+							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label="Open chat"
@@ -105,9 +105,9 @@ function GameView({ room }: GameViewProps) {
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full flex-col items-center gap-4 lg:flex-row lg:items-end lg:justify-between md:gap-6">
+						<div className="flex w-full flex-col items-center gap-4 2xl:flex-row 2xl:items-end 2xl:justify-between md:gap-6">
 							{phase === "open" && (
-								<div className="flex items-end gap-3 lg:mx-auto">
+								<div className="flex items-end gap-3 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
 									{isHost && (
 										<StartGameButton
@@ -119,10 +119,10 @@ function GameView({ room }: GameViewProps) {
 							)}
 							{phase === "playing" && (
 								<>
-									<div className="order-1 min-w-0 w-full lg:order-2 lg:w-auto lg:max-w-xl">
+									<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:w-auto 2xl:max-w-xl">
 										<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
 									</div>
-									<div className="order-2 mb-[max(1vw,12px)] flex items-center gap-3 lg:order-1">
+									<div className="order-2 mb-[max(1vw,12px)] flex items-center gap-3 2xl:order-1">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 										{isHost && <EndGameButton onClick={handleEndGame} />}
 									</div>
@@ -130,7 +130,7 @@ function GameView({ room }: GameViewProps) {
 							)}
 						</div>
 					</div>
-					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 lg:flex lg:w-[500px]">
+					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 2xl:flex 2xl:w-[500px]">
 						<div className="w-full h-[70%] min-h-0">
 							<ChatBox messages={chatMessages} onSend={handleSendChat} />
 						</div>
