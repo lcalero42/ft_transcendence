@@ -80,7 +80,7 @@ function GameView({ room }: GameViewProps) {
 	}));
 
 	return (
-		<div className="page h-screen overflow-hidden">
+		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
 			<Header compact />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
 				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
