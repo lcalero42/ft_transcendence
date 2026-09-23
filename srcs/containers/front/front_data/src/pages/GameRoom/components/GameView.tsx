@@ -83,7 +83,7 @@ function GameView({ room }: GameViewProps) {
 		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
 			<Header compact />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
-				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center 2xl:flex-row 2xl:items-stretch">
+				<div className="relative flex h-[80vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center 2xl:flex-row 2xl:items-stretch">
 					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
 						<div className="z-10 flex w-full shrink-0 items-center justify-between">
 							<Timer secondsLeft={secondsLeft} />
