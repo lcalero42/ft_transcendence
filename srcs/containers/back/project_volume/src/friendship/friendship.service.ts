@@ -49,6 +49,8 @@ export class FriendshipService {
       where: {
         status,
         OR: [{ requesterId: playerId }, { addresseeId: playerId }],
+        requester: { deletedAt: null },
+        addressee: { deletedAt: null },
       },
       include: {
         requester: { select: { id: true, name: true, avatarUrl: true } },
@@ -62,6 +64,8 @@ export class FriendshipService {
       where: {
         id,
         OR: [{ requesterId: playerId }, { addresseeId: playerId }],
+        requester: { deletedAt: null },
+        addressee: { deletedAt: null },
       },
       include: {
         requester: { select: { id: true, name: true, avatarUrl: true } },

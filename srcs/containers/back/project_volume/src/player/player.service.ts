@@ -7,7 +7,9 @@ export class PlayerService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    const players = await this.prisma.player.findMany();
+    const players = await this.prisma.player.findMany({
+      where: { deletedAt: null },
+    });
     return players;
   }
 
@@ -52,7 +54,7 @@ export class PlayerService {
 
   async update(id: number, updatePlayerDto: UpdatePlayerDto) {
     const updatePlayer = await this.prisma.player.update({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
       data: {
         email: updatePlayerDto.email,
         name: updatePlayerDto.name,
@@ -65,7 +67,7 @@ export class PlayerService {
 
   async updateAvatar(id: number, avatarUrl: string) {
     const updatedPlayer = await this.prisma.player.update({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
       data: { avatarUrl },
     });
     return updatedPlayer;

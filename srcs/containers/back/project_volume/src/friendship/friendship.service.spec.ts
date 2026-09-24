@@ -135,6 +135,8 @@ describe('FriendshipService', () => {
         where: {
           status: FriendshipStatus.ACCEPTED,
           OR: [{ requesterId: 1 }, { addresseeId: 1 }],
+          requester: { deletedAt: null },
+          addressee: { deletedAt: null },
         },
         include: { requester: playerSelect, addressee: playerSelect },
       });
@@ -152,6 +154,8 @@ describe('FriendshipService', () => {
         where: {
           status: undefined,
           OR: [{ requesterId: 1 }, { addresseeId: 1 }],
+          requester: { deletedAt: null },
+          addressee: { deletedAt: null },
         },
         include: { requester: playerSelect, addressee: playerSelect },
       });
@@ -165,7 +169,12 @@ describe('FriendshipService', () => {
 
       expect(await service.findOne(5, 1)).toBe(result);
       expect(prismaMock.friendship.findFirst).toHaveBeenCalledWith({
-        where: { id: 5, OR: [{ requesterId: 1 }, { addresseeId: 1 }] },
+        where: {
+          id: 5,
+          OR: [{ requesterId: 1 }, { addresseeId: 1 }],
+          requester: { deletedAt: null },
+          addressee: { deletedAt: null },
+        },
         include: { requester: playerSelect, addressee: playerSelect },
       });
     });
