@@ -17,13 +17,20 @@ interface SeatTransferAuth {
   token?: string;
 }
 
+interface WordPair {
+  civilianWord: string;
+  undercoverWord: string;
+}
+
+type Role = 'civilian' | 'undercover';
+
 const MIN_PARTICIPANTS = 3;
 const MAX_PARTICIPANTS = 6;
 const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
 const RECONNECTION_WINDOW_SECONDS = 20;
-const MAX_ROOM_NAME_LENGTH = 12;
+const MAX_ROOM_NAME_LENGTH = 16;
 const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
 
 export class UndercoverRoom extends Room {
@@ -31,6 +38,8 @@ export class UndercoverRoom extends Room {
   state = new UndercoverState();
 
   private readonly logger = new Logger('UndercoverRoom');
+  private wordPair: WordPair | null = null;
+  private roles = new Map<string, Role>();
 
   messages = {
     start: async (client: Client) => {
@@ -102,7 +111,7 @@ export class UndercoverRoom extends Room {
       this.removeParticipant(client.sessionId);
     },
 
-    startGame: (client: Client) => {
+    startGame: async (client: Client) => {
       if (
         !this.isHost(client) ||
         this.state.phase !== 'open' ||
@@ -110,10 +119,26 @@ export class UndercoverRoom extends Room {
       ) {
         return;
       }
+      const pair = await this.fetchWordPair();
+      if (!pair) {
+        this.logger.warn('no word pair available, game not started');
+        return;
+      }
+      this.wordPair = pair;
+      this.assignRoles();
       this.state.phase = 'playing';
+      for (const sessionId of this.state.participants) {
+        this.sendWord(sessionId);
+      }
       this.logger.log(
         `game started with ${this.state.participants.length} participants`,
       );
+    },
+
+    getWord: (client: Client) => {
+      if (this.state.phase === 'playing') {
+        this.sendWord(client.sessionId);
+      }
     },
 
     endGame: (client: Client) => {
@@ -225,6 +250,50 @@ export class UndercoverRoom extends Room {
     }
   }
 
+  private async fetchWordPair(): Promise<WordPair | null> {
+    try {
+      const res = await fetch(`${API_URL}/word-pair`);
+      if (!res.ok) {
+        this.logger.warn(`could not fetch word pairs: ${res.status}`);
+        return null;
+      }
+      const pairs = (await res.json()) as WordPair[];
+      if (pairs.length === 0) {
+        return null;
+      }
+      const { civilianWord, undercoverWord } =
+        pairs[Math.floor(Math.random() * pairs.length)];
+      return { civilianWord, undercoverWord };
+    } catch (error) {
+      this.logger.warn(`could not fetch word pairs: ${String(error)}`);
+      return null;
+    }
+  }
+
+  private assignRoles() {
+    const participants = [...this.state.participants];
+    const undercoverIndex = Math.floor(Math.random() * participants.length);
+    this.roles.clear();
+    participants.forEach((sessionId, index) => {
+      this.roles.set(
+        sessionId,
+        index === undercoverIndex ? 'undercover' : 'civilian',
+      );
+    });
+  }
+
+  private sendWord(sessionId: string) {
+    const role = this.roles.get(sessionId);
+    if (!role || !this.wordPair) {
+      return;
+    }
+    const word =
+      role === 'undercover'
+        ? this.wordPair.undercoverWord
+        : this.wordPair.civilianWord;
+    this.clients.getById(sessionId)?.send('word', { word });
+  }
+
   private isHost(client: Client) {
     return client.sessionId === this.state.hostSessionId;
   }
@@ -239,5 +308,7 @@ export class UndercoverRoom extends Room {
   private finishGame() {
     this.state.phase = 'open';
     this.state.participants.clear();
+    this.wordPair = null;
+    this.roles.clear();
   }
 }

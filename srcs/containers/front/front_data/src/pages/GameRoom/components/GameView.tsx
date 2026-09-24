@@ -26,7 +26,7 @@ interface GameViewProps {
 
 function GameView({ room }: GameViewProps) {
 	const secondsLeft = 20;
-	const currentWord = "PLUME";
+	const [myWord, setMyWord] = useState("");
 	const activePlayerIndex = 0;
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
@@ -42,6 +42,13 @@ function GameView({ room }: GameViewProps) {
 	const isMyTurn = participantEntries[activePlayerIndex]?.[0] === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
+	const currentWord = phase === "playing" ? myWord : "";
+
+	useEffect(() => {
+		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
+		room.send("getWord");
+		return unsubscribe;
+	}, [room]);
 
 	useEffect(() => {
 		if (phase === "open" && autoJoin && !isParticipant) {
