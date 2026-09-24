@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 import { PrismaService } from '../prisma.service';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/client';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 
@@ -18,7 +19,10 @@ describe('GameController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GameController],
       providers: [GameService, { provide: PrismaService, useValue: {} }],
-    }).compile();
+    })
+      .overrideGuard(InternalApiKeyGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     gameController = module.get<GameController>(GameController);
     gameService = module.get<GameService>(GameService);
@@ -118,7 +122,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.findOne('5')).toBe(result);
+      expect(await gameController.findOne(5)).toBe(result);
       expect(gameService.findOne).toHaveBeenCalledWith(5);
     });
 
@@ -127,7 +131,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'findOne')
         .mockRejectedValue(new NotFoundException('Game 404 not found'));
 
-      await expect(gameController.findOne('404')).rejects.toThrow(
+      await expect(gameController.findOne(404)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -153,14 +157,14 @@ describe('GameController', () => {
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve(res));
 
-      expect(await gameController.getPlayersByGame('5')).toBe(res);
+      expect(await gameController.getPlayersByGame(5)).toBe(res);
       expect(gameService.getPlayersByGame).toHaveBeenCalledWith(5);
     });
     it('should return void tab when the game has no players', async () => {
       jest
         .spyOn(gameService, 'getPlayersByGame')
         .mockImplementation(() => Promise.resolve([]));
-      expect(await gameController.getPlayersByGame('5')).toEqual([]);
+      expect(await gameController.getPlayersByGame(5)).toEqual([]);
     });
 
     it('should propagate NotFoundException when the game does not exist', async () => {
@@ -168,7 +172,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'getPlayersByGame')
         .mockRejectedValue(new NotFoundException('Game 404 not found'));
 
-      await expect(gameController.getPlayersByGame('404')).rejects.toThrow(
+      await expect(gameController.getPlayersByGame(404)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -182,7 +186,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'getMyWord')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.getMyWord('5', req)).toBe(result);
+      expect(await gameController.getMyWord(5, req)).toBe(result);
       expect(gameService.getMyWord).toHaveBeenCalledWith(5, 1);
     });
 
@@ -194,7 +198,7 @@ describe('GameController', () => {
           new ForbiddenException('You are not a player in this game'),
         );
 
-      await expect(gameController.getMyWord('5', req)).rejects.toThrow(
+      await expect(gameController.getMyWord(5, req)).rejects.toThrow(
         ForbiddenException,
       );
     });
@@ -205,7 +209,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'getMyWord')
         .mockRejectedValue(new NotFoundException('Game 404 not found'));
 
-      await expect(gameController.getMyWord('404', req)).rejects.toThrow(
+      await expect(gameController.getMyWord(404, req)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -231,7 +235,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.update('5', updateDto)).toBe(result);
+      expect(await gameController.update(5, updateDto)).toBe(result);
       expect(gameService.update).toHaveBeenCalledWith(5, updateDto);
     });
   });
@@ -252,7 +256,7 @@ describe('GameController', () => {
         .spyOn(gameService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.remove('5')).toBe(result);
+      expect(await gameController.remove(5)).toBe(result);
       expect(gameService.remove).toHaveBeenCalledWith(5);
     });
   });

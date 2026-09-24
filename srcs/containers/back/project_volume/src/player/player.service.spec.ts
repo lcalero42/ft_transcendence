@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
@@ -48,7 +49,9 @@ describe('PlayerService', () => {
       prismaMock.player.findMany.mockResolvedValue(result);
 
       expect(await service.findAll()).toBe(result);
-      expect(prismaMock.player.findMany).toHaveBeenCalledWith();
+      expect(prismaMock.player.findMany).toHaveBeenCalledWith({
+        where: { deletedAt: null },
+      });
     });
   });
 
@@ -85,8 +88,14 @@ describe('PlayerService', () => {
 
       expect(await service.findOne(5)).toBe(result);
       expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
       });
+    });
+
+    it('should throw a NotFoundException when the player does not exist', async () => {
+      prismaMock.player.findUnique.mockResolvedValue(null);
+
+      await expect(service.findOne(404)).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -174,11 +183,12 @@ describe('PlayerService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.player.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
         data: {
           email: updateDto.email,
           name: updateDto.name,
           aboutMe: undefined,
+          avatarUrl: undefined,
         },
       });
     });
@@ -303,27 +313,38 @@ describe('PlayerService', () => {
 
   describe('getAboutMe', () => {
     it('should return the player about me section', async () => {
-      prismaMock.player.findUnique.mockResolvedValue({
+      const player = {
+        id: 5,
+        name: 'Bob',
+        email: 'bob@test.com',
+        password: 'password123',
         aboutMe: 'Hello there',
-      } as unknown as PlayerRow);
+        avatarUrl: null,
+        createdAt: new Date(),
+        deletedAt: null,
+      };
+      prismaMock.player.findUnique
+        .mockResolvedValueOnce(player)
+        .mockResolvedValueOnce({ aboutMe: 'Hello there' } as PlayerRow);
 
       expect(await service.getAboutMe(5)).toEqual({
         playerId: 5,
-        aboutMe: { aboutMe: 'Hello there' },
+        aboutMe: 'Hello there',
       });
       expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
+      });
+      expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
+        where: { id: 5, deletedAt: null },
         select: { aboutMe: true },
       });
     });
 
-    it('should return a null about me when the player does not exist', async () => {
+    it('should throw a NotFoundException when the player does not exist', async () => {
       prismaMock.player.findUnique.mockResolvedValue(null);
 
-      expect(await service.getAboutMe(5)).toEqual({
-        playerId: 5,
-        aboutMe: null,
-      });
+      await expect(service.getAboutMe(404)).rejects.toThrow(NotFoundException);
+      expect(prismaMock.player.findUnique).toHaveBeenCalledTimes(1);
     });
   });
 });

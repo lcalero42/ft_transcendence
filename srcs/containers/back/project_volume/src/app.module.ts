@@ -8,6 +8,7 @@ import { WordPairModule } from './word_pair/word_pair.module';
 import { AuthModule } from './auth/auth.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { FriendshipModule } from './friendship/friendship.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { join } from 'path';
     AuthModule,
     WordPairModule,
     GameModule,
+    FriendshipModule,
   ],
   controllers: [AppController],
   providers: [AppService],
