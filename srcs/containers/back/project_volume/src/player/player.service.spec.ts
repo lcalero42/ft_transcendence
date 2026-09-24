@@ -49,7 +49,9 @@ describe('PlayerService', () => {
       prismaMock.player.findMany.mockResolvedValue(result);
 
       expect(await service.findAll()).toBe(result);
-      expect(prismaMock.player.findMany).toHaveBeenCalledWith();
+      expect(prismaMock.player.findMany).toHaveBeenCalledWith({
+        where: { deletedAt: null },
+      });
     });
   });
 
@@ -181,11 +183,12 @@ describe('PlayerService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.player.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, deletedAt: null },
         data: {
           email: updateDto.email,
           name: updateDto.name,
           aboutMe: undefined,
+          avatarUrl: undefined,
         },
       });
     });
