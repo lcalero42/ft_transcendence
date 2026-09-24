@@ -1,8 +1,7 @@
 import { defineServer, defineRoom } from '@colyseus/core';
 import { WebSocketTransport } from '@colyseus/ws-transport';
 import { createServer } from 'http';
-import { Rooms } from './rooms/Rooms';
-import { LobbyRoom } from './rooms/LobbyRoom';
+import { UndercoverRoom } from './rooms/UndercoverRoom';
 
 export const httpServer = createServer();
 
@@ -11,7 +10,6 @@ export const colyseusServer = defineServer({
     server: httpServer,
   }),
   rooms: {
-    udvRoom: defineRoom(Rooms),
-    lobby: defineRoom(LobbyRoom),
+    undercover: defineRoom(UndercoverRoom),
   },
 });
