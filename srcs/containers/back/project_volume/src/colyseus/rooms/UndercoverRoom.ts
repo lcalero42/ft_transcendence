@@ -1,11 +1,19 @@
 import { Logger } from '@nestjs/common';
+import { ArraySchema } from '@colyseus/schema';
 import {
   Room,
   type Client,
   type AuthContext,
   matchMaker,
 } from '@colyseus/core';
-import { UndercoverState, Player, ChatMessage } from './UndercoverState';
+import {
+  UndercoverState,
+  Player,
+  ChatMessage,
+  Clue,
+  type RoomPhase,
+} from './UndercoverState';
+import { assignRoles, buildTurnOrder, type Role } from './undercoverGameLogic';
 
 export interface JoinOptions {
   name?: string;
@@ -22,16 +30,16 @@ interface WordPair {
   undercoverWord: string;
 }
 
-type Role = 'civilian' | 'undercover';
-
 const MIN_PARTICIPANTS = 3;
 const MAX_PARTICIPANTS = 6;
 const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
+const MAX_CLUE_LENGTH = 60;
 const RECONNECTION_WINDOW_SECONDS = 20;
 const MAX_ROOM_NAME_LENGTH = 16;
 const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
+const ROUND_PHASES: RoomPhase[] = ['describing', 'voting', 'reveal'];
 
 export class UndercoverRoom extends Room {
   maxClients = MAX_CLIENTS;
@@ -125,24 +133,61 @@ export class UndercoverRoom extends Room {
         return;
       }
       this.wordPair = pair;
-      this.assignRoles();
-      this.state.phase = 'playing';
+      this.roles = assignRoles([...this.state.participants]);
       for (const sessionId of this.state.participants) {
         this.sendWord(sessionId);
       }
+
+      this.state.round = 1;
+      this.state.alive = new ArraySchema(...this.state.participants);
+      this.state.turnOrder = new ArraySchema(
+        ...buildTurnOrder([...this.state.alive]),
+      );
+      this.state.currentTurnIndex = 0;
+      this.state.clues.clear();
+      this.state.phase = 'describing';
+
       this.logger.log(
         `game started with ${this.state.participants.length} participants`,
       );
     },
 
     getWord: (client: Client) => {
-      if (this.state.phase === 'playing') {
+      if (ROUND_PHASES.includes(this.state.phase)) {
         this.sendWord(client.sessionId);
       }
     },
 
+    submitClue: (client: Client, word: unknown) => {
+      if (
+        this.state.phase !== 'describing' ||
+        this.state.turnOrder[this.state.currentTurnIndex] !==
+          client.sessionId ||
+        typeof word !== 'string'
+      ) {
+        return;
+      }
+      const trimmed = word.trim().slice(0, MAX_CLUE_LENGTH);
+      if (!trimmed) {
+        return;
+      }
+
+      const player = this.state.players.get(client.sessionId);
+      const clue = new Clue();
+      clue.sessionId = client.sessionId;
+      clue.name = player?.name ?? '';
+      clue.word = trimmed;
+      clue.submittedAt = Date.now();
+      this.state.clues.push(clue);
+
+      this.state.currentTurnIndex += 1;
+      if (this.state.currentTurnIndex >= this.state.turnOrder.length) {
+        this.state.phase = 'voting';
+      }
+    },
+
     endGame: (client: Client) => {
-      if (!this.isHost(client) || this.state.phase !== 'playing') {
+      if (!this.isHost(client) || !ROUND_PHASES.includes(this.state.phase)) {
         return;
       }
       this.finishGame();
@@ -205,12 +250,13 @@ export class UndercoverRoom extends Room {
     this.state.players.delete(client.sessionId);
     this.removeParticipant(client.sessionId);
 
-    if (
-      this.state.phase === 'playing' &&
-      this.state.participants.length < this.state.minParticipants
-    ) {
-      this.logger.log('not enough participants left, ending game');
-      this.finishGame();
+    if (ROUND_PHASES.includes(this.state.phase)) {
+      this.removeFromRound(client.sessionId);
+
+      if (this.state.participants.length < this.state.minParticipants) {
+        this.logger.log('not enough participants left, ending game');
+        this.finishGame();
+      }
     }
 
     if (this.state.hostSessionId === client.sessionId) {
@@ -270,18 +316,6 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  private assignRoles() {
-    const participants = [...this.state.participants];
-    const undercoverIndex = Math.floor(Math.random() * participants.length);
-    this.roles.clear();
-    participants.forEach((sessionId, index) => {
-      this.roles.set(
-        sessionId,
-        index === undercoverIndex ? 'undercover' : 'civilian',
-      );
-    });
-  }
-
   private sendWord(sessionId: string) {
     const role = this.roles.get(sessionId);
     if (!role || !this.wordPair) {
@@ -305,9 +339,36 @@ export class UndercoverRoom extends Room {
     }
   }
 
+  private removeFromRound(sessionId: string) {
+    const aliveIndex = this.state.alive.indexOf(sessionId);
+    if (aliveIndex !== -1) {
+      this.state.alive.splice(aliveIndex, 1);
+    }
+
+    const turnIndex = this.state.turnOrder.indexOf(sessionId);
+    if (turnIndex === -1) {
+      return;
+    }
+    this.state.turnOrder.splice(turnIndex, 1);
+    if (turnIndex < this.state.currentTurnIndex) {
+      this.state.currentTurnIndex -= 1;
+    } else if (
+      turnIndex === this.state.currentTurnIndex &&
+      this.state.phase === 'describing' &&
+      this.state.currentTurnIndex >= this.state.turnOrder.length
+    ) {
+      this.state.phase = 'voting';
+    }
+  }
+
   private finishGame() {
     this.state.phase = 'open';
     this.state.participants.clear();
+    this.state.round = 0;
+    this.state.alive.clear();
+    this.state.turnOrder.clear();
+    this.state.currentTurnIndex = 0;
+    this.state.clues.clear();
     this.wordPair = null;
     this.roles.clear();
   }
