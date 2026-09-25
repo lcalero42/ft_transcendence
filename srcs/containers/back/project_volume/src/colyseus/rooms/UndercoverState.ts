@@ -28,6 +28,18 @@ export class Clue extends Schema {
   @type('number') submittedAt: number = 0;
 }
 
+export class Vote extends Schema {
+  @type('string') voterSessionId: string = '';
+  @type('string') targetSessionId: string = '';
+}
+
+export class EliminationRecord extends Schema {
+  @type('number') round: number = 0;
+  @type('string') eliminatedSessionId: string = '';
+  @type('string') eliminatedName: string = '';
+  @type('string') eliminatedRole: string = '';
+}
+
 export class UndercoverState extends Schema {
   @type('string') phase: RoomPhase = 'setup';
   @type('string') hostSessionId: string = '';
@@ -42,4 +54,9 @@ export class UndercoverState extends Schema {
   @type(['string']) turnOrder = new ArraySchema<string>();
   @type('number') currentTurnIndex: number = 0;
   @type([Clue]) clues = new ArraySchema<Clue>();
+  @type([Vote]) votes = new ArraySchema<Vote>();
+  @type([EliminationRecord]) eliminationHistory = new ArraySchema<EliminationRecord>();
+  @type('number') revealEndsAt: number = 0;
+  @type('string') winner: string = '';
+  @type({ map: 'string' }) revealedRoles = new MapSchema<string>();
 }

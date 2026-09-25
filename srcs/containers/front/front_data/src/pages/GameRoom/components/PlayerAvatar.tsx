@@ -1,13 +1,20 @@
+import type { ReactNode } from "react";
+
 interface PlayerAvatarProps {
 	name: string;
 	avatarUrl?: string;
 	hintWord?: string;
 	isActive?: boolean;
+	voteCount?: number;
+	action?: ReactNode;
 }
 
-function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps) {
+function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, action }: PlayerAvatarProps) {
 	return (
 		<div className="flex flex-col items-center gap-2">
+			{typeof voteCount === "number" && (
+				<span className="text-small font-semibold text-accent-purple">{voteCount} votes</span>
+			)}
 			<span className={`text-body font-bold ${isActive ? "text-accent-purple" : "text-gray-high"}`}>
 				{name}
 			</span>
@@ -21,6 +28,7 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive }: PlayerAvatarProps
 				/>
 			</div>
 			{hintWord && <span className="text-title font-bold text-white">{hintWord}</span>}
+			{action}
 		</div>
 	);
 }

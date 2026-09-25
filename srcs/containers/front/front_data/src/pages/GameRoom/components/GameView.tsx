@@ -12,6 +12,7 @@ import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/u
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import ClueList from "@/pages/GameRoom/components/ClueList";
+import VoteAction from "@/pages/GameRoom/components/VoteAction";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
@@ -38,19 +39,21 @@ function GameView({ room }: GameViewProps) {
 	const turnOrder = useRoomState(room, (s) => s.turnOrder);
 	const currentTurnIndex = useRoomState(room, (s) => s.currentTurnIndex);
 	const clues = useRoomState(room, (s) => s.clues);
+	const votes = useRoomState(room, (s) => s.votes);
 	const isParticipant = participants?.includes(room.sessionId) ?? false;
 	const participantEntries = playerEntries.filter(([sessionId]) => participants?.includes(sessionId));
-	const activeSessionId = turnOrder?.[currentTurnIndex ?? 0];
+	const activeSessionId = phase === "describing" ? turnOrder?.[currentTurnIndex ?? 0] : undefined;
 	const activePlayerIndex = Math.max(
 		participantEntries.findIndex(([sessionId]) => sessionId === activeSessionId),
 		0,
 	);
-	const arrowDirection = getPlayerAngleDeg(activePlayerIndex, participantEntries.length);
+	const arrowDirection = phase === "describing" ? getPlayerAngleDeg(activePlayerIndex, participantEntries.length) : 0;
 	const activePlayer = activeSessionId ? players?.[activeSessionId] : undefined;
 	const isMyTurn = activeSessionId === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
-	const currentWord = phase === "describing" ? myWord : "";
+	const currentWord = phase === "describing" || phase === "voting" ? myWord : "";
+	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -68,6 +71,7 @@ function GameView({ room }: GameViewProps) {
 	const handleStartGame = () => room.send("startGame");
 	const handleEndGame = () => room.send("endGame");
 	const handleSubmitClue = (word: string) => room.send("submitClue", word);
+	const handleCastVote = (targetSessionId: string) => room.send("castVote", targetSessionId);
 	const clueEntries = (clues ?? []).map((clue, index) => ({
 		id: `${clue.sessionId}-${clue.submittedAt}-${index}`,
 		name: clue.name,
@@ -82,7 +86,7 @@ function GameView({ room }: GameViewProps) {
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
-	const activePlayerSessionId = participantEntries[activePlayerIndex]?.[0];
+	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
 	const playerList = playerEntries.map(([sessionId, player]) => ({
 		sessionId,
 		name: player.name,
@@ -91,13 +95,25 @@ function GameView({ room }: GameViewProps) {
 		isSelf: sessionId === room.sessionId,
 		isHost: sessionId === hostSessionId,
 	}));
-	const participantPlayerList = participantEntries.map(([sessionId, player]) => ({
-		sessionId,
-		name: player.name,
-		avatarUrl: getAvatarUrl(player.avatarUrl),
-		isActive: sessionId === activePlayerSessionId,
-		isSelf: sessionId === room.sessionId,
-	}));
+	const participantPlayerList = participantEntries.map(([sessionId, player]) => {
+		const isSelf = sessionId === room.sessionId;
+		const voteCount =
+			phase === "voting" ? (votes ?? []).filter((vote) => vote.targetSessionId === sessionId).length : undefined;
+		const action =
+			phase === "voting" && !isSelf ? (
+				<VoteAction hasVoted={myVoteTargetId === sessionId} onClick={() => handleCastVote(sessionId)} />
+			) : undefined;
+
+		return {
+			sessionId,
+			name: player.name,
+			avatarUrl: getAvatarUrl(player.avatarUrl),
+			isActive: sessionId === activePlayerSessionId,
+			isSelf,
+			voteCount,
+			action,
+		};
+	});
 
 	return (
 		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
@@ -137,16 +153,18 @@ function GameView({ room }: GameViewProps) {
 									)}
 								</div>
 							)}
-							{phase === "describing" && (
+							{(phase === "describing" || phase === "voting") && (
 								<>
-									<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto flex flex-col gap-4">
-										<TurnInput
-											isMyTurn={isMyTurn}
-											activePlayerName={activePlayer?.name}
-											onSubmit={handleSubmitClue}
-										/>
-										<ClueList clues={clueEntries} />
-									</div>
+									{phase === "describing" && (
+										<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto flex flex-col gap-4">
+											<TurnInput
+												isMyTurn={isMyTurn}
+												activePlayerName={activePlayer?.name}
+												onSubmit={handleSubmitClue}
+											/>
+											<ClueList clues={clueEntries} />
+										</div>
+									)}
 									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
 										{isHost && <EndGameButton onClick={handleEndGame} />}
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />

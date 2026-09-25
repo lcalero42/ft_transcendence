@@ -11,9 +11,17 @@ import {
   Player,
   ChatMessage,
   Clue,
+  Vote,
+  EliminationRecord,
   type RoomPhase,
 } from './UndercoverState';
-import { assignRoles, buildTurnOrder, type Role } from './undercoverGameLogic';
+import {
+  assignRoles,
+  buildTurnOrder,
+  tallyVotes,
+  checkWinCondition,
+  type Role,
+} from './undercoverGameLogic';
 
 export interface JoinOptions {
   name?: string;
@@ -36,6 +44,7 @@ const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
 const MAX_CLUE_LENGTH = 60;
+const REVEAL_DURATION_MS = 5000;
 const RECONNECTION_WINDOW_SECONDS = 20;
 const MAX_ROOM_NAME_LENGTH = 16;
 const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
@@ -145,6 +154,11 @@ export class UndercoverRoom extends Room {
       );
       this.state.currentTurnIndex = 0;
       this.state.clues.clear();
+      this.state.votes.clear();
+      this.state.eliminationHistory.clear();
+      this.state.revealEndsAt = 0;
+      this.state.winner = '';
+      this.state.revealedRoles.clear();
       this.state.phase = 'describing';
 
       this.logger.log(
@@ -182,7 +196,36 @@ export class UndercoverRoom extends Room {
 
       this.state.currentTurnIndex += 1;
       if (this.state.currentTurnIndex >= this.state.turnOrder.length) {
+        this.state.votes.clear();
         this.state.phase = 'voting';
+      }
+    },
+
+    castVote: (client: Client, targetSessionId: unknown) => {
+      if (
+        this.state.phase !== 'voting' ||
+        typeof targetSessionId !== 'string' ||
+        targetSessionId === client.sessionId ||
+        !this.state.alive.includes(client.sessionId) ||
+        !this.state.alive.includes(targetSessionId)
+      ) {
+        return;
+      }
+
+      const existingVote = this.state.votes.find(
+        (vote) => vote.voterSessionId === client.sessionId,
+      );
+      if (existingVote) {
+        existingVote.targetSessionId = targetSessionId;
+      } else {
+        const vote = new Vote();
+        vote.voterSessionId = client.sessionId;
+        vote.targetSessionId = targetSessionId;
+        this.state.votes.push(vote);
+      }
+
+      if (this.state.votes.length >= this.state.alive.length) {
+        this.resolveVoting();
       }
     },
 
@@ -345,6 +388,21 @@ export class UndercoverRoom extends Room {
       this.state.alive.splice(aliveIndex, 1);
     }
 
+    if (this.state.phase === 'voting') {
+      for (let i = this.state.votes.length - 1; i >= 0; i--) {
+        if (this.state.votes[i].voterSessionId === sessionId) {
+          this.state.votes.splice(i, 1);
+        }
+      }
+      if (
+        this.state.alive.length > 0 &&
+        this.state.votes.length >= this.state.alive.length
+      ) {
+        this.resolveVoting();
+      }
+      return;
+    }
+
     const turnIndex = this.state.turnOrder.indexOf(sessionId);
     if (turnIndex === -1) {
       return;
@@ -357,8 +415,59 @@ export class UndercoverRoom extends Room {
       this.state.phase === 'describing' &&
       this.state.currentTurnIndex >= this.state.turnOrder.length
     ) {
+      this.state.votes.clear();
       this.state.phase = 'voting';
     }
+  }
+
+  private resolveVoting() {
+    const { eliminatedSessionId } = tallyVotes(
+      [...this.state.votes],
+      [...this.state.alive],
+    );
+
+    const record = new EliminationRecord();
+    record.round = this.state.round;
+    if (eliminatedSessionId) {
+      const aliveIndex = this.state.alive.indexOf(eliminatedSessionId);
+      if (aliveIndex !== -1) {
+        this.state.alive.splice(aliveIndex, 1);
+      }
+      record.eliminatedSessionId = eliminatedSessionId;
+      record.eliminatedName =
+        this.state.players.get(eliminatedSessionId)?.name ?? '';
+      record.eliminatedRole = this.roles.get(eliminatedSessionId) ?? '';
+    }
+    this.state.eliminationHistory.push(record);
+
+    this.state.winner =
+      checkWinCondition([...this.state.alive], this.roles) ?? '';
+    this.state.phase = 'reveal';
+    this.state.revealEndsAt = Date.now() + REVEAL_DURATION_MS;
+    this.clock.setTimeout(() => this.advanceAfterReveal(), REVEAL_DURATION_MS);
+  }
+
+  private advanceAfterReveal() {
+    if (this.state.phase !== 'reveal') {
+      return;
+    }
+
+    if (this.state.winner) {
+      for (const sessionId of this.state.participants) {
+        this.state.revealedRoles.set(sessionId, this.roles.get(sessionId) ?? '');
+      }
+      this.state.phase = 'finished';
+      return;
+    }
+
+    this.state.round += 1;
+    this.state.turnOrder = new ArraySchema(
+      ...buildTurnOrder([...this.state.alive]),
+    );
+    this.state.currentTurnIndex = 0;
+    this.state.clues.clear();
+    this.state.votes.clear();
+    this.state.phase = 'describing';
   }
 
   private finishGame() {
@@ -369,6 +478,11 @@ export class UndercoverRoom extends Room {
     this.state.turnOrder.clear();
     this.state.currentTurnIndex = 0;
     this.state.clues.clear();
+    this.state.votes.clear();
+    this.state.eliminationHistory.clear();
+    this.state.revealEndsAt = 0;
+    this.state.winner = '';
+    this.state.revealedRoles.clear();
     this.wordPair = null;
     this.roles.clear();
   }
