@@ -363,7 +363,7 @@ describe('GameService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: {
           civilianWord: updateDto.civilianWord,
           undercoverWord: updateDto.undercoverWord,
@@ -388,7 +388,7 @@ describe('GameService', () => {
 
       expect(await service.update(5, updateDto)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: {
           civilianWord: 'dog',
           undercoverWord: undefined,
@@ -416,7 +416,7 @@ describe('GameService', () => {
 
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5 },
+        where: { id: 5, finishedAt: null },
         data: { finishedAt: expect.any(Date) as Date },
       });
     });

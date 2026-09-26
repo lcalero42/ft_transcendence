@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WordPairService } from './word_pair.service';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
@@ -32,24 +33,24 @@ export class WordPairController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.wordPairService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.wordPairService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @adminOnly()
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateWordPairDto: UpdateWordPairDto,
   ) {
-    return this.wordPairService.update(+id, updateWordPairDto);
+    return this.wordPairService.update(id, updateWordPairDto);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @adminOnly()
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.wordPairService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.wordPairService.remove(id);
   }
 }

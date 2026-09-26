@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { WordPairService } from './word_pair.service';
 import { PrismaService } from '../prisma.service';
@@ -65,10 +66,10 @@ describe('WordPairService', () => {
       });
     });
 
-    it('should return null when the word pair does not exist', async () => {
+    it('should throw a NotFoundException when the word pair does not exist', async () => {
       prismaMock.word_Pair.findUnique.mockResolvedValue(null);
 
-      expect(await service.findOne(404)).toBeNull();
+      await expect(service.findOne(404)).rejects.toThrow(NotFoundException);
     });
   });
 

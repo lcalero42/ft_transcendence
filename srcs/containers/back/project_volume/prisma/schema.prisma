@@ -19,8 +19,10 @@ model Player {
   createdAt         DateTime    @default(now()) @map("created_at")
   deletedAt         DateTime?   @map("deleted_at")
 
-  rooms             Rooms[]
-  gamePlayers       Game_Players[]
+  rooms                   Rooms[]
+  gamePlayers             Game_Players[]
+  sentFriendRequests      Friendship[] @relation("FriendshipRequester")
+  receivedFriendRequests  Friendship[] @relation("FriendshipAddressee")
 }
 
 model Rooms {
@@ -74,6 +76,29 @@ model Game_Players {
 
   playerId          Int         @map("player_id")
   playerIdRel       Player      @relation(fields: [playerId], references: [id])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  BLOCKED
+}
+
+model Friendship {
+  id          Int              @id @default(autoincrement())
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  requesterId Int    @map("requester_id")
+  requester   Player @relation("FriendshipRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+
+  addresseeId Int    @map("addressee_id")
+  addressee   Player @relation("FriendshipAddressee", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
 }
 
 model Word_Pair {

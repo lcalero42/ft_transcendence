@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageCircle, Users } from "lucide-react";
 import type { Room } from "@colyseus/sdk";
 import { useRoomState } from "@colyseus/react";
@@ -8,11 +8,13 @@ import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
-import LeaveButton from "@/pages/GameRoom/components/LeaveButton";
+import JoinButton from "@/pages/GameRoom/components/JoinButton";
+import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
+import EndGameButton from "@/pages/GameRoom/components/EndGameButton";
 import ChatBox from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
@@ -27,41 +29,64 @@ function GameView({ room }: GameViewProps) {
 	const currentWord = "PLUME";
 	const activePlayerIndex = 0;
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
+	const [autoJoin, setAutoJoin] = useState(false);
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
-	const arrowDirection = getPlayerAngleDeg(activePlayerIndex, playerEntries.length);
-	const activePlayer = playerEntries[activePlayerIndex]?.[1];
-	const isMyTurn = playerEntries[activePlayerIndex]?.[0] === room.sessionId;
+	const phase = useRoomState(room, (s) => s.phase);
+	const participants = useRoomState(room, (s) => s.participants);
+	const minParticipants = useRoomState(room, (s) => s.minParticipants);
+	const isParticipant = participants?.includes(room.sessionId) ?? false;
+	const participantEntries = playerEntries.filter(([sessionId]) => participants?.includes(sessionId));
+	const arrowDirection = getPlayerAngleDeg(activePlayerIndex, participantEntries.length);
+	const activePlayer = participantEntries[activePlayerIndex]?.[1];
+	const isMyTurn = participantEntries[activePlayerIndex]?.[0] === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
-	const chatMessages = [
-		{
-			id: "1",
-			name: activePlayer?.name ?? "mastermind",
-			text: "Hello everyone! I'm the mastermind.",
-			time: "21:42",
-			avatarUrl: getAvatarUrl(activePlayer?.avatarUrl ?? null),
-		},
-	];
-	const playerList = playerEntries.map(([sessionId, player], index) => ({
+
+	useEffect(() => {
+		if (phase === "open" && autoJoin && !isParticipant) {
+			room.send("joinGame");
+		}
+	}, [phase, autoJoin, isParticipant, room]);
+
+	const handleToggleParticipant = () => room.send(isParticipant ? "leaveGame" : "joinGame");
+	const handleStartGame = () => room.send("startGame");
+	const handleEndGame = () => room.send("endGame");
+	const chat = useRoomState(room, (s) => s.chat);
+	const chatMessages = (chat ?? []).map((message, index) => ({
+		id: `${message.sessionId}-${message.sentAt}-${index}`,
+		name: message.name,
+		text: message.text,
+		time: formatChatTime(message.sentAt),
+		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
+	}));
+	const handleSendChat = (text: string) => room.send("chat", text);
+	const activePlayerSessionId = participantEntries[activePlayerIndex]?.[0];
+	const playerList = playerEntries.map(([sessionId, player]) => ({
 		sessionId,
 		name: player.name,
 		avatarUrl: getAvatarUrl(player.avatarUrl),
-		isActive: index === activePlayerIndex,
+		isActive: sessionId === activePlayerSessionId,
+		isSelf: sessionId === room.sessionId,
+		isHost: sessionId === hostSessionId,
+	}));
+	const participantPlayerList = participantEntries.map(([sessionId, player]) => ({
+		sessionId,
+		name: player.name,
+		avatarUrl: getAvatarUrl(player.avatarUrl),
+		isActive: sessionId === activePlayerSessionId,
 		isSelf: sessionId === room.sessionId,
 	}));
 
 	return (
-		<div className="page h-screen overflow-hidden">
+		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
 			<Header compact />
 			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
-				<div className="relative flex h-[70vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center lg:flex-row lg:items-stretch">
-					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-4 lg:w-auto">
-						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
-							<div className="absolute top-0 left-0">
-								<Timer secondsLeft={secondsLeft} />
-							</div>
-							<div className="absolute top-0 right-0 z-10 flex items-center gap-3 lg:hidden">
+				<div className="relative flex h-[80vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center 2xl:flex-row 2xl:items-stretch">
+					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
+						<div className="z-10 flex w-full shrink-0 items-center justify-between">
+							<Timer secondsLeft={secondsLeft} />
+							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label="Open chat"
@@ -73,27 +98,40 @@ function GameView({ room }: GameViewProps) {
 									onClick={() => setDrawer("players")}
 								/>
 							</div>
-							<PlayerCircle players={playerList}>
+						</div>
+						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
+							<PlayerCircle players={participantPlayerList}>
 								<CenterWord word={currentWord} direction={arrowDirection} />
 							</PlayerCircle>
 						</div>
-						<div className="flex w-full flex-col items-center gap-4 lg:flex-row lg:items-end lg:justify-between md:gap-6">
-							<div className="order-1 min-w-0 w-full lg:order-2 lg:w-auto lg:max-w-xl">
-								<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
-							</div>
-							<div className="order-2 flex w-full items-center justify-between gap-4 lg:contents">
-								<div className="mb-[max(1vw,12px)] lg:order-1">
-									<AutoJoinButton />
+						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
+							{phase === "open" && (
+								<div className="flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
+									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
+									{isHost && (
+										<StartGameButton
+											onClick={handleStartGame}
+											disabled={(participants?.length ?? 0) < (minParticipants ?? 0)}
+										/>
+									)}
 								</div>
-								<div className="mb-[max(1vw,12px)] lg:order-3">
-									<LeaveButton />
-								</div>
-							</div>
+							)}
+							{phase === "playing" && (
+								<>
+									<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto">
+										<TurnInput isMyTurn={isMyTurn} activePlayerName={activePlayer?.name} />
+									</div>
+									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
+										{isHost && <EndGameButton onClick={handleEndGame} />}
+										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
+									</div>
+								</>
+							)}
 						</div>
 					</div>
-					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 lg:flex lg:w-[400px]">
+					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 2xl:flex 2xl:w-[500px]">
 						<div className="w-full h-[70%] min-h-0">
-							<ChatBox messages={chatMessages} />
+							<ChatBox messages={chatMessages} onSend={handleSendChat} />
 						</div>
 						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
 							<PlayersList players={playerList} isHost={isHost} />
@@ -102,7 +140,7 @@ function GameView({ room }: GameViewProps) {
 				</div>
 			</main>
 			<MobileDrawer open={drawer === "chat"} onClose={() => setDrawer(null)}>
-				<ChatBox messages={chatMessages} />
+				<ChatBox messages={chatMessages} onSend={handleSendChat} />
 			</MobileDrawer>
 			<MobileDrawer open={drawer === "players"} onClose={() => setDrawer(null)}>
 				<PlayersList players={playerList} isHost={isHost} />

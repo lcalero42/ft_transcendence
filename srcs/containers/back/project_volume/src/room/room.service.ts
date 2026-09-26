@@ -1,4 +1,8 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from '../prisma.service';
@@ -43,8 +47,9 @@ export class RoomService {
 
   async findOne(id: number) {
     const room = await this.prisma.rooms.findUnique({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
     });
+    if (!room) throw new NotFoundException('Room does not exist');
     return room;
   }
 
@@ -54,17 +59,19 @@ export class RoomService {
     });
     return i;
   }
+
   async getGames(id: number) {
-    const games = await this.prisma.rooms.findUnique({
-      where: { id: id },
+    const room = await this.prisma.rooms.findUnique({
+      where: { id: id, deletedAt: null },
       include: { games: true },
     });
-    return games?.games ?? [];
+    if (!room) throw new NotFoundException('Room does not exist');
+    return room.games;
   }
 
   async update(id: number, updateRoomDto: UpdateRoomDto) {
     const updateRoom = await this.prisma.rooms.update({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
       data: {
         name: updateRoomDto.name,
       },
@@ -74,7 +81,7 @@ export class RoomService {
 
   async remove(id: number) {
     const deleteRoom = await this.prisma.rooms.update({
-      where: { id: id },
+      where: { id: id, deletedAt: null },
       data: {
         deletedAt: new Date(),
       },

@@ -60,7 +60,7 @@ describe('WordPairController', () => {
         .spyOn(wordPairService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await wordPairController.findOne('5')).toBe(result);
+      expect(await wordPairController.findOne(5)).toBe(result);
       expect(wordPairService.findOne).toHaveBeenCalledWith(5);
     });
   });
@@ -73,7 +73,7 @@ describe('WordPairController', () => {
         .spyOn(wordPairService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await wordPairController.update('5', updateDto)).toBe(result);
+      expect(await wordPairController.update(5, updateDto)).toBe(result);
       expect(wordPairService.update).toHaveBeenCalledWith(5, updateDto);
     });
   });
@@ -85,7 +85,7 @@ describe('WordPairController', () => {
         .spyOn(wordPairService, 'remove')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await wordPairController.remove('5')).toBe(result);
+      expect(await wordPairController.remove(5)).toBe(result);
       expect(wordPairService.remove).toHaveBeenCalledWith(5);
     });
   });

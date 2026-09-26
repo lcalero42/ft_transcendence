@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ParseIntPipe,
   Req,
 } from '@nestjs/common';
 import { GameService } from './game.service';
@@ -40,31 +41,37 @@ export class GameController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.gameService.findOne(+id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.findOne(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/players')
-  async getPlayersByGame(@Param('id') id: string) {
-    return this.gameService.getPlayersByGame(+id);
+  async getPlayersByGame(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.getPlayersByGame(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/my-word')
-  async getMyWord(@Param('id') id: string, @Req() req: AuthenticatedRequest) {
-    return this.gameService.getMyWord(+id, req.user.id);
+  async getMyWord(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.gameService.getMyWord(id, req.user.id);
   }
 
   @UseGuards(InternalApiKeyGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-    return this.gameService.update(+id, updateGameDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateGameDto: UpdateGameDto,
+  ) {
+    return this.gameService.update(id, updateGameDto);
   }
 
   @UseGuards(InternalApiKeyGuard)
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.gameService.remove(+id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return this.gameService.remove(id);
   }
 }
