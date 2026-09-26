@@ -66,7 +66,7 @@ describe('FriendshipService', () => {
       password: 'password123',
       aboutMe: null,
       avatarUrl: null,
-	  isAdmin: false,
+      isAdmin: false,
       createdAt: new Date(),
       deletedAt: null,
     };
