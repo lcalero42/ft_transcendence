@@ -6,6 +6,8 @@ import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { client } from "@/lib/colyseusClient";
 import GameView from "@/pages/GameRoom/components/GameView";
+import LoadPage from "@/components/LoadPage/LoadPage";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import {
 	clearReconnection,
 	readStoredReconnection,
@@ -76,11 +78,11 @@ function GameRoom() {
 		void navigate(`/create-room/${room.roomId}`, { replace: true });
 	}, [room, phase, navigate]);
 
-	if (!id) return <p>My_Error: no room id provided</p>;
-	if (profileLoading) return <p>Connecting...</p>;
-	if (isConnecting) return <p>Connecting...</p>;
-	if (error) return <p>My_Error: {error.message}</p>;
-	if (!room) return <p>My_Error: room unavailable</p>;
+	if (!id) return <ErrorPage error="No room id provided" />;
+	if (profileLoading) return <LoadPage text="Connecting" />;
+	if (isConnecting) return <LoadPage text="Connecting" />;
+	if (error) return <ErrorPage error={error.message} />;
+	if (!room) return <ErrorPage error="room unavailable" />;
 
 	return <GameView room={room} />;
 }

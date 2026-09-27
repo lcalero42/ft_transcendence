@@ -17,12 +17,16 @@ function LoadingDots() {
 	);
 }
 
-function LoadPage() {
+interface LoadPageProps {
+  text?: string;
+}
+
+function LoadPage({ text = "Loading" }: LoadPageProps) {
 	return (
 		<div className="page flex flex-col items-center justify-center gap-4 py-20">
 			<Spinner className="size-10 text-accent-hover" />
 			<p className="text-accent-hover font-bold">
-				Loading <LoadingDots />
+				{text} <LoadingDots />
 			</p>
 		</div>
 	);

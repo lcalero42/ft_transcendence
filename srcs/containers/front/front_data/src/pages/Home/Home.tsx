@@ -43,7 +43,7 @@ function Home() {
         };
     }, []);
 
-    if (loading) return <LoadPage />
+    if (loading) return <LoadPage />;
     if (error) return <ErrorPage error={error} />;
 
 	return (
