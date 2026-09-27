@@ -11,7 +11,8 @@ import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
 import { LogOut } from "lucide-react";
-
+import LoadPage from "@/components/LoadPage/LoadPage";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import {
 	getMe,
 	getAvatarUrl,
@@ -71,8 +72,8 @@ function Profile() {
 		void loadData();
 	},[user, navigate]);
 	if (!user) return null;
- 	if (loading) return <p>Loading...</p>;
-  	if (error) return <p>{error}</p>;
+    if (loading) return <LoadPage />;
+    if (error) return <ErrorPage error={error} />;
   	if (!player) return null;
 
 	const friends = [

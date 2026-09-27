@@ -4,7 +4,7 @@ import { getGamesByRoom, fetchRooms, type Room } from "@/api/rooms";
 import { getPlayersByGame } from "@/api/games";
 import { getAvatarUrl } from "@/api/player";
 import AvatarDefault from "@/assets/profile-photo/avatar-default.svg";
-
+import LoadPage from "@/components/LoadPage/LoadPage";
 type Game = {
 	id: number;
 	createdAt: string;
@@ -38,7 +38,7 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 			.finally(() => setLoading(false));
 	}, [gameId]);
 
-	if (loading) return <div className="text-xs text-text-dim px-3 py-2">Loading players...</div>;
+    if (loading) return <LoadPage />;
 	if (players.length === 0) {
 		return <div className="text-xs text-text-dim px-3 py-2">No players in this game</div>;}
 	return (
