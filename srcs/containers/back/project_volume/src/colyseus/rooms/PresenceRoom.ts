@@ -3,7 +3,10 @@ import { Room, type Client } from '@colyseus/core';
 import jwt from 'jsonwebtoken';
 import { requireEnv } from '../../common/require-env';
 import { PrismaService } from '../../prisma.service';
-import { registerPresenceRoom, unregisterPresenceRoom } from '../presence-pubsub';
+import {
+  registerPresenceRoom,
+  unregisterPresenceRoom,
+} from '../presence-pubsub';
 
 interface JoinOptions {
   token?: string;
@@ -25,7 +28,10 @@ export class PresenceRoom extends Room {
 
     let payload: { sub: number; email: string };
     try {
-      payload = jwt.verify(options.token, requireEnv('JWT_SECRET')) as unknown as {
+      payload = jwt.verify(
+        options.token,
+        requireEnv('JWT_SECRET'),
+      ) as unknown as {
         sub: number;
         email: string;
       };

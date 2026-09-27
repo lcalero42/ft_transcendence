@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
@@ -147,7 +146,11 @@ describe('FriendshipService', () => {
       expect(await service.create({ name: 'Bob' }, 1)).toBe(revived);
       expect(prismaMock.friendship.update).toHaveBeenCalledWith({
         where: { id: declined.id },
-        data: { status: FriendshipStatus.PENDING, requesterId: 1, addresseeId: 2 },
+        data: {
+          status: FriendshipStatus.PENDING,
+          requesterId: 1,
+          addresseeId: 2,
+        },
         include: { requester: playerSelect },
       });
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
