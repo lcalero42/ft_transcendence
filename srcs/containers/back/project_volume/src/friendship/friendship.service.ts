@@ -11,6 +11,8 @@ import { PrismaService } from '../prisma.service';
 import { FriendshipStatus } from '../generated/prisma/enums';
 import { notifyPlayer } from '../colyseus/presence-pubsub';
 
+const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
+
 @Injectable()
 export class FriendshipService {
   constructor(private prisma: PrismaService) {}
@@ -23,6 +25,9 @@ export class FriendshipService {
       },
     });
     if (!addressee) throw new NotFoundException('Player not found');
+    if (addressee.id === id)
+      throw new BadRequestException("You can't be friend with yourself");
+
     const existingFriendship = await this.prisma.friendship.findFirst({
       where: {
         OR: [
@@ -31,48 +36,53 @@ export class FriendshipService {
         ],
       },
     });
-    if (existingFriendship?.status === FriendshipStatus.DECLINED) {
-      const revivedFriendship = await this.prisma.friendship.update({
-        where: { id: existingFriendship.id },
-        data: {
-          status: FriendshipStatus.PENDING,
-          requesterId: id,
-          addresseeId: addressee.id,
-        },
-        include: {
-          requester: { select: { id: true, name: true, avatarUrl: true } },
-        },
-      });
-      notifyPlayer(addressee.id, 'friendRequest', {
-        friendshipId: revivedFriendship.id,
-        fromName: revivedFriendship.requester.name,
-      });
-      return revivedFriendship;
-    } else if (existingFriendship?.status === FriendshipStatus.PENDING) {
+
+    if (existingFriendship?.status === FriendshipStatus.DECLINED)
+      return this.reviveFriendship(existingFriendship.id, id, addressee.id);
+
+    if (existingFriendship?.status === FriendshipStatus.PENDING)
       throw new ConflictException(
         existingFriendship.requesterId === id
           ? 'You already have a pending friend request to this player'
           : 'This player already sent you a friend request',
       );
-    } else if (existingFriendship !== null)
+
+    if (existingFriendship !== null)
       throw new ConflictException('Friendship already exists');
-    else if (addressee.id === id)
-      throw new BadRequestException("You can't be friend with yourself");
 
     const createFriendship = await this.prisma.friendship.create({
       data: {
         requesterId: id,
         addresseeId: addressee.id,
       },
-      include: {
-        requester: { select: { id: true, name: true, avatarUrl: true } },
-      },
+      include: { requester: playerSelect },
     });
     notifyPlayer(addressee.id, 'friendRequest', {
       friendshipId: createFriendship.id,
       fromName: createFriendship.requester.name,
     });
     return createFriendship;
+  }
+
+  private async reviveFriendship(
+    friendshipId: number,
+    requesterId: number,
+    addresseeId: number,
+  ) {
+    const revivedFriendship = await this.prisma.friendship.update({
+      where: { id: friendshipId },
+      data: {
+        status: FriendshipStatus.PENDING,
+        requesterId,
+        addresseeId,
+      },
+      include: { requester: playerSelect },
+    });
+    notifyPlayer(addresseeId, 'friendRequest', {
+      friendshipId: revivedFriendship.id,
+      fromName: revivedFriendship.requester.name,
+    });
+    return revivedFriendship;
   }
 
   async findAll(playerId: number, status?: FriendshipStatus) {
@@ -84,8 +94,8 @@ export class FriendshipService {
         addressee: { deletedAt: null },
       },
       include: {
-        requester: { select: { id: true, name: true, avatarUrl: true } },
-        addressee: { select: { id: true, name: true, avatarUrl: true } },
+        requester: playerSelect,
+        addressee: playerSelect,
       },
     });
   }
@@ -99,8 +109,8 @@ export class FriendshipService {
         addressee: { deletedAt: null },
       },
       include: {
-        requester: { select: { id: true, name: true, avatarUrl: true } },
-        addressee: { select: { id: true, name: true, avatarUrl: true } },
+        requester: playerSelect,
+        addressee: playerSelect,
       },
     });
     if (!friendship) throw new NotFoundException('Friendship not found');

@@ -17,6 +17,20 @@ import { FriendsContext } from "./friends-context";
 type PresenceRoom = Awaited<ReturnType<typeof client.joinOrCreate>>;
 const EMPTY_ONLINE_IDS: Set<number> = new Set();
 
+function refetchInto<T>(fetcher: () => Promise<T[]>, setState: (value: T[]) => void) {
+	fetcher().then(setState).catch(() => {});
+}
+
+function withRefetch<Args extends unknown[]>(
+	action: (...args: Args) => Promise<unknown>,
+	refetches: (() => void)[],
+) {
+	return async (...args: Args) => {
+		await action(...args);
+		refetches.forEach((refetch) => refetch());
+	};
+}
+
 export function FriendsProvider({ children }: { children: ReactNode }) {
 	const { isAuth, user } = useAuth();
 	const [friends, setFriends] = useState<Friendship[]>([]);
@@ -26,13 +40,8 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const roomRef = useRef<PresenceRoom | null>(null);
 
-	const refetchFriends = useCallback(() => {
-		getFriends().then(setFriends).catch(() => {});
-	}, []);
-
-	const refetchPending = useCallback(() => {
-		getPendingRequests().then(setPending).catch(() => {});
-	}, []);
+	const refetchFriends = useCallback(() => refetchInto(getFriends, setFriends), []);
+	const refetchPending = useCallback(() => refetchInto(getPendingRequests, setPending), []);
 
 	useEffect(() => {
 		if (!isAuth) return;
@@ -104,31 +113,17 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		setIsMenuOpen(false);
 	}
 
-	async function sendRequest(name: string) {
-		await sendFriendRequestByName(name);
-		refetchPending();
-	}
-
-	async function acceptRequest(id: number) {
-		await respondToRequest(id, "ACCEPTED");
-		refetchFriends();
-		refetchPending();
-	}
-
-	async function declineRequest(id: number) {
-		await respondToRequest(id, "DECLINED");
-		refetchPending();
-	}
-
-	async function cancelRequest(id: number) {
-		await cancelRequestApi(id);
-		refetchPending();
-	}
-
-	async function removeFriend(id: number) {
-		await removeFriendApi(id);
-		refetchFriends();
-	}
+	const sendRequest = withRefetch(sendFriendRequestByName, [refetchPending]);
+	const acceptRequest = withRefetch(
+		(id: number) => respondToRequest(id, "ACCEPTED"),
+		[refetchFriends, refetchPending],
+	);
+	const declineRequest = withRefetch(
+		(id: number) => respondToRequest(id, "DECLINED"),
+		[refetchPending],
+	);
+	const cancelRequest = withRefetch(cancelRequestApi, [refetchPending]);
+	const removeFriend = withRefetch(removeFriendApi, [refetchFriends]);
 
 	const incomingRequests = isAuth ? pending.filter((f) => f.addresseeId === user?.id) : [];
 	const outgoingRequests = isAuth ? pending.filter((f) => f.requesterId === user?.id) : [];

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
+import { otherPlayer } from "@/api/friendship";
 import RequestInput from "./RequestInput";
 import SentRequests from "./SentRequests";
 import PendingRequests from "./PendingRequests";
@@ -13,7 +14,7 @@ function FriendsMenu() {
 
 	const friendPlayers = friends.map((f) => ({
 		friendshipId: f.id,
-		...(f.requesterId === user?.id ? f.addressee : f.requester),
+		...otherPlayer(f, user?.id),
 	}));
 	const onlineCount = friendPlayers.filter((p) => onlineIds.has(p.id)).length;
 

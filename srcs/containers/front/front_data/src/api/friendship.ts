@@ -19,6 +19,10 @@ export interface Friendship {
 	updatedAt: string;
 }
 
+export function otherPlayer(friendship: Friendship, myId: number | undefined): FriendshipPlayer {
+	return friendship.requesterId === myId ? friendship.addressee : friendship.requester;
+}
+
 export async function getFriends(): Promise<Friendship[]> {
 	return apiFetch<Friendship[]>("/friendship?status=ACCEPTED");
 }
