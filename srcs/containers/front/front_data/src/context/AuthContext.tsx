@@ -23,9 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = getToken();
     return token ? decodeToken(token) : null;
   });
-  // Keyed by userId so profile/profileLoading can be derived below without
-  // ever setting state synchronously inside the effect (only from its
-  // promise callbacks, once the fetch actually resolves).
   const [fetchedProfile, setFetchedProfile] = useState<{ userId: number; profile: Player | null } | null>(null);
 
   useEffect(() => {
