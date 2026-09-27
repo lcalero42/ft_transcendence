@@ -8,6 +8,7 @@ import { fetchRooms, type Room } from '../../api/rooms';
 import Header from "@/components/Header/Header";
 import { Spinner } from "@/components/ui/spinner";
 import LoadingDots from "@/components/LoadingDots/LoadingDots";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
 
 function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -51,7 +52,9 @@ function Home() {
 			</p>
 		</div>
 	);
-    if (error) return <p className="text-sm text-defeat">{error}</p>;
+    if (error) {
+		return <ErrorPage error={error} />;
+	}
 
 	return (
 		<div className="page">
