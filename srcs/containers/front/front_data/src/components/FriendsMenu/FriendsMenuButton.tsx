@@ -8,7 +8,7 @@ function FriendsMenuButton() {
 			type="button"
 			onClick={toggleMenu}
 			aria-label="Open friends menu"
-			className="clean-btn hoverable relative flex h-5 w-7 flex-col justify-between"
+			className="clean-btn hoverable relative z-50 flex h-5 w-7 shrink-0 flex-col justify-between md:absolute md:top-1/2 md:left-6 md:-translate-y-1/2"
 		>
 			{[0, 1, 2].map((i) => (
 				<span key={i} className="h-0.5 w-full rounded-full bg-white" />

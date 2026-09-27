@@ -13,6 +13,7 @@ export interface FriendsContextValue {
 	sendRequest: (name: string) => Promise<void>;
 	acceptRequest: (id: number) => Promise<void>;
 	declineRequest: (id: number) => Promise<void>;
+	cancelRequest: (id: number) => Promise<void>;
 }
 
 export const FriendsContext = createContext<FriendsContextValue | undefined>(undefined);

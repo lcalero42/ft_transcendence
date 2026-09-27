@@ -43,3 +43,7 @@ export async function respondToRequest(
 		body: JSON.stringify({ status }),
 	});
 }
+
+export async function cancelRequest(id: number): Promise<void> {
+	await apiFetch<null>(`/friendship/${id}`, { method: "DELETE" });
+}

@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
 import RequestInput from "./RequestInput";
+import SentRequests from "./SentRequests";
 import PendingRequests from "./PendingRequests";
 import FriendListItem from "./FriendListItem";
 
@@ -26,6 +27,7 @@ function FriendsMenu() {
 
 				<div className="flex flex-col gap-6">
 					<RequestInput />
+					<SentRequests />
 					<PendingRequests />
 
 					<div>

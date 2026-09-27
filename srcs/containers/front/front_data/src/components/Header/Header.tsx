@@ -11,10 +11,10 @@ function Header({ compact }: HeaderProps) {
 	const { profile, isAuth } = useAuth();
 
 	return (
-		<header className={`page-header ${compact ? "py-3! md:py-3!" : ""}`}>
+		<header className={`page-header relative ${compact ? "py-3! md:py-3!" : ""}`}>
 			<div className="flex items-center gap-4">
-				<Logo />
 				{isAuth && <FriendsMenuButton />}
+				<Logo />
 			</div>
 			<LinkProfile name={profile?.name ? profile.name : "login"} icon="🥷" />
 		</header>

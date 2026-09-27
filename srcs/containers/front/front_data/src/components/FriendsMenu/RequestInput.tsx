@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useFriends } from "@/context/useFriends";
+import { toast } from "@/components/ui/toast";
 
 function RequestInput() {
 	const { sendRequest } = useFriends();
@@ -16,6 +17,7 @@ function RequestInput() {
 		setError(null);
 		try {
 			await sendRequest(trimmed);
+			toast.add({ type: "success", title: "Friend request sent", description: `Your request was sent to ${trimmed}` });
 			setName("");
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Something went wrong");

@@ -31,7 +31,30 @@ export class FriendshipService {
         ],
       },
     });
-    if (existingFriendship !== null)
+    if (existingFriendship?.status === FriendshipStatus.DECLINED) {
+      const revivedFriendship = await this.prisma.friendship.update({
+        where: { id: existingFriendship.id },
+        data: {
+          status: FriendshipStatus.PENDING,
+          requesterId: id,
+          addresseeId: addressee.id,
+        },
+        include: {
+          requester: { select: { id: true, name: true, avatarUrl: true } },
+        },
+      });
+      notifyPlayer(addressee.id, 'friendRequest', {
+        friendshipId: revivedFriendship.id,
+        fromName: revivedFriendship.requester.name,
+      });
+      return revivedFriendship;
+    } else if (existingFriendship?.status === FriendshipStatus.PENDING) {
+      throw new ConflictException(
+        existingFriendship.requesterId === id
+          ? 'You already have a pending friend request to this player'
+          : 'This player already sent you a friend request',
+      );
+    } else if (existingFriendship !== null)
       throw new ConflictException('Friendship already exists');
     else if (addressee.id === id)
       throw new BadRequestException("You can't be friend with yourself");
@@ -117,6 +140,11 @@ export class FriendshipService {
         friendshipId: updated.id,
         fromName: friendship.addressee.name,
       });
+    } else if (to === FriendshipStatus.DECLINED) {
+      notifyPlayer(friendship.requesterId, 'friendRequestDeclined', {
+        friendshipId: updated.id,
+        fromName: friendship.addressee.name,
+      });
     }
     return updated;
   }
@@ -130,8 +158,20 @@ export class FriendshipService {
     )
       throw new ForbiddenException('Only the blocker can remove a block');
 
-    return this.prisma.friendship.delete({
+    const deleted = await this.prisma.friendship.delete({
       where: { id, status: friendship.status },
     });
+
+    if (friendship.status === FriendshipStatus.PENDING) {
+      const otherId =
+        friendship.requesterId === playerId
+          ? friendship.addresseeId
+          : friendship.requesterId;
+      notifyPlayer(otherId, 'friendRequestCancelled', {
+        friendshipId: deleted.id,
+      });
+    }
+
+    return deleted;
   }
 }
