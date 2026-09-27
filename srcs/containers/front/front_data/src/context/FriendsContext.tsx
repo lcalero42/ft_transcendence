@@ -8,6 +8,7 @@ import {
 	sendFriendRequestByName,
 	respondToRequest,
 	cancelRequest as cancelRequestApi,
+	removeFriend as removeFriendApi,
 	type Friendship,
 } from "../api/friendship";
 import { useAuth } from "./useAuth";
@@ -79,6 +80,9 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				room.onMessage("friendRequestCancelled", () => {
 					refetchPending();
 				});
+				room.onMessage("friendRemoved", () => {
+					refetchFriends();
+				});
 			})
 			.catch(() => {});
 
@@ -121,6 +125,11 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		refetchPending();
 	}
 
+	async function removeFriend(id: number) {
+		await removeFriendApi(id);
+		refetchFriends();
+	}
+
 	const incomingRequests = isAuth ? pending.filter((f) => f.addresseeId === user?.id) : [];
 	const outgoingRequests = isAuth ? pending.filter((f) => f.requesterId === user?.id) : [];
 
@@ -139,6 +148,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				acceptRequest,
 				declineRequest,
 				cancelRequest,
+				removeFriend,
 			}}
 		>
 			{children}

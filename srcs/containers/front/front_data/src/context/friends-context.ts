@@ -14,6 +14,7 @@ export interface FriendsContextValue {
 	acceptRequest: (id: number) => Promise<void>;
 	declineRequest: (id: number) => Promise<void>;
 	cancelRequest: (id: number) => Promise<void>;
+	removeFriend: (id: number) => Promise<void>;
 }
 
 export const FriendsContext = createContext<FriendsContextValue | undefined>(undefined);

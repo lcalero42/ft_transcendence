@@ -162,12 +162,17 @@ export class FriendshipService {
       where: { id, status: friendship.status },
     });
 
+    const otherId =
+      friendship.requesterId === playerId
+        ? friendship.addresseeId
+        : friendship.requesterId;
+
     if (friendship.status === FriendshipStatus.PENDING) {
-      const otherId =
-        friendship.requesterId === playerId
-          ? friendship.addresseeId
-          : friendship.requesterId;
       notifyPlayer(otherId, 'friendRequestCancelled', {
+        friendshipId: deleted.id,
+      });
+    } else if (friendship.status === FriendshipStatus.ACCEPTED) {
+      notifyPlayer(otherId, 'friendRemoved', {
         friendshipId: deleted.id,
       });
     }

@@ -47,3 +47,7 @@ export async function respondToRequest(
 export async function cancelRequest(id: number): Promise<void> {
 	await apiFetch<null>(`/friendship/${id}`, { method: "DELETE" });
 }
+
+export async function removeFriend(id: number): Promise<void> {
+	await apiFetch<null>(`/friendship/${id}`, { method: "DELETE" });
+}

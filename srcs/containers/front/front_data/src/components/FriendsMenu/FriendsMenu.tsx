@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
 import RequestInput from "./RequestInput";
@@ -7,11 +8,13 @@ import FriendListItem from "./FriendListItem";
 
 function FriendsMenu() {
 	const { user } = useAuth();
-	const { isMenuOpen, closeMenu, friends, onlineIds } = useFriends();
+	const { isMenuOpen, closeMenu, friends, onlineIds, removeFriend } = useFriends();
+	const [expandedFriendId, setExpandedFriendId] = useState<number | null>(null);
 
-	const friendPlayers = friends.map((f) =>
-		f.requesterId === user?.id ? f.addressee : f.requester
-	);
+	const friendPlayers = friends.map((f) => ({
+		friendshipId: f.id,
+		...(f.requesterId === user?.id ? f.addressee : f.requester),
+	}));
 	const onlineCount = friendPlayers.filter((p) => onlineIds.has(p.id)).length;
 
 	return (
@@ -44,6 +47,9 @@ function FriendsMenu() {
 										name={p.name}
 										avatarUrl={p.avatarUrl}
 										isOnline={onlineIds.has(p.id)}
+										expanded={expandedFriendId === p.friendshipId}
+										onToggle={() => setExpandedFriendId((prev) => (prev === p.friendshipId ? null : p.friendshipId))}
+										onRemove={() => { void removeFriend(p.friendshipId); }}
 									/>
 								))
 							)}
