@@ -6,6 +6,8 @@ import AvailableRooms from "./components/AvailableRooms";
 import { useEffect, useState } from 'react';
 import { fetchRooms, type Room } from '../../api/rooms';
 import Header from "@/components/Header/Header";
+import { Spinner } from "@/components/ui/spinner";
+import LoadingDots from "@/components/LoadingDots/LoadingDots";
 
 function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -41,8 +43,15 @@ function Home() {
         };
     }, []);
 
-    if (loading) return <p>Loading rooms...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) return (
+		<div className="page flex flex-col items-center justify-center gap-4 py-20">
+			<Spinner className="size-10 text-accent-hover" />
+			<p className="text-accent-hover font-bold">
+				Loading rooms <LoadingDots />
+			</p>
+		</div>
+	);
+    if (error) return <p className="text-sm text-defeat">{error}</p>;
 
 	return (
 		<div className="page">
