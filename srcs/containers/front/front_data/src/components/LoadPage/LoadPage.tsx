@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/ui/spinner";
 import { useEffect, useState } from 'react';
 
 function LoadingDots() {
@@ -8,7 +9,7 @@ function LoadingDots() {
 		}, 400);
 		return () => clearInterval(interval);
 	}, []);
-	
+
 	return (
 	    <span className="inline-block w-[1.5em] text-left">
 			{". ".repeat(dots)}
@@ -16,4 +17,15 @@ function LoadingDots() {
 	);
 }
 
-export default LoadingDots;
+function LoadPage() {
+	return (
+		<div className="page flex flex-col items-center justify-center gap-4 py-20">
+			<Spinner className="size-10 text-accent-hover" />
+			<p className="text-accent-hover font-bold">
+				Loading <LoadingDots />
+			</p>
+		</div>
+	);
+}
+
+export default LoadPage;
