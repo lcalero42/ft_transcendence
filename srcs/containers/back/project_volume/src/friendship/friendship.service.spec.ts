@@ -72,13 +72,13 @@ describe('FriendshipService', () => {
 
     it('should create a pending friendship request', async () => {
       const result = friendshipRow(FriendshipStatus.PENDING);
-      prismaMock.player.findUnique.mockResolvedValue(addressee);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
       prismaMock.friendship.findFirst.mockResolvedValue(null);
       prismaMock.friendship.create.mockResolvedValue(result);
 
-      expect(await service.create({ addressee: 2 }, 1)).toBe(result);
-      expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
-        where: { id: 2, deletedAt: null },
+      expect(await service.create({ name: 'Bob' }, 1)).toBe(result);
+      expect(prismaMock.player.findFirst).toHaveBeenCalledWith({
+        where: { name: 'Bob', deletedAt: null },
       });
       expect(prismaMock.friendship.findFirst).toHaveBeenCalledWith({
         where: {
@@ -93,32 +93,32 @@ describe('FriendshipService', () => {
       });
     });
 
-    it('should throw a NotFoundException when the addressee does not exist', async () => {
-      prismaMock.player.findUnique.mockResolvedValue(null);
+    it('should throw a NotFoundException when the player does not exist', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(null);
 
-      await expect(service.create({ addressee: 404 }, 1)).rejects.toThrow(
+      await expect(service.create({ name: 'Ghost' }, 1)).rejects.toThrow(
         NotFoundException,
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
     });
 
     it('should throw a ConflictException when a friendship already exists', async () => {
-      prismaMock.player.findUnique.mockResolvedValue(addressee);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
       prismaMock.friendship.findFirst.mockResolvedValue(
         friendshipRow(FriendshipStatus.PENDING, 2, 1),
       );
 
-      await expect(service.create({ addressee: 2 }, 1)).rejects.toThrow(
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toThrow(
         ConflictException,
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
     });
 
     it('should throw a BadRequestException when befriending yourself', async () => {
-      prismaMock.player.findUnique.mockResolvedValue({ ...addressee, id: 1 });
+      prismaMock.player.findFirst.mockResolvedValue({ ...addressee, id: 1 });
       prismaMock.friendship.findFirst.mockResolvedValue(null);
 
-      await expect(service.create({ addressee: 1 }, 1)).rejects.toThrow(
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toThrow(
         BadRequestException,
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();

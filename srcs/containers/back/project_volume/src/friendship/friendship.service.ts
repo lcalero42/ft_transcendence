@@ -15,30 +15,30 @@ export class FriendshipService {
   constructor(private prisma: PrismaService) {}
 
   async create(createFriendshipDto: CreateFriendshipDto, id: number) {
-    const addressee = await this.prisma.player.findUnique({
+    const addressee = await this.prisma.player.findFirst({
       where: {
-        id: createFriendshipDto.addressee,
+        name: createFriendshipDto.name,
         deletedAt: null,
       },
     });
-    if (!addressee) throw new NotFoundException('Addressee not found');
+    if (!addressee) throw new NotFoundException('Player not found');
     const existingFriendship = await this.prisma.friendship.findFirst({
       where: {
         OR: [
-          { requesterId: id, addresseeId: createFriendshipDto.addressee },
-          { requesterId: createFriendshipDto.addressee, addresseeId: id },
+          { requesterId: id, addresseeId: addressee.id },
+          { requesterId: addressee.id, addresseeId: id },
         ],
       },
     });
     if (existingFriendship !== null)
       throw new ConflictException('Friendship already exists');
-    else if (createFriendshipDto.addressee === id)
+    else if (addressee.id === id)
       throw new BadRequestException("You can't be friend with yourself");
 
     const createFriendship = await this.prisma.friendship.create({
       data: {
         requesterId: id,
-        addresseeId: createFriendshipDto.addressee,
+        addresseeId: addressee.id,
       },
     });
     return createFriendship;
