@@ -90,6 +90,7 @@ describe('FriendshipService', () => {
       });
       expect(prismaMock.friendship.create).toHaveBeenCalledWith({
         data: { requesterId: 1, addresseeId: 2 },
+        include: { requester: playerSelect },
       });
     });
 

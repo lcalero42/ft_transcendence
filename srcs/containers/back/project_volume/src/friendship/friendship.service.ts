@@ -9,6 +9,7 @@ import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus } from '../generated/prisma/enums';
+import { notifyPlayer } from '../colyseus/presence-pubsub';
 
 @Injectable()
 export class FriendshipService {
@@ -40,6 +41,13 @@ export class FriendshipService {
         requesterId: id,
         addresseeId: addressee.id,
       },
+      include: {
+        requester: { select: { id: true, name: true, avatarUrl: true } },
+      },
+    });
+    notifyPlayer(addressee.id, 'friendRequest', {
+      friendshipId: createFriendship.id,
+      fromName: createFriendship.requester.name,
     });
     return createFriendship;
   }
@@ -97,13 +105,20 @@ export class FriendshipService {
     const otherId = isAddressee
       ? friendship.requesterId
       : friendship.addresseeId;
-    return this.prisma.friendship.update({
+    const updated = await this.prisma.friendship.update({
       where: { id, status: from },
       data:
         to === FriendshipStatus.BLOCKED
           ? { status: to, requesterId: playerId, addresseeId: otherId }
           : { status: to },
     });
+    if (to === FriendshipStatus.ACCEPTED) {
+      notifyPlayer(friendship.requesterId, 'friendRequestAccepted', {
+        friendshipId: updated.id,
+        fromName: friendship.addressee.name,
+      });
+    }
+    return updated;
   }
 
   async remove(id: number, playerId: number) {
