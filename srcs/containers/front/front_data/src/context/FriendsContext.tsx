@@ -13,6 +13,7 @@ import { useAuth } from "./useAuth";
 import { FriendsContext } from "./friends-context";
 
 type PresenceRoom = Awaited<ReturnType<typeof client.joinOrCreate>>;
+const EMPTY_ONLINE_IDS: Set<number> = new Set();
 
 export function FriendsProvider({ children }: { children: ReactNode }) {
 	const { isAuth, user } = useAuth();
@@ -32,13 +33,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	useEffect(() => {
-		if (!isAuth) {
-			setFriends([]);
-			setPending([]);
-			setOnlineIds(new Set());
-			setUnreadCount(0);
-			return;
-		}
+		if (!isAuth) return;
 
 		refetchFriends();
 		refetchPending();
@@ -82,7 +77,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 
 		return () => {
 			cancelled = true;
-			roomRef.current?.leave();
+			void roomRef.current?.leave();
 			roomRef.current = null;
 		};
 	}, [isAuth, user?.id, refetchFriends, refetchPending]);
@@ -114,17 +109,17 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		refetchPending();
 	}
 
-	const incomingRequests = pending.filter((f) => f.addresseeId === user?.id);
-	const outgoingRequests = pending.filter((f) => f.requesterId === user?.id);
+	const incomingRequests = isAuth ? pending.filter((f) => f.addresseeId === user?.id) : [];
+	const outgoingRequests = isAuth ? pending.filter((f) => f.requesterId === user?.id) : [];
 
 	return (
 		<FriendsContext.Provider
 			value={{
-				friends,
+				friends: isAuth ? friends : [],
 				incomingRequests,
 				outgoingRequests,
-				onlineIds,
-				unreadCount,
+				onlineIds: isAuth ? onlineIds : EMPTY_ONLINE_IDS,
+				unreadCount: isAuth ? unreadCount : 0,
 				isMenuOpen,
 				toggleMenu,
 				closeMenu,

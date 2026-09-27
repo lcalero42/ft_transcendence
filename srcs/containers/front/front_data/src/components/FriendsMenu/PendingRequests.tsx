@@ -29,7 +29,7 @@ function PendingRequests() {
 						<button
 							type="button"
 							aria-label="Accept"
-							onClick={() => acceptRequest(request.id)}
+							onClick={() => { void acceptRequest(request.id); }}
 							className="clean-btn hoverable flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-victory text-white"
 						>
 							<Check size={16} />
@@ -37,7 +37,7 @@ function PendingRequests() {
 						<button
 							type="button"
 							aria-label="Decline"
-							onClick={() => declineRequest(request.id)}
+							onClick={() => { void declineRequest(request.id); }}
 							className="clean-btn hoverable flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-defeat text-white"
 						>
 							<X size={16} />

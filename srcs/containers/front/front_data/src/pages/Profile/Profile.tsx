@@ -1,4 +1,4 @@
-import Logo from "@/components/Logo/Logo";
+import Header from "@/components/Header/Header";
 import Credit from "@/components/Credit/Credit";
 import Identity from "./components/Identity/Identity";
 import Bio from "./components/Bio/Bio";
@@ -89,10 +89,8 @@ function Profile() {
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
-			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
-				<div className="text-[1.3rem]">
-					<Logo />
-				</div>
+			<div className="z-100 fixed w-full border-b py-2 bg-bg-deep/70 border-head-border">
+				<Header compact />
 			</div>
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">

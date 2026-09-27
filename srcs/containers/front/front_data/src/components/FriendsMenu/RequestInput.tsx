@@ -25,7 +25,7 @@ function RequestInput() {
 	}
 
 	return (
-		<form onSubmit={handleSubmit}>
+		<form onSubmit={(e) => { void handleSubmit(e); }}>
 			<div className="mb-1 font-semibold text-accent-purple">Add a friend</div>
 			<div className="flex gap-2">
 				<input
