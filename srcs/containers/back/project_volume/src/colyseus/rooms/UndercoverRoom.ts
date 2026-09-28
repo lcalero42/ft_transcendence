@@ -4,6 +4,7 @@ import {
   Room,
   type Client,
   type AuthContext,
+  type Delayed,
   matchMaker,
 } from '@colyseus/core';
 import {
@@ -44,11 +45,20 @@ const MAX_CLIENTS = 12;
 const MAX_CHAT_HISTORY = 100;
 const MAX_CHAT_MESSAGE_LENGTH = 300;
 const MAX_CLUE_LENGTH = 60;
+const STARTING_DURATION_MS = 5000;
+const TURN_DURATION_MS = 60000;
+const VOTING_DURATION_MS = 30000;
 const REVEAL_DURATION_MS = 5000;
+const FINISHED_DURATION_MS = 5000;
 const RECONNECTION_WINDOW_SECONDS = 20;
 const MAX_ROOM_NAME_LENGTH = 16;
 const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
-const ROUND_PHASES: RoomPhase[] = ['describing', 'voting', 'reveal'];
+const ROUND_PHASES: RoomPhase[] = [
+  'starting',
+  'describing',
+  'voting',
+  'reveal',
+];
 
 export class UndercoverRoom extends Room {
   maxClients = MAX_CLIENTS;
@@ -57,6 +67,7 @@ export class UndercoverRoom extends Room {
   private readonly logger = new Logger('UndercoverRoom');
   private wordPair: WordPair | null = null;
   private roles = new Map<string, Role>();
+  private phaseTimer: Delayed | null = null;
 
   messages = {
     start: async (client: Client) => {
@@ -149,17 +160,14 @@ export class UndercoverRoom extends Room {
 
       this.state.round = 1;
       this.state.alive = new ArraySchema(...this.state.participants);
-      this.state.turnOrder = new ArraySchema(
-        ...buildTurnOrder([...this.state.alive]),
-      );
+      this.state.turnOrder.clear();
       this.state.currentTurnIndex = 0;
       this.state.clues.clear();
       this.state.votes.clear();
       this.state.eliminationHistory.clear();
-      this.state.revealEndsAt = 0;
       this.state.winner = '';
       this.state.revealedRoles.clear();
-      this.state.phase = 'describing';
+      this.setPhase('starting', STARTING_DURATION_MS, () => this.beginRound());
 
       this.logger.log(
         `game started with ${this.state.participants.length} participants`,
@@ -193,12 +201,7 @@ export class UndercoverRoom extends Room {
       clue.word = trimmed;
       clue.submittedAt = Date.now();
       this.state.clues.push(clue);
-
-      this.state.currentTurnIndex += 1;
-      if (this.state.currentTurnIndex >= this.state.turnOrder.length) {
-        this.state.votes.clear();
-        this.state.phase = 'voting';
-      }
+      this.advanceTurn();
     },
 
     castVote: (client: Client, targetSessionId: unknown) => {
@@ -227,13 +230,6 @@ export class UndercoverRoom extends Room {
       if (this.state.votes.length >= this.state.alive.length) {
         this.resolveVoting();
       }
-    },
-
-    endGame: (client: Client) => {
-      if (!this.isHost(client) || !ROUND_PHASES.includes(this.state.phase)) {
-        return;
-      }
-      this.finishGame();
     },
   };
 
@@ -295,11 +291,6 @@ export class UndercoverRoom extends Room {
 
     if (ROUND_PHASES.includes(this.state.phase)) {
       this.removeFromRound(client.sessionId);
-
-      if (this.state.participants.length < this.state.minParticipants) {
-        this.logger.log('not enough participants left, ending game');
-        this.finishGame();
-      }
     }
 
     if (this.state.hostSessionId === client.sessionId) {
@@ -384,8 +375,15 @@ export class UndercoverRoom extends Room {
 
   private removeFromRound(sessionId: string) {
     const aliveIndex = this.state.alive.indexOf(sessionId);
-    if (aliveIndex !== -1) {
-      this.state.alive.splice(aliveIndex, 1);
+    if (aliveIndex === -1) {
+      return;
+    }
+    this.state.alive.splice(aliveIndex, 1);
+
+    const winner = checkWinCondition([...this.state.alive], this.roles);
+    if (winner) {
+      this.endWithWinner(winner);
+      return;
     }
 
     if (this.state.phase === 'voting') {
@@ -394,15 +392,15 @@ export class UndercoverRoom extends Room {
           this.state.votes.splice(i, 1);
         }
       }
-      if (
-        this.state.alive.length > 0 &&
-        this.state.votes.length >= this.state.alive.length
-      ) {
+      if (this.state.votes.length >= this.state.alive.length) {
         this.resolveVoting();
       }
       return;
     }
 
+    if (this.state.phase !== 'describing') {
+      return;
+    }
     const turnIndex = this.state.turnOrder.indexOf(sessionId);
     if (turnIndex === -1) {
       return;
@@ -410,14 +408,55 @@ export class UndercoverRoom extends Room {
     this.state.turnOrder.splice(turnIndex, 1);
     if (turnIndex < this.state.currentTurnIndex) {
       this.state.currentTurnIndex -= 1;
-    } else if (
-      turnIndex === this.state.currentTurnIndex &&
-      this.state.phase === 'describing' &&
-      this.state.currentTurnIndex >= this.state.turnOrder.length
-    ) {
-      this.state.votes.clear();
-      this.state.phase = 'voting';
+    } else if (turnIndex === this.state.currentTurnIndex) {
+      if (this.state.currentTurnIndex >= this.state.turnOrder.length) {
+        this.startVoting();
+      } else {
+        this.startTurn();
+      }
     }
+  }
+
+  private setPhase(
+    phase: RoomPhase,
+    durationMs = 0,
+    onExpire?: () => void,
+  ) {
+    this.phaseTimer?.clear();
+    this.phaseTimer = null;
+    this.state.phase = phase;
+    this.state.phaseEndsAt = durationMs ? Date.now() + durationMs : 0;
+    if (durationMs && onExpire) {
+      this.phaseTimer = this.clock.setTimeout(onExpire, durationMs);
+    }
+  }
+
+  private beginRound() {
+    this.state.turnOrder = new ArraySchema(
+      ...buildTurnOrder([...this.state.alive]),
+    );
+    this.state.currentTurnIndex = 0;
+    this.state.clues.clear();
+    this.state.votes.clear();
+    this.startTurn();
+  }
+
+  private startTurn() {
+    this.setPhase('describing', TURN_DURATION_MS, () => this.advanceTurn());
+  }
+
+  private advanceTurn() {
+    this.state.currentTurnIndex += 1;
+    if (this.state.currentTurnIndex >= this.state.turnOrder.length) {
+      this.startVoting();
+    } else {
+      this.startTurn();
+    }
+  }
+
+  private startVoting() {
+    this.state.votes.clear();
+    this.setPhase('voting', VOTING_DURATION_MS, () => this.resolveVoting());
   }
 
   private resolveVoting() {
@@ -440,38 +479,30 @@ export class UndercoverRoom extends Room {
     }
     this.state.eliminationHistory.push(record);
 
-    this.state.winner =
-      checkWinCondition([...this.state.alive], this.roles) ?? '';
-    this.state.phase = 'reveal';
-    this.state.revealEndsAt = Date.now() + REVEAL_DURATION_MS;
-    this.clock.setTimeout(() => this.advanceAfterReveal(), REVEAL_DURATION_MS);
+    const winner = checkWinCondition([...this.state.alive], this.roles);
+    if (winner) {
+      this.endWithWinner(winner);
+      return;
+    }
+    this.setPhase('reveal', REVEAL_DURATION_MS, () => this.advanceAfterReveal());
   }
 
   private advanceAfterReveal() {
-    if (this.state.phase !== 'reveal') {
-      return;
-    }
-
-    if (this.state.winner) {
-      for (const sessionId of this.state.participants) {
-        this.state.revealedRoles.set(sessionId, this.roles.get(sessionId) ?? '');
-      }
-      this.state.phase = 'finished';
-      return;
-    }
-
     this.state.round += 1;
-    this.state.turnOrder = new ArraySchema(
-      ...buildTurnOrder([...this.state.alive]),
-    );
-    this.state.currentTurnIndex = 0;
-    this.state.clues.clear();
-    this.state.votes.clear();
-    this.state.phase = 'describing';
+    this.beginRound();
+  }
+
+  private endWithWinner(winner: string) {
+    this.logger.log(`game over, ${winner} win`);
+    this.state.winner = winner;
+    for (const sessionId of this.state.participants) {
+      this.state.revealedRoles.set(sessionId, this.roles.get(sessionId) ?? '');
+    }
+    this.setPhase('finished', FINISHED_DURATION_MS, () => this.finishGame());
   }
 
   private finishGame() {
-    this.state.phase = 'open';
+    this.setPhase('open');
     this.state.participants.clear();
     this.state.round = 0;
     this.state.alive.clear();
@@ -480,7 +511,6 @@ export class UndercoverRoom extends Room {
     this.state.clues.clear();
     this.state.votes.clear();
     this.state.eliminationHistory.clear();
-    this.state.revealEndsAt = 0;
     this.state.winner = '';
     this.state.revealedRoles.clear();
     this.wordPair = null;

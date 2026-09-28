@@ -16,7 +16,6 @@ import VoteAction from "@/pages/GameRoom/components/VoteAction";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
-import EndGameButton from "@/pages/GameRoom/components/EndGameButton";
 import ChatBox from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
@@ -27,7 +26,7 @@ interface GameViewProps {
 }
 
 function GameView({ room }: GameViewProps) {
-	const secondsLeft = 20;
+	const [now, setNow] = useState(() => Date.now());
 	const [myWord, setMyWord] = useState("");
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
@@ -40,6 +39,8 @@ function GameView({ room }: GameViewProps) {
 	const currentTurnIndex = useRoomState(room, (s) => s.currentTurnIndex);
 	const clues = useRoomState(room, (s) => s.clues);
 	const votes = useRoomState(room, (s) => s.votes);
+	const phaseEndsAt = useRoomState(room, (s) => s.phaseEndsAt) ?? 0;
+	const secondsLeft = phaseEndsAt ? Math.max(0, Math.ceil((phaseEndsAt - now) / 1000)) : 0;
 	const isParticipant = participants?.includes(room.sessionId) ?? false;
 	const participantEntries = playerEntries.filter(([sessionId]) => participants?.includes(sessionId));
 	const activeSessionId = phase === "describing" ? turnOrder?.[currentTurnIndex ?? 0] : undefined;
@@ -52,7 +53,7 @@ function GameView({ room }: GameViewProps) {
 	const isMyTurn = activeSessionId === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
-	const currentWord = phase === "describing" || phase === "voting" ? myWord : "";
+	const currentWord = phase === "starting" || phase === "describing" || phase === "voting" ? myWord : "";
 	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
 
 	useEffect(() => {
@@ -62,6 +63,13 @@ function GameView({ room }: GameViewProps) {
 	}, [room]);
 
 	useEffect(() => {
+		if (!phaseEndsAt) return;
+		setNow(Date.now());
+		const interval = setInterval(() => setNow(Date.now()), 250);
+		return () => clearInterval(interval);
+	}, [phaseEndsAt]);
+
+	useEffect(() => {
 		if (phase === "open" && autoJoin && !isParticipant) {
 			room.send("joinGame");
 		}
@@ -69,7 +77,6 @@ function GameView({ room }: GameViewProps) {
 
 	const handleToggleParticipant = () => room.send(isParticipant ? "leaveGame" : "joinGame");
 	const handleStartGame = () => room.send("startGame");
-	const handleEndGame = () => room.send("endGame");
 	const handleSubmitClue = (word: string) => room.send("submitClue", word);
 	const handleCastVote = (targetSessionId: string) => room.send("castVote", targetSessionId);
 	const clueEntries = (clues ?? []).map((clue, index) => ({
@@ -166,7 +173,6 @@ function GameView({ room }: GameViewProps) {
 										</div>
 									)}
 									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
-										{isHost && <EndGameButton onClick={handleEndGame} />}
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 									</div>
 								</>
