@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Privacy from "./pages/Privacy/Privacy";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
@@ -20,6 +21,7 @@ function App() {
 					<Route path="/home" element={<Home />} />
 					<Route path="/login" element={<Login />} />
 					<Route path="/register" element={<Register />} />
+					<Route path="/privacy" element={<Privacy />} />
 
 					<Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
 
