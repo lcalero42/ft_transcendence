@@ -57,7 +57,8 @@ export class UndercoverState extends Schema {
   @type('number') currentTurnIndex: number = 0;
   @type([Clue]) clues = new ArraySchema<Clue>();
   @type([Vote]) votes = new ArraySchema<Vote>();
-  @type([EliminationRecord]) eliminationHistory = new ArraySchema<EliminationRecord>();
+  @type([EliminationRecord]) eliminationHistory =
+    new ArraySchema<EliminationRecord>();
   @type('number') phaseEndsAt: number = 0;
   @type('string') winner: string = '';
   @type({ map: 'string' }) revealedRoles = new MapSchema<string>();

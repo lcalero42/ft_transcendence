@@ -34,6 +34,7 @@ function GameView({ room }: GameViewProps) {
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const phase = useRoomState(room, (s) => s.phase);
+	const [prevPhase, setPrevPhase] = useState(phase);
 	const participants = useRoomState(room, (s) => s.participants);
 	const minParticipants = useRoomState(room, (s) => s.minParticipants);
 	const turnOrder = useRoomState(room, (s) => s.turnOrder);
@@ -41,7 +42,7 @@ function GameView({ room }: GameViewProps) {
 	const clues = useRoomState(room, (s) => s.clues);
 	const votes = useRoomState(room, (s) => s.votes);
 	const phaseEndsAt = useRoomState(room, (s) => s.phaseEndsAt) ?? 0;
-	const secondsLeft = phaseEndsAt ? Math.max(0, Math.ceil((phaseEndsAt - now) / 1000)) : 0;
+	const secondsLeft = phaseEndsAt ? Math.max(0, Math.round((phaseEndsAt - now) / 1000)) : 0;
 	const isParticipant = participants?.includes(room.sessionId) ?? false;
 	const participantEntries = playerEntries.filter(([sessionId]) => participants?.includes(sessionId));
 	const activeSessionId = phase === "describing" ? turnOrder?.[currentTurnIndex ?? 0] : undefined;
@@ -66,7 +67,7 @@ function GameView({ room }: GameViewProps) {
 			avatarUrl: getAvatarUrl(players?.[sessionId]?.avatarUrl ?? null),
 		}));
 	const winnerLabel = winner === "undercover" ? "Undercover wins" : "Civilians win";
-	const myVoteTargetId =(votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
+	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -75,15 +76,14 @@ function GameView({ room }: GameViewProps) {
 	}, [room]);
 
 	useEffect(() => {
-		if (!phaseEndsAt) return;
-		setNow(Date.now());
 		const interval = setInterval(() => setNow(Date.now()), 250);
 		return () => clearInterval(interval);
-	}, [phaseEndsAt]);
+	}, []);
 
-	useEffect(() => {
+	if (phase !== prevPhase) {
+		setPrevPhase(phase);
 		if (phase === "starting") setChatTab("clues");
-	}, [phase]);
+	}
 
 	useEffect(() => {
 		if (phase === "open" && autoJoin && !isParticipant) {

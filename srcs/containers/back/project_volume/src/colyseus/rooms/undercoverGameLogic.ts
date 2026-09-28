@@ -24,7 +24,10 @@ export function tallyVotes(
     if (!counts.has(vote.targetSessionId)) {
       continue;
     }
-    counts.set(vote.targetSessionId, (counts.get(vote.targetSessionId) ?? 0) + 1);
+    counts.set(
+      vote.targetSessionId,
+      (counts.get(vote.targetSessionId) ?? 0) + 1,
+    );
   }
 
   let topCount = -1;

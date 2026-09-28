@@ -314,10 +314,10 @@ export class UndercoverRoom extends Room {
     try {
       const res = await fetch(`${API_URL}/room`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', `Bearer ${token}`],
+        ],
         body: JSON.stringify({
           name: hostName.slice(0, MAX_ROOM_NAME_LENGTH),
           colyseusRoomId: this.roomId,
