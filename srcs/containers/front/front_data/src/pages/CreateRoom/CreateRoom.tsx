@@ -5,6 +5,7 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import { toast } from "@/components/ui/toast";
 import { client } from "@/lib/colyseusClient";
+import { getToken } from "@/api/auth/client";
 import {
 	clearReconnection,
 	readStoredReconnection,
@@ -22,7 +23,7 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading } = useAuth();
+	const { profile, profileLoading, isGuest } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 
@@ -43,9 +44,11 @@ export default function CreateRoom() {
 							clearReconnection();
 						}
 					}
+					const options = { name: profile?.name, avatarUrl: profile?.avatarUrl };
+					client.auth.token = getToken() ?? "";
 					return targetRoomId
-						? client.joinById<UndercoverRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-						: client.create<UndercoverRoom>("undercover", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+						? client.joinById<UndercoverRoom>(targetRoomId, options)
+						: client.create<UndercoverRoom>("undercover", options);
 				},
 		[profileLoading],
 	);
@@ -157,12 +160,12 @@ export default function CreateRoom() {
 						>
 							Copy the game link
 						</button>
-						<p>add players from your friend list or send them the link </p>
+						<p>{isGuest ? "send the link to invite players" : "add players from your friend list or send them the link"}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						<div className="w-full md:flex md:justify-center">
+						{!isGuest && <div className="w-full md:flex md:justify-center">
 							<FriendList friends={friends} />
-						</div>
+						</div>}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>

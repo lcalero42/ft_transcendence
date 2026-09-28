@@ -19,6 +19,7 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { NotGuestGuard } from '../auth/not-guest.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 
 const AVATAR_MIME_TO_EXT = new Map<string, string>([
@@ -67,7 +68,7 @@ export class PlayerController {
     return this.playerService.getGamesList(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -116,7 +117,7 @@ export class PlayerController {
     return this.playerService.getAboutMe(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {

@@ -64,6 +64,7 @@ describe('FriendshipService', () => {
       name: 'Bob',
       email: 'bob@test.com',
       password: 'password123',
+      isGuest: false,
       aboutMe: null,
       avatarUrl: null,
       createdAt: new Date(),

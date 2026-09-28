@@ -41,6 +41,7 @@ describe('AuthService', () => {
         name: 'Bob',
         email: 'bob@test.com',
         password: 'some-bcrypt-hash',
+        isGuest: false,
         aboutMe: null,
         avatarUrl: null,
         createdAt: new Date(),
@@ -64,6 +65,7 @@ describe('AuthService', () => {
         name: 'ExistingBob',
         email: 'bob@test.com',
         password: 'some-bcrypt-hash',
+        isGuest: false,
         aboutMe: null,
         avatarUrl: null,
         createdAt: new Date(),
@@ -89,6 +91,7 @@ describe('AuthService', () => {
           name: 'Bob',
           email: 'differentemail@test.com',
           password: 'some-bcrypt-hash',
+          isGuest: false,
           aboutMe: null,
           avatarUrl: null,
           createdAt: new Date(),
@@ -113,6 +116,7 @@ describe('AuthService', () => {
         name: 'Bob',
         email: 'bob@test.com',
         password: 'irrelevant-for-this-test',
+        isGuest: false,
         aboutMe: null,
         avatarUrl: null,
         createdAt: new Date(),
@@ -131,6 +135,52 @@ describe('AuthService', () => {
     });
   });
 
+  describe('guest', () => {
+    it('should create a guest player without email and return an access token', async () => {
+      prismaMock.player.findUnique.mockResolvedValue(null);
+      prismaMock.player.create.mockResolvedValue({
+        id: 3,
+        name: 'Zed',
+        email: null,
+        password: 'some-bcrypt-hash',
+        isGuest: true,
+        aboutMe: null,
+        avatarUrl: null,
+        createdAt: new Date(),
+        deletedAt: null,
+      });
+      jwtServiceMock.sign.mockReturnValue('fake-jwt-token');
+
+      const result = await service.guest({ name: 'Zed' });
+
+      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      const createCallArgs = prismaMock.player.create.mock.calls[0][0];
+      expect(createCallArgs.data).toMatchObject({ name: 'Zed', isGuest: true });
+      expect(createCallArgs.data.email).toBeUndefined();
+      expect(jwtServiceMock.sign).toHaveBeenCalledWith({ sub: 3, email: null });
+    });
+
+    it('should throw a ConflictException when the name is already taken', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Zed',
+        email: 'zed@test.com',
+        password: 'some-bcrypt-hash',
+        isGuest: false,
+        aboutMe: null,
+        avatarUrl: null,
+        createdAt: new Date(),
+        deletedAt: null,
+      });
+
+      await expect(service.guest({ name: 'Zed' })).rejects.toThrow(
+        'Username already taken',
+      );
+
+      expect(prismaMock.player.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('login', () => {
     it('should return an access token when credentials are valid', async () => {
       prismaMock.player.findUnique.mockResolvedValue({
@@ -138,6 +188,7 @@ describe('AuthService', () => {
         name: 'Bob',
         email: 'bob@test.com',
         password: 'stored-bcrypt-hash',
+        isGuest: false,
         aboutMe: null,
         avatarUrl: null,
         createdAt: new Date(),
@@ -159,6 +210,7 @@ describe('AuthService', () => {
         name: 'Bob',
         email: 'bob@test.com',
         password: 'stored-bcrypt-hash',
+        isGuest: false,
         aboutMe: null,
         avatarUrl: null,
         createdAt: new Date(),

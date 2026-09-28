@@ -6,7 +6,7 @@ import { AuthContext, type User } from "./auth-context";
 
 interface JwtPayload {
   sub: number;
-  email: string;
+  email: string | null;
 }
 
 function decodeToken(token: string): User | null {
@@ -37,7 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!ignore) setFetchedProfile({ userId: user.id, profile: player });
       })
       .catch(() => {
-        if (!ignore) setFetchedProfile({ userId: user.id, profile: null });
+        if (ignore) return;
+        if (!getToken()) {
+          setUser(null);
+          return;
+        }
+        setFetchedProfile({ userId: user.id, profile: null });
       });
 
     return () => {
@@ -47,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const profile = user && fetchedProfile?.userId === user.id ? fetchedProfile.profile : null;
   const profileLoading = !!user && fetchedProfile?.userId !== user.id;
+  const isGuest = profile?.isGuest ?? false;
 
   async function login(email: string, pw: string) {
     const { accessToken } = await authApi.login(email, pw);
@@ -58,6 +64,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(decodeToken(accessToken));
   }
 
+  async function guest(name: string) {
+    const { accessToken } = await authApi.guest(name);
+    setUser(decodeToken(accessToken));
+  }
+
   function logout() {
     authApi.logout();
     setUser(null);
@@ -65,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, profile, profileLoading, isAuth: !!user, isLoading: false, login, register, logout }}
+      value={{ user, profile, profileLoading, isAuth: !!user, isGuest, isLoading: false, login, register, guest, logout }}
     >
       {children}
     </AuthContext.Provider>

@@ -22,6 +22,8 @@ export class FriendshipService {
       },
     });
     if (!addressee) throw new NotFoundException('Addressee not found');
+    if (addressee.isGuest)
+      throw new ForbiddenException("You can't be friend with a guest");
     const existingFriendship = await this.prisma.friendship.findFirst({
       where: {
         OR: [

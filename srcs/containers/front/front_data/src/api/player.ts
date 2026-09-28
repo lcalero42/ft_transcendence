@@ -5,7 +5,8 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 export interface Player {
 	id: number;
 	name: string;
-	email: string;
+	email: string | null;
+	isGuest: boolean;
 	aboutMe: string;
 	avatarUrl: string;
 	createdAt: string;

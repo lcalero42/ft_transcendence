@@ -11,6 +11,6 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(1)
-  @MaxLength(50)
+  @MaxLength(12)
   name: string;
 }

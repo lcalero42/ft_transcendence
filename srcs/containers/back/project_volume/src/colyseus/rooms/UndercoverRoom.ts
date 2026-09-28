@@ -1,15 +1,26 @@
 import { Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Room, type Client, matchMaker } from '@colyseus/core';
 import { UndercoverState, Player, ChatMessage } from './UndercoverState';
+import { requireEnv } from '../../common/require-env';
+import { softDeleteGuest } from '../../player/soft-delete-guest';
+import { prisma } from '../prisma';
 
 export interface JoinOptions {
   name?: string;
   avatarUrl?: string;
 }
 
-interface SeatTransferAuth {
+interface PlayerIdentity {
+  playerId: number;
+  isGuest: boolean;
+}
+
+interface SeatTransferAuth extends PlayerIdentity {
   isHost: boolean;
 }
+
+const jwtService = new JwtService({ secret: requireEnv('JWT_SECRET') });
 
 const MIN_PARTICIPANTS = 3;
 const MAX_PARTICIPANTS = 6;
@@ -23,6 +34,8 @@ export class UndercoverRoom extends Room {
   state = new UndercoverState();
 
   private readonly logger = new Logger('UndercoverRoom');
+  private readonly identities = new Map<string, PlayerIdentity>();
+  private readonly pendingHandoffs = new Map<number, PlayerIdentity>();
 
   messages = {
     start: async (client: Client) => {
@@ -34,9 +47,15 @@ export class UndercoverRoom extends Room {
 
       const roomCache = await matchMaker.getRoomById(this.roomId);
       for (const [sessionId, player] of this.state.players.entries()) {
+        const identity = this.identities.get(sessionId);
+        if (!identity) {
+          continue;
+        }
         const auth: SeatTransferAuth = {
+          ...identity,
           isHost: sessionId === this.state.hostSessionId,
         };
+        this.pendingHandoffs.set(identity.playerId, identity);
         try {
           const reservation = await matchMaker.reserveSeatFor(
             roomCache,
@@ -50,6 +69,10 @@ export class UndercoverRoom extends Room {
           );
         }
       }
+      this.clock.setTimeout(
+        () => this.expireHandoffs(),
+        this.seatReservationTimeout * 1000,
+      );
     },
 
     chat: (client: Client, text: unknown) => {
@@ -122,15 +145,36 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
+  static async onAuth(token: string): Promise<PlayerIdentity> {
+    if (!token) {
+      throw new Error('missing token');
+    }
+    const payload = await jwtService.verifyAsync<{ sub: number }>(token);
+    const player = await prisma.player.findUnique({
+      where: { id: payload.sub, deletedAt: null },
+      select: { id: true, isGuest: true },
+    });
+    if (!player) {
+      throw new Error('player not found');
+    }
+    return { playerId: player.id, isGuest: player.isGuest };
+  }
+
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
+    const auth = client.auth as PlayerIdentity & Partial<SeatTransferAuth>;
+    this.identities.set(client.sessionId, {
+      playerId: auth.playerId,
+      isGuest: auth.isGuest,
+    });
+    this.pendingHandoffs.delete(auth.playerId);
+
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
     player.avatarUrl = options?.avatarUrl?.trim() || '';
     this.state.players.set(client.sessionId, player);
 
-    const auth = client.auth as SeatTransferAuth | undefined;
-    if (auth?.isHost || !this.state.hostSessionId) {
+    if (auth.isHost || !this.state.hostSessionId) {
       this.state.hostSessionId = client.sessionId;
     }
   }
@@ -178,6 +222,12 @@ export class UndercoverRoom extends Room {
       const [nextHost] = Array.from(this.state.players.keys());
       this.state.hostSessionId = nextHost ?? '';
     }
+
+    const identity = this.identities.get(client.sessionId);
+    this.identities.delete(client.sessionId);
+    if (identity) {
+      this.cleanupGuestIfGone(identity);
+    }
   }
 
   onDispose() {
@@ -193,6 +243,30 @@ export class UndercoverRoom extends Room {
     if (index !== -1) {
       this.state.participants.splice(index, 1);
     }
+  }
+
+  private expireHandoffs() {
+    const expired = Array.from(this.pendingHandoffs.values());
+    this.pendingHandoffs.clear();
+    for (const identity of expired) {
+      this.cleanupGuestIfGone(identity);
+    }
+  }
+
+  private cleanupGuestIfGone({ playerId, isGuest }: PlayerIdentity) {
+    if (!isGuest || this.pendingHandoffs.has(playerId)) {
+      return;
+    }
+    for (const identity of this.identities.values()) {
+      if (identity.playerId === playerId) {
+        return;
+      }
+    }
+    softDeleteGuest(prisma, playerId).catch((error: unknown) => {
+      this.logger.warn(
+        `could not clean up guest ${playerId}: ${String(error)}`,
+      );
+    });
   }
 
   private finishGame() {

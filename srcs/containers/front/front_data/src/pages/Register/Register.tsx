@@ -51,6 +51,8 @@ function Register() {
 			nextErrors.username = "Username is required.";
 		} else if (form.username.trim().length < 3) {
 			nextErrors.username = "Username must be at least 3 characters.";
+		} else if (form.username.trim().length > 12) {
+			nextErrors.username = "Username must be at most 12 characters.";
 		}
 
 		if (!form.password) {
@@ -131,7 +133,7 @@ function Register() {
 				label="Username"
 				iconSrc={UserIcon}
 				type="text"
-				placeholder="VeryCoolAndGentle67"
+				placeholder="CoolAgent67"
 				value={form.username}
 				onChange={handleChange}
 				error={errors.username}

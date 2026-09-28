@@ -12,10 +12,11 @@ type AuthLayoutProps = {
 	onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 	submitLabel: string;
 	footer?: ReactNode;
+	showSocialLogin?: boolean;
 	children: ReactNode;
 };
 
-function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabel, footer, children }: AuthLayoutProps) {
+function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabel, footer, showSocialLogin = true, children }: AuthLayoutProps) {
 	return (
 		<div className="page">
 			<header className="flex w-full items-center justify-center md:justify-start px-[10vw] py-5 shadow-sm text-outline">
@@ -57,13 +58,17 @@ function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabe
 							{submitLabel}
 						</button>
 
-						<div className="mt-3">
-							<Divider label="or continue with" />
-						</div>
+						{showSocialLogin && (
+							<>
+								<div className="mt-3">
+									<Divider label="or continue with" />
+								</div>
 
-						<div className="mt-1">
-							<SocialLogin />
-						</div>
+								<div className="mt-1">
+									<SocialLogin />
+								</div>
+							</>
+						)}
 
 						{footer}
 					</form>

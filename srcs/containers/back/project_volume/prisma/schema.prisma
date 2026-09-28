@@ -11,8 +11,9 @@ generator client {
 model Player {
   id                Int         @id @default(autoincrement())
   name              String      @unique
-  email             String      @unique
+  email             String?     @unique
   password          String
+  isGuest           Boolean     @default(false) @map("is_guest")
   aboutMe           String?     @map("about_me")
   avatarUrl			String?		@map("avatar_url")
   createdAt         DateTime    @default(now()) @map("created_at")
