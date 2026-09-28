@@ -199,6 +199,7 @@ export class UndercoverRoom extends Room {
       clue.sessionId = client.sessionId;
       clue.name = player?.name ?? '';
       clue.word = trimmed;
+      clue.round = this.state.round;
       clue.submittedAt = Date.now();
       this.state.clues.push(clue);
       this.advanceTurn();
@@ -417,11 +418,7 @@ export class UndercoverRoom extends Room {
     }
   }
 
-  private setPhase(
-    phase: RoomPhase,
-    durationMs = 0,
-    onExpire?: () => void,
-  ) {
+  private setPhase(phase: RoomPhase, durationMs = 0, onExpire?: () => void) {
     this.phaseTimer?.clear();
     this.phaseTimer = null;
     this.state.phase = phase;
@@ -436,7 +433,6 @@ export class UndercoverRoom extends Room {
       ...buildTurnOrder([...this.state.alive]),
     );
     this.state.currentTurnIndex = 0;
-    this.state.clues.clear();
     this.state.votes.clear();
     this.startTurn();
   }
@@ -484,7 +480,9 @@ export class UndercoverRoom extends Room {
       this.endWithWinner(winner);
       return;
     }
-    this.setPhase('reveal', REVEAL_DURATION_MS, () => this.advanceAfterReveal());
+    this.setPhase('reveal', REVEAL_DURATION_MS, () =>
+      this.advanceAfterReveal(),
+    );
   }
 
   private advanceAfterReveal() {

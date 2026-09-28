@@ -11,12 +11,11 @@ import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
 import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
-import ClueList from "@/pages/GameRoom/components/ClueList";
 import VoteAction from "@/pages/GameRoom/components/VoteAction";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
-import ChatBox from "@/pages/GameRoom/components/ChatBox";
+import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
@@ -30,6 +29,7 @@ function GameView({ room }: GameViewProps) {
 	const [myWord, setMyWord] = useState("");
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
+	const [chatTab, setChatTab] = useState<ChatTab>("chat");
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const phase = useRoomState(room, (s) => s.phase);
@@ -70,6 +70,10 @@ function GameView({ room }: GameViewProps) {
 	}, [phaseEndsAt]);
 
 	useEffect(() => {
+		if (phase === "starting") setChatTab("clues");
+	}, [phase]);
+
+	useEffect(() => {
 		if (phase === "open" && autoJoin && !isParticipant) {
 			room.send("joinGame");
 		}
@@ -83,6 +87,7 @@ function GameView({ room }: GameViewProps) {
 		id: `${clue.sessionId}-${clue.submittedAt}-${index}`,
 		name: clue.name,
 		word: clue.word,
+		round: clue.round,
 	}));
 	const chat = useRoomState(room, (s) => s.chat);
 	const chatMessages = (chat ?? []).map((message, index) => ({
@@ -169,7 +174,6 @@ function GameView({ room }: GameViewProps) {
 												activePlayerName={activePlayer?.name}
 												onSubmit={handleSubmitClue}
 											/>
-											<ClueList clues={clueEntries} />
 										</div>
 									)}
 									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
@@ -181,7 +185,13 @@ function GameView({ room }: GameViewProps) {
 					</div>
 					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 2xl:flex 2xl:w-[500px]">
 						<div className="w-full h-[70%] min-h-0">
-							<ChatBox messages={chatMessages} onSend={handleSendChat} />
+							<ChatBox
+								messages={chatMessages}
+								clues={clueEntries}
+								tab={chatTab}
+								onTabChange={setChatTab}
+								onSend={handleSendChat}
+							/>
 						</div>
 						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
 							<PlayersList players={playerList} isHost={isHost} />
@@ -190,7 +200,13 @@ function GameView({ room }: GameViewProps) {
 				</div>
 			</main>
 			<MobileDrawer open={drawer === "chat"} onClose={() => setDrawer(null)}>
-				<ChatBox messages={chatMessages} onSend={handleSendChat} />
+				<ChatBox
+					messages={chatMessages}
+					clues={clueEntries}
+					tab={chatTab}
+					onTabChange={setChatTab}
+					onSend={handleSendChat}
+				/>
 			</MobileDrawer>
 			<MobileDrawer open={drawer === "players"} onClose={() => setDrawer(null)}>
 				<PlayersList players={playerList} isHost={isHost} />

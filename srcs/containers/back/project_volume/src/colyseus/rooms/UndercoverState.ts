@@ -26,6 +26,7 @@ export class Clue extends Schema {
   @type('string') sessionId: string = '';
   @type('string') name: string = '';
   @type('string') word: string = '';
+  @type('number') round: number = 0;
   @type('number') submittedAt: number = 0;
 }
 
