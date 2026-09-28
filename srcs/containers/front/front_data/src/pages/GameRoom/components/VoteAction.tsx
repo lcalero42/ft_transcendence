@@ -2,11 +2,15 @@ import { Check } from "lucide-react";
 
 interface VoteActionProps {
 	hasVoted: boolean;
+  isParticipant: boolean;
 	onClick: () => void;
 }
 
-function VoteAction({ hasVoted, onClick }: VoteActionProps) {
-	if (hasVoted) {
+function VoteAction({ hasVoted, onClick, isParticipant }: VoteActionProps) {
+
+  if (!isParticipant)
+    return (null);
+  if (hasVoted) {
 		return (
 			<span className="bg-victory flex size-7 shrink-0 items-center justify-center rounded-full text-black">
 				<Check className="size-4" strokeWidth={3} />

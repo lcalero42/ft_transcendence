@@ -474,6 +474,7 @@ export class UndercoverRoom extends Room {
       record.eliminatedRole = this.roles.get(eliminatedSessionId) ?? '';
     }
     this.state.eliminationHistory.push(record);
+    this.removeParticipant(eliminatedSessionId ?? '');
 
     const winner = checkWinCondition([...this.state.alive], this.roles);
     if (winner) {

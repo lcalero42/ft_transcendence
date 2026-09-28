@@ -10,6 +10,7 @@ import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
 import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
+import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import VoteAction from "@/pages/GameRoom/components/VoteAction";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
@@ -54,7 +55,18 @@ function GameView({ room }: GameViewProps) {
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const isHost = hostSessionId === room.sessionId;
 	const currentWord = phase === "starting" || phase === "describing" || phase === "voting" ? myWord : "";
-	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
+	const winner = useRoomState(room, (s) => s.winner);
+	const revealedRoles = useRoomState(room, (s) => s.revealedRoles);
+	const winningRole = winner === "undercover" ? "undercover" : "civilian";
+	const winners = Object.entries(revealedRoles ?? {})
+		.filter(([, role]) => role === winningRole)
+		.map(([sessionId]) => ({
+			sessionId,
+			name: players?.[sessionId]?.name ?? "",
+			avatarUrl: getAvatarUrl(players?.[sessionId]?.avatarUrl ?? null),
+		}));
+	const winnerLabel = winner === "undercover" ? "Undercover wins" : "Civilians win";
+	const myVoteTargetId =(votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -113,7 +125,7 @@ function GameView({ room }: GameViewProps) {
 			phase === "voting" ? (votes ?? []).filter((vote) => vote.targetSessionId === sessionId).length : undefined;
 		const action =
 			phase === "voting" && !isSelf ? (
-				<VoteAction hasVoted={myVoteTargetId === sessionId} onClick={() => handleCastVote(sessionId)} />
+				<VoteAction hasVoted={myVoteTargetId === sessionId} onClick={() => handleCastVote(sessionId)} isParticipant={isParticipant} />
 			) : undefined;
 
 		return {
@@ -150,7 +162,11 @@ function GameView({ room }: GameViewProps) {
 						</div>
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
 							<PlayerCircle players={participantPlayerList}>
-								<CenterWord word={currentWord} direction={arrowDirection} />
+								{phase === "finished" ? (
+									<WinnerReveal winners={winners} label={winnerLabel} />
+								) : (
+									<CenterWord word={currentWord} direction={arrowDirection} />
+								)}
 							</PlayerCircle>
 						</div>
 						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
