@@ -5,6 +5,7 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import { toast } from "@/components/ui/toast";
 import { client } from "@/lib/colyseusClient";
+import { getToken } from "@/api/auth/client";
 import {
 	clearReconnection,
 	readStoredReconnection,
@@ -43,6 +44,7 @@ export default function CreateRoom() {
 							clearReconnection();
 						}
 					}
+					client.auth.token = getToken() ?? "";
 					return targetRoomId
 						? client.joinById<UndercoverRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
 						: client.create<UndercoverRoom>("undercover", { name: profile?.name, avatarUrl: profile?.avatarUrl });
