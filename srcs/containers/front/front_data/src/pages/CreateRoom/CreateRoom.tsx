@@ -12,6 +12,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
+import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import LinkProfile from "../../components/LinkProfile/LinkProfile";
 import Logo from "../../components/Logo/Logo";
@@ -73,6 +74,8 @@ export default function CreateRoom() {
 		room.onReconnect(onReconnect);
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
+
+	useSeatTakenOver(room);
 
 	useEffect(() => {
 		if (!room) return;

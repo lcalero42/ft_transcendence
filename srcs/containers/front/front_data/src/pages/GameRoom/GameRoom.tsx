@@ -15,6 +15,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
+import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 
 function GameRoom() {
 	const { id } = useParams();
@@ -73,6 +74,8 @@ function GameRoom() {
 		room.onReconnect(onReconnect);
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
+
+	useSeatTakenOver(room);
 
 	const phase = useRoomState(room, (s) => s.phase);
 	useEffect(() => {

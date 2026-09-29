@@ -1,12 +1,7 @@
 import { Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { ArraySchema } from '@colyseus/schema';
-import {
-  Room,
-  type Client,
-  type AuthContext,
-  type Delayed,
-  matchMaker,
-} from '@colyseus/core';
+import { Room, type Client, type Delayed, matchMaker } from '@colyseus/core';
 import {
   UndercoverState,
   Player,
@@ -23,15 +18,22 @@ import {
   checkWinCondition,
   type Role,
 } from './undercoverGameLogic';
+import { requireEnv } from '../../common/require-env';
+import { prisma } from '../prisma';
 
 export interface JoinOptions {
   name?: string;
   avatarUrl?: string;
 }
 
-interface SeatTransferAuth {
+interface PlayerIdentity {
+  playerId: number;
+  isGuest: boolean;
+  token: string;
+}
+
+interface SeatTransferAuth extends PlayerIdentity {
   isHost?: boolean;
-  token?: string;
 }
 
 interface WordPair {
@@ -53,6 +55,7 @@ const VOTING_DURATION_MS = 30000;
 const REVEAL_DURATION_MS = 5000;
 const FINISHED_DURATION_MS = 5000;
 const RECONNECTION_WINDOW_SECONDS = 20;
+const TAKEN_OVER_CODE = 4100;
 const MAX_ROOM_NAME_LENGTH = 16;
 const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
 const ROUND_PHASES: RoomPhase[] = [
@@ -70,6 +73,13 @@ export class UndercoverRoom extends Room {
   private wordPair: WordPair | null = null;
   private roles = new Map<string, Role>();
   private phaseTimer: Delayed | null = null;
+  private readonly identities = new Map<string, PlayerIdentity>();
+  private readonly pendingHandoffs = new Set<number>();
+  private readonly takenOverSessions = new Set<string>();
+  private readonly pendingReconnections = new Map<
+    string,
+    ReturnType<Room['allowReconnection']>
+  >();
 
   messages = {
     start: async (client: Client) => {
@@ -90,7 +100,7 @@ export class UndercoverRoom extends Room {
           ...identity,
           isHost: sessionId === this.state.hostSessionId,
         };
-        this.pendingHandoffs.set(identity.playerId, identity);
+        this.pendingHandoffs.add(identity.playerId);
         try {
           const reservation = await matchMaker.reserveSeatFor(
             roomCache,
@@ -105,7 +115,7 @@ export class UndercoverRoom extends Room {
         }
       }
       this.clock.setTimeout(
-        () => this.expireHandoffs(),
+        () => this.pendingHandoffs.clear(),
         this.seatReservationTimeout * 1000,
       );
     },
@@ -253,19 +263,38 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
-  onAuth(_client: Client, _options: JoinOptions, context: AuthContext) {
-    const auth: SeatTransferAuth = { token: context.token };
-    return auth;
+  static async onAuth(token: string): Promise<PlayerIdentity> {
+    if (!token) {
+      throw new Error('missing token');
+    }
+    const payload = await jwtService.verifyAsync<{ sub: number }>(token);
+    const player = await prisma.player.findUnique({
+      where: { id: payload.sub, deletedAt: null },
+      select: { id: true, isGuest: true },
+    });
+    if (!player) {
+      throw new Error('player not found');
+    }
+    return { playerId: player.id, isGuest: player.isGuest, token };
   }
 
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
-    const auth = client.auth as PlayerIdentity & Partial<SeatTransferAuth>;
+    const auth = client.auth as SeatTransferAuth;
+    const previousSessionId = this.pendingHandoffs.has(auth.playerId)
+      ? undefined
+      : this.findSession(auth.playerId);
     this.identities.set(client.sessionId, {
       playerId: auth.playerId,
       isGuest: auth.isGuest,
+      token: auth.token,
     });
     this.pendingHandoffs.delete(auth.playerId);
+
+    if (previousSessionId) {
+      this.takeOverSession(previousSessionId, client.sessionId);
+      return;
+    }
 
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
@@ -278,25 +307,33 @@ export class UndercoverRoom extends Room {
   }
 
   onDrop(client: Client) {
+    if (this.takenOverSessions.delete(client.sessionId)) {
+      return;
+    }
     this.logger.log('room connection dropped, awaiting reconnection');
     const player = this.state.players.get(client.sessionId);
     if (player) {
       player.connected = false;
     }
 
-    this.allowReconnection(client, RECONNECTION_WINDOW_SECONDS).catch(
-      (reason: unknown) => {
-        this.logger.log(
-          reason === false
-            ? 'reconnection window expired'
-            : `reconnection not possible: ${reason instanceof Error ? reason.message : String(reason)}`,
-        );
-      },
+    const reconnection = this.allowReconnection(
+      client,
+      RECONNECTION_WINDOW_SECONDS,
     );
+    this.pendingReconnections.set(client.sessionId, reconnection);
+    reconnection.catch((reason: unknown) => {
+      this.pendingReconnections.delete(client.sessionId);
+      this.logger.log(
+        reason === false
+          ? 'reconnection window expired'
+          : `reconnection not possible: ${reason instanceof Error ? reason.message : String(reason)}`,
+      );
+    });
   }
 
   onReconnect(client: Client) {
     this.logger.log('room reconnected');
+    this.pendingReconnections.delete(client.sessionId);
     const player = this.state.players.get(client.sessionId);
     if (player) {
       player.connected = true;
@@ -317,11 +354,7 @@ export class UndercoverRoom extends Room {
       this.state.hostSessionId = nextHost ?? '';
     }
 
-    const identity = this.identities.get(client.sessionId);
     this.identities.delete(client.sessionId);
-    if (identity) {
-      this.cleanupGuestIfGone(identity);
-    }
   }
 
   onDispose() {
@@ -329,7 +362,7 @@ export class UndercoverRoom extends Room {
   }
 
   private async saveRoom(host: Client) {
-    const token = (host.auth as SeatTransferAuth | undefined)?.token;
+    const token = this.identities.get(host.sessionId)?.token;
     if (!token) {
       this.logger.warn('host has no token, room not saved');
       return;
@@ -385,6 +418,69 @@ export class UndercoverRoom extends Room {
         ? this.wordPair.undercoverWord
         : this.wordPair.civilianWord;
     this.clients.getById(sessionId)?.send('word', { word });
+  }
+
+  private findSession(playerId: number) {
+    for (const [sessionId, identity] of this.identities) {
+      if (identity.playerId === playerId) {
+        return sessionId;
+      }
+    }
+    return undefined;
+  }
+
+  private takeOverSession(oldId: string, newId: string) {
+    this.logger.log('seat taken over by a new session');
+    const previous = this.state.players.get(oldId);
+    const player = new Player();
+    player.name = previous?.name ?? 'Player';
+    player.avatarUrl = previous?.avatarUrl ?? '';
+    this.state.players.delete(oldId);
+    this.state.players.set(newId, player);
+
+    const { state } = this;
+    for (const list of [state.participants, state.alive, state.turnOrder]) {
+      const index = list.indexOf(oldId);
+      if (index !== -1) {
+        list.splice(index, 1, newId);
+      }
+    }
+    for (const vote of state.votes) {
+      if (vote.voterSessionId === oldId) vote.voterSessionId = newId;
+      if (vote.targetSessionId === oldId) vote.targetSessionId = newId;
+    }
+    for (const entry of [...state.clues, ...state.chat]) {
+      if (entry.sessionId === oldId) entry.sessionId = newId;
+    }
+    for (const record of state.eliminationHistory) {
+      if (record.eliminatedSessionId === oldId) {
+        record.eliminatedSessionId = newId;
+      }
+    }
+    const revealedRole = state.revealedRoles.get(oldId);
+    if (revealedRole !== undefined) {
+      state.revealedRoles.delete(oldId);
+      state.revealedRoles.set(newId, revealedRole);
+    }
+    const role = this.roles.get(oldId);
+    if (role) {
+      this.roles.delete(oldId);
+      this.roles.set(newId, role);
+    }
+    if (state.hostSessionId === oldId) {
+      state.hostSessionId = newId;
+    }
+    this.identities.delete(oldId);
+
+    const reconnection = this.pendingReconnections.get(oldId);
+    this.pendingReconnections.delete(oldId);
+    if (reconnection) {
+      const reject = reconnection.reject as (reason: Error) => void;
+      reject(new Error('seat taken over'));
+    } else {
+      this.takenOverSessions.add(oldId);
+      this.clients.getById(oldId)?.leave(TAKEN_OVER_CODE);
+    }
   }
 
   private isHost(client: Client) {

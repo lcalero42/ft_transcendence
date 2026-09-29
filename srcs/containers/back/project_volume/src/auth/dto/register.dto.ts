@@ -10,7 +10,7 @@ export class RegisterDto {
   password: string;
 
   @IsString()
-  @MinLength(1)
+  @MinLength(3)
   @MaxLength(12)
   name: string;
 }

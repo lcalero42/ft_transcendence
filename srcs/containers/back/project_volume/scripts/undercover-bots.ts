@@ -9,7 +9,10 @@ const USAGE = `usage: npm run bots -- [roomId] [options]
   --vote-for <x>      random | none | <player name> (default random)
   --leave-in <phase>  last bot leaves when this phase is reached (describing | voting)
   --create            bots create and run the room themselves (Bot1 is host)
-  --url <ws>          colyseus endpoint (default ws://localhost:2567)`;
+  --url <ws>          colyseus endpoint (default ws://localhost:2567)
+  --api <http>        REST API used to log bots in as guests (default http://localhost:3000)
+
+bots log in through POST /auth/guest, limited to 5 per minute per IP.`;
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
@@ -20,6 +23,7 @@ const { values, positionals } = parseArgs({
     'leave-in': { type: 'string' },
     create: { type: 'boolean', default: false },
     url: { type: 'string', default: 'ws://localhost:2567' },
+    api: { type: 'string', default: 'http://localhost:3000' },
     help: { type: 'boolean', short: 'h', default: false },
   },
 });
@@ -54,6 +58,23 @@ class Bot {
 
   log(message: string) {
     console.log(`[${this.name}] ${message}`);
+  }
+
+  async login() {
+    const res = await fetch(`${values.api}/auth/guest`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: this.name }),
+    });
+    if (!res.ok) {
+      throw new Error(
+        res.status === 429
+          ? `${this.name}: too many guest logins, wait a minute and retry`
+          : `${this.name}: guest login failed (${res.status})`,
+      );
+    }
+    const { accessToken } = (await res.json()) as { accessToken: string };
+    this.client.auth.token = accessToken;
   }
 
   async create() {
@@ -212,10 +233,14 @@ async function waitFor(check: () => boolean, timeoutMs = 10_000) {
 }
 
 async function main() {
+  const runId = Math.floor(1000 + Math.random() * 9000);
   const bots = Array.from(
     { length: botCount },
-    (_, i) => new Bot(`Bot${i + 1}`, i === botCount - 1),
+    (_, i) => new Bot(`Bot${i + 1}_${runId}`, i === botCount - 1),
   );
+  for (const bot of bots) {
+    await bot.login();
+  }
 
   process.on('SIGINT', () => {
     void Promise.all(bots.map((bot) => bot.leave())).then(() => process.exit(0));
