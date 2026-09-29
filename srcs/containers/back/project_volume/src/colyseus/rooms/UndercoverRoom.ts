@@ -6,6 +6,7 @@ import {
   type AuthContext,
   type Delayed,
   matchMaker,
+  ServerError,
 } from '@colyseus/core';
 import {
   UndercoverState,
@@ -23,6 +24,18 @@ import {
   checkWinCondition,
   type Role,
 } from './undercoverGameLogic';
+import {
+  getPlayerId,
+  createRoom,
+  closeRoom,
+  fetchWordPair,
+  createGame,
+  eliminatePlayer,
+  finishGame,
+  abortGame,
+  type WordPair,
+  type GamePlayer,
+} from '../api';
 
 export interface JoinOptions {
   name?: string;
@@ -32,11 +45,7 @@ export interface JoinOptions {
 interface SeatTransferAuth {
   isHost?: boolean;
   token?: string;
-}
-
-interface WordPair {
-  civilianWord: string;
-  undercoverWord: string;
+  playerId?: number;
 }
 
 const MIN_PARTICIPANTS = 3;
@@ -52,7 +61,6 @@ const REVEAL_DURATION_MS = 5000;
 const FINISHED_DURATION_MS = 5000;
 const RECONNECTION_WINDOW_SECONDS = 20;
 const MAX_ROOM_NAME_LENGTH = 16;
-const API_URL = `http://localhost:${process.env.PORT ?? 3000}`;
 const ROUND_PHASES: RoomPhase[] = [
   'starting',
   'describing',
@@ -68,6 +76,9 @@ export class UndercoverRoom extends Room {
   private wordPair: WordPair | null = null;
   private roles = new Map<string, Role>();
   private phaseTimer: Delayed | null = null;
+  private playerIds = new Map<string, number>();
+  private dbRoomId: number | null = null;
+  private dbGameId: number | null = null;
 
   messages = {
     start: async (client: Client) => {
@@ -82,6 +93,7 @@ export class UndercoverRoom extends Room {
       for (const [sessionId, player] of this.state.players.entries()) {
         const auth: SeatTransferAuth = {
           isHost: sessionId === this.state.hostSessionId,
+          playerId: this.playerIds.get(sessionId),
         };
         try {
           const reservation = await matchMaker.reserveSeatFor(
@@ -147,13 +159,25 @@ export class UndercoverRoom extends Room {
       ) {
         return;
       }
-      const pair = await this.fetchWordPair();
+      const pair = await fetchWordPair();
       if (!pair) {
         this.logger.warn('no word pair available, game not started');
         return;
       }
+      const roles = assignRoles([...this.state.participants]);
+      if (this.dbRoomId) {
+        this.dbGameId = await createGame(
+          this.dbRoomId,
+          pair,
+          this.toGamePlayers(roles),
+        );
+        if (!this.dbGameId) {
+          this.logger.warn('could not save game, game not started');
+          return;
+        }
+      }
       this.wordPair = pair;
-      this.roles = assignRoles([...this.state.participants]);
+      this.roles = roles;
       for (const sessionId of this.state.participants) {
         this.sendWord(sessionId);
       }
@@ -241,13 +265,25 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
-  onAuth(_client: Client, _options: JoinOptions, context: AuthContext) {
-    const auth: SeatTransferAuth = { token: context.token };
+  async onAuth(_client: Client, _options: JoinOptions, context: AuthContext) {
+    const { token } = context;
+    if (!token) {
+      return {};
+    }
+    const playerId = await getPlayerId(token);
+    if (!playerId) {
+      throw new ServerError(401, 'invalid token');
+    }
+    const auth: SeatTransferAuth = { token, playerId };
     return auth;
   }
 
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
+    const playerId = (client.auth as SeatTransferAuth | undefined)?.playerId;
+    if (playerId) {
+      this.playerIds.set(client.sessionId, playerId);
+    }
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
     player.avatarUrl = options?.avatarUrl?.trim() || '';
@@ -298,10 +334,17 @@ export class UndercoverRoom extends Room {
       const [nextHost] = Array.from(this.state.players.keys());
       this.state.hostSessionId = nextHost ?? '';
     }
+    this.playerIds.delete(client.sessionId);
   }
 
-  onDispose() {
+  async onDispose() {
     this.logger.log('room disposed');
+    if (this.dbGameId) {
+      await abortGame(this.dbGameId);
+    }
+    if (this.dbRoomId) {
+      await closeRoom(this.dbRoomId);
+    }
   }
 
   private async saveRoom(host: Client) {
@@ -311,43 +354,28 @@ export class UndercoverRoom extends Room {
       return;
     }
     const hostName = this.state.players.get(host.sessionId)?.name ?? '';
-    try {
-      const res = await fetch(`${API_URL}/room`, {
-        method: 'POST',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', `Bearer ${token}`],
-        ],
-        body: JSON.stringify({
-          name: hostName.slice(0, MAX_ROOM_NAME_LENGTH),
-          colyseusRoomId: this.roomId,
-        }),
-      });
-      if (!res.ok) {
-        this.logger.warn(`could not save room: ${res.status}`);
-      }
-    } catch (error) {
-      this.logger.warn(`could not save room: ${String(error)}`);
-    }
+    this.dbRoomId = await createRoom(
+      token,
+      hostName.slice(0, MAX_ROOM_NAME_LENGTH),
+      this.roomId,
+    );
   }
 
-  private async fetchWordPair(): Promise<WordPair | null> {
-    try {
-      const res = await fetch(`${API_URL}/word-pair`);
-      if (!res.ok) {
-        this.logger.warn(`could not fetch word pairs: ${res.status}`);
-        return null;
+  private toGamePlayers(roles: Map<string, Role>): GamePlayer[] {
+    const players: GamePlayer[] = [];
+    for (const [sessionId, role] of roles) {
+      const playerId = this.playerIds.get(sessionId);
+      if (playerId) {
+        players.push({ playerId, role });
       }
-      const pairs = (await res.json()) as WordPair[];
-      if (pairs.length === 0) {
-        return null;
-      }
-      const { civilianWord, undercoverWord } =
-        pairs[Math.floor(Math.random() * pairs.length)];
-      return { civilianWord, undercoverWord };
-    } catch (error) {
-      this.logger.warn(`could not fetch word pairs: ${String(error)}`);
-      return null;
+    }
+    return players;
+  }
+
+  private recordElimination(sessionId: string) {
+    const playerId = this.playerIds.get(sessionId);
+    if (this.dbGameId && playerId) {
+      void eliminatePlayer(this.dbGameId, playerId);
     }
   }
 
@@ -380,6 +408,7 @@ export class UndercoverRoom extends Room {
       return;
     }
     this.state.alive.splice(aliveIndex, 1);
+    this.recordElimination(sessionId);
 
     const winner = checkWinCondition([...this.state.alive], this.roles);
     if (winner) {
@@ -467,6 +496,7 @@ export class UndercoverRoom extends Room {
       const aliveIndex = this.state.alive.indexOf(eliminatedSessionId);
       if (aliveIndex !== -1) {
         this.state.alive.splice(aliveIndex, 1);
+        this.recordElimination(eliminatedSessionId);
       }
       record.eliminatedSessionId = eliminatedSessionId;
       record.eliminatedName =
@@ -491,8 +521,15 @@ export class UndercoverRoom extends Room {
     this.beginRound();
   }
 
-  private endWithWinner(winner: string) {
+  private endWithWinner(winner: 'civilians' | 'undercover') {
     this.logger.log(`game over, ${winner} win`);
+    if (this.dbGameId) {
+      void finishGame(
+        this.dbGameId,
+        winner === 'undercover' ? 'undercover' : 'civilian',
+      );
+      this.dbGameId = null;
+    }
     this.state.winner = winner;
     for (const sessionId of this.state.participants) {
       this.state.revealedRoles.set(sessionId, this.roles.get(sessionId) ?? '');
