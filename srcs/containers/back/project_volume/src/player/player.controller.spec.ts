@@ -3,6 +3,20 @@ import { PlayerController } from './player.controller';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
+import sharp from 'sharp';
+
+jest.mock('sharp', () => {
+  const instance = {
+    rotate: jest.fn().mockReturnThis(),
+    resize: jest.fn().mockReturnThis(),
+    webp: jest.fn().mockReturnThis(),
+    toFile: jest.fn().mockResolvedValue(undefined),
+  };
+  return { __esModule: true, default: jest.fn(() => instance) };
+});
+
+type SharpInstance = { toFile: jest.Mock };
+const sharpInstance = () => (sharp as unknown as jest.Mock<SharpInstance>)();
 
 function requestAs(id: number, email: string): AuthenticatedRequest {
   return { user: { id, email } } as AuthenticatedRequest;
@@ -157,6 +171,63 @@ describe('PlayerController', () => {
           req,
         ),
       ).rejects.toThrow('Cannot edit another player');
+    });
+  });
+
+  describe('updateAvatar', () => {
+    const pngBuffer = Buffer.concat([
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      Buffer.alloc(32),
+    ]);
+    const makeFile = (buffer: Buffer) =>
+      ({ buffer, mimetype: 'image/png' }) as Express.Multer.File;
+
+    it('should process the image and save the new avatar url', async () => {
+      const result = { id: 5, avatarUrl: '/uploads/avatars/x.webp' };
+      jest
+        .spyOn(playerService, 'updateAvatar')
+        .mockResolvedValue(result as never);
+
+      const req = requestAs(5, 'bob@test.com');
+      expect(
+        await playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).toBe(result);
+      expect(playerService.updateAvatar).toHaveBeenCalledWith(
+        5,
+        expect.stringMatching(/^\/uploads\/avatars\/[0-9a-f-]+\.webp$/),
+      );
+    });
+
+    it('should reject editing another player avatar', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(
+        playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).rejects.toThrow('Cannot edit another player');
+    });
+
+    it('should reject a missing file', async () => {
+      const req = requestAs(5, 'bob@test.com');
+      await expect(
+        playerController.updateAvatar(5, undefined as never, req),
+      ).rejects.toThrow('No avatar file was uploaded');
+    });
+
+    it('should reject a file whose content is not an image', async () => {
+      const req = requestAs(5, 'bob@test.com');
+      const fake = makeFile(
+        Buffer.from('<?php echo 1; ?> not an image at all'),
+      );
+      await expect(playerController.updateAvatar(5, fake, req)).rejects.toThrow(
+        'File content is not a valid image',
+      );
+    });
+
+    it('should reject a corrupted image', async () => {
+      sharpInstance().toFile.mockRejectedValueOnce(new Error('bad'));
+      const req = requestAs(5, 'bob@test.com');
+      await expect(
+        playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).rejects.toThrow('Image is corrupted or unsupported');
     });
   });
 

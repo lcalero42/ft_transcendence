@@ -20,7 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
-import {detectImageType} from './avatar-validation';
+import { detectImageType } from './avatar-validation';
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import sharp from 'sharp';
@@ -126,17 +126,19 @@ export class PlayerController {
   @UseInterceptors(
     FileInterceptor('avatar', {
       storage: memoryStorage(),
-	  limits: {fileSize: AVATAR_MAX_SIZE, files: 1},
-	  fileFilter: (req, file, callback) => {
-		if (!AVATAR_MIMES.has(file.mimetype)) {
-			callback(
-				new UnsupportedMediaTypeException('Avatar must be a PNG, JPEG, WEBP, or GIF image'),
-				false,
-			);
-			return;
-		}
-		callback(null,true);
-	  },
+      limits: { fileSize: AVATAR_MAX_SIZE, files: 1 },
+      fileFilter: (req, file, callback) => {
+        if (!AVATAR_MIMES.has(file.mimetype)) {
+          callback(
+            new UnsupportedMediaTypeException(
+              'Avatar must be a PNG, JPEG, WEBP, or GIF image',
+            ),
+            false,
+          );
+          return;
+        }
+        callback(null, true);
+      },
     }),
   )
   async updateAvatar(
@@ -150,20 +152,24 @@ export class PlayerController {
     if (!file) {
       throw new BadRequestException('No avatar file was uploaded');
     }
- 	if (!detectImageType(file.buffer)) {
-      throw new UnsupportedMediaTypeException('File content is not a valid image');
+    if (!detectImageType(file.buffer)) {
+      throw new UnsupportedMediaTypeException(
+        'File content is not a valid image',
+      );
     }
-	const filename = `${randomUUID()}.webp`;
-	try {
-   	  await sharp(file.buffer, { limitInputPixels: AVATAR_MAX_INPUT_PIXELS })
-		.rotate()
-		.resize(AVATAR_OUTPUT_SIZE,AVATAR_OUTPUT_SIZE, {fit: 'cover'})
-		.webp({quality:80})
-		.toFile(join(AVATAR_DIR, filename));
-	} catch {
-    	throw new BadRequestException('Image is corrupted or unsupported');
-	}
-    return this.playerService.updateAvatar(id, `${AVATAR_URL_PREFIX}${filename}`);
+    const filename = `${randomUUID()}.webp`;
+    try {
+      await sharp(file.buffer, { limitInputPixels: AVATAR_MAX_INPUT_PIXELS })
+        .rotate()
+        .resize(AVATAR_OUTPUT_SIZE, AVATAR_OUTPUT_SIZE, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toFile(join(AVATAR_DIR, filename));
+    } catch {
+      throw new BadRequestException('Image is corrupted or unsupported');
+    }
+    return this.playerService.updateAvatar(
+      id,
+      `${AVATAR_URL_PREFIX}${filename}`,
+    );
   }
-
 }

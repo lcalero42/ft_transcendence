@@ -92,7 +92,9 @@ export class PlayerService {
     try {
       await unlink(join(AVATAR_DIR, filename));
     } catch (error) {
-      this.logger.warn(`could not delete old avatar ${filename}: ${String(error)}`);
+      this.logger.warn(
+        `could not delete old avatar ${filename}: ${String(error)}`,
+      );
     }
   }
 
