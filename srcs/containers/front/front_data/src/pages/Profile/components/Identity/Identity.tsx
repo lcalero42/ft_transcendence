@@ -4,7 +4,7 @@ import EditIcon from "../EditIcon/EditIcon";
 import { useState } from "react";
 import { updateAvatar} from '@/api/player';
 import EditAvatar from "./EditAvatar";
-
+import { toast } from "@/components/ui/toast";
 
 type IdentityProps = {
 	playerId: number;
@@ -20,10 +20,16 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 	const handleAvatarSave = async (file: File) => {
 		try {
 			const updatedPlayer = await updateAvatar(playerId, file);
-			const fullUrl = `${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`;
-			setAvatar(fullUrl);
+			setAvatar(`${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`);
+			toast.add({ type: "success", title: "Avatar updated" });
 		} catch (err) {
 			console.error(err);
+			toast.add({
+				type: "error",
+				title: "Avatar not  updated",
+				description: err instanceof Error ? err.message : "Something went wrong",
+			});
+			return false;
 		}
 	};
 	return (
