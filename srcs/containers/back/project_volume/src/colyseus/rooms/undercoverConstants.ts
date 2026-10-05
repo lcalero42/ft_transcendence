@@ -12,7 +12,7 @@ export const VOTING_DURATION_MS = 30000;
 export const REVEAL_DURATION_MS = 5000;
 export const FINISHED_DURATION_MS = 5000;
 export const RECONNECTION_WINDOW_SECONDS = 20;
-export const MAX_ROOM_NAME_LENGTH = 12;
+export const MAX_ROOM_NAME_LENGTH = 32;
 export const ROUND_PHASES: RoomPhase[] = [
   'starting',
   'describing',

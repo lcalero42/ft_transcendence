@@ -49,9 +49,10 @@ export class UndercoverRoom extends Room {
       }
       this.state.phase = 'open';
       await this.setPrivate(false);
+      const roomName = this.state.players.get(client.sessionId)?.name ?? '';
       await this.persistence.saveRoom(
         (client.auth as SeatTransferAuth | undefined)?.token,
-        this.state.players.get(client.sessionId)?.name ?? '',
+        roomName + "'s room",
         this.roomId,
       );
       await this.transferSeats();
