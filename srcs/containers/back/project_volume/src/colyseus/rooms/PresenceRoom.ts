@@ -18,10 +18,16 @@ interface PresenceAuth {
 }
 
 const prisma = new PrismaService();
+// Délai avant d'annoncer "offline", pour absorber les reloads et reconnexions
+const OFFLINE_GRACE_MS = 3000;
 
 export class PresenceRoom extends Room {
   private readonly logger = new Logger('PresenceRoom');
   private readonly sessionIdByPlayerId = new Map<number, string>();
+  private readonly offlineTimerByPlayerId = new Map<
+    number,
+    ReturnType<typeof setTimeout>
+  >();
 
   async onAuth(_client: Client, options?: JoinOptions): Promise<PresenceAuth> {
     if (!options?.token) throw new Error('Missing token');
@@ -55,6 +61,11 @@ export class PresenceRoom extends Room {
 
   onJoin(client: Client) {
     const auth = client.auth as PresenceAuth;
+    this.logger.log(
+      `[PRES] join player=${auth.id} session=${client.sessionId} previous=${this.sessionIdByPlayerId.get(auth.id) ?? 'none'}`,
+    );
+    clearTimeout(this.offlineTimerByPlayerId.get(auth.id));
+    this.offlineTimerByPlayerId.delete(auth.id);
     this.sessionIdByPlayerId.set(auth.id, client.sessionId);
     client.send('onlineIds', Array.from(this.sessionIdByPlayerId.keys()));
     this.broadcast('online', { playerId: auth.id }, { except: client });
@@ -62,13 +73,24 @@ export class PresenceRoom extends Room {
 
   onLeave(client: Client) {
     const auth = client.auth as PresenceAuth;
+    const current = this.sessionIdByPlayerId.get(auth.id);
+    this.logger.log(
+      `[PRES] leave player=${auth.id} session=${client.sessionId} current=${current ?? 'none'} -> ${current === client.sessionId ? 'OFFLINE broadcast' : 'ignored'}`,
+    );
     if (this.sessionIdByPlayerId.get(auth.id) === client.sessionId) {
       this.sessionIdByPlayerId.delete(auth.id);
+      this.offlineTimerByPlayerId.set(
+        auth.id,
+        setTimeout(() => {
+          this.offlineTimerByPlayerId.delete(auth.id);
+          this.broadcast('offline', { playerId: auth.id });
+        }, OFFLINE_GRACE_MS),
+      );
     }
-    this.broadcast('offline', { playerId: auth.id });
   }
 
   onDispose() {
+    this.offlineTimerByPlayerId.forEach(clearTimeout);
     this.logger.log('presence room disposed');
     unregisterPresenceRoom(this);
   }

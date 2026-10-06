@@ -63,10 +63,13 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				room.onMessage("onlineIds", (ids: number[]) => {
 					setOnlineIds(new Set(ids));
 				});
+				console.log(`[PRES] ${Date.now() % 100000} joined session=${room.sessionId}`);
 				room.onMessage("online", ({ playerId }: { playerId: number }) => {
+					console.log(`[PRES] ${Date.now() % 100000} online player=${playerId}`);
 					setOnlineIds((prev) => new Set(prev).add(playerId));
 				});
 				room.onMessage("offline", ({ playerId }: { playerId: number }) => {
+					console.log(`[PRES] ${Date.now() % 100000} offline player=${playerId}`);
 					setOnlineIds((prev) => {
 						const next = new Set(prev);
 						next.delete(playerId);
@@ -95,7 +98,9 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 			})
 			.catch(() => {});
 
+		console.log(`[PRES] ${Date.now() % 100000} effect start user=${user?.id}`);
 		return () => {
+			console.log(`[PRES] ${Date.now() % 100000} effect cleanup`);
 			cancelled = true;
 			void roomRef.current?.leave();
 			roomRef.current = null;
