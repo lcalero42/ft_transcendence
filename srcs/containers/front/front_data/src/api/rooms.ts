@@ -5,6 +5,7 @@ export interface Room {
     name: string;
     min_player: number;
     max_player: number;
+	colyseusRoomId: string | null;
 	createdAt: string;
 }
 
