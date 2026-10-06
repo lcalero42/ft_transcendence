@@ -212,6 +212,7 @@ describe('PlayerService', () => {
       email: 'bob@test.com',
       password: 'password123',
       aboutMe: 'Hello there',
+      isAdmin: false,
       createdAt: new Date(),
       deletedAt: null,
     };

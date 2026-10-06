@@ -14,7 +14,8 @@ import {
   UnsupportedMediaTypeException,
   ParseIntPipe,
 } from '@nestjs/common';
-
+import { RolesGuard } from '../common/roles.guard';
+import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
