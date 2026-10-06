@@ -8,6 +8,8 @@ interface PlayerCircleEntry {
 	avatarUrl?: string;
 	hintWord?: string;
 	isActive?: boolean;
+	voteCount?: number;
+	action?: ReactNode;
 }
 
 interface PlayerCircleProps {
@@ -54,6 +56,8 @@ function PlayerCircle({ players, children }: PlayerCircleProps) {
 							avatarUrl={player.avatarUrl}
 							hintWord={player.hintWord}
 							isActive={player.isActive}
+							voteCount={player.voteCount}
+							action={player.action}
 						/>
 					</div>
 				);

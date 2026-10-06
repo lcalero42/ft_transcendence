@@ -1,6 +1,5 @@
 import Logo from "@/components/Logo/Logo";
 import Credit from "@/components/Credit/Credit";
-import Sidebar from "@/components/Sidebar/Sidebar";
 import Identity from "./components/Identity/Identity";
 import Bio from "./components/Bio/Bio";
 import Counter from "./components/Counter/Counter";
@@ -11,7 +10,9 @@ import IconDetective from "../../assets/icons/brand-redhat.svg";
 import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
-
+import { LogOut } from "lucide-react";
+import LoadPage from "@/components/LoadPage/LoadPage";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import {
 	getMe,
 	getAvatarUrl,
@@ -27,6 +28,11 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
 	const { user } = useAuth();
+	const { logout } = useAuth();
+	function handleLogout() {
+    	logout();
+    	void navigate("/login");
+  	}
 	const [player, setPlayer] = useState<Player | null>(null);
 	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
 	const [victory, setVictory] = useState<number>(0);
@@ -66,8 +72,8 @@ function Profile() {
 		void loadData();
 	},[user, navigate]);
 	if (!user) return null;
- 	if (loading) return <p>Loading...</p>;
-  	if (error) return <p>{error}</p>;
+    if (loading) return <LoadPage />;
+    if (error) return <ErrorPage error={error} />;
   	if (!player) return null;
 
 	const friends = [
@@ -85,7 +91,6 @@ function Profile() {
 	return (
 		<div className="page">
 			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
-				<Sidebar />
 				<div className="text-[1.3rem]">
 					<Logo />
 				</div>
@@ -118,6 +123,13 @@ function Profile() {
 					<FriendList friends={friends}/>
 					<GamesList games={gameList}/>
 				</div>
+				<button
+				    onClick={handleLogout}
+				    className="mt-3 ml-auto flex items-center gap-2 rounded-xl border border-card-border bg-card px-4 py-2 text-sm font-medium text-gray-high transition-colors duration-150 hover:border-defeat hover:text-defeat"
+				>
+				    <LogOut size={16} />
+				    Logout
+				</button>
 			</main>
 			<Credit />
 		</div>
