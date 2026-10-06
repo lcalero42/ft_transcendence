@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { Room, type Client } from '@colyseus/core';
+import { getPlayerId } from '../api';
 import {
   registerPresenceRoom,
   unregisterPresenceRoom,
@@ -11,11 +12,8 @@ interface JoinOptions {
 
 interface PresenceAuth {
   id: number;
-  email: string;
 }
 
-const API_URL =
-  process.env.API_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
 const OFFLINE_GRACE_MS = 3000;
 
 export class PresenceRoom extends Room {
@@ -29,18 +27,10 @@ export class PresenceRoom extends Room {
   async onAuth(_client: Client, options?: JoinOptions): Promise<PresenceAuth> {
     if (!options?.token) throw new Error('Missing token');
 
-    let res: Response;
-    try {
-      res = await fetch(`${API_URL}/player/me`, {
-        headers: { Authorization: `Bearer ${options.token}` },
-      });
-    } catch {
-      throw new Error('Auth service unavailable');
-    }
-    if (!res.ok) throw new Error('Unauthorized');
+    const id = await getPlayerId(options.token);
+    if (!id) throw new Error('Unauthorized');
 
-    const { id, email } = (await res.json()) as PresenceAuth;
-    return { id, email };
+    return { id };
   }
 
   onCreate() {
