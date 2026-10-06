@@ -17,17 +17,22 @@ import {
 import { PlayerService } from './player.service';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NotGuestGuard } from '../auth/not-guest.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
-
-const AVATAR_MIME_TO_EXT = new Map<string, string>([
-  ['image/png', '.png'],
-  ['image/jpeg', '.jpg'],
-  ['image/webp', '.webp'],
-  ['image/gif', '.gif'],
-]);
+import { detectImageType } from './avatar-validation';
+import { randomUUID } from 'node:crypto';
+import { join } from 'node:path';
+import sharp from 'sharp';
+import {
+  AVATAR_DIR,
+  AVATAR_URL_PREFIX,
+  AVATAR_MAX_SIZE,
+  AVATAR_OUTPUT_SIZE,
+  AVATAR_MAX_INPUT_PIXELS,
+  AVATAR_MIMES,
+} from './avatar.constants';
 
 @Controller('player')
 export class PlayerController {
@@ -121,17 +126,10 @@ export class PlayerController {
   @Patch(':id/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: './uploads/avatars',
-        filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = AVATAR_MIME_TO_EXT.get(file.mimetype);
-          callback(null, `${uniqueSuffix}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
+      limits: { fileSize: AVATAR_MAX_SIZE, files: 1 },
       fileFilter: (req, file, callback) => {
-        if (!AVATAR_MIME_TO_EXT.has(file.mimetype)) {
+        if (!AVATAR_MIMES.has(file.mimetype)) {
           callback(
             new UnsupportedMediaTypeException(
               'Avatar must be a PNG, JPEG, WEBP, or GIF image',
@@ -142,7 +140,6 @@ export class PlayerController {
         }
         callback(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   async updateAvatar(
@@ -156,7 +153,24 @@ export class PlayerController {
     if (!file) {
       throw new BadRequestException('No avatar file was uploaded');
     }
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
-    return this.playerService.updateAvatar(id, avatarUrl);
+    if (!detectImageType(file.buffer)) {
+      throw new UnsupportedMediaTypeException(
+        'File content is not a valid image',
+      );
+    }
+    const filename = `${randomUUID()}.webp`;
+    try {
+      await sharp(file.buffer, { limitInputPixels: AVATAR_MAX_INPUT_PIXELS })
+        .rotate()
+        .resize(AVATAR_OUTPUT_SIZE, AVATAR_OUTPUT_SIZE, { fit: 'cover' })
+        .webp({ quality: 80 })
+        .toFile(join(AVATAR_DIR, filename));
+    } catch {
+      throw new BadRequestException('Image is corrupted or unsupported');
+    }
+    return this.playerService.updateAvatar(
+      id,
+      `${AVATAR_URL_PREFIX}${filename}`,
+    );
   }
 }

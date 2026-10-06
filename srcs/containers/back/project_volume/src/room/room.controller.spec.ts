@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoomController } from './room.controller';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/enums';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 
@@ -17,7 +18,10 @@ describe('RoomController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [RoomController],
       providers: [RoomService, { provide: PrismaService, useValue: {} }],
-    }).compile();
+    })
+      .overrideGuard(InternalApiKeyGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     roomController = module.get<RoomController>(RoomController);
     roomService = module.get<RoomService>(RoomService);
@@ -213,6 +217,27 @@ describe('RoomController', () => {
         roomController.update(5, { name: 'RoomRenamed' }, req),
       ).rejects.toThrow('Cannot edit a room you did not create');
       expect(roomService.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('close', () => {
+    it('should soft delete a room without ownership check', async () => {
+      const result = {
+        id: 5,
+        name: 'Room1',
+        minPlayers: 3,
+        maxPlayers: 6,
+        colyseusRoomId: 'abc123',
+        createdBy: 3,
+        createdAt: new Date(),
+        deletedAt: new Date(),
+      };
+      jest
+        .spyOn(roomService, 'remove')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await roomController.close(5)).toBe(result);
+      expect(roomService.remove).toHaveBeenCalledWith(5);
     });
   });
 

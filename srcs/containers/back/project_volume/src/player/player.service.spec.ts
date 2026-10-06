@@ -4,6 +4,13 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
 import { PrismaClient, Role } from '../generated/prisma/client';
+import { unlink } from 'node:fs/promises';
+
+jest.mock('node:fs/promises', () => ({
+  unlink: jest.fn(),
+}));
+
+const unlinkMock = unlink as jest.MockedFunction<typeof unlink>;
 
 type VictoryRow = { role: Role; gameIdRel: { victory: Role | null } };
 type GamePlayersRows = Awaited<
@@ -17,6 +24,7 @@ describe('PlayerService', () => {
 
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaClient>();
+    unlinkMock.mockReset();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -194,6 +202,90 @@ describe('PlayerService', () => {
           avatarUrl: undefined,
         },
       });
+    });
+  });
+
+  describe('updateAvatar', () => {
+    const basePlayer = {
+      id: 5,
+      name: 'Bob',
+      email: 'bob@test.com',
+      password: 'password123',
+      isGuest: false,
+      aboutMe: 'Hello there',
+      createdAt: new Date(),
+      deletedAt: null,
+    };
+
+    it('should update the avatar and delete the old file', async () => {
+      const updated = { ...basePlayer, avatarUrl: '/uploads/avatars/new.webp' };
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: '/uploads/avatars/old.webp',
+      } as PlayerRow);
+      prismaMock.player.update.mockResolvedValue(updated);
+      unlinkMock.mockResolvedValue(undefined);
+
+      expect(await service.updateAvatar(5, '/uploads/avatars/new.webp')).toBe(
+        updated,
+      );
+      expect(prismaMock.player.update).toHaveBeenCalledWith({
+        where: { id: 5, deletedAt: null },
+        data: { avatarUrl: '/uploads/avatars/new.webp' },
+      });
+      expect(unlinkMock).toHaveBeenCalledWith(
+        expect.stringContaining('old.webp'),
+      );
+    });
+
+    it('should not delete anything when there was no previous avatar', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: null,
+      } as PlayerRow);
+      prismaMock.player.update.mockResolvedValue({
+        ...basePlayer,
+        avatarUrl: '/uploads/avatars/new.webp',
+      });
+
+      await service.updateAvatar(5, '/uploads/avatars/new.webp');
+      expect(unlinkMock).not.toHaveBeenCalled();
+    });
+
+    it('should not delete an external avatar url', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: 'https://cdn.example.com/a.png',
+      } as PlayerRow);
+      prismaMock.player.update.mockResolvedValue({
+        ...basePlayer,
+        avatarUrl: '/uploads/avatars/new.webp',
+      });
+
+      await service.updateAvatar(5, '/uploads/avatars/new.webp');
+      expect(unlinkMock).not.toHaveBeenCalled();
+    });
+
+    it('should not fail when the old file cannot be deleted', async () => {
+      const updated = { ...basePlayer, avatarUrl: '/uploads/avatars/new.webp' };
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: '/uploads/avatars/old.webp',
+      } as PlayerRow);
+      prismaMock.player.update.mockResolvedValue(updated);
+      unlinkMock.mockRejectedValue(new Error('ENOENT'));
+
+      await expect(
+        service.updateAvatar(5, '/uploads/avatars/new.webp'),
+      ).resolves.toBe(updated);
+    });
+
+    it('should keep the old file when the database update fails', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: '/uploads/avatars/old.webp',
+      } as PlayerRow);
+      prismaMock.player.update.mockRejectedValue(new Error('db down'));
+
+      await expect(
+        service.updateAvatar(5, '/uploads/avatars/new.webp'),
+      ).rejects.toThrow('db down');
+      expect(unlinkMock).not.toHaveBeenCalled();
     });
   });
 
