@@ -50,6 +50,7 @@ export default tseslint.config(
         { selector: 'property', format: ['camelCase'] },
         { selector: 'objectLiteralProperty', format: null },
         { selector: 'variable', modifiers: ['const', 'global'], format: ['camelCase', 'UPPER_CASE'] },
+        { selector: 'parameter', format: ['camelCase'], leadingUnderscore: 'allow' },
       ],
       'no-console': 'error',
     },

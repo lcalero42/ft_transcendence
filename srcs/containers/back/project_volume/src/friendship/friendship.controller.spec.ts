@@ -47,7 +47,7 @@ describe('FriendshipController', () => {
 
   describe('create', () => {
     it('should create a friendship request from the logged player', async () => {
-      const createDto = { addressee: 4 };
+      const createDto = { name: 'Bob' };
       const result = friendshipRow(FriendshipStatus.PENDING);
       jest
         .spyOn(friendshipService, 'create')
