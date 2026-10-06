@@ -61,9 +61,6 @@ export class PresenceRoom extends Room {
 
   onJoin(client: Client) {
     const auth = client.auth as PresenceAuth;
-    this.logger.log(
-      `[PRES] join player=${auth.id} session=${client.sessionId} previous=${this.sessionIdByPlayerId.get(auth.id) ?? 'none'}`,
-    );
     clearTimeout(this.offlineTimerByPlayerId.get(auth.id));
     this.offlineTimerByPlayerId.delete(auth.id);
     this.sessionIdByPlayerId.set(auth.id, client.sessionId);
@@ -73,10 +70,6 @@ export class PresenceRoom extends Room {
 
   onLeave(client: Client) {
     const auth = client.auth as PresenceAuth;
-    const current = this.sessionIdByPlayerId.get(auth.id);
-    this.logger.log(
-      `[PRES] leave player=${auth.id} session=${client.sessionId} current=${current ?? 'none'} -> ${current === client.sessionId ? 'OFFLINE broadcast' : 'ignored'}`,
-    );
     if (this.sessionIdByPlayerId.get(auth.id) === client.sessionId) {
       this.sessionIdByPlayerId.delete(auth.id);
       this.offlineTimerByPlayerId.set(
