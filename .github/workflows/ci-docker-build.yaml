@@ -51,6 +51,8 @@ jobs:
           echo "ci_db"               > srcs/secrets/db_name.txt
           echo "ci_jwt_secret"       > srcs/secrets/jwt_secret.txt
           echo "ci_internal_api_key" > srcs/secrets/internal_api_key.txt
+          echo "admin@ci.local"      > srcs/secrets/admin_email.txt
+          echo "ci_admin_password"   > srcs/secrets/admin_password.txt
 
       - name: Build stack and verify containers launch
         run: make check-build
