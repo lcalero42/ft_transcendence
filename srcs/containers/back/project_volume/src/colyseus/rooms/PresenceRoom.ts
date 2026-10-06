@@ -14,10 +14,8 @@ interface PresenceAuth {
   email: string;
 }
 
-// Colyseus ne parle à la base que via l'API Nest (pas d'accès direct à Prisma)
 const API_URL =
   process.env.API_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
-// Délai avant d'annoncer "offline", pour absorber les reloads et reconnexions
 const OFFLINE_GRACE_MS = 3000;
 
 export class PresenceRoom extends Room {
