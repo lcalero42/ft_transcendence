@@ -44,6 +44,7 @@ export default tseslint.config(
         'error',
         { selector: 'default', format: ['camelCase'] },
         { selector: 'variableLike', format: ['camelCase'] },
+        { selector: 'parameter', format: ['camelCase'], leadingUnderscore: 'allow' },
         { selector: 'typeLike', format: ['PascalCase'] },
         { selector: 'enumMember', format: ['PascalCase'] },
         { selector: 'property', format: ['camelCase'] },

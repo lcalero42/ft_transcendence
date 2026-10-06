@@ -6,6 +6,8 @@ import AvailableRooms from "./components/AvailableRooms";
 import { useEffect, useState } from 'react';
 import { fetchRooms, type Room } from '../../api/rooms';
 import Header from "@/components/Header/Header";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
+import LoadPage from "@/components/LoadPage/LoadPage";
 
 function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
@@ -41,8 +43,8 @@ function Home() {
         };
     }, []);
 
-    if (loading) return <p>Loading rooms...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) return <LoadPage />;
+    if (error) return <ErrorPage error={error} />;
 
 	return (
 		<div className="page">
