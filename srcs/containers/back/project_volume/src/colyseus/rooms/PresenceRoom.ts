@@ -1,8 +1,5 @@
 import { Logger } from '@nestjs/common';
 import { Room, type Client } from '@colyseus/core';
-import jwt from 'jsonwebtoken';
-import { requireEnv } from '../../common/require-env';
-import { PrismaService } from '../../prisma.service';
 import {
   registerPresenceRoom,
   unregisterPresenceRoom,
@@ -17,7 +14,9 @@ interface PresenceAuth {
   email: string;
 }
 
-const prisma = new PrismaService();
+// Colyseus ne parle à la base que via l'API Nest (pas d'accès direct à Prisma)
+const API_URL =
+  process.env.API_URL ?? `http://localhost:${process.env.PORT ?? 3000}`;
 // Délai avant d'annoncer "offline", pour absorber les reloads et reconnexions
 const OFFLINE_GRACE_MS = 3000;
 
@@ -32,26 +31,18 @@ export class PresenceRoom extends Room {
   async onAuth(_client: Client, options?: JoinOptions): Promise<PresenceAuth> {
     if (!options?.token) throw new Error('Missing token');
 
-    let payload: { sub: number; email: string };
+    let res: Response;
     try {
-      payload = jwt.verify(
-        options.token,
-        requireEnv('JWT_SECRET'),
-      ) as unknown as {
-        sub: number;
-        email: string;
-      };
+      res = await fetch(`${API_URL}/player/me`, {
+        headers: { Authorization: `Bearer ${options.token}` },
+      });
     } catch {
-      throw new Error('Invalid token');
+      throw new Error('Auth service unavailable');
     }
+    if (!res.ok) throw new Error('Unauthorized');
 
-    const player = await prisma.player.findUnique({
-      where: { id: payload.sub, deletedAt: null },
-      select: { id: true, email: true },
-    });
-    if (!player) throw new Error('Unauthorized');
-
-    return player;
+    const { id, email } = (await res.json()) as PresenceAuth;
+    return { id, email };
   }
 
   onCreate() {
