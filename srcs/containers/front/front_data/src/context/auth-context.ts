@@ -4,7 +4,6 @@ import type { Player } from "../api/player";
 export interface User {
   id: number;
   email: string;
-  isAdmin: boolean;
 }
 
 export interface AuthContextValue {

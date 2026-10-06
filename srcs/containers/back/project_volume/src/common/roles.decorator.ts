@@ -1,4 +1,6 @@
-import { SetMetadata } from '@nestjs/common';
+import { applyDecorators, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from './roles.guard';
 
-export const IS_ADMIN_KEY = 'isadmin';
-export const adminOnly = () => SetMetadata(IS_ADMIN_KEY, true);
+export const adminOnly = () =>
+  applyDecorators(UseGuards(JwtAuthGuard, RolesGuard));

@@ -7,13 +7,13 @@ import { AuthContext, type User } from "./auth-context";
 interface JwtPayload {
   sub: number;
   email: string;
-  isAdmin: boolean;
 }
 
 function decodeToken(token: string): User | null {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
-    return { id: payload.sub, email: payload.email, isAdmin: payload.isAdmin };
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64)) as JwtPayload;
+    return { id: payload.sub, email: payload.email };
   } catch {
     return null;
   }
@@ -67,16 +67,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-		user,
-		profile,
-		profileLoading,
-		isAuth: !!user,
-		isAdmin: !!user?.isAdmin,
-		isLoading: false,
-		login,
-		register,
-		logout
-	  }}
+        user,
+        profile,
+        profileLoading,
+        isAuth: !!user,
+        isAdmin: !!profile?.isAdmin,
+        isLoading: false,
+        login,
+        register,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

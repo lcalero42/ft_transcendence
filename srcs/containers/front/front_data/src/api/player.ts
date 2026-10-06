@@ -8,6 +8,7 @@ export interface Player {
 	email: string;
 	aboutMe: string;
 	avatarUrl: string;
+	isAdmin: boolean;
 	createdAt: string;
 }
 export interface GameListOfPlayer {
