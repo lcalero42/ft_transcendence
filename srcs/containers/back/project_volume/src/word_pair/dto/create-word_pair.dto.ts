@@ -6,4 +6,16 @@ export class CreateWordPairDto {
 
   @IsString()
   undercoverWord: string;
+
+  @IsString()
+  civilianWordFr: string;
+
+  @IsString()
+  undercoverWordFr: string;
+
+  @IsString()
+  civilianWordEs: string;
+
+  @IsString()
+  undercoverWordEs: string;
 }

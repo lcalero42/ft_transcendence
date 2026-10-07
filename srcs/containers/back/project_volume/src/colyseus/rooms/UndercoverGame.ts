@@ -21,6 +21,9 @@ import {
   REVEAL_DURATION_MS,
   FINISHED_DURATION_MS,
   ROUND_PHASES,
+  LANGUAGES,
+  DEFAULT_LANGUAGE,
+  type Language,
 } from './undercoverConstants';
 import { removeParticipant } from './undercoverLobby';
 import type { RoomPersistence } from './RoomPersistence';
@@ -31,6 +34,7 @@ export class UndercoverGame {
   private readonly logger = new Logger('UndercoverRoom');
   private wordPair: WordPair | null = null;
   private roles = new Map<string, Role>();
+  private languages = new Map<string, Language>();
   private phaseTimer: Delayed | null = null;
   private readonly room: UndercoverRoom;
   private readonly persistence: RoomPersistence;

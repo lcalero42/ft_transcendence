@@ -104,4 +104,8 @@ model Word_Pair {
   id                Int         @id @default(autoincrement())
   civilianWord      String      @map("civilian_word")
   undercoverWord    String      @map("undercover_word")
+  civilianWordFr    String      @map("civilian_word_fr")
+  undercoverWordFr  String      @map("undercover_word_fr")
+  civilianWordEs    String      @map("civilian_word_es")
+  undercoverWordEs  String      @map("undercover_word_es")
 }
