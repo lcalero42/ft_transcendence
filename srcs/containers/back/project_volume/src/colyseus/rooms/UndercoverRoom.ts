@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Room, type Client, matchMaker } from '@colyseus/core';
 import { UndercoverState, Player } from './UndercoverState';
 import { assignRoles } from './undercoverGameLogic';
@@ -17,8 +16,7 @@ import {
 } from './undercoverLobby';
 import { UndercoverGame } from './UndercoverGame';
 import { RoomPersistence } from './RoomPersistence';
-import { fetchWordPair } from '../api';
-import { requireEnv } from '../../common/require-env';
+import { getPlayerId, fetchWordPair } from '../api';
 import { prisma } from '../prisma';
 
 export interface JoinOptions {
@@ -35,8 +33,6 @@ interface PlayerIdentity {
 interface SeatTransferAuth extends PlayerIdentity {
   isHost?: boolean;
 }
-
-const jwtService = new JwtService({ secret: requireEnv('JWT_SECRET') });
 
 export class UndercoverRoom extends Room {
   maxClients = MAX_CLIENTS;
@@ -131,9 +127,12 @@ export class UndercoverRoom extends Room {
     if (!token) {
       throw new Error('missing token');
     }
-    const payload = await jwtService.verifyAsync<{ sub: number }>(token);
+    const playerId = await getPlayerId(token);
+    if (!playerId) {
+      throw new Error('invalid token');
+    }
     const player = await prisma.player.findUnique({
-      where: { id: payload.sub, deletedAt: null },
+      where: { id: playerId, deletedAt: null },
       select: { id: true, isGuest: true },
     });
     if (!player) {

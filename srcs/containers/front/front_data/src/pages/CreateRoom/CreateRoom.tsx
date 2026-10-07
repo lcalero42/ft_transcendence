@@ -56,6 +56,8 @@ export default function CreateRoom() {
 	const players = useRoomState(room, (s) => s.players);
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const maxClients = useRoomState(room, (s) => s.maxParticipants);
+	const phase = useRoomState(room, (s) => s.phase);
+	const joinedPhaseRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (!room) return;
@@ -64,6 +66,14 @@ export default function CreateRoom() {
 			void navigate(`/create-room/${room.roomId}`, { replace: true });
 		}
 	}, [room, routeRoomId, navigate]);
+
+	useEffect(() => {
+		if (!room || !phase) return;
+		joinedPhaseRef.current ??= phase;
+		if (joinedPhaseRef.current !== "setup") {
+			void navigate(`/game/${room.roomId}`, { replace: true });
+		}
+	}, [room, phase, navigate]);
 
 	// The server issues a new reconnection token on every join, and the SDK's
 	// automatic retry rewrites it on the same room object, so re-store it.

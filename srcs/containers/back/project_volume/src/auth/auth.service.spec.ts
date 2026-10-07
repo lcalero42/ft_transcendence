@@ -150,6 +150,7 @@ describe('AuthService', () => {
         isGuest: true,
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -173,6 +174,7 @@ describe('AuthService', () => {
         isGuest: false,
         aboutMe: null,
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       });
