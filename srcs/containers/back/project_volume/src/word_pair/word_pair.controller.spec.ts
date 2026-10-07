@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WordPairController } from './word_pair.controller';
 import { WordPairService } from './word_pair.service';
 import { PrismaService } from '../prisma.service';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 
 describe('WordPairController', () => {
   let wordPairController: WordPairController;
@@ -11,7 +12,10 @@ describe('WordPairController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WordPairController],
       providers: [WordPairService, { provide: PrismaService, useValue: {} }],
-    }).compile();
+    })
+      .overrideGuard(InternalApiKeyGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     wordPairController = module.get<WordPairController>(WordPairController);
     wordPairService = module.get<WordPairService>(WordPairService);

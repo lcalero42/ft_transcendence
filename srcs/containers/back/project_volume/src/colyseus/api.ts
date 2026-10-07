@@ -73,7 +73,7 @@ export function closeRoom(roomId: number) {
 }
 
 export async function fetchWordPair(): Promise<WordPair | null> {
-  const pairs = await apiRequest<WordPair[]>('/word-pair');
+  const pairs = await apiRequest<WordPair[]>('/word-pair/internal');
   if (!pairs || pairs.length === 0) {
     return null;
   }
