@@ -27,9 +27,17 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    srcs/secrets/db_name.txt
    srcs/secrets/jwt_secret.txt
    srcs/secrets/internal_api_key.txt
+   srcs/secrets/admin_email.txt
+   srcs/secrets/admin_password.txt
    ```
    Each file holds a single value, no trailing newline conventions
    enforced — just don't leave them empty.
+   `admin_email.txt` / `admin_password.txt` are the credentials of the
+   `admin` account created by the seed (the only player with `isAdmin`,
+   which unlocks `/admin`). Get the shared values from the team password
+   manager, or pick your own (e.g. `admin@transcendence.local`) since the
+   database is local. Never commit them; changing them and restarting
+   `back` re-seeds the account with the new password.
 3. `make buildd` — build and start everything, detached.
 
 ## Everyday commands

@@ -11,7 +11,8 @@ interface JwtPayload {
 
 function decodeToken(token: string): User | null {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64)) as JwtPayload;
     return { id: payload.sub, email: payload.email };
   } catch {
     return null;
@@ -62,7 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, profile, profileLoading, isAuth: !!user, isLoading: false, login, register, logout }}
+      value={{
+        user,
+        profile,
+        profileLoading,
+        isAuth: !!user,
+        isAdmin: !!profile?.isAdmin,
+        isLoading: false,
+        login,
+        register,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

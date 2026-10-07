@@ -11,6 +11,25 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
 
+  //admin
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminEmail || !adminPassword) {
+    throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set to seed the admin account");
+  }
+  const adminHash = await bcrypt.hash(adminPassword, 10);
+
+  await prisma.player.upsert({
+    where: { email: adminEmail },
+    update: { password: adminHash, isAdmin: true },
+    create: {
+      name: "admin",
+      email: adminEmail,
+      password: adminHash,
+      isAdmin: true,
+    },
+  });
+
   //players
   const alicePassword = await bcrypt.hash("Alice1234#", 10);
   const bobPassword = await bcrypt.hash("Bob1234#", 10);
