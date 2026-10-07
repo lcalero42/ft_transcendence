@@ -13,7 +13,9 @@
       "@colyseus/core": ["./node_modules/@colyseus/core"],
       "@colyseus/schema": ["./node_modules/@colyseus/schema"],
       "@colyseus/ws-transport": ["./node_modules/@colyseus/ws-transport"],
-      "@nestjs/common": ["./node_modules/@nestjs/common"]
+      "@nestjs/common": ["./node_modules/@nestjs/common"],
+      "@prisma/adapter-pg": ["./node_modules/@prisma/adapter-pg"],
+      "jsonwebtoken": ["./node_modules/@types/jsonwebtoken"]
     },
 
     /* Bundler mode */

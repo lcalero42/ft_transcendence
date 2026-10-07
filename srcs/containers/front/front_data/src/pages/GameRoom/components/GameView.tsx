@@ -169,9 +169,9 @@ function GameView({ room }: GameViewProps) {
 								)}
 							</PlayerCircle>
 						</div>
-						<div className="relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
+						<div className="pointer-events-none relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
 							{phase === "open" && (
-								<div className="flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
+								<div className="pointer-events-auto flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
 									{isHost && (
 										<StartGameButton
@@ -184,7 +184,7 @@ function GameView({ room }: GameViewProps) {
 							{(phase === "describing" || phase === "voting") && (
 								<>
 									{phase === "describing" && (
-										<div className="order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto flex flex-col gap-4">
+										<div className="pointer-events-auto order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto flex flex-col gap-4">
 											<TurnInput
 												isMyTurn={isMyTurn}
 												activePlayerName={activePlayer?.name}
@@ -192,7 +192,7 @@ function GameView({ room }: GameViewProps) {
 											/>
 										</div>
 									)}
-									<div className="order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
+									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 									</div>
 								</>

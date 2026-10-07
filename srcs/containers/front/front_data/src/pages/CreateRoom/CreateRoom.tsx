@@ -13,8 +13,7 @@ import {
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
-import LinkProfile from "../../components/LinkProfile/LinkProfile";
-import Logo from "../../components/Logo/Logo";
+import Header from "../../components/Header/Header";
 import FriendList from "../Profile/components/FriendList/FriendList";
 import PlayerList from "./components/PlayerList";
 
@@ -138,11 +137,7 @@ export default function CreateRoom() {
 
 	return (
 		<div className="page">
-			<header className="page-header">
-				<Logo />
-				<LinkProfile
-					name={profile?.name ? profile.name : "login"} icon="🥷" />
-			</header>
+			<Header />
 			<main className="flex flex-1 flex-col">
 				<div className="h-[7vh] w-screen flex items-center justify-center bg-banner-bg">
 					<p className="text-sm">

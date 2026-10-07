@@ -11,8 +11,8 @@ function DisplayRoomCards({ rooms }: Rooms) {
         <section className="flex flex-col
         md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]">
             <CreateRoomButton />
-            {rooms.map((room) => (
-                <RoomCard key={room.id} min_players={room.min_player} max_players={room.max_player} {...room} />
+            {rooms.map((room) => room.colyseusRoomId && (
+                <RoomCard key={room.id} name={room.name} colyseusRoomId={room.colyseusRoomId} min_players={room.min_player} max_players={room.max_player} />
             ))}
         </section>
     );

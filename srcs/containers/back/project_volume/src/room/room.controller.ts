@@ -16,6 +16,7 @@ import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import type { Rooms } from '../generated/prisma/client';
 
@@ -75,6 +76,12 @@ export class RoomController {
       throw new ForbiddenException('Cannot edit a room you did not create');
     }
     return this.roomService.update(id, updateRoomDto);
+  }
+
+  @UseGuards(InternalApiKeyGuard)
+  @Delete('internal/:id')
+  async close(@Param('id', ParseIntPipe) id: number) {
+    return this.roomService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard)

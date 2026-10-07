@@ -46,10 +46,14 @@ describe('GameController', () => {
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         roomId: 7,
+        players: [
+          { playerId: 1, role: Role.civilian },
+          { playerId: 2, role: Role.undercover },
+        ],
       };
       const result = {
         id: 5,
-        status: GameStatus.waiting,
+        status: GameStatus.playing,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
@@ -219,28 +223,38 @@ describe('GameController', () => {
     });
   });
 
-  describe('update', () => {
-    it('should update a game and return it', async () => {
-      const updateDto = {
-        civilianWord: 'dog',
-        undercoverWord: 'wolf',
-      };
+  describe('eliminate', () => {
+    it('should eliminate a player from a game', async () => {
+      const result = { count: 1 };
+      jest
+        .spyOn(gameService, 'eliminate')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await gameController.eliminate(5, { playerId: 2 })).toBe(result);
+      expect(gameService.eliminate).toHaveBeenCalledWith(5, 2);
+    });
+  });
+
+  describe('finish', () => {
+    it('should finish a game with a victory and return it', async () => {
       const result = {
         id: 5,
-        status: GameStatus.playing,
-        civilianWord: 'dog',
-        undercoverWord: 'wolf',
+        status: GameStatus.finished,
+        civilianWord: 'cat',
+        undercoverWord: 'tiger',
         createdAt: new Date(),
-        finishedAt: null,
-        victory: null,
+        finishedAt: new Date(),
+        victory: Role.civilian,
         roomId: 7,
       };
       jest
-        .spyOn(gameService, 'update')
+        .spyOn(gameService, 'finish')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await gameController.update(5, updateDto)).toBe(result);
-      expect(gameService.update).toHaveBeenCalledWith(5, updateDto);
+      expect(await gameController.finish(5, { victory: Role.civilian })).toBe(
+        result,
+      );
+      expect(gameService.finish).toHaveBeenCalledWith(5, Role.civilian);
     });
   });
 
@@ -248,7 +262,7 @@ describe('GameController', () => {
     it('should delete a game and return it', async () => {
       const result = {
         id: 5,
-        status: GameStatus.playing,
+        status: GameStatus.finished,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),

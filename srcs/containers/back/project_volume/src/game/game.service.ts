@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
 import { PrismaService } from '../prisma.service';
 import type { Games } from '../generated/prisma/client';
 import type { Player } from '../generated/prisma/client';
@@ -35,6 +34,8 @@ export class GameService {
         civilianWord: createGameDto.civilianWord,
         undercoverWord: createGameDto.undercoverWord,
         roomId: createGameDto.roomId,
+        status: 'playing',
+        gamePlayers: { create: createGameDto.players },
       },
     });
     return createGame;
@@ -118,22 +119,33 @@ export class GameService {
     return { word };
   }
 
-  async update(id: number, updateGameDto: UpdateGameDto) {
-    const updateGame = await this.prisma.games.update({
-      where: { id: id, finishedAt: null },
+  async eliminate(id: number, playerId: number) {
+    const eliminated = await this.prisma.game_Players.updateMany({
+      where: { gameId: id, playerId: playerId, eliminatedAt: null },
       data: {
-        civilianWord: updateGameDto.civilianWord,
-        undercoverWord: updateGameDto.undercoverWord,
-        roomId: updateGameDto.roomId,
+        eliminatedAt: new Date(),
       },
     });
-    return updateGame;
+    return eliminated;
+  }
+
+  async finish(id: number, victory: Role) {
+    const finishGame = await this.prisma.games.update({
+      where: { id: id, finishedAt: null },
+      data: {
+        status: 'finished',
+        finishedAt: new Date(),
+        victory: victory,
+      },
+    });
+    return finishGame;
   }
 
   async remove(id: number) {
     const deleteGame = await this.prisma.games.update({
       where: { id: id, finishedAt: null },
       data: {
+        status: 'finished',
         finishedAt: new Date(),
       },
     });
