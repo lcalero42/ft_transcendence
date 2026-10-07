@@ -11,7 +11,8 @@ interface JwtPayload {
 
 function decodeToken(token: string): User | null {
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])) as JwtPayload;
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64)) as JwtPayload;
     return { id: payload.sub, email: payload.email };
   } catch {
     return null;
@@ -23,9 +24,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = getToken();
     return token ? decodeToken(token) : null;
   });
-  // Keyed by userId so profile/profileLoading can be derived below without
-  // ever setting state synchronously inside the effect (only from its
-  // promise callbacks, once the fetch actually resolves).
   const [fetchedProfile, setFetchedProfile] = useState<{ userId: number; profile: Player | null } | null>(null);
 
   useEffect(() => {
@@ -76,7 +74,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, profile, profileLoading, isAuth: !!user, isGuest, isLoading: false, login, register, guest, logout }}
+      value={{
+        user,
+        profile,
+        profileLoading,
+        isAuth: !!user,
+        isGuest,
+        isAdmin: !!profile?.isAdmin,
+        isLoading: false,
+        login,
+        register,
+        guest,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

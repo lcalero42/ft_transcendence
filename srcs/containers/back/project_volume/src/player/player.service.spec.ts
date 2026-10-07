@@ -51,6 +51,7 @@ describe('PlayerService', () => {
           isGuest: false,
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -91,6 +92,7 @@ describe('PlayerService', () => {
         isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -187,6 +189,7 @@ describe('PlayerService', () => {
         isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -213,6 +216,7 @@ describe('PlayerService', () => {
       password: 'password123',
       isGuest: false,
       aboutMe: 'Hello there',
+      isAdmin: false,
       createdAt: new Date(),
       deletedAt: null,
     };
@@ -299,6 +303,7 @@ describe('PlayerService', () => {
         isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
@@ -417,6 +422,7 @@ describe('PlayerService', () => {
         isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
         createdAt: new Date(),
         deletedAt: null,
       };

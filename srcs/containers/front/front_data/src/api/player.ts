@@ -9,6 +9,7 @@ export interface Player {
 	isGuest: boolean;
 	aboutMe: string;
 	avatarUrl: string;
+	isAdmin: boolean;
 	createdAt: string;
 }
 export interface GameListOfPlayer {

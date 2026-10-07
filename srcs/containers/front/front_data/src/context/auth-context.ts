@@ -12,6 +12,7 @@ export interface AuthContextValue {
   profileLoading: boolean;
   isAuth: boolean;
   isGuest: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;

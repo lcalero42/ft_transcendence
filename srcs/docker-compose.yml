@@ -25,6 +25,8 @@ services:
       - db_name
       - jwt_secret
       - internal_api_key
+      - admin_email
+      - admin_password
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,3 +81,7 @@ secrets:
     file: ./secrets/jwt_secret.txt
   internal_api_key:
     file: ./secrets/internal_api_key.txt
+  admin_email:
+    file: ./secrets/admin_email.txt
+  admin_password:
+    file: ./secrets/admin_password.txt

@@ -6,8 +6,12 @@ import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/enums';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 
-function requestAs(id: number, email: string): AuthenticatedRequest {
-  return { user: { id, email } } as AuthenticatedRequest;
+function requestAs(
+  id: number,
+  email: string,
+  isAdmin = false,
+): AuthenticatedRequest {
+  return { user: { id, email, isAdmin } } as AuthenticatedRequest;
 }
 
 describe('RoomController', () => {

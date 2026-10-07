@@ -1,7 +1,7 @@
-import { IsInt, IsPositive } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateFriendshipDto {
-  @IsInt()
-  @IsPositive()
-  addressee: number;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 }

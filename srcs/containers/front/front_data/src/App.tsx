@@ -8,28 +8,32 @@ import Admin from "./pages/Admin/Admin";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
 import { AuthProvider } from "./context/AuthContext";
+import { FriendsProvider } from "./context/FriendsContext";
 import ProtectedRoute from "./context/ProtectedRoute";
+import Layout from "./components/Layout/Layout";
 import { Toaster} from "@/components/ui/toast";
 
 function App() {
 	return (
 		<AuthProvider>
-			<BrowserRouter>
-				<Toaster />
-				<Routes>
-					<Route path="/" element={<Navigate to="/home" replace />} />
-					<Route path="/home" element={<Home />} />
-					<Route path="/login" element={<Login />} />
-					<Route path="/register" element={<Register />} />
-					<Route path="/guest" element={<Guest />} />
-
-					<Route path="/admin" element={<ProtectedRoute allowGuest={false}><Admin /></ProtectedRoute>} />
-
-					<Route path="/profile" element={<ProtectedRoute allowGuest={false}><Profile /></ProtectedRoute>} />
-					<Route path="/create-room/:roomId?" element={<ProtectedRoute redirectTo="/guest"><CreateRoom /></ProtectedRoute>} />
-					<Route path="/game/:id" element={<ProtectedRoute redirectTo="/guest"><GameRoom /></ProtectedRoute>} />
-				</Routes>
-			</BrowserRouter>
+			<FriendsProvider>
+				<BrowserRouter>
+					<Toaster />
+					<Layout>
+						<Routes>
+							<Route path="/" element={<Navigate to="/home" replace />} />
+							<Route path="/home" element={<Home />} />
+							<Route path="/login" element={<Login />} />
+							<Route path="/register" element={<Register />} />
+							<Route path="/guest" element={<Guest />} />
+							<Route path="/admin" element={<ProtectedRoute allowGuest={false} adminOnly><Admin /></ProtectedRoute>} />
+							<Route path="/profile" element={<ProtectedRoute allowGuest={false}><Profile /></ProtectedRoute>} />
+							<Route path="/create-room/:roomId?" element={<ProtectedRoute redirectTo="/guest"><CreateRoom /></ProtectedRoute>} />
+							<Route path="/game/:id" element={<ProtectedRoute redirectTo="/guest"><GameRoom /></ProtectedRoute>} />
+						</Routes>
+					</Layout>
+				</BrowserRouter>
+			</FriendsProvider>
 		</AuthProvider>
 	)
 }
