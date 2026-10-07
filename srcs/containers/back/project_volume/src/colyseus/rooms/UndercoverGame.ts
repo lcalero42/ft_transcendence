@@ -80,11 +80,30 @@ export class UndercoverGame {
     if (!role || !this.wordPair) {
       return;
     }
+    const words = {
+      en: [this.wordPair.civilianWord, this.wordPair.undercoverWord],
+      fr: [this.wordPair.civilianWordFr, this.wordPair.undercoverWordFr],
+      es: [this.wordPair.civilianWordEs, this.wordPair.undercoverWordEs],
+    };
+    const index = role === 'undercover' ? 1 : 0;
     const word =
-      role === 'undercover'
-        ? this.wordPair.undercoverWord
-        : this.wordPair.civilianWord;
+      words[this.getLanguage(sessionId)][index] ||
+      words[DEFAULT_LANGUAGE][index];
     this.room.clients.getById(sessionId)?.send('word', { word });
+  }
+
+  setLanguage(sessionId: string, language: unknown) {
+    if (LANGUAGES.includes(language as Language)) {
+      this.languages.set(sessionId, language as Language);
+    }
+  }
+
+  getLanguage(sessionId: string) {
+    return this.languages.get(sessionId) ?? DEFAULT_LANGUAGE;
+  }
+
+  forgetLanguage(sessionId: string) {
+    this.languages.delete(sessionId);
   }
 
   submitClue(sessionId: string, word: unknown) {
