@@ -26,6 +26,7 @@ import { getPlayerId, fetchWordPair } from '../api';
 export interface JoinOptions {
   name?: string;
   avatarUrl?: string;
+  lang?: string;
 }
 
 interface SeatTransferAuth {
@@ -94,7 +95,8 @@ export class UndercoverRoom extends Room {
       this.game.start(pair, roles);
     },
 
-    getWord: (client: Client) => {
+    getWord: (client: Client, lang: unknown) => {
+      this.game.setLanguage(client.sessionId, lang);
       if (this.game.isRunning()) {
         this.game.sendWord(client.sessionId);
       }
@@ -133,6 +135,7 @@ export class UndercoverRoom extends Room {
     this.logger.log('room joined');
     const auth = client.auth as SeatTransferAuth | undefined;
     this.persistence.trackPlayer(client.sessionId, auth?.playerId);
+    this.game.setLanguage(client.sessionId, options?.lang);
 
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
@@ -184,6 +187,7 @@ export class UndercoverRoom extends Room {
       this.state.hostSessionId = nextHost ?? '';
     }
     this.persistence.forgetPlayer(client.sessionId);
+    this.game.forgetLanguage(client.sessionId);
   }
 
   async onDispose() {
@@ -201,7 +205,11 @@ export class UndercoverRoom extends Room {
       try {
         const reservation = await matchMaker.reserveSeatFor(
           roomCache,
-          { name: player.name, avatarUrl: player.avatarUrl },
+          {
+            name: player.name,
+            avatarUrl: player.avatarUrl,
+            lang: this.game.getLanguage(sessionId),
+          },
           auth,
         );
         this.clients.getById(sessionId)?.send('seatReservation', reservation);

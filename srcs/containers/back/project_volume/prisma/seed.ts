@@ -190,22 +190,34 @@ async function main() {
 
   const wp_1 = await prisma.word_Pair.create({
     data: {
-      civilianWord: "lapin",
-      undercoverWord: "cheval"
+      civilianWord: "rabbit",
+      undercoverWord: "horse",
+      civilianWordFr: "lapin",
+      undercoverWordFr: "cheval",
+      civilianWordEs: "conejo",
+      undercoverWordEs: "caballo"
     }
   })
 
   const wp_2 = await prisma.word_Pair.create({
     data: {
-      civilianWord: "chat",
-      undercoverWord: "tigre"
+      civilianWord: "cat",
+      undercoverWord: "tiger",
+      civilianWordFr: "chat",
+      undercoverWordFr: "tigre",
+      civilianWordEs: "gato",
+      undercoverWordEs: "tigre"
     }
   })
 
   const wp_3 = await prisma.word_Pair.create({
     data: {
-      civilianWord: "telephone",
-      undercoverWord: "ordinateur"
+      civilianWord: "phone",
+      undercoverWord: "computer",
+      civilianWordFr: "téléphone",
+      undercoverWordFr: "ordinateur",
+      civilianWordEs: "teléfono",
+      undercoverWordEs: "ordenador"
     }
   })
 

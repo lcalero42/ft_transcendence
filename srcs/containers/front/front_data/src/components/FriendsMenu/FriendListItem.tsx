@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { getAvatarUrl } from "@/api/player";
 import RemoveFriendConfirm from "./RemoveFriendConfirm";
 
@@ -15,6 +16,7 @@ type FriendListItemProps = {
 function FriendListItem({ name, avatarUrl, isOnline, expanded, onToggle, onRemove }: FriendListItemProps) {
 	const [showConfirm, setShowConfirm] = useState(false);
 	const itemRef = useRef<HTMLDivElement>(null);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!expanded) return;
@@ -45,7 +47,7 @@ function FriendListItem({ name, avatarUrl, isOnline, expanded, onToggle, onRemov
 			{expanded && (
 				<button
 					type="button"
-					aria-label={`Remove ${name}`}
+					aria-label={t("friends.removeAria", { name })}
 					onClick={() => setShowConfirm(true)}
 					className="clean-btn hoverable flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-defeat text-white"
 				>

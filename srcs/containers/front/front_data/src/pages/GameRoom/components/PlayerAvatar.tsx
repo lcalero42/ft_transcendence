@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PlayerAvatarProps {
 	name: string;
@@ -10,10 +11,12 @@ interface PlayerAvatarProps {
 }
 
 function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, action }: PlayerAvatarProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="flex flex-col items-center gap-2">
 			{typeof voteCount === "number" && (
-				<span className="text-small font-semibold text-accent-purple">{voteCount} votes</span>
+				<span className="text-small font-semibold text-accent-purple">{t("game.votes", { count: voteCount })}</span>
 			)}
 			<span className={`text-body font-bold ${isActive ? "text-accent-purple" : "text-gray-high"}`}>
 				{name}

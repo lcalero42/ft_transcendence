@@ -1,4 +1,5 @@
 import { useState} from "react";
+import { useTranslation } from "react-i18next";
 import Edit from "../../../../components/Popup/Edit";
 
 type EditAvatarProps = {
@@ -10,6 +11,7 @@ type EditAvatarProps = {
 function EditAvatar({currentAvatar, onClose, onSave}: EditAvatarProps) {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string>(currentAvatar);
+	const { t } = useTranslation();
 
 	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -23,10 +25,10 @@ function EditAvatar({currentAvatar, onClose, onSave}: EditAvatarProps) {
 		<Edit onClose={onClose}>
 			{(handleClose) => (
 				<>
-					<h2 className="font-bold text-lg">Your avatar</h2>
-					<img src={previewUrl} alt="Avatar preview" className="w-32 h-32 rounded-full"/>
+					<h2 className="font-bold text-lg">{t("profile.yourAvatar")}</h2>
+					<img src={previewUrl} alt={t("profile.avatarPreview")} className="w-32 h-32 rounded-full"/>
 					<label className="clean-btn font-medium min-w-60 text-accent hoverable hover:font-black">
-						Modify photo
+						{t("profile.modifyPhoto")}
 						<input
 							type="file"
 							accept="image/*"
@@ -37,7 +39,7 @@ function EditAvatar({currentAvatar, onClose, onSave}: EditAvatarProps) {
 
 				<div className="flex justify-around w-full mt-1">
 					<button className="clean-btn text-text-dim hoverable hover:font-black" onClick={handleClose}>
-						Cancel
+						{t("common.cancel")}
 					</button>
 					<button
 						className="clean-btn text-accent font-semibold hoverable hover:font-black"
@@ -46,7 +48,7 @@ function EditAvatar({currentAvatar, onClose, onSave}: EditAvatarProps) {
 								handleClose();
 						}}
 					>
-						Save
+						{t("common.save")}
 					</button>
 				</div>
 			</>

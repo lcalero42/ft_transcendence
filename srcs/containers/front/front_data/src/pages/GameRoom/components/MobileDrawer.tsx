@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface MobileDrawerProps {
 	open: boolean;
@@ -9,6 +10,8 @@ interface MobileDrawerProps {
 }
 
 function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		if (!open) return;
 
@@ -27,7 +30,7 @@ function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 		>
 			<button
 				type="button"
-				aria-label="Close"
+				aria-label={t("common.close")}
 				onClick={onClose}
 				className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`}
 			/>
@@ -37,7 +40,7 @@ function MobileDrawer({ open, onClose, children }: MobileDrawerProps) {
 				<button
 					type="button"
 					onClick={onClose}
-					aria-label="Close"
+					aria-label={t("common.close")}
 					className="mb-3 self-end text-white"
 				>
 					<X className="size-6" />

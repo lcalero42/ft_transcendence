@@ -21,6 +21,9 @@ import {
   REVEAL_DURATION_MS,
   FINISHED_DURATION_MS,
   ROUND_PHASES,
+  LANGUAGES,
+  DEFAULT_LANGUAGE,
+  type Language,
 } from './undercoverConstants';
 import { removeParticipant } from './undercoverLobby';
 import type { RoomPersistence } from './RoomPersistence';
@@ -31,6 +34,7 @@ export class UndercoverGame {
   private readonly logger = new Logger('UndercoverRoom');
   private wordPair: WordPair | null = null;
   private roles = new Map<string, Role>();
+  private languages = new Map<string, Language>();
   private phaseTimer: Delayed | null = null;
   private readonly room: UndercoverRoom;
   private readonly persistence: RoomPersistence;
@@ -76,11 +80,30 @@ export class UndercoverGame {
     if (!role || !this.wordPair) {
       return;
     }
+    const words = {
+      en: [this.wordPair.civilianWord, this.wordPair.undercoverWord],
+      fr: [this.wordPair.civilianWordFr, this.wordPair.undercoverWordFr],
+      es: [this.wordPair.civilianWordEs, this.wordPair.undercoverWordEs],
+    };
+    const index = role === 'undercover' ? 1 : 0;
     const word =
-      role === 'undercover'
-        ? this.wordPair.undercoverWord
-        : this.wordPair.civilianWord;
+      words[this.getLanguage(sessionId)][index] ||
+      words[DEFAULT_LANGUAGE][index];
     this.room.clients.getById(sessionId)?.send('word', { word });
+  }
+
+  setLanguage(sessionId: string, language: unknown) {
+    if (LANGUAGES.includes(language as Language)) {
+      this.languages.set(sessionId, language as Language);
+    }
+  }
+
+  getLanguage(sessionId: string) {
+    return this.languages.get(sessionId) ?? DEFAULT_LANGUAGE;
+  }
+
+  forgetLanguage(sessionId: string) {
+    this.languages.delete(sessionId);
   }
 
   submitClue(sessionId: string, word: unknown) {

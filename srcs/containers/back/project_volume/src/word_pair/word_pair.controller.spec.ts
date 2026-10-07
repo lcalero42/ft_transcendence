@@ -3,6 +3,24 @@ import { WordPairController } from './word_pair.controller';
 import { WordPairService } from './word_pair.service';
 import { PrismaService } from '../prisma.service';
 
+const catPair = {
+  civilianWord: 'cat',
+  undercoverWord: 'tiger',
+  civilianWordFr: 'chat',
+  undercoverWordFr: 'tigre',
+  civilianWordEs: 'gato',
+  undercoverWordEs: 'tigre',
+};
+
+const dogPair = {
+  civilianWord: 'dog',
+  undercoverWord: 'wolf',
+  civilianWordFr: 'chien',
+  undercoverWordFr: 'loup',
+  civilianWordEs: 'perro',
+  undercoverWordEs: 'lobo',
+};
+
 describe('WordPairController', () => {
   let wordPairController: WordPairController;
   let wordPairService: WordPairService;
@@ -27,22 +45,21 @@ describe('WordPairController', () => {
 
   describe('create', () => {
     it('should create a word pair', async () => {
-      const createDto = { civilianWord: 'cat', undercoverWord: 'tiger' };
-      const result = { id: 5, civilianWord: 'cat', undercoverWord: 'tiger' };
+      const result = { id: 5, ...catPair };
       jest
         .spyOn(wordPairService, 'create')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await wordPairController.create(createDto)).toBe(result);
-      expect(wordPairService.create).toHaveBeenCalledWith(createDto);
+      expect(await wordPairController.create(catPair)).toBe(result);
+      expect(wordPairService.create).toHaveBeenCalledWith(catPair);
     });
   });
 
   describe('findAll', () => {
     it('should return a word pair array', async () => {
       const result = [
-        { id: 5, civilianWord: 'cat', undercoverWord: 'tiger' },
-        { id: 6, civilianWord: 'dog', undercoverWord: 'wolf' },
+        { id: 5, ...catPair },
+        { id: 6, ...dogPair },
       ];
       jest
         .spyOn(wordPairService, 'findAll')
@@ -55,7 +72,7 @@ describe('WordPairController', () => {
 
   describe('findOne', () => {
     it('should return a word pair', async () => {
-      const result = { id: 5, civilianWord: 'cat', undercoverWord: 'tiger' };
+      const result = { id: 5, ...catPair };
       jest
         .spyOn(wordPairService, 'findOne')
         .mockImplementation(() => Promise.resolve(result));
@@ -67,20 +84,19 @@ describe('WordPairController', () => {
 
   describe('update', () => {
     it('should update a word pair and return it', async () => {
-      const updateDto = { civilianWord: 'dog', undercoverWord: 'wolf' };
-      const result = { id: 5, civilianWord: 'dog', undercoverWord: 'wolf' };
+      const result = { id: 5, ...dogPair };
       jest
         .spyOn(wordPairService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await wordPairController.update(5, updateDto)).toBe(result);
-      expect(wordPairService.update).toHaveBeenCalledWith(5, updateDto);
+      expect(await wordPairController.update(5, dogPair)).toBe(result);
+      expect(wordPairService.update).toHaveBeenCalledWith(5, dogPair);
     });
   });
 
   describe('remove', () => {
     it('should delete a word pair and return it', async () => {
-      const result = { id: 5, civilianWord: 'cat', undercoverWord: 'tiger' };
+      const result = { id: 5, ...catPair };
       jest
         .spyOn(wordPairService, 'remove')
         .mockImplementation(() => Promise.resolve(result));

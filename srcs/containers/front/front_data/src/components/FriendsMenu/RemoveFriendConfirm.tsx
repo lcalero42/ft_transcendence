@@ -1,4 +1,5 @@
 import Edit from "@/components/Popup/Edit";
+import { useTranslation } from "react-i18next";
 
 type RemoveFriendConfirmProps = {
 	name: string;
@@ -7,17 +8,19 @@ type RemoveFriendConfirmProps = {
 };
 
 function RemoveFriendConfirm({ name, onClose, onConfirm }: RemoveFriendConfirmProps) {
+	const { t } = useTranslation();
+
 	return (
 		<Edit onClose={onClose}>
 			{(handleClose) => (
 				<>
-					<h2 className="font-bold text-lg">Remove friend</h2>
+					<h2 className="font-bold text-lg">{t("friends.removeTitle")}</h2>
 					<p className="text-sm text-text-dim">
-						Are you sure you want to remove {name} from your friends?
+						{t("friends.removeConfirm", { name })}
 					</p>
 					<div className="flex justify-around w-full mt-1">
 						<button className="clean-btn text-text-dim hoverable hover:font-black" onClick={handleClose}>
-							Cancel
+							{t("common.cancel")}
 						</button>
 						<button
 							className="clean-btn text-defeat font-semibold hoverable hover:font-black"
@@ -26,7 +29,7 @@ function RemoveFriendConfirm({ name, onClose, onConfirm }: RemoveFriendConfirmPr
 								handleClose();
 							}}
 						>
-							Remove
+							{t("friends.remove")}
 						</button>
 					</div>
 				</>

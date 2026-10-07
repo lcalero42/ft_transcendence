@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 
 interface TurnInputProps {
 	isMyTurn: boolean;
@@ -8,6 +9,7 @@ interface TurnInputProps {
 
 function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 	const [value, setValue] = useState("");
+	const { t } = useTranslation();
 
 	function handleSubmit(event: React.FormEvent) {
 		event.preventDefault();
@@ -19,22 +21,18 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 	return (
 		<form onSubmit={handleSubmit} className="card mb-0! mx-auto w-full min-w-[265px] max-w-2xl p-[max(1vw,12px)]">
 			<p className="text-center text-[clamp(14px,1vw,24px)] font-semibold">
-				{isMyTurn ? (
-					<>
-						It's <span className="text-accent-purple">your turn</span>
-					</>
-				) : (
-					<>
-						It's <span className="text-accent-purple">{activePlayerName || "a player"}</span>'s turn
-					</>
-				)}
+				<Trans
+					i18nKey={isMyTurn ? "game.yourTurn" : "game.playerTurn"}
+					values={{ name: activePlayerName || t("game.aPlayer") }}
+					components={{ accent: <span className="text-accent-purple" /> }}
+				/>
 			</p>
 			<input
 				type="text"
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
 				disabled={!isMyTurn}
-				placeholder={isMyTurn ? "Type your guess..." : "Wait for your turn..."}
+				placeholder={isMyTurn ? t("game.typeGuess") : t("game.waitTurn")}
 				className="input disabled:opacity-50"
 			/>
 		</form>

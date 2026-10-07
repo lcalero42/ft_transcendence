@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface PlayerListItemProps {
 	name: string;
@@ -14,6 +15,7 @@ interface PlayerListItemProps {
 function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
 	const showKick = expanded && canKick && !isSelf;
 	const itemRef = useRef<HTMLDivElement>(null);
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!expanded) return;
@@ -44,11 +46,11 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, on
 			{(expanded || showKick) && (
 				<div className="flex shrink-0 gap-1">
 					{expanded && (
-						<span className="badge bg-victory! border-victory! text-small">PROFILE</span>
+						<span className="badge bg-victory! border-victory! text-small">{t("game.profile")}</span>
 					)}
 					{showKick && (
 						<button type="button" onClick={onKick} className="badge bg-defeat! border-defeat! hoverable text-small">
-							KICK
+							{t("game.kick")}
 						</button>
 					)}
 				</div>

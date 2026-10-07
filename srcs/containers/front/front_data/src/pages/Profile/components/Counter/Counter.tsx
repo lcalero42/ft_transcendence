@@ -2,6 +2,7 @@ import winRate from  "../../../../assets/icons/winrate.svg";
 import friend from  "../../../../assets/icons/friend-svgrepo-com.svg";
 import win from  "../../../../assets/icons/victory-svgrepo-com.svg";
 import game from  "../../../../assets/icons/game.svg";
+import { useTranslation } from "react-i18next";
 
 type DisplayCounterCardProps = {
 	color:		string;
@@ -35,30 +36,32 @@ function DisplayCounterCard({color, nb, categories, icon} : DisplayCounterCardPr
 }
 
 function Counter({games, victories, winrate, friends} : CounterProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="flex flex-wrap justify-between md:py-2.5">
 			<DisplayCounterCard
 				color="text-games"
 				nb={games.toString()}
-				categories="Games played"
+				categories={t("profile.gamesPlayed")}
 				icon={game}
 			/>
 			<DisplayCounterCard
 				color="text-victory"
 				nb={victories.toString()}
-				categories="Victories"
+				categories={t("profile.victories")}
 				icon={win}
 			/>
 			<DisplayCounterCard
 				color="text-winrate"
 				nb={winrate.toString() + "%"}
-				categories="Win rate"
+				categories={t("profile.winRate")}
 				icon={winRate}
 			/>
 			<DisplayCounterCard
 				color="text-friends"
 				nb={friends.toString()}
-				categories="Friends"
+				categories={t("profile.friends")}
 				icon={friend}
 			/>
 		</div>
