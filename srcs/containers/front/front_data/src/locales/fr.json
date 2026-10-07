@@ -36,6 +36,7 @@
 		"confirmPassword": "Confirmer le mot de passe",
 		"rememberMe": "Se souvenir de moi",
 		"notLogged": "Vous n'êtes pas connecté",
+		"adminRequired": "Accès administrateur requis",
 		"guest": "connexion",
 		"login": {
 			"subtitle": "Connectez-vous pour continuer votre aventure Undercover !",

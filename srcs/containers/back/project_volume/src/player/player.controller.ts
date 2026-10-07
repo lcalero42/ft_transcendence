@@ -14,6 +14,7 @@ import {
   UnsupportedMediaTypeException,
   ParseIntPipe,
 } from '@nestjs/common';
+import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
 import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -37,7 +38,7 @@ import {
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @adminOnly()
   @Get()
   async findAll() {
     return this.playerService.findAll();
@@ -54,7 +55,7 @@ export class PlayerController {
     return this.playerService.findOne(req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @adminOnly()
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.findOne(id);
