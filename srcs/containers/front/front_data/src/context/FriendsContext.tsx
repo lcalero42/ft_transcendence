@@ -33,31 +33,36 @@ function withRefetch<Args extends unknown[]>(
 
 export function FriendsProvider({ children }: { children: ReactNode }) {
 	const { isAuth, user } = useAuth();
-	const [friends, setFriends] = useState<Friendship[]>([]);
-	const [friendsStatus, setFriendsStatus] = useState<FriendsStatus>("loading");
+	const [friendsState, setFriendsState] = useState<{
+		userId: number | undefined;
+		list: Friendship[];
+		status: FriendsStatus;
+	}>({ userId: undefined, list: [], status: "loading" });
 	const [pending, setPending] = useState<Friendship[]>([]);
 	const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const roomRef = useRef<PresenceRoom | null>(null);
 
+	const userId = user?.id;
 	const refetchFriends = useCallback(() => {
 		getFriends()
 			.then((list) => {
-				setFriends(list);
-				setFriendsStatus("ready");
+				setFriendsState({ userId, list, status: "ready" });
 			})
 			.catch(() => {
-				setFriendsStatus((prev) => (prev === "ready" ? prev : "error"));
+				setFriendsState((prev) =>
+					prev.userId === userId && prev.status === "ready"
+						? prev
+						: { userId, list: [], status: "error" },
+				);
 			});
-	}, []);
+	}, [userId]);
 	const refetchPending = useCallback(() => refetchInto(getPendingRequests, setPending), []);
 
 	useEffect(() => {
 		if (!isAuth) return;
 
-		setFriends([]);
-		setFriendsStatus("loading");
 		refetchFriends();
 		refetchPending();
 
@@ -115,7 +120,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	}, [isAuth, user?.id, refetchFriends, refetchPending]);
 
 	function retryFriends() {
-		setFriendsStatus("loading");
+		setFriendsState({ userId, list: [], status: "loading" });
 		refetchFriends();
 	}
 
@@ -142,13 +147,18 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	const cancelRequest = withRefetch(cancelRequestApi, [refetchPending]);
 	const removeFriend = withRefetch(removeFriendApi, [refetchFriends]);
 
+	// Friends loaded for another account are stale: show them as still loading
+	const friendsAreCurrent = isAuth && friendsState.userId === userId;
+	const friends = friendsAreCurrent ? friendsState.list : [];
+	const friendsStatus: FriendsStatus = friendsAreCurrent ? friendsState.status : "loading";
+
 	const incomingRequests = isAuth ? pending.filter((f) => f.addresseeId === user?.id) : [];
 	const outgoingRequests = isAuth ? pending.filter((f) => f.requesterId === user?.id) : [];
 
 	return (
 		<FriendsContext.Provider
 			value={{
-				friends: isAuth ? friends : [],
+				friends,
 				friendsStatus,
 				retryFriends,
 				incomingRequests,
