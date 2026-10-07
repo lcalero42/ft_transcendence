@@ -12,7 +12,7 @@ import {
 	type Friendship,
 } from "../api/friendship";
 import { useAuth } from "./useAuth";
-import { FriendsContext } from "./friends-context";
+import { FriendsContext, type FriendsStatus } from "./friends-context";
 
 type PresenceRoom = Awaited<ReturnType<typeof client.joinOrCreate>>;
 const EMPTY_ONLINE_IDS: Set<number> = new Set();
@@ -34,13 +34,23 @@ function withRefetch<Args extends unknown[]>(
 export function FriendsProvider({ children }: { children: ReactNode }) {
 	const { isAuth, user } = useAuth();
 	const [friends, setFriends] = useState<Friendship[]>([]);
+	const [friendsStatus, setFriendsStatus] = useState<FriendsStatus>("loading");
 	const [pending, setPending] = useState<Friendship[]>([]);
 	const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 	const [unreadCount, setUnreadCount] = useState(0);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const roomRef = useRef<PresenceRoom | null>(null);
 
-	const refetchFriends = useCallback(() => refetchInto(getFriends, setFriends), []);
+	const refetchFriends = useCallback(() => {
+		getFriends()
+			.then((list) => {
+				setFriends(list);
+				setFriendsStatus("ready");
+			})
+			.catch(() => {
+				setFriendsStatus((prev) => (prev === "ready" ? prev : "error"));
+			});
+	}, []);
 	const refetchPending = useCallback(() => refetchInto(getPendingRequests, setPending), []);
 
 	useEffect(() => {
@@ -102,6 +112,11 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		};
 	}, [isAuth, user?.id, refetchFriends, refetchPending]);
 
+	function retryFriends() {
+		setFriendsStatus("loading");
+		refetchFriends();
+	}
+
 	function toggleMenu() {
 		setIsMenuOpen((prev) => {
 			if (!prev) setUnreadCount(0);
@@ -132,6 +147,8 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		<FriendsContext.Provider
 			value={{
 				friends: isAuth ? friends : [],
+				friendsStatus,
+				retryFriends,
 				incomingRequests,
 				outgoingRequests,
 				onlineIds: isAuth ? onlineIds : EMPTY_ONLINE_IDS,

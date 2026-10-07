@@ -1,8 +1,12 @@
 import { createContext } from "react";
 import type { Friendship } from "../api/friendship";
 
+export type FriendsStatus = "loading" | "ready" | "error";
+
 export interface FriendsContextValue {
 	friends: Friendship[];
+	friendsStatus: FriendsStatus;
+	retryFriends: () => void;
 	incomingRequests: Friendship[];
 	outgoingRequests: Friendship[];
 	onlineIds: Set<number>;
