@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next";
+
 interface StartGameButtonProps {
 	onClick: () => void;
 	disabled?: boolean;
 }
 
 function StartGameButton({ onClick, disabled }: StartGameButtonProps) {
+	const { t } = useTranslation();
+
 	return (
 		<button
 			type="button"
@@ -11,7 +15,7 @@ function StartGameButton({ onClick, disabled }: StartGameButtonProps) {
 			disabled={disabled}
 			className="badge badge-action hoverable rounded-lg! shrink-0 disabled:opacity-50"
 		>
-			Start Game
+			{t("game.startGame")}
 		</button>
 	);
 }

@@ -6,6 +6,7 @@ import PassIcon from "../../assets/icons/lock.svg";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useNavigate} from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -25,7 +26,7 @@ function Login() {
 
 	const {login} = useAuth();
 	const navigate = useNavigate();
-
+	const { t } = useTranslation();
 
 	const [form, setForm] = useState<LoginForm>(initialForm);
 	const [errors, setErrors] = useState<LoginErrors>({});
@@ -43,13 +44,13 @@ function Login() {
 		const nextErrors: LoginErrors = {};
 
 		if (!form.email.trim()) {
-			nextErrors.email = "Email is required.";
+			nextErrors.email = t("auth.errors.emailRequired");
 		} else if (!EMAIL_REGEX.test(form.email)) {
-			nextErrors.email = "Enter a valid email address.";
+			nextErrors.email = t("auth.errors.emailInvalid");
 		}
 
 		if (!form.password) {
-			nextErrors.password = "Password is required.";
+			nextErrors.password = t("auth.errors.passwordRequired");
 		}
 
 		return nextErrors;
@@ -71,7 +72,7 @@ function Login() {
 			await login(form.email, form.password);
 			void navigate("/");
 		} catch (err) {
-      		setAuthError(err instanceof Error ? err.message : "Login failed");
+      		setAuthError(err instanceof Error ? err.message : t("auth.login.failed"));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -81,25 +82,24 @@ function Login() {
 
 	return (
 		<AuthLayout
-			subtitle="Log in to continue your Undercover journey !"
+			subtitle={t("auth.login.subtitle")}
 			icon="🥷"
-			heading="Log in to your account"
-			description="Enter your credentials to access your account."
+			heading={t("auth.login.heading")}
+			description={t("auth.login.description")}
 			onSubmit={(e) => { void handleSubmit(e); }}
-			submitLabel={isSubmitting ? "Logging in..." : "Log in"}
-			// submitLabel="Log in"
+			submitLabel={isSubmitting ? t("auth.login.submitting") : t("auth.login.submit")}
 			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
-					Don't have an account ?{" "}
+					{t("auth.login.noAccount")}{" "}
 					<Link to="/register" className="font-semibold text-accent-purple hover:underline">
-						Create one
+						{t("auth.login.createOne")}
 					</Link>
 				</p>
 			}
 		>
 			<FormField
 				id="email"
-				label="Email"
+				label={t("auth.email")}
 				iconSrc={UserIcon}
 				type="email"
 				placeholder="example@hello.com"
@@ -110,7 +110,7 @@ function Login() {
 
 			<FormField
 				id="password"
-				label="Password"
+				label={t("auth.password")}
 				iconSrc={PassIcon}
 				type="password"
 				placeholder="Coolpassword31#"
@@ -122,7 +122,7 @@ function Login() {
 			<div className="mt-2 ml-2">
 				<Checkbox
 					id="remember-me"
-					label="Remember me"
+					label={t("auth.rememberMe")}
 					checked={rememberMe}
 					onChange={setRememberMe}
 				/>

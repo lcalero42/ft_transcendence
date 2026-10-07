@@ -16,6 +16,9 @@ import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
 import FriendList from "../Profile/components/FriendList/FriendList";
 import PlayerList from "./components/PlayerList";
+import LoadPage from "@/components/LoadPage/LoadPage";
+import ErrorPage from "@/components/ErrorPage/ErrorPage";
+import { useTranslation } from "react-i18next";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
@@ -25,9 +28,7 @@ export default function CreateRoom() {
 	const { profile, profileLoading } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
-
-	// Frozen at mount so that our own `navigate()` call below (which updates
-	// the URL to include the created room's id) doesn't retrigger useRoom.
+	const { t, i18n } = useTranslation();
 	const targetRoomIdRef = useRef(routeRoomId);
 
 	const { room, error, isConnecting } = useRoom(
@@ -44,9 +45,10 @@ export default function CreateRoom() {
 						}
 					}
 					client.auth.token = getToken() ?? "";
+					const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
 					return targetRoomId
-						? client.joinById<UndercoverRoom>(targetRoomId, { name: profile?.name, avatarUrl: profile?.avatarUrl })
-						: client.create<UndercoverRoom>("undercover", { name: profile?.name, avatarUrl: profile?.avatarUrl });
+						? client.joinById<UndercoverRoom>(targetRoomId, options)
+						: client.create<UndercoverRoom>("undercover", options);
 				},
 		[profileLoading],
 	);
@@ -85,16 +87,16 @@ export default function CreateRoom() {
 		clearReconnection();
 		toast.add({
 			type: "error",
-			title: "Unable to join the game",
+			title: t("lobby.joinError"),
 			description: error.message,
 		});
 		void navigate("/home", { replace: true });
-	}, [error, navigate]);
+	}, [error, navigate, t]);
 
-	if (profileLoading) return <p>Connecting...</p>;
-	if (isConnecting) return <p>Connecting...</p>;
+	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
+	if (isConnecting) return <LoadPage text={t("common.connecting")} />;
 	if (error) return null;
-	if (!room) return <p>My_Error: room unavailable</p>;
+	if (!room) return <ErrorPage error={t("lobby.unavailable")} />;
 
 	const inviteLink = `${window.location.origin}/create-room/${room.roomId}`;
 	const playerEntries = Object.entries(players ?? {});
@@ -114,8 +116,8 @@ export default function CreateRoom() {
 		await navigator.clipboard.writeText(inviteLink);
 		toast.add({
 			type: "success",
-			title: "Link copied!",
-			description: "Share it to invite players.",
+			title: t("lobby.linkCopiedTitle"),
+			description: t("lobby.linkCopiedDescription"),
 		});
 	};
 
@@ -142,8 +144,8 @@ export default function CreateRoom() {
 				<div className="h-[7vh] w-screen flex items-center justify-center bg-banner-bg">
 					<p className="text-sm">
 						{missingPlayers > 0
-							? `waiting for ${missingPlayers} more player${missingPlayers > 1 ? "s" : ""} ...`
-							: "room is full"}
+							? t("lobby.waiting", { count: missingPlayers })
+							: t("lobby.full")}
 					</p>
 				</div>
 				<div>
@@ -152,9 +154,9 @@ export default function CreateRoom() {
 							onClick={() => void handleCopy()}
 							className="clean-btn hoverable rounded-lg bg-linear-to-r from-btn-gradient-start to-btn-gradient-end px-4 py-2 text-sm text-white whitespace-nowrap sm:px-6 sm:py-3 sm:text-base"
 						>
-							Copy the game link
+							{t("lobby.copyLink")}
 						</button>
-						<p>add players from your friend list or send them the link </p>
+						<p>{t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
 						<div className="w-full md:flex md:justify-center">
@@ -171,7 +173,7 @@ export default function CreateRoom() {
 						onClick={handleStart}
 						className="clean-btn hoverable btn-glow-start rounded-lg bg-linear-to-r from-start-gradient-start to-start-gradient-end px-6 py-3 text-base font-bold text-black"
 					>
-						Start the game
+						{t("lobby.start")}
 					</button>
 				</div>}
 			</main>

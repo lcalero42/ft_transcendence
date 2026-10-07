@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "@/pages/GameRoom/components/ChatMessage";
 import ClueList from "@/pages/GameRoom/components/ClueList";
+import { useTranslation } from "react-i18next";
 
 interface ChatEntry {
 	id: string;
@@ -27,12 +28,10 @@ interface ChatBoxProps {
 	onSend?: (text: string) => void;
 }
 
-const TABS: { id: ChatTab; label: string }[] = [
-	{ id: "chat", label: "Chat" },
-	{ id: "clues", label: "Clues" },
-];
+const TABS: ChatTab[] = ["chat", "clues"];
 
 function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
+	const { t } = useTranslation();
 	const [value, setValue] = useState("");
 	const listRef = useRef<HTMLDivElement>(null);
 
@@ -53,14 +52,14 @@ function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
 			style={{ borderColor: "#15113A" }}
 		>
 			<div className="border-card-border-2 -mx-5 mb-2 flex gap-6 border-b px-5 pb-3">
-				{TABS.map(({ id, label }) => (
+				{TABS.map((id) => (
 					<button
 						key={id}
 						type="button"
 						onClick={() => onTabChange(id)}
 						className={`text-title cursor-pointer font-bold ${tab === id ? "text-accent-purple" : "text-gray-low"}`}
 					>
-						{label}
+						{t(`game.${id}`)}
 					</button>
 				))}
 			</div>
@@ -85,7 +84,7 @@ function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
 						type="text"
 						value={value}
 						onChange={(event) => setValue(event.target.value)}
-						placeholder="Type a message..."
+						placeholder={t("game.typeMessage")}
 						className="input h-10 py-2 text-sm"
 					/>
 				</form>

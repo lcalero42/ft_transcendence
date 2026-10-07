@@ -1,4 +1,5 @@
 import { useState} from "react";
+import { useTranslation } from "react-i18next";
 import Edit from "../../../../components/Popup/Edit";
 
 type EditBioProps = {
@@ -9,6 +10,7 @@ type EditBioProps = {
 
 function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 	const [bioValue, setbioValue] = useState(currentBio);
+	const { t } = useTranslation();
 
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setbioValue(e.target.value);
@@ -29,7 +31,7 @@ function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 		<Edit onClose={onClose}>
 			{(handleClose) => (
 				<>
-					<h2 className="font-bold text-lg">About me</h2>
+					<h2 className="font-bold text-lg">{t("profile.aboutMe")}</h2>
 					<textarea className="border border-card-border rounded-lg p-2 text-sm"
 						value={bioValue}
 						onChange={handleChange}
@@ -37,7 +39,7 @@ function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 					/>
 					<div className="flex justify-around w-full mt-1">
 						<button className="clean-btn text-text-dim hoverable hover:font-black" onClick={handleClose}>
-							Cancel
+							{t("common.cancel")}
 						</button>
 						<button
 							className="clean-btn text-accent font-semibold hoverable hover:font-black"
@@ -46,7 +48,7 @@ function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 								handleClose();
 							}}
 						>
-							Save
+							{t("common.save")}
 						</button>
 					</div>
 				</>

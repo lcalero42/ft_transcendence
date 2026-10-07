@@ -5,6 +5,7 @@ import { useState } from "react";
 import { updateAvatar} from '@/api/player';
 import EditAvatar from "./EditAvatar";
 import { toast } from "@/components/ui/toast";
+import { useTranslation } from "react-i18next";
 
 type IdentityProps = {
 	playerId: number;
@@ -16,18 +17,19 @@ type IdentityProps = {
 function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [avatar, setAvatar] = useState(urlAvatar);
+	const { t } = useTranslation();
 
 	const handleAvatarSave = async (file: File) => {
 		try {
 			const updatedPlayer = await updateAvatar(playerId, file);
 			setAvatar(`${import.meta.env.VITE_API_URL}${updatedPlayer.avatarUrl}`);
-			toast.add({ type: "success", title: "Avatar updated" });
+			toast.add({ type: "success", title: t("profile.avatarUpdated") });
 		} catch (err) {
 			console.error(err);
 			toast.add({
 				type: "error",
-				title: "Avatar not  updated",
-				description: err instanceof Error ? err.message : "Something went wrong",
+				title: t("profile.avatarNotUpdated"),
+				description: err instanceof Error ? err.message : t("common.somethingWentWrong"),
 			});
 			return false;
 		}
@@ -42,7 +44,7 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 					absolute bottom-1 right-1
 					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
 					 hoverable hover:bg-card/52"
-					aria-label="Modify"
+					aria-label={t("common.modify")}
 					onClick={() => setIsPopupOpen(true)}
 				>
 					<EditIcon/>
@@ -60,7 +62,7 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 						}}
 					/>
 					<div className="text-left text-text-dim text-xs">
-						member since {Since}
+						{t("profile.memberSince", { date: Since })}
 					</div>
 				</div>
 			</div>

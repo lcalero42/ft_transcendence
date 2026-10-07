@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
 import { otherPlayer } from "@/api/friendship";
@@ -11,6 +12,7 @@ function FriendsMenu() {
 	const { user } = useAuth();
 	const { isMenuOpen, closeMenu, friends, onlineIds, removeFriend } = useFriends();
 	const [expandedFriendId, setExpandedFriendId] = useState<number | null>(null);
+	const { t } = useTranslation();
 
 	const friendPlayers = friends.map((f) => ({
 		friendshipId: f.id,
@@ -27,7 +29,7 @@ function FriendsMenu() {
 				${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h2 className="mb-6 text-3xl font-bold">Friends</h2>
+				<h2 className="mb-6 text-3xl font-bold">{t("friends.title")}</h2>
 
 				<div className="flex flex-col gap-6">
 					<RequestInput />
@@ -36,11 +38,11 @@ function FriendsMenu() {
 
 					<div>
 						<div className="mb-2 font-semibold text-accent-purple">
-							friends · {onlineCount} online
+							{t("friends.onlineCount", { count: onlineCount })}
 						</div>
 						<div className="card">
 							{friendPlayers.length === 0 ? (
-								<div className="text-sm text-text-dim">No friends yet</div>
+								<div className="text-sm text-text-dim">{t("friends.none")}</div>
 							) : (
 								friendPlayers.map((p) => (
 									<FriendListItem

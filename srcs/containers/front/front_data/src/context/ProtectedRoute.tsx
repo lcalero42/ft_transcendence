@@ -2,15 +2,17 @@ import { useEffect } from "react";
 import { useAuth } from "./useAuth";
 import {Navigate} from "react-router-dom"
 import {toast} from "@/components/ui/toast";
+import { useTranslation } from "react-i18next";
 
 function ProtectedRoute({children}:{children: React.ReactNode}){
 	const {isAuth, isLoading} = useAuth();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (!isLoading && !isAuth) {
-			toast.add({id: "not-logged-in", type: "warning", title: "you're not logged"})
+			toast.add({id: "not-logged-in", type: "warning", title: t("auth.notLogged")})
 		}
-	}, [isLoading, isAuth]);
+	}, [isLoading, isAuth, t]);
 
 	if (isLoading) {
 		return null

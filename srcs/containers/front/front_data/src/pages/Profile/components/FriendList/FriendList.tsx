@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 type FriendProps = {
 	id: number;
 	name: string;
@@ -10,11 +12,13 @@ type FriendListProps = {
 };
 
 function FriendList({friends}: FriendListProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="card md:bg-transparent md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between mb-3">
 				<div className="flex gap-1">
-					<div className="font-bold"> My friends </div>
+					<div className="font-bold"> {t("profile.myFriends")} </div>
 					<span> ({friends.length}) </span>
 				</div>
 			</div>
@@ -31,7 +35,7 @@ function FriendList({friends}: FriendListProps) {
 								 	className={`w-2 h-2 rounded-full
 										${f.isOnLine ? "bg-victory" : "bg-text-dim"}`}
 								/>
-								{f.isOnLine ? "Online" : "Offline"}
+								{f.isOnLine ? t("common.online") : t("common.offline")}
 							</div>
 						</div>
 					</div>
