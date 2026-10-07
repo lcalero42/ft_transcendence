@@ -124,15 +124,15 @@ export default function CreateRoom() {
 	};
 
 	const friends = [
-		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true },
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
-		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true },
-		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
-		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
+		{ id: 1, name: "bob", avatarUrl: null, isOnline: true },
+		{ id: 2, name: "QueMp4", avatarUrl: null, isOnline: false },
+		{ id: 3, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
+		{ id: 4, name: "QueMp4", avatarUrl: null, isOnline: false },
+		{ id: 5, name: "QueMp4", avatarUrl: null, isOnline: false },
+		{ id: 6, name: "QueMp4", avatarUrl: null, isOnline: false },
+		{ id: 7, name: "jiraaaaf", avatarUrl: null, isOnline: true },
+		{ id: 8, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
+		{ id: 9, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
 	];
 
 	return (
@@ -158,7 +158,7 @@ export default function CreateRoom() {
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
 						<div className="w-full md:flex md:justify-center">
-							<FriendList friends={friends} />
+							<FriendList friends={friends} status="ready" onRetry={() => {}} />
 						</div>
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
