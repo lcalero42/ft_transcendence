@@ -56,6 +56,8 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		if (!isAuth) return;
 
+		setFriends([]);
+		setFriendsStatus("loading");
 		refetchFriends();
 		refetchPending();
 
