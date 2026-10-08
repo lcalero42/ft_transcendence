@@ -3,8 +3,9 @@ import { Client, type Room, type SeatReservation } from '@colyseus/sdk';
 
 type State = any;
 
-const USAGE = `usage: npm run bots -- [roomId] [options]
-  --bots <n>          number of bots (default 2)
+const USAGE = `usage: make bots ARGS="[roomId] [options]"   (from the repo root, runs inside the back container)
+       npm run bots -- [roomId] [options]   (from inside the back container)
+  --bots <n>         number of bots (default 2)
   --delay <ms>        wait before each clue / vote (default 800)
   --vote-for <x>      random | none | <player name> (default random)
   --leave-in <phase>  last bot leaves when this phase is reached (describing | voting)

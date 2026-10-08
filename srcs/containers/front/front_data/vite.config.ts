@@ -9,6 +9,9 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    hmr: {
+      clientPort: Number(process.env.HMR_CLIENT_PORT) || 443,
+    },
   },
   resolve: {
     alias: {

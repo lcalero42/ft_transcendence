@@ -25,9 +25,9 @@ CYAN   := \033[0;36m
 NC     := \033[0m
 
 .PHONY: all build buildd up upd down front back re re-front re-back \
-        logs logs-front logs-back ps \
+        logs logs-front logs-back logs-nginx ps \
         clean fclean \
-        prisma-migrate prisma-generate \
+        prisma-migrate prisma-generate bots \
         check-env check-secrets check-containers-up \
         check-lint check-lint-fix check-typecheck check-all check-build check-build test \
         help
@@ -76,9 +76,9 @@ check-secrets: ## Verify secret files exist and are not empty
 
 ##@ CI / Checks
 
-check-containers-up: ## Verify front, back & postgres containers are running (checks execute inside them)
+check-containers-up: ## Verify nginx, front, back & postgres containers are running (checks execute inside them)
 	@running="$$($(COMPOSE) ps --status running --services)"; \
-	for svc in front back postgres; do \
+	for svc in nginx front back postgres; do \
 		if ! printf '%s\n' "$$running" | grep -qx "$$svc"; then \
 			printf "$(RED)Error:$(NC) '$$svc' container is not running.\n"; \
 			printf "$(YELLOW)Fix:$(NC) run 'make up' or 'make buildd' first.\n"; \
@@ -120,16 +120,16 @@ test: check-containers-up ## Run backend Jest tests inside the back container
 
 ##@ Build & Run
 
-build: check-env check-secrets ## Build and start all services (front + back + postgres) attached
+build: check-env check-secrets ## Build and start all services (nginx + front + back + postgres) attached
 	$(COMPOSE) up --build
 
-buildd: check-env check-secrets ## Build and start all services (front + back + postgres) loading in the background.
+buildd: check-env check-secrets ## Build and start all services (nginx + front + back + postgres) loading in the background.
 	$(COMPOSE) up --build -d
 
-up: check-env check-secrets ## Start all services (front + back + postgres) attached
+up: check-env check-secrets ## Start all services (nginx + front + back + postgres) attached, app on https://localhost:8443
 	$(COMPOSE) up
 
-upd: check-env check-secrets ## Start all services (front + back + postgres) detached
+upd: check-env check-secrets ## Start all services (nginx + front + back + postgres) detached, app on https://localhost:8443
 	$(COMPOSE) up -d
 
 down: ## Stop and remove all containers
@@ -166,6 +166,9 @@ logs-front: ## Tail logs for the front service only
 logs-back: ## Tail logs for the back service only
 	$(COMPOSE) logs -f back
 
+logs-nginx: ## Tail logs for the nginx service only
+	$(COMPOSE) logs -f nginx
+
 ps: ## Show status of running containers
 	$(COMPOSE) ps
 
@@ -176,6 +179,11 @@ prisma-migrate: ## Run Prisma migrations inside the back container
 
 prisma-generate: ## Regenerate Prisma client inside the back container
 	$(COMPOSE) exec back npx prisma generate
+
+##@ Dev tools
+
+bots: check-containers-up ## Run the Undercover bots inside the back container (e.g. make bots ARGS="--create")
+	$(COMPOSE) exec back npm run bots -- $(ARGS)
 
 ##@ Cleaning
 

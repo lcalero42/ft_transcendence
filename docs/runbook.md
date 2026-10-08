@@ -18,7 +18,7 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
      level up is invisible to Vite and every `VITE_API_URL`-based fetch
      call silently resolves to `undefined/...` (see "Frontend can't reach
      the backend" below — this exact mistake has happened before).
-     Minimal contents: `VITE_API_URL=http://localhost:3000`.
+     Minimal contents: `VITE_API_URL=/api` (see `front_data/.env.example`).
 2. Create the Docker secrets (`make check-secrets` verifies these exist and
    are non-empty):
    ```
@@ -39,6 +39,12 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    database is local. Never commit them; changing them and restarting
    `back` re-seeds the account with the new password.
 3. `make buildd` — build and start everything, detached.
+4. Open `https://localhost:8443`. NGINX is the only entry point (`8080`
+   redirects to `8443`) and serves a self-signed certificate generated on
+   its first start, so the browser shows a security warning once: accept it
+   to continue. Rootless Docker can't publish ports below 1024, hence the
+   defaults; with regular Docker you can set `HTTPS_PORT=443` and
+   `HTTP_PORT=80` in `srcs/.env`.
 
 ## Everyday commands
 
@@ -50,9 +56,14 @@ make down               # stop and remove containers
 make re                 # down + up (keeps volumes, i.e. keeps DB data)
 make re-front            # rebuild only the front container
 make re-back             # rebuild only the back container
-make logs / make logs-front / make logs-back
+make logs / make logs-front / make logs-back / make logs-nginx
 make ps                  # container status
+make bots ARGS="--create"  # run test bots inside the back container
 ```
+
+Only `nginx` is published to other machines. For local debugging, the
+NestJS API (`http://localhost:3000`, e.g. for Postman) and Prisma Studio are
+published on `127.0.0.1` only.
 
 ## Database
 
@@ -75,15 +86,15 @@ make ps                  # container status
 ## Realtime (Colyseus)
 
 - The Colyseus server runs inside the `back` container alongside the REST
-  API, listening on `ws://localhost:2567` (published in
-  `docker-compose.yml`). There's no separate container/service for it.
+  API on port `2567`. It is not published: browsers reach it through NGINX
+  at `wss://localhost:8443/colyseus`. There's no separate container/service for it.
 - Room logic is wired but the game loop isn't — see
   [architecture.md](architecture.md#realtime-game-state). To exercise it,
   log in and create a room from the Home page: you land on
   `/create-room/<roomId>`, and the invite link shown there lets a second
   account join the same room. If a page hangs on "Connecting...", check
-  `make logs-back` for Colyseus errors and confirm port `2567` isn't
-  already in use on the host.
+  `make logs-back` for Colyseus errors and `make logs-nginx` for proxy
+  errors on `/colyseus/`.
 
 ## Checks (mirrors CI)
 
@@ -102,7 +113,7 @@ others).
 
 ### Frontend can't reach the backend / pages show no data
 
-Symptom: network requests to `localhost:3000/...` fail or resolve to a
+Symptom: network requests to `/api/...` fail or resolve to a
 literal `undefined/...` URL; UI looks like the database is empty or
 disconnected even though `back` is healthy.
 
@@ -113,12 +124,11 @@ disconnected even though `back` is healthy.
    If this errors with "No such file or directory", the `.env` is sitting
    outside `front_data/` — move it to
    `srcs/containers/front/front_data/.env` and `make re-front`.
-2. Confirm `VITE_API_URL` matches how you're accessing the app
-   (`http://localhost:3000` for the default local setup).
-3. Check CORS: `src/main.ts` in `back` only allows the origin
-   `http://localhost:5173`. If you're accessing the front from a different
-   host/port, requests will be blocked by the browser — update
-   `enableCors` in `back`'s `main.ts`.
+2. Confirm `VITE_API_URL=/api` and that you opened the app through NGINX
+   (`https://localhost:8443`), not a container port directly.
+3. Check CORS: `back` only allows the origin set in `CORS_ORIGIN`
+   (`srcs/.env`, defaults to `https://localhost:<HTTPS_PORT>`). If you're accessing the
+   app from a different host, set it there and `make re-back`.
 
 ### `back` won't start / crashes on boot
 

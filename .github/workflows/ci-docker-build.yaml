@@ -37,7 +37,7 @@ jobs:
       - name: Create frontend .env file
         run: |
           cat <<EOF > srcs/containers/front/front_data/.env
-          VITE_API_URL=http://localhost:3000
+          VITE_API_URL=/api
           EOF
 
       - name: Create frontend .env file
