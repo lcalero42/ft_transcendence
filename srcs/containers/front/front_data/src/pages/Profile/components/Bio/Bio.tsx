@@ -8,9 +8,10 @@ import { useTranslation } from "react-i18next";
 type BioProps = {
 	playerId: number;
 	bio: string;
+	editable?: boolean;
 };
 
-function Bio({playerId, bio}: BioProps) {
+function Bio({playerId, bio, editable = true}: BioProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [currentBio, setCurrentBio] = useState(bio);
 	const { t } = useTranslation();
@@ -33,13 +34,13 @@ function Bio({playerId, bio}: BioProps) {
 			<div className="flex justify-between">
 				<div className="text-left font-bold">{t("profile.aboutMe")}</div>
 
-				<button
+				{editable && <button
 					className="flex clean-btn h-8 "
 					aria-label={t("common.modify")}
 					onClick={() => setIsPopupOpen(true)}
 				>
 					<EditIcon color="var(--color-text-dim)"/>
-				</button>
+				</button>}
 			</div>
 			<p className="text-text-dim text-xs text-left max-w-[75%] break-all">
 					{currentBio || t("profile.noDescription")}

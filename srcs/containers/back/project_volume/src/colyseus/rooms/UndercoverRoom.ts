@@ -179,6 +179,7 @@ export class UndercoverRoom extends Room {
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
     player.avatarUrl = options?.avatarUrl?.trim() || '';
+    player.isGuest = auth.isGuest;
     this.state.players.set(client.sessionId, player);
 
     if (auth.isHost || !this.state.hostSessionId) {
@@ -294,6 +295,7 @@ export class UndercoverRoom extends Room {
     const player = new Player();
     player.name = previous?.name ?? 'Player';
     player.avatarUrl = previous?.avatarUrl ?? '';
+    player.isGuest = previous?.isGuest ?? false;
     this.state.players.delete(oldId);
     this.state.players.set(newId, player);
 

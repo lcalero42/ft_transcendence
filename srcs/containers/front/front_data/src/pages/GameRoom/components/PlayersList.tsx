@@ -8,6 +8,7 @@ interface PlayersListEntry {
 	avatarUrl?: string;
 	isSelf?: boolean;
 	isHost?: boolean;
+	isGuest?: boolean;
 }
 
 interface PlayersListProps {
@@ -36,6 +37,7 @@ function PlayersList({ players, isHost, onKick }: PlayersListProps) {
 						avatarUrl={player.avatarUrl}
 						isSelf={player.isSelf}
 						isHost={player.isHost}
+						isGuest={player.isGuest}
 						canKick={isHost}
 						expanded={expandedId === player.sessionId}
 						onToggle={() => setExpandedId((current) => (current === player.sessionId ? null : player.sessionId))}

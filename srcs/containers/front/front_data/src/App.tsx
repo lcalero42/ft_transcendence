@@ -28,6 +28,7 @@ function App() {
 							<Route path="/guest" element={<Guest />} />
 							<Route path="/admin" element={<ProtectedRoute allowGuest={false} adminOnly><Admin /></ProtectedRoute>} />
 							<Route path="/profile" element={<ProtectedRoute allowGuest={false}><Profile /></ProtectedRoute>} />
+							<Route path="/profile/:name" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 							<Route path="/create-room/:roomId?" element={<ProtectedRoute redirectTo="/guest"><CreateRoom /></ProtectedRoute>} />
 							<Route path="/game/:id" element={<ProtectedRoute redirectTo="/guest"><GameRoom /></ProtectedRoute>} />
 						</Routes>

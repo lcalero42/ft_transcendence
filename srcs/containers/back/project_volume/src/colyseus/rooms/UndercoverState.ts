@@ -13,6 +13,7 @@ export class Player extends Schema {
   @type('string') name: string = '';
   @type('string') avatarUrl: string = '';
   @type('boolean') connected: boolean = true;
+  @type('boolean') isGuest: boolean = false;
 }
 
 export class ChatMessage extends Schema {

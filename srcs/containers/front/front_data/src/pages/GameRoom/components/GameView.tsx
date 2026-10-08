@@ -121,6 +121,7 @@ function GameView({ room }: GameViewProps) {
 		isActive: sessionId === activePlayerSessionId,
 		isSelf: sessionId === room.sessionId,
 		isHost: sessionId === hostSessionId,
+		isGuest: player.isGuest,
 	}));
 	const participantPlayerList = participantEntries.map(([sessionId, player]) => {
 		const isSelf = sessionId === room.sessionId;
