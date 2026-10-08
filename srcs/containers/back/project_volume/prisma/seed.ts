@@ -11,24 +11,10 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
 
-  //admin
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminEmail || !adminPassword) {
-    throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set to seed the admin account");
+  if (await prisma.player.findUnique({ where: { email: "alice@prisma.io" } })) {
+    console.log("demo data already seeded, skipping");
+    return;
   }
-  const adminHash = await bcrypt.hash(adminPassword, 10);
-
-  await prisma.player.upsert({
-    where: { email: adminEmail },
-    update: { password: adminHash, isAdmin: true },
-    create: {
-      name: "admin",
-      email: adminEmail,
-      password: adminHash,
-      isAdmin: true,
-    },
-  });
 
   //players
   const alicePassword = await bcrypt.hash("Alice1234#", 10);
@@ -73,7 +59,7 @@ async function main() {
   const aliceRoom = await prisma.rooms.create({
     data: {
       name: "alice's room",
-      createdBy: 1,
+      createdBy: alice.id,
     },
   });
 
@@ -183,41 +169,6 @@ async function main() {
       role: "civilian",
       gameId: aliceRoomGame3.id,
       playerId: marley.id
-    }
-  })
-
-  // wordPairs
-
-  const wp_1 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "rabbit",
-      undercoverWord: "horse",
-      civilianWordFr: "lapin",
-      undercoverWordFr: "cheval",
-      civilianWordEs: "conejo",
-      undercoverWordEs: "caballo"
-    }
-  })
-
-  const wp_2 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "cat",
-      undercoverWord: "tiger",
-      civilianWordFr: "chat",
-      undercoverWordFr: "tigre",
-      civilianWordEs: "gato",
-      undercoverWordEs: "tigre"
-    }
-  })
-
-  const wp_3 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "phone",
-      undercoverWord: "computer",
-      civilianWordFr: "téléphone",
-      undercoverWordFr: "ordinateur",
-      civilianWordEs: "teléfono",
-      undercoverWordEs: "ordenador"
     }
   })
 

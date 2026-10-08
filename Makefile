@@ -2,8 +2,12 @@
 # Transcendance - Makefile
 # =============================================================================
 
-COMPOSE_FILE := srcs/docker-compose.yml
-COMPOSE      := docker compose -f $(COMPOSE_FILE)
+COMPOSE_FILE      := srcs/docker-compose.yml
+COMPOSE_DEV_FILE  := srcs/docker-compose.dev.yml
+COMPOSE_PROD_FILE := srcs/docker-compose.prod.yml
+COMPOSE_DEV       := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_DEV_FILE)
+COMPOSE_PROD      := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE)
+COMPOSE           := $(COMPOSE_DEV)
 
 # Docker Compose defaults the project name to the basename of the directory
 # containing the compose file (not the repo root / cwd) — must match that
@@ -24,7 +28,7 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all build buildd up upd down front back re re-front re-back \
+.PHONY: all dev prod build buildd up upd down front back re re-front re-back \
         logs logs-front logs-back logs-nginx ps \
         clean fclean \
         prisma-migrate prisma-generate bots \
@@ -33,6 +37,17 @@ NC     := \033[0m
         help
 
 .DEFAULT_GOAL := help
+
+define check_running
+	@running="$$($(1) ps --status running --services)"; \
+	for svc in $(2); do \
+		if ! printf '%s\n' "$$running" | grep -qx "$$svc"; then \
+			printf "$(RED)Error:$(NC) '$$svc' container is not running.\n"; \
+			printf "$(YELLOW)Fix:$(NC) $(3)\n"; \
+			exit 1; \
+		fi; \
+	done
+endef
 
 # -----------------------------------------------------------------------------
 # Default target
@@ -76,15 +91,8 @@ check-secrets: ## Verify secret files exist and are not empty
 
 ##@ CI / Checks
 
-check-containers-up: ## Verify nginx, front, back & postgres containers are running (checks execute inside them)
-	@running="$$($(COMPOSE) ps --status running --services)"; \
-	for svc in nginx front back postgres; do \
-		if ! printf '%s\n' "$$running" | grep -qx "$$svc"; then \
-			printf "$(RED)Error:$(NC) '$$svc' container is not running.\n"; \
-			printf "$(YELLOW)Fix:$(NC) run 'make up' or 'make buildd' first.\n"; \
-			exit 1; \
-		fi; \
-	done
+check-containers-up: ## Verify the dev stack (nginx, front, back & postgres) is running (checks execute inside it)
+	$(call check_running,$(COMPOSE_DEV),nginx front back postgres,run 'make dev' or 'make upd' first (checks need the dev stack).)
 
 check-lint: check-containers-up ## Run eslint inside the front & back containers
 	@printf "$(CYAN)Linting back...$(NC)\n"
@@ -107,12 +115,12 @@ check-typecheck: check-containers-up ## Run typecheck inside the front & back co
 check-all: check-containers-up test ## Run all checks (eslint + typecheck) inside the containers, continuing past failures
 	@$(MAKE) --no-print-directory -k check-lint check-typecheck
 
-check-build: check-env check-secrets ## Build the stack, verify all services build & launch properly, then tear down (CI)
-	@printf "$(CYAN)Building and starting stack...$(NC)\n"
-	$(COMPOSE) up --build -d --wait --wait-timeout 120
-	@$(MAKE) --no-print-directory check-containers-up
-	@printf "$(CYAN)Stack built and launched successfully. Tearing down...$(NC)\n"
-	$(COMPOSE) down
+check-build: check-env check-secrets ## Build the prod stack, verify it launches properly, then tear down (CI)
+	@printf "$(CYAN)Building and starting prod stack...$(NC)\n"
+	$(COMPOSE_PROD) up --build -d --remove-orphans --wait --wait-timeout 180
+	$(call check_running,$(COMPOSE_PROD),nginx back postgres,check 'make logs' for the failing service.)
+	@printf "$(CYAN)Prod stack built and launched successfully. Tearing down...$(NC)\n"
+	$(COMPOSE_PROD) down
 
 test: check-containers-up ## Run backend Jest tests inside the back container
 	@printf "$(CYAN)Running backend tests...$(NC)\n"
@@ -120,20 +128,23 @@ test: check-containers-up ## Run backend Jest tests inside the back container
 
 ##@ Build & Run
 
-build: check-env check-secrets ## Build and start all services (nginx + front + back + postgres) attached
-	$(COMPOSE) up --build
+dev: check-env check-secrets ## Build and start the dev stack attached (hot reload, Studio, demo data), app on https://localhost:8443
+	$(COMPOSE_DEV) up --build --remove-orphans
 
-buildd: check-env check-secrets ## Build and start all services (nginx + front + back + postgres) loading in the background.
-	$(COMPOSE) up --build -d
+prod: check-env check-secrets ## Build and start the prod stack detached (optimized build, only nginx exposed), app on https://localhost:8443
+	$(COMPOSE_PROD) up --build -d --remove-orphans
 
-up: check-env check-secrets ## Start all services (nginx + front + back + postgres) attached, app on https://localhost:8443
-	$(COMPOSE) up
+up: dev ## Alias of dev
 
-upd: check-env check-secrets ## Start all services (nginx + front + back + postgres) detached, app on https://localhost:8443
-	$(COMPOSE) up -d
+upd: check-env check-secrets ## Build and start the dev stack detached
+	$(COMPOSE_DEV) up --build -d --remove-orphans
 
-down: ## Stop and remove all containers
-	$(COMPOSE) down
+build: dev ## Alias of dev
+
+buildd: upd ## Alias of upd
+
+down: ## Stop and remove all containers (dev or prod)
+	$(COMPOSE) down --remove-orphans
 
 front: check-env check-secrets ## Build and start only the front service
 	$(COMPOSE) up --build -d front
@@ -143,7 +154,7 @@ back: check-env check-secrets ## Build and start only the back service (+ postgr
 
 ##@ Rebuild
 
-re: down up ## Full rebuild of the whole stack (down + up, keeps volumes)
+re: down dev ## Full rebuild of the dev stack (down + dev, keeps volumes)
 
 re-front: check-env check-secrets ## Rebuild only the front service
 	$(COMPOSE) stop front && \
@@ -187,14 +198,16 @@ bots: check-containers-up ## Run the Undercover bots inside the back container (
 
 ##@ Cleaning
 
-clean: ## Stop containers and remove associated images/networks (keeps volumes)
-	$(COMPOSE) down --rmi all
+clean: ## Stop containers and remove dev and prod images/networks (keeps volumes)
+	$(COMPOSE_DEV) down --rmi all --remove-orphans
+	$(COMPOSE_PROD) down --rmi all --remove-orphans
 
-fclean: ## Full clean: also remove named volumes (asks for confirmation, scoped to this project only)
-	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images AND named volumes (e.g. postgres data) for this project only.\n"
+fclean: ## Full clean: also remove dev and prod named volumes (asks for confirmation, scoped to this project only)
+	@printf "$(YELLOW)WARNING:$(NC) this will remove all containers, images AND named volumes (postgres data, avatars, certificate) for this project only.\n"
 	@read -p "Are you sure? [y/N] " confirm && \
 		if [ "$$confirm" = "y" ] || [ "$$confirm" = "Y" ]; then \
-			$(COMPOSE) down -v --rmi all && \
+			$(COMPOSE_DEV) down -v --rmi all --remove-orphans && \
+			$(COMPOSE_PROD) down -v --rmi all --remove-orphans && \
 			docker image prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)" && \
 			docker volume prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)" && \
 			docker network prune -f --filter "label=com.docker.compose.project=$(PROJECT_NAME)"; \
