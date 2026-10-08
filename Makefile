@@ -115,11 +115,27 @@ check-typecheck: check-containers-up ## Run typecheck inside the front & back co
 check-all: check-containers-up test ## Run all checks (eslint + typecheck) inside the containers, continuing past failures
 	@$(MAKE) --no-print-directory -k check-lint check-typecheck
 
-check-build: check-env check-secrets ## Build the prod stack, verify it launches properly, then tear down (CI)
+check-build: check-env check-secrets ## Build the prod stack, verify nginx serves the front and the API, then tear down (CI)
 	@printf "$(CYAN)Building and starting prod stack...$(NC)\n"
 	$(COMPOSE_PROD) up --build -d --remove-orphans --wait --wait-timeout 180
 	$(call check_running,$(COMPOSE_PROD),nginx back postgres,check 'make logs' for the failing service.)
-	@printf "$(CYAN)Prod stack built and launched successfully. Tearing down...$(NC)\n"
+	@port=$$(grep -E '^HTTPS_PORT=' $(ROOT_ENV_FILE) | cut -d '=' -f2-); \
+	port=$${port:-8443}; \
+	for path in / /api/; do \
+		url="https://localhost:$$port$$path"; \
+		tries=0; \
+		until curl -fsk -o /dev/null "$$url"; do \
+			tries=$$((tries + 1)); \
+			if [ $$tries -ge 30 ]; then \
+				printf "$(RED)Error:$(NC) $$url did not answer through nginx.\n"; \
+				printf "$(YELLOW)Fix:$(NC) check 'make logs' (the stack is left running).\n"; \
+				exit 1; \
+			fi; \
+			sleep 2; \
+		done; \
+		printf "$(CYAN)OK:$(NC) $$url\n"; \
+	done
+	@printf "$(CYAN)Prod stack built and serving through nginx. Tearing down...$(NC)\n"
 	$(COMPOSE_PROD) down
 
 test: check-containers-up ## Run backend Jest tests inside the back container
