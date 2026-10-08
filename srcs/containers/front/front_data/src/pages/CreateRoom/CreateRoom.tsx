@@ -14,6 +14,7 @@ import {
 import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
 import { otherPlayer } from "@/api/friendship";
+import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
 import InviteFriendList from "./components/InviteFriendList";
@@ -27,7 +28,7 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading, user } = useAuth();
+	const { profile, profileLoading, user, isGuest } = useAuth();
 	const { friends, onlineIds } = useFriends();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
@@ -78,6 +79,7 @@ export default function CreateRoom() {
 			}
 		});
 	}, [room, t]);
+	const joinedPhaseRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (!room) return;
@@ -87,6 +89,14 @@ export default function CreateRoom() {
 		}
 	}, [room, routeRoomId, navigate]);
 
+	useEffect(() => {
+		if (!room || !phase) return;
+		joinedPhaseRef.current ??= phase;
+		if (joinedPhaseRef.current !== "setup") {
+			void navigate(`/game/${room.roomId}`, { replace: true });
+		}
+	}, [room, phase, navigate]);
+
 	// The server issues a new reconnection token on every join, and the SDK's
 	// automatic retry rewrites it on the same room object, so re-store it.
 	useEffect(() => {
@@ -95,6 +105,8 @@ export default function CreateRoom() {
 		room.onReconnect(onReconnect);
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
+
+	useSeatTakenOver(room);
 
 	useEffect(() => {
 		if (!room) return;
@@ -182,21 +194,21 @@ export default function CreateRoom() {
 						>
 							{t("lobby.copyLink")}
 						</button>
-						<p>{t("lobby.inviteHint")}</p>
+						<p>{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						<div className="w-full md:flex md:justify-center">
+						{!isGuest && <div className="w-full md:flex md:justify-center">
 							<InviteFriendList
 								friends={onlineFriends}
 								disabled={inviteDisabled}
 								onInvite={handleInvite}
 							/>
-						</div>
+						</div>}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>
-					</div>
-				</div>
+					</div >
+				</div >
 
 				{isHost && <div className="max-w-2xl m-10 mx-auto flex flex-1 items-center justify-center">
 					<button
@@ -205,8 +217,9 @@ export default function CreateRoom() {
 					>
 						{t("lobby.start")}
 					</button>
-				</div>}
-			</main>
-		</div>
+				</div>
+				}
+			</main >
+		</div >
 	);
 }
