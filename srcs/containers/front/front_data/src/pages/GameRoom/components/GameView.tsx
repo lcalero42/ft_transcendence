@@ -112,6 +112,7 @@ function GameView({ room }: GameViewProps) {
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
+	const handleKick = (sessionId: string) => room.send("kick", sessionId);
 	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
 	const playerList = playerEntries.map(([sessionId, player]) => ({
 		sessionId,
@@ -212,7 +213,7 @@ function GameView({ room }: GameViewProps) {
 							/>
 						</div>
 						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
-							<PlayersList players={playerList} isHost={isHost} />
+							<PlayersList players={playerList} isHost={isHost} onKick={handleKick} />
 						</div>
 					</aside>
 				</div>
@@ -227,7 +228,7 @@ function GameView({ room }: GameViewProps) {
 				/>
 			</MobileDrawer>
 			<MobileDrawer open={drawer === "players"} onClose={() => setDrawer(null)}>
-				<PlayersList players={playerList} isHost={isHost} />
+				<PlayersList players={playerList} isHost={isHost} onKick={handleKick} />
 			</MobileDrawer>
 		</div>
 	);

@@ -8,6 +8,7 @@ import {
   MAX_CLIENTS,
   RECONNECTION_WINDOW_SECONDS,
   TAKEN_OVER_CODE,
+  KICKED_CODE,
 } from './undercoverConstants';
 import {
   addParticipant,
@@ -44,7 +45,7 @@ export class UndercoverRoom extends Room {
   private readonly game = new UndercoverGame(this, this.persistence);
   private readonly identities = new Map<string, PlayerIdentity>();
   private readonly pendingHandoffs = new Set<number>();
-  private readonly takenOverSessions = new Set<string>();
+  private readonly forcedOutSessions = new Set<string>();
   private readonly pendingReconnections = new Map<
     string,
     ReturnType<Room['allowReconnection']>
@@ -116,6 +117,18 @@ export class UndercoverRoom extends Room {
     castVote: (client: Client, targetSessionId: unknown) => {
       this.game.castVote(client.sessionId, targetSessionId);
     },
+
+    kick: (client: Client, targetSessionId: unknown) => {
+      if (
+        !this.isHost(client) ||
+        typeof targetSessionId !== 'string' ||
+        targetSessionId === client.sessionId ||
+        !this.state.players.has(targetSessionId)
+      ) {
+        return;
+      }
+      this.forceOut(targetSessionId, KICKED_CODE, 'kicked');
+    },
   };
 
   async onCreate() {
@@ -174,7 +187,7 @@ export class UndercoverRoom extends Room {
   }
 
   onDrop(client: Client) {
-    if (this.takenOverSessions.delete(client.sessionId)) {
+    if (this.forcedOutSessions.delete(client.sessionId)) {
       return;
     }
     this.logger.log('room connection dropped, awaiting reconnection');
@@ -316,14 +329,21 @@ export class UndercoverRoom extends Room {
     this.persistence.forgetPlayer(oldId);
     this.game.forgetLanguage(oldId);
 
-    const reconnection = this.pendingReconnections.get(oldId);
-    this.pendingReconnections.delete(oldId);
+    this.forceOut(oldId, TAKEN_OVER_CODE, 'seat taken over');
+  }
+
+  private forceOut(sessionId: string, code: number, reason: string) {
+    const reconnection = this.pendingReconnections.get(sessionId);
+    this.pendingReconnections.delete(sessionId);
     if (reconnection) {
       const reject = reconnection.reject as (reason: Error) => void;
-      reject(new Error('seat taken over'));
-    } else {
-      this.takenOverSessions.add(oldId);
-      this.clients.getById(oldId)?.leave(TAKEN_OVER_CODE);
+      reject(new Error(reason));
+      return;
+    }
+    const target = this.clients.getById(sessionId);
+    if (target) {
+      this.forcedOutSessions.add(sessionId);
+      target.leave(code);
     }
   }
 

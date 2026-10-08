@@ -147,7 +147,8 @@
 		"vote": "vote",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
-		"seatTakenOver": "Game opened in another tab"
+		"seatTakenOver": "Game opened in another tab",
+		"kicked": "You were kicked from the room"
 	},
 	"friends": {
 		"title": "Friends",
