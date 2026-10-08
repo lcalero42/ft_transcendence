@@ -10,13 +10,13 @@ interface HeaderProps {
 }
 
 function Header({ compact }: HeaderProps) {
-	const { profile, isAuth } = useAuth();
+	const { profile, isAuth, isGuest } = useAuth();
 	const { t } = useTranslation();
 
 	return (
 		<header className={`page-header relative ${compact ? "py-3! md:py-3!" : ""}`}>
 			<div className="flex items-center gap-4">
-				{isAuth && <FriendsMenuButton />}
+				{isAuth && !isGuest && <FriendsMenuButton />}
 				<Logo />
 			</div>
 			<div className="flex items-center gap-4">

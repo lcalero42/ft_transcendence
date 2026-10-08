@@ -53,6 +53,8 @@ function Register() {
 			nextErrors.username = t("auth.errors.usernameRequired");
 		} else if (form.username.trim().length < 3) {
 			nextErrors.username = t("auth.errors.usernameTooShort");
+		} else if (form.username.trim().length > 12) {
+			nextErrors.username = t("auth.errors.usernameTooLong");
 		}
 
 		if (!form.password) {
@@ -133,7 +135,7 @@ function Register() {
 				label={t("auth.username")}
 				iconSrc={UserIcon}
 				type="text"
-				placeholder="VeryCoolAndGentle67"
+				placeholder="CoolAgent67"
 				value={form.username}
 				onChange={handleChange}
 				error={errors.username}

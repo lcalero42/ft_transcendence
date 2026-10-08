@@ -16,6 +16,7 @@ import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { NotGuestGuard } from '../auth/not-guest.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { FriendshipStatus } from '../generated/prisma/enums';
 
@@ -23,7 +24,7 @@ import { FriendshipStatus } from '../generated/prisma/enums';
 export class FriendshipController {
   constructor(private readonly friendshipService: FriendshipService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Post()
   create(
     @Body() createFriendshipDto: CreateFriendshipDto,
@@ -32,7 +33,7 @@ export class FriendshipController {
     return this.friendshipService.create(createFriendshipDto, req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Get()
   findAll(
     @Req() req: AuthenticatedRequest,
@@ -42,7 +43,7 @@ export class FriendshipController {
     return this.friendshipService.findAll(req.user.id, status);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number,
@@ -51,7 +52,7 @@ export class FriendshipController {
     return this.friendshipService.findOne(id, req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -61,7 +62,7 @@ export class FriendshipController {
     return this.friendshipService.update(id, updateFriendshipDto, req.user.id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Delete(':id')
   remove(
     @Param('id', ParseIntPipe) id: number,

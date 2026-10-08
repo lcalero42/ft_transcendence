@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
   ParseIntPipe,
 } from '@nestjs/common';
 import { WordPairService } from './word_pair.service';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
 import { UpdateWordPairDto } from './dto/update-word_pair.dto';
 import { adminOnly } from '../common/roles.decorator';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 
 @Controller('word-pair')
 export class WordPairController {
@@ -26,6 +28,12 @@ export class WordPairController {
   @adminOnly()
   @Get()
   async findAll() {
+    return this.wordPairService.findAll();
+  }
+
+  @UseGuards(InternalApiKeyGuard)
+  @Get('internal')
+  async findAllInternal() {
     return this.wordPairService.findAll();
   }
 

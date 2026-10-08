@@ -37,6 +37,7 @@
 		"rememberMe": "Se souvenir de moi",
 		"notLogged": "Vous n'êtes pas connecté",
 		"adminRequired": "Accès administrateur requis",
+		"guestBlocked": "Créez un compte pour accéder à cette page",
 		"guest": "connexion",
 		"login": {
 			"subtitle": "Connectez-vous pour continuer votre aventure Undercover !",
@@ -60,11 +61,20 @@
 			"successDescription": "Vous pouvez maintenant profiter de la meilleure expérience de votre vie.",
 			"failed": "Échec de l'inscription"
 		},
+		"guestLogin": {
+			"subtitle": "Choisissez un nom et lancez-vous dans la partie !",
+			"heading": "Jouer en tant qu'invité",
+			"description": "Pas besoin de compte, choisissez simplement un nom d'utilisateur.",
+			"submit": "Jouer en invité",
+			"submitting": "Connexion...",
+			"failed": "Impossible de rejoindre en tant qu'invité"
+		},
 		"errors": {
 			"emailRequired": "L'e-mail est requis.",
 			"emailInvalid": "Entrez une adresse e-mail valide.",
 			"usernameRequired": "Le nom d'utilisateur est requis.",
 			"usernameTooShort": "Le nom d'utilisateur doit contenir au moins 3 caractères.",
+			"usernameTooLong": "Le nom d'utilisateur doit contenir au plus 12 caractères.",
 			"passwordRequired": "Le mot de passe est requis.",
 			"passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
 			"passwordMismatch": "Les mots de passe ne correspondent pas."
@@ -97,6 +107,7 @@
 		"full": "Le salon est complet",
 		"copyLink": "Copier le lien de la partie",
 		"inviteHint": "Ajoutez des joueurs depuis votre liste d'amis ou envoyez-leur le lien",
+		"inviteHintGuest": "Envoyez le lien pour inviter des joueurs",
 		"start": "Lancer la partie",
 		"linkCopiedTitle": "Lien copié !",
 		"linkCopiedDescription": "Partagez-le pour inviter des joueurs.",
@@ -135,7 +146,8 @@
 		"waitTurn": "Attendez votre tour...",
 		"vote": "voter",
 		"votes_one": "{{count}} vote",
-		"votes_other": "{{count}} votes"
+		"votes_other": "{{count}} votes",
+		"seatTakenOver": "Partie ouverte dans un autre onglet"
 	},
 	"friends": {
 		"title": "Amis",

@@ -20,6 +20,7 @@ import { UpdatePlayerDto } from './dto/update-player.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { NotGuestGuard } from '../auth/not-guest.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { detectImageType } from './avatar-validation';
 import { randomUUID } from 'node:crypto';
@@ -73,7 +74,7 @@ export class PlayerController {
     return this.playerService.getGamesList(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -122,7 +123,7 @@ export class PlayerController {
     return this.playerService.getAboutMe(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {

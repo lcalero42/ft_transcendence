@@ -12,6 +12,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
+import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
 import FriendList from "../Profile/components/FriendList/FriendList";
@@ -25,7 +26,7 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading } = useAuth();
+	const { profile, profileLoading, isGuest } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
@@ -56,6 +57,8 @@ export default function CreateRoom() {
 	const players = useRoomState(room, (s) => s.players);
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const maxClients = useRoomState(room, (s) => s.maxParticipants);
+	const phase = useRoomState(room, (s) => s.phase);
+	const joinedPhaseRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (!room) return;
@@ -65,6 +68,14 @@ export default function CreateRoom() {
 		}
 	}, [room, routeRoomId, navigate]);
 
+	useEffect(() => {
+		if (!room || !phase) return;
+		joinedPhaseRef.current ??= phase;
+		if (joinedPhaseRef.current !== "setup") {
+			void navigate(`/game/${room.roomId}`, { replace: true });
+		}
+	}, [room, phase, navigate]);
+
 	// The server issues a new reconnection token on every join, and the SDK's
 	// automatic retry rewrites it on the same room object, so re-store it.
 	useEffect(() => {
@@ -73,6 +84,8 @@ export default function CreateRoom() {
 		room.onReconnect(onReconnect);
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
+
+	useSeatTakenOver(room);
 
 	useEffect(() => {
 		if (!room) return;
@@ -156,12 +169,12 @@ export default function CreateRoom() {
 						>
 							{t("lobby.copyLink")}
 						</button>
-						<p>{t("lobby.inviteHint")}</p>
+						<p>{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						<div className="w-full md:flex md:justify-center">
+						{!isGuest && <div className="w-full md:flex md:justify-center">
 							<FriendList friends={friends} />
-						</div>
+						</div>}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>

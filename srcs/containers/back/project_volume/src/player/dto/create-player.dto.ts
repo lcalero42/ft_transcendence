@@ -2,7 +2,7 @@ import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class CreatePlayerDto {
   @IsString()
-  @MinLength(1)
+  @MinLength(3)
   @MaxLength(24)
   name: string;
 

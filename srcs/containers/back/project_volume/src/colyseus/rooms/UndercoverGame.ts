@@ -92,6 +92,14 @@ export class UndercoverGame {
     this.room.clients.getById(sessionId)?.send('word', { word });
   }
 
+  renameSession(oldId: string, newId: string) {
+    const role = this.roles.get(oldId);
+    if (role) {
+      this.roles.delete(oldId);
+      this.roles.set(newId, role);
+    }
+  }
+
   setLanguage(sessionId: string, language: unknown) {
     if (LANGUAGES.includes(language as Language)) {
       this.languages.set(sessionId, language as Language);

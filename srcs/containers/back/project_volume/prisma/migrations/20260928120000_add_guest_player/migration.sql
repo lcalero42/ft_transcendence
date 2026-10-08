@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Player" ADD COLUMN     "is_guest" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "email" DROP NOT NULL;
