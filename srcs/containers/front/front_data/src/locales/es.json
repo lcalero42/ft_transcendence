@@ -97,6 +97,16 @@
 		"full": "La sala está llena",
 		"copyLink": "Copiar el enlace de la partida",
 		"inviteHint": "Añade jugadores desde tu lista de amigos o envíales el enlace",
+		"invite": "Invitar",
+		"inRoom": "En la sala",
+		"noFriendsOnline": "No hay amigos en línea ahora mismo",
+		"inviteSent": "Invitación enviada",
+		"errRoomFull": "La sala está llena",
+		"errGameStarted": "La partida ya ha comenzado",
+		"errAlreadyIn": "Este amigo ya está en la sala",
+		"errNotFriend": "Este jugador no es tu amigo",
+		"errUnavailable": "Este amigo ya no está disponible",
+		"errFailed": "No se pudo enviar la invitación",
 		"start": "Empezar la partida",
 		"linkCopiedTitle": "¡Enlace copiado!",
 		"linkCopiedDescription": "Compártelo para invitar a jugadores.",
@@ -159,7 +169,10 @@
 		"newRequestTitle": "Nueva solicitud de amistad",
 		"newRequestDescription": "{{name}} te ha enviado una solicitud de amistad",
 		"acceptedTitle": "Solicitud de amistad aceptada",
-		"acceptedDescription": "{{name}} ha aceptado tu solicitud de amistad"
+		"acceptedDescription": "{{name}} ha aceptado tu solicitud de amistad",
+		"roomInviteTitle": "Invitación a una partida",
+		"roomInviteDescription": "{{name}} te invita a unirte a su sala",
+		"join": "Unirse"
 	},
 	"profile": {
 		"loadError": "Error al cargar el jugador",

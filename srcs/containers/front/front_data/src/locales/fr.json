@@ -97,6 +97,16 @@
 		"full": "Le salon est complet",
 		"copyLink": "Copier le lien de la partie",
 		"inviteHint": "Ajoutez des joueurs depuis votre liste d'amis ou envoyez-leur le lien",
+		"invite": "Inviter",
+		"inRoom": "Dans le salon",
+		"noFriendsOnline": "Aucun ami en ligne pour le moment",
+		"inviteSent": "Invitation envoyée",
+		"errRoomFull": "Le salon est complet",
+		"errGameStarted": "La partie a déjà commencé",
+		"errAlreadyIn": "Cet ami est déjà dans le salon",
+		"errNotFriend": "Ce joueur n'est pas dans vos amis",
+		"errUnavailable": "Cet ami n'est plus disponible",
+		"errFailed": "Impossible d'envoyer l'invitation",
 		"start": "Lancer la partie",
 		"linkCopiedTitle": "Lien copié !",
 		"linkCopiedDescription": "Partagez-le pour inviter des joueurs.",
@@ -159,7 +169,10 @@
 		"newRequestTitle": "Nouvelle demande d'ami",
 		"newRequestDescription": "{{name}} vous a envoyé une demande d'ami",
 		"acceptedTitle": "Demande d'ami acceptée",
-		"acceptedDescription": "{{name}} a accepté votre demande d'ami"
+		"acceptedDescription": "{{name}} a accepté votre demande d'ami",
+		"roomInviteTitle": "Invitation à une partie",
+		"roomInviteDescription": "{{name}} vous invite à rejoindre son salon",
+		"join": "Rejoindre"
 	},
 	"profile": {
 		"loadError": "Erreur lors du chargement du joueur",

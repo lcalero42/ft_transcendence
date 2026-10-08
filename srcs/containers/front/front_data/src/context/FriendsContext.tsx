@@ -79,7 +79,19 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					setUnreadCount((c) => c + 1);
 					refetchPending();
 				});
-				room.onMessage("friendRequestAccepted", ({ fromName }: { fromName: string }) => {
+				room.onMessage("roomInvite", ({ roomId, fromName }: { roomId: string; fromName: string }) => {
+					toast.add({
+						type: "info",
+						title: i18n.t("friends.roomInviteTitle"),
+						description: i18n.t("friends.roomInviteDescription", { name: fromName }),
+						timeout: 15000,
+						actionProps: {
+							children: i18n.t("friends.join"),
+							onClick: () => window.location.assign(`/create-room/${roomId}`),
+						},
+					});
+				});
+				room.onMessage("friendRequestAccepted",({ fromName }: { fromName: string }) => {
 					toast.add({ type: "success", title: i18n.t("friends.acceptedTitle"), description: i18n.t("friends.acceptedDescription", { name: fromName }) });
 					refetchFriends();
 					refetchPending();

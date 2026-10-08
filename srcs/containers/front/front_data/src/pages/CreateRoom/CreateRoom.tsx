@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
 import type { SeatReservation } from "@colyseus/sdk";
-import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
+import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { toast } from "@/components/ui/toast";
 import { client } from "@/lib/colyseusClient";
 import { getToken } from "@/api/auth/client";
@@ -12,9 +12,11 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
+import { useFriends } from "@/context/useFriends";
+import { otherPlayer } from "@/api/friendship";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
-import FriendList from "../Profile/components/FriendList/FriendList";
+import InviteFriendList from "./components/InviteFriendList";
 import PlayerList from "./components/PlayerList";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
@@ -25,7 +27,8 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading } = useAuth();
+	const { profile, profileLoading, user } = useAuth();
+	const { friends, onlineIds } = useFriends();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
@@ -35,27 +38,46 @@ export default function CreateRoom() {
 		profileLoading
 			? null
 			: async () => {
-					const targetRoomId = targetRoomIdRef.current;
-					const stored = readStoredReconnection();
-					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
-						try {
-							return await client.reconnect<UndercoverRoom>(stored.token);
-						} catch {
-							clearReconnection();
-						}
+				const targetRoomId = targetRoomIdRef.current;
+				const stored = readStoredReconnection();
+				if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
+					try {
+						return await client.reconnect<UndercoverState>(stored.token);
+					} catch {
+						clearReconnection();
 					}
-					client.auth.token = getToken() ?? "";
-					const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
-					return targetRoomId
-						? client.joinById<UndercoverRoom>(targetRoomId, options)
-						: client.create<UndercoverRoom>("undercover", options);
-				},
+				}
+				client.auth.token = getToken() ?? "";
+				const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
+				return targetRoomId
+					? client.joinById<UndercoverState>(targetRoomId, options)
+					: client.create<UndercoverState>("undercover", options);
+			},
 		[profileLoading],
 	);
 
 	const players = useRoomState(room, (s) => s.players);
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const maxClients = useRoomState(room, (s) => s.maxParticipants);
+	const phase = useRoomState(room, (s) => s.phase);
+
+	useEffect(() => {
+		if (!room) return;
+		return room.onMessage("inviteResult", ({ ok, code }: { ok: boolean; code?: string }) => {
+			const errors: Record<string, string> = {
+				ROOM_FULL: "lobby.errRoomFull",
+				GAME_STARTED: "lobby.errGameStarted",
+				ALREADY_IN_ROOM: "lobby.errAlreadyIn",
+				NOT_FRIEND: "lobby.errNotFriend",
+				FRIEND_UNAVAILABLE: "lobby.errUnavailable",
+			};
+			if (ok) {
+				toast.add({ type: "success", title: t("lobby.inviteSent") });
+			} else {
+				toast.add({ type: "error", title: t(errors[code ?? ""] ?? "lobby.errFailed") });
+			}
+		});
+	}, [room, t]);
 
 	useEffect(() => {
 		if (!room) return;
@@ -125,17 +147,21 @@ export default function CreateRoom() {
 		room.send("start");
 	};
 
-	const friends = [
-		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true },
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
-		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false },
-		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true },
-		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
-		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true },
-	];
+	const playerIdsInRoom = new Set(playerEntries.map(([, p]) => p.playerId));
+	const onlineFriends = friends
+		.map((f) => otherPlayer(f, user?.id))
+		.filter((f) => onlineIds.has(f.id))
+		.map((f) => ({
+			id: f.id,
+			name: f.name,
+			avatarUrl: resolveAvatar(f.avatarUrl ?? ""),
+			inRoom: playerIdsInRoom.has(f.id),
+		}));
+	const inviteDisabled = phase !== "setup" || playerEntries.length >= (maxClients ?? 0);
+
+	const handleInvite = (friendId: number) => {
+		room.send("inviteFriend", { friendId });
+	};
 
 	return (
 		<div className="page">
@@ -160,7 +186,11 @@ export default function CreateRoom() {
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
 						<div className="w-full md:flex md:justify-center">
-							<FriendList friends={friends} />
+							<InviteFriendList
+								friends={onlineFriends}
+								disabled={inviteDisabled}
+								onInvite={handleInvite}
+							/>
 						</div>
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
