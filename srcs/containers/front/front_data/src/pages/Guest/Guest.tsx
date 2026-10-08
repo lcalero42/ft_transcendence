@@ -4,12 +4,14 @@ import UserIcon from "../../assets/icons/user.svg";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
+import { useTranslation } from "react-i18next";
 
 const NAME_MIN_LENGTH = 3;
 const NAME_MAX_LENGTH = 12;
 
 function Guest() {
 	const { guest, isAuth } = useAuth();
+	const { t } = useTranslation();
 	const location = useLocation();
 	const from = (location.state as { from?: string } | null)?.from ?? "/home";
 
@@ -28,9 +30,9 @@ function Guest() {
 
 	function validate(): string | undefined {
 		const trimmed = name.trim();
-		if (!trimmed) return "Username is required.";
-		if (trimmed.length < NAME_MIN_LENGTH) return `Username must be at least ${NAME_MIN_LENGTH} characters.`;
-		if (trimmed.length > NAME_MAX_LENGTH) return `Username must be at most ${NAME_MAX_LENGTH} characters.`;
+		if (!trimmed) return t("auth.errors.usernameRequired");
+		if (trimmed.length < NAME_MIN_LENGTH) return t("auth.errors.usernameTooShort");
+		if (trimmed.length > NAME_MAX_LENGTH) return t("auth.errors.usernameTooLong");
 		return undefined;
 	}
 
@@ -46,7 +48,7 @@ function Guest() {
 		try {
 			await guest(name.trim());
 		} catch (err) {
-			setAuthError(err instanceof Error ? err.message : "Could not join as guest");
+			setAuthError(err instanceof Error ? err.message : t("auth.guestLogin.failed"));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -54,25 +56,25 @@ function Guest() {
 
 	return (
 		<AuthLayout
-			subtitle="Pick a name and jump into the game !"
+			subtitle={t("auth.guestLogin.subtitle")}
 			icon="🕵️"
-			heading="Play as a guest"
-			description="No account needed, just choose a username."
+			heading={t("auth.guestLogin.heading")}
+			description={t("auth.guestLogin.description")}
 			onSubmit={(e) => { void handleSubmit(e); }}
-			submitLabel={isSubmitting ? "Joining..." : "Play as guest"}
+			submitLabel={isSubmitting ? t("auth.guestLogin.submitting") : t("auth.guestLogin.submit")}
 			showSocialLogin={false}
 			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
-					Already have an account ?{" "}
+					{t("auth.register.hasAccount")}{" "}
 					<Link to="/login" className="font-semibold text-accent-purple hover:underline">
-						Log in
+						{t("auth.register.logIn")}
 					</Link>
 				</p>
 			}
 		>
 			<FormField
 				id="name"
-				label="Username"
+				label={t("auth.username")}
 				iconSrc={UserIcon}
 				type="text"
 				placeholder="SneakyFox"

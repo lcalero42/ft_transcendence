@@ -61,6 +61,14 @@
 			"successDescription": "Vous pouvez maintenant profiter de la meilleure expérience de votre vie.",
 			"failed": "Échec de l'inscription"
 		},
+		"guestLogin": {
+			"subtitle": "Choisissez un nom et lancez-vous dans la partie !",
+			"heading": "Jouer en tant qu'invité",
+			"description": "Pas besoin de compte, choisissez simplement un nom d'utilisateur.",
+			"submit": "Jouer en invité",
+			"submitting": "Connexion...",
+			"failed": "Impossible de rejoindre en tant qu'invité"
+		},
 		"errors": {
 			"emailRequired": "L'e-mail est requis.",
 			"emailInvalid": "Entrez une adresse e-mail valide.",
@@ -138,7 +146,8 @@
 		"waitTurn": "Attendez votre tour...",
 		"vote": "voter",
 		"votes_one": "{{count}} vote",
-		"votes_other": "{{count}} votes"
+		"votes_other": "{{count}} votes",
+		"seatTakenOver": "Partie ouverte dans un autre onglet"
 	},
 	"friends": {
 		"title": "Amis",

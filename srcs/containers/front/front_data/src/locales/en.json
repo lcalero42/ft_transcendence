@@ -61,6 +61,14 @@
 			"successDescription": "You can now enjoy the best experience of your life.",
 			"failed": "Registration failed"
 		},
+		"guestLogin": {
+			"subtitle": "Pick a name and jump into the game!",
+			"heading": "Play as a guest",
+			"description": "No account needed, just choose a username.",
+			"submit": "Play as guest",
+			"submitting": "Joining...",
+			"failed": "Could not join as guest"
+		},
 		"errors": {
 			"emailRequired": "Email is required.",
 			"emailInvalid": "Enter a valid email address.",
@@ -138,7 +146,8 @@
 		"waitTurn": "Wait for your turn...",
 		"vote": "vote",
 		"votes_one": "{{count}} vote",
-		"votes_other": "{{count}} votes"
+		"votes_other": "{{count}} votes",
+		"seatTakenOver": "Game opened in another tab"
 	},
 	"friends": {
 		"title": "Friends",
