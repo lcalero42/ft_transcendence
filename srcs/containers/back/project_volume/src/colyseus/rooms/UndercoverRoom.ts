@@ -22,6 +22,7 @@ import { prisma } from '../prisma';
 export interface JoinOptions {
   name?: string;
   avatarUrl?: string;
+  lang?: string;
 }
 
 interface PlayerIdentity {
@@ -101,7 +102,8 @@ export class UndercoverRoom extends Room {
       this.game.start(pair, roles);
     },
 
-    getWord: (client: Client) => {
+    getWord: (client: Client, lang: unknown) => {
+      this.game.setLanguage(client.sessionId, lang);
       if (this.game.isRunning()) {
         this.game.sendWord(client.sessionId);
       }
@@ -153,6 +155,7 @@ export class UndercoverRoom extends Room {
       token: auth.token,
     });
     this.persistence.trackPlayer(client.sessionId, auth.playerId);
+    this.game.setLanguage(client.sessionId, options?.lang);
     this.pendingHandoffs.delete(auth.playerId);
 
     if (previousSessionId) {
@@ -220,6 +223,7 @@ export class UndercoverRoom extends Room {
 
     this.identities.delete(client.sessionId);
     this.persistence.forgetPlayer(client.sessionId);
+    this.game.forgetLanguage(client.sessionId);
   }
 
   async onDispose() {
@@ -242,7 +246,11 @@ export class UndercoverRoom extends Room {
       try {
         const reservation = await matchMaker.reserveSeatFor(
           roomCache,
-          { name: player.name, avatarUrl: player.avatarUrl },
+          {
+            name: player.name,
+            avatarUrl: player.avatarUrl,
+            lang: this.game.getLanguage(sessionId),
+          },
           auth,
         );
         this.clients.getById(sessionId)?.send('seatReservation', reservation);
@@ -306,6 +314,7 @@ export class UndercoverRoom extends Room {
     }
     this.identities.delete(oldId);
     this.persistence.forgetPlayer(oldId);
+    this.game.forgetLanguage(oldId);
 
     const reconnection = this.pendingReconnections.get(oldId);
     this.pendingReconnections.delete(oldId);

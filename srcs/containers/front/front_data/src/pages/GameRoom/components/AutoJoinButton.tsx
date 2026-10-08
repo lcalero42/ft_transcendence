@@ -1,4 +1,5 @@
 import { UserPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AutoJoinButtonProps {
 	enabled: boolean;
@@ -6,6 +7,8 @@ interface AutoJoinButtonProps {
 }
 
 function AutoJoinButton({ enabled, onToggle }: AutoJoinButtonProps) {
+	const { t } = useTranslation();
+
 	return (
 		<button
 			type="button"
@@ -13,7 +16,7 @@ function AutoJoinButton({ enabled, onToggle }: AutoJoinButtonProps) {
 			className={`badge badge-action hoverable rounded-lg! shrink-0 gap-[max(0.6vw,8px)] ${enabled ? "border-accent-purple text-accent-purple" : ""}`}
 		>
 			<UserPlus className="size-[clamp(15px,1.1vw,24px)]" />
-			Auto-Join
+			{t("game.autoJoin")}
 		</button>
 	);
 }

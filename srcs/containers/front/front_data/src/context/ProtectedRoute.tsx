@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useAuth } from "./useAuth";
 import {Navigate, useLocation} from "react-router-dom";
 import {toast} from "@/components/ui/toast";
+import { useTranslation } from "react-i18next";
 
 type ProtectedRouteProps = {
 	children: React.ReactNode;
@@ -15,17 +16,18 @@ function ProtectedRoute({children, redirectTo = "/login", allowGuest = true, adm
 	const location = useLocation();
 	const blockedGuest = !allowGuest && isGuest;
 	const waitingForAdmin = adminOnly && profileLoading;
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		if (isLoading) return;
 		if (!isAuth && redirectTo === "/login") {
-			toast.add({id: "not-logged-in", type: "warning", title: "You're not logged"})
+			toast.add({id: "not-logged-in", type: "warning", title: t("auth.notLogged")})
 		} else if (blockedGuest) {
-			toast.add({id: "guest-blocked", type: "warning", title: "Create an account to access this page"})
+			toast.add({id: "guest-blocked", type: "warning", title: t("auth.guestBlocked")})
 		} else if (!waitingForAdmin && isAuth && adminOnly && !isAdmin) {
-			toast.add({id: "not-admin", type: "warning", title: "Admin access required"})
+			toast.add({id: "not-admin", type: "warning", title: t("auth.adminRequired")})
 		}
-	}, [isLoading, isAuth, blockedGuest, redirectTo, waitingForAdmin, isAdmin, adminOnly]);
+	}, [isLoading, isAuth, blockedGuest, redirectTo, waitingForAdmin, isAdmin, adminOnly, t]);
 
 	if (isLoading) {
 		return null

@@ -14,6 +14,10 @@ interface RequestOptions {
 export interface WordPair {
   civilianWord: string;
   undercoverWord: string;
+  civilianWordFr: string;
+  undercoverWordFr: string;
+  civilianWordEs: string;
+  undercoverWordEs: string;
 }
 
 export interface GamePlayer {
@@ -77,9 +81,7 @@ export async function fetchWordPair(): Promise<WordPair | null> {
   if (!pairs || pairs.length === 0) {
     return null;
   }
-  const { civilianWord, undercoverWord } =
-    pairs[Math.floor(Math.random() * pairs.length)];
-  return { civilianWord, undercoverWord };
+  return pairs[Math.floor(Math.random() * pairs.length)];
 }
 
 export async function createGame(

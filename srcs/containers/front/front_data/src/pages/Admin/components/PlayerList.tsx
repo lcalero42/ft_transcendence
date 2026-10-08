@@ -1,6 +1,8 @@
 import { useEffect,useState  } from "react";
 import {getPlayers} from "@/api/player"
 import { toast } from "@/components/ui/toast";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import AvatarDefault from "@/assets/profile-photo/avatar-default.svg";
 import {getAvatarUrl} from "@/api/player";
 
@@ -13,21 +15,22 @@ type PlayerListPros = {
 };
 
 function PlayerList() {
+	const { t } = useTranslation();
 	const [players, setPlayers] = useState<PlayerListPros[]>([]);
 	useEffect(() => {
 	getPlayers()
 		.then((data) => setPlayers(data))
 		.catch((err: unknown) =>
 			toast.add({
-				title: "An error occured",
-				description: err instanceof Error ? err.message : "Something went wrong.",
+				title: i18n.t("common.errorOccurred"),
+				description: err instanceof Error ? err.message : i18n.t("common.somethingWentWrong"),
 			})
 		);
 }, []);
 	return (
 		<div className="card w-full md:bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
-				<div className="font-bold text-xl"> Users </div>
+				<div className="font-bold text-xl"> {t("admin.users")} </div>
 			</div>
 			<div className="flex flex-col max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
 				{players.map((player) => (
@@ -56,7 +59,7 @@ function PlayerList() {
 										<div className="font-semibold truncate">{player.name}</div>
 									</div>
 									<span className=" hidden md:block md:text-sm md:text-text-dim">
-										profile create at : {new Date(player.createdAt).toLocaleDateString()}
+										{t("admin.profileCreatedAt")} {new Date(player.createdAt).toLocaleDateString(i18n.language)}
 									</span>
 								</div>
 								<div className="flex items-center">
@@ -68,7 +71,7 @@ function PlayerList() {
 										className={`hidden md:inline font-semibold text-xs md:text-sm ${
 											player.isLog ? "text-victory" : "text-text-dim"}`}
 									>
-										{player.isLog ? "connected" : "disconnect"}
+										{player.isLog ? t("admin.connected") : t("admin.disconnected")}
 									</span>
 								</div>
 							</div>

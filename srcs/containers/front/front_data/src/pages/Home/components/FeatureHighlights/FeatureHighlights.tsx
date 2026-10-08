@@ -1,20 +1,23 @@
 import victoryIcon from "../../../../assets/icons/victory-svgrepo-com.svg"
 import maskIcon from "../../../../assets/icons/masks-svgrepo-com.svg"
 import friendIcon from "../../../../assets/icons/friend-svgrepo-com.svg"
+import { useTranslation } from "react-i18next";
 
 const features = [
-	{ icon: victoryIcon, title: "Strategy", description: "Use cunning and observation to win" },
-	{ icon: maskIcon, title: "Suspense", description: "Who is the impostor? It's up to you to find out" },
-	{ icon: friendIcon, title: "Friends", description: "Invite your friends and have fun together" },
+	{ icon: victoryIcon, key: "strategy" },
+	{ icon: maskIcon, key: "suspense" },
+	{ icon: friendIcon, key: "friends" },
 ];
 
 function FeatureHighlights() {
+	const { t } = useTranslation();
+
 	return (
 		<div className="card w-full hidden md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]
             md:border-l-2 md:border-card-accent-border
             md:mt-[clamp(15px,2vw,30px)]">
 			{features.map((feature) => (
-					<div  key={feature.title} className="flex items-center gap-3">
+					<div  key={feature.key} className="flex items-center gap-3">
 						<div className="circle-purple w-14 h-14">
 							<div className="mask-icon w-10.5 h-10.5 bg-accent-purple"
 								style={{
@@ -24,10 +27,10 @@ function FeatureHighlights() {
 						</div>
 						<div className="text-left">
 							<h3 className="mb-1 text-gray-high font-bold">
-								{feature.title}
+								{t(`home.features.${feature.key}.title`)}
 							</h3>
 							<p className="text-gray-low text-xs">
-								{feature.description}
+								{t(`home.features.${feature.key}.description`)}
 							</p>
 						</div>
 					</div>
