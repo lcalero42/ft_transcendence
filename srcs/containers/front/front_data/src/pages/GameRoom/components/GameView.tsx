@@ -102,7 +102,10 @@ function GameView({ room }: GameViewProps) {
 		}
 	}, [phase, autoJoin, isParticipant, room]);
 
-	const handleToggleParticipant = () => room.send(isParticipant ? "leaveGame" : "joinGame");
+	const handleToggleParticipant = () => {
+		if (isParticipant) setAutoJoin(false);
+		room.send(isParticipant ? "leaveGame" : "joinGame");
+	};
 	const handleStartGame = () => room.send("startGame");
 	const handleSubmitClue = (word: string) => room.send("submitClue", word);
 	const handleCastVote = (targetSessionId: string) => room.send("castVote", targetSessionId);
