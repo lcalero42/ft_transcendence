@@ -154,7 +154,6 @@
 		"aPlayer": "un joueur",
 		"typeGuess": "Écrivez votre indice...",
 		"waitTurn": "Attendez votre tour...",
-		"vote": "voter",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Partie ouverte dans un autre onglet"

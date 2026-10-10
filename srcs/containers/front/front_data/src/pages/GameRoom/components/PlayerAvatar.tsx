@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface PlayerAvatarProps {
@@ -7,10 +6,10 @@ interface PlayerAvatarProps {
 	hintWord?: string;
 	isActive?: boolean;
 	voteCount?: number;
-	action?: ReactNode;
+	isVoteTarget?: boolean;
 }
 
-function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, action }: PlayerAvatarProps) {
+function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, isVoteTarget }: PlayerAvatarProps) {
 	const { t } = useTranslation();
 
 	return (
@@ -22,7 +21,7 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, action }
 				{name}
 			</span>
 			<div
-				className={`flex h-[72px] w-[80px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"}`}
+				className={`flex h-[72px] w-[80px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"} ${isVoteTarget ? "ring-accent-purple ring-2 shadow-[0_0_18px_#8B57FB]" : ""}`}
 			>
 				<img
 					src={avatarUrl}
@@ -35,7 +34,6 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, action }
 					{hintWord}
 				</span>
 			)}
-			{action}
 		</div>
 	);
 }

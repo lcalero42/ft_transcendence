@@ -12,7 +12,6 @@ import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/u
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
-import VoteAction from "@/pages/GameRoom/components/VoteAction";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
@@ -33,6 +32,7 @@ function GameView({ room }: GameViewProps) {
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
 	const [chatTab, setChatTab] = useState<ChatTab>("chat");
+	const [aimedSessionId, setAimedSessionId] = useState<string | null>(null);
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const phase = useRoomState(room, (s) => s.phase);
@@ -53,7 +53,6 @@ function GameView({ room }: GameViewProps) {
 		participantEntries.findIndex(([sessionId]) => sessionId === activeSessionId),
 		0,
 	);
-	const arrowDirection = phase === "describing" ? getPlayerAngleDeg(activePlayerIndex, participantEntries.length) : 0;
 	const activePlayer = activeSessionId ? players?.[activeSessionId] : undefined;
 	const isMyTurn = activeSessionId === room.sessionId;
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
@@ -71,6 +70,15 @@ function GameView({ room }: GameViewProps) {
 		}));
 	const winnerLabel = winner === "undercover" ? t("game.undercoverWins") : t("game.civiliansWin");
 	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
+	const canVote = phase === "voting" && isParticipant;
+	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
+	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
+	const arrowTargetIndex = phase === "voting" ? voteArrowTargetIndex : activePlayerIndex;
+	const isArrowIdle = phase === "voting" && voteArrowTargetIndex === -1;
+	const arrowDirection =
+		(phase === "describing" || phase === "voting") && arrowTargetIndex !== -1
+			? getPlayerAngleDeg(arrowTargetIndex, participantEntries.length)
+			: 0;
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -126,10 +134,6 @@ function GameView({ room }: GameViewProps) {
 		const isSelf = sessionId === room.sessionId;
 		const voteCount =
 			phase === "voting" ? (votes ?? []).filter((vote) => vote.targetSessionId === sessionId).length : undefined;
-		const action =
-			phase === "voting" && !isSelf ? (
-				<VoteAction hasVoted={myVoteTargetId === sessionId} onClick={() => handleCastVote(sessionId)} isParticipant={isParticipant} />
-			) : undefined;
 
 		return {
 			sessionId,
@@ -139,17 +143,18 @@ function GameView({ room }: GameViewProps) {
 			isActive: sessionId === activePlayerSessionId,
 			isSelf,
 			voteCount,
-			action,
+			isVoteTarget: canVote && myVoteTargetId === sessionId,
+			isAimable: canVote && !isSelf,
 		};
 	});
 
 	return (
 		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
 			<Header compact />
-			<main className="flex min-h-0 flex-1 items-center justify-center px-[10vw] py-[2vh] md:px-[15vw] md:py-[2vh]">
-				<div className="relative flex h-[80vh] min-h-0 w-full flex-col items-center justify-center gap-6 text-center 2xl:flex-row 2xl:items-stretch">
+			<main className="flex min-h-0 flex-1 items-stretch justify-center px-5 py-[2vh] sm:px-[10vw] md:items-center md:px-[15vw] md:py-[2vh]">
+				<div className="relative flex min-h-0 w-full flex-col items-center justify-center gap-6 text-center md:h-[80vh] 2xl:flex-row 2xl:items-stretch">
 					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
-						<div className="z-10 flex w-full shrink-0 items-center justify-between">
+						<div className="z-10 flex w-full shrink-0 items-center justify-between md:-translate-y-[3vh]">
 							<Timer secondsLeft={secondsLeft} />
 							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
@@ -164,12 +169,12 @@ function GameView({ room }: GameViewProps) {
 								/>
 							</div>
 						</div>
-						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center">
-							<PlayerCircle players={participantPlayerList}>
+						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[3vh]">
+							<PlayerCircle players={participantPlayerList} onAim={setAimedSessionId} onSelect={handleCastVote}>
 								{phase === "finished" ? (
 									<WinnerReveal winners={winners} label={winnerLabel} />
 								) : (
-									<CenterWord word={currentWord} direction={arrowDirection} />
+									<CenterWord word={currentWord} direction={arrowDirection} dimmed={isArrowIdle} />
 								)}
 							</PlayerCircle>
 						</div>
