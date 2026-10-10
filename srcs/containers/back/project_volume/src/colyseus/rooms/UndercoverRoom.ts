@@ -16,7 +16,8 @@ import {
 } from './undercoverLobby';
 import { UndercoverGame } from './UndercoverGame';
 import { RoomPersistence } from './RoomPersistence';
-import { getPlayerId, fetchWordPair } from '../api';
+import { getPlayerId, fetchWordPair, areFriends } from '../api';
+import { notifyPlayer } from '../presence-pubsub';
 import { prisma } from '../prisma';
 
 export interface JoinOptions {
@@ -64,6 +65,37 @@ export class UndercoverRoom extends Room {
         this.roomId,
       );
       await this.transferSeats();
+    },
+
+    inviteFriend: async (client: Client, payload: { friendId?: unknown }) => {
+      const reply = (code?: string) =>
+        client.send('inviteResult', { ok: !code, code });
+      const friendId = payload?.friendId;
+      const sender = this.state.players.get(client.sessionId);
+      const token = (client.auth as SeatTransferAuth | undefined)?.token;
+      if (typeof friendId !== 'number' || !sender || !token) {
+        return reply('INVALID_REQUEST');
+      }
+      if (this.state.phase !== 'setup') {
+        return reply('GAME_STARTED');
+      }
+      if (this.state.players.size >= this.state.maxParticipants) {
+        return reply('ROOM_FULL');
+      }
+      const alreadyIn = [...this.state.players.values()].some(
+        (p) => p.playerId === friendId,
+      );
+      if (alreadyIn) {
+        return reply('ALREADY_IN_ROOM');
+      }
+      if (!(await areFriends(token, friendId))) {
+        return reply('NOT_FRIEND');
+      }
+      const delivered = notifyPlayer(friendId, 'roomInvite', {
+        roomId: this.roomId,
+        fromName: sender.name,
+      });
+      reply(delivered ? undefined : 'FRIEND_UNAVAILABLE');
     },
 
     chat: (client: Client, text: unknown) => {
@@ -166,6 +198,7 @@ export class UndercoverRoom extends Room {
     const player = new Player();
     player.name = options?.name?.trim() || 'Player';
     player.avatarUrl = options?.avatarUrl?.trim() || '';
+    player.playerId = auth?.playerId ?? 0;
     this.state.players.set(client.sessionId, player);
 
     if (auth.isHost || !this.state.hostSessionId) {

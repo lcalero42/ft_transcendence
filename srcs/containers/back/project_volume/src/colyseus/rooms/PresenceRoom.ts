@@ -67,9 +67,11 @@ export class PresenceRoom extends Room {
     unregisterPresenceRoom(this);
   }
 
-  notifyPlayer(playerId: number, type: string, payload: unknown) {
+  notifyPlayer(playerId: number, type: string, payload: unknown): boolean {
     const sessionId = this.sessionIdByPlayerId.get(playerId);
-    if (!sessionId) return;
-    this.clients.getById(sessionId)?.send(type, payload);
+    if (!sessionId) return false;
+    const client = this.clients.getById(sessionId);
+    client?.send(type, payload);
+    return !!client;
   }
 }
