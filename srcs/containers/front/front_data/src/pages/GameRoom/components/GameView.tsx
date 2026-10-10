@@ -42,6 +42,7 @@ function GameView({ room }: GameViewProps) {
 	const turnOrder = useRoomState(room, (s) => s.turnOrder);
 	const currentTurnIndex = useRoomState(room, (s) => s.currentTurnIndex);
 	const clues = useRoomState(room, (s) => s.clues);
+	const round = useRoomState(room, (s) => s.round);
 	const votes = useRoomState(room, (s) => s.votes);
 	const phaseEndsAt = useRoomState(room, (s) => s.phaseEndsAt) ?? 0;
 	const secondsLeft = phaseEndsAt ? Math.max(0, Math.round((phaseEndsAt - now) / 1000)) : 0;
@@ -134,6 +135,7 @@ function GameView({ room }: GameViewProps) {
 			sessionId,
 			name: player.name,
 			avatarUrl: getAvatarUrl(player.avatarUrl),
+			hintWord: (clues ?? []).find((clue) => clue.sessionId === sessionId && clue.round === round)?.word,
 			isActive: sessionId === activePlayerSessionId,
 			isSelf,
 			voteCount,
