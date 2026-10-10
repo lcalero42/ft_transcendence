@@ -110,4 +110,6 @@ model Word_Pair {
   undercoverWordFr  String      @map("undercover_word_fr")
   civilianWordEs    String      @map("civilian_word_es")
   undercoverWordEs  String      @map("undercover_word_es")
+
+  @@unique([civilianWord, undercoverWord])
 }

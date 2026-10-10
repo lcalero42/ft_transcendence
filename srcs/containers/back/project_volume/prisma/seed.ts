@@ -3,6 +3,7 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import * as bcrypt from 'bcrypt';
+import { wordPairs } from "./data/word-pairs";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
@@ -188,38 +189,10 @@ async function main() {
 
   // wordPairs
 
-  const wp_1 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "rabbit",
-      undercoverWord: "horse",
-      civilianWordFr: "lapin",
-      undercoverWordFr: "cheval",
-      civilianWordEs: "conejo",
-      undercoverWordEs: "caballo"
-    }
-  })
-
-  const wp_2 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "cat",
-      undercoverWord: "tiger",
-      civilianWordFr: "chat",
-      undercoverWordFr: "tigre",
-      civilianWordEs: "gato",
-      undercoverWordEs: "tigre"
-    }
-  })
-
-  const wp_3 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "phone",
-      undercoverWord: "computer",
-      civilianWordFr: "téléphone",
-      undercoverWordFr: "ordinateur",
-      civilianWordEs: "teléfono",
-      undercoverWordEs: "ordenador"
-    }
-  })
+  await prisma.word_Pair.createMany({
+    data: wordPairs,
+    skipDuplicates: true,
+  });
 
   console.log({ alice, bob, aliceRoom });
 }
