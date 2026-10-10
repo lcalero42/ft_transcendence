@@ -15,8 +15,11 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
+import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { useTranslation } from "react-i18next";
 
 function GameRoom() {
+	const { t, i18n } = useTranslation();
 	const { id } = useParams();
 	const { profile, profileLoading } = useAuth();
 	const location = useLocation();
@@ -53,6 +56,7 @@ function GameRoom() {
 					return client.joinById<UndercoverRoom>(id, {
 						name: profile?.name,
 						avatarUrl: profile?.avatarUrl,
+						lang: i18n.language,
 					});
 				},
 		[id, profileLoading],
@@ -74,17 +78,19 @@ function GameRoom() {
 		return () => room.onReconnect.remove(onReconnect);
 	}, [room]);
 
+	useSeatTakenOver(room);
+
 	const phase = useRoomState(room, (s) => s.phase);
 	useEffect(() => {
 		if (!room || phase !== "setup") return;
 		void navigate(`/create-room/${room.roomId}`, { replace: true });
 	}, [room, phase, navigate]);
 
-	if (!id) return <ErrorPage error="No room id provided" />;
-	if (profileLoading) return <LoadPage text="Connecting" />;
-	if (isConnecting) return <LoadPage text="Connecting" />;
+	if (!id) return <ErrorPage error={t("game.noRoomId")} />;
+	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
+	if (isConnecting) return <LoadPage text={t("common.connecting")} />;
 	if (error) return <ErrorPage error={error.message} />;
-	if (!room) return <ErrorPage error="room unavailable" />;
+	if (!room) return <ErrorPage error={t("game.unavailable")} />;
 
 	return <GameView room={room} />;
 }

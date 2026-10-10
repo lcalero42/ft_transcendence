@@ -5,9 +5,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { GuestDto } from './dto/guest.dto';
 
 // A precomputed bcrypt hash with no matching plaintext, compared against on a
 // login miss so the response time doesn't reveal whether the email exists.
@@ -28,13 +30,19 @@ export class AuthService {
     if (existingEmail) {
       throw new ConflictException('Email already registered');
     }
-    const existingName = await this.prisma.player.findUnique({
-      where: { name: dto.name },
-    });
-    if (existingName) throw new ConflictException('Username already taken');
+    await this.assertNameAvailable(dto.name);
     const hashed = await bcrypt.hash(dto.password, 10);
     const player = await this.prisma.player.create({
       data: { email: dto.email, name: dto.name, password: hashed },
+    });
+    return this.signToken(player.id, player.email);
+  }
+
+  async guest(dto: GuestDto) {
+    await this.assertNameAvailable(dto.name);
+    const hashed = await bcrypt.hash(randomUUID(), 10);
+    const player = await this.prisma.player.create({
+      data: { name: dto.name, password: hashed, isGuest: true },
     });
     return this.signToken(player.id, player.email);
   }
@@ -54,7 +62,14 @@ export class AuthService {
     return this.signToken(player.id, player.email);
   }
 
-  private signToken(sub: number, email: string) {
+  private async assertNameAvailable(name: string) {
+    const existingName = await this.prisma.player.findUnique({
+      where: { name },
+    });
+    if (existingName) throw new ConflictException('Username already taken');
+  }
+
+  private signToken(sub: number, email: string | null) {
     return { accessToken: this.jwtService.sign({ sub, email }) };
   }
 }

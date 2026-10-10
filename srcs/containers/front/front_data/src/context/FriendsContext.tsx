@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { client } from "../lib/colyseusClient";
 import { getToken } from "../api/auth/client";
 import { toast } from "@/components/ui/toast";
+import i18n from "@/i18n";
 import {
 	getFriends,
 	getPendingRequests,
@@ -91,12 +92,12 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					});
 				});
 				room.onMessage("friendRequest", ({ fromName }: { fromName: string }) => {
-					toast.add({ type: "info", title: "New friend request", description: `${fromName} sent you a friend request` });
+					toast.add({ type: "info", title: i18n.t("friends.newRequestTitle"), description: i18n.t("friends.newRequestDescription", { name: fromName }) });
 					setUnreadCount((c) => c + 1);
 					refetchPending();
 				});
 				room.onMessage("friendRequestAccepted", ({ fromName }: { fromName: string }) => {
-					toast.add({ type: "success", title: "Friend request accepted", description: `${fromName} accepted your friend request` });
+					toast.add({ type: "success", title: i18n.t("friends.acceptedTitle"), description: i18n.t("friends.acceptedDescription", { name: fromName }) });
 					refetchFriends();
 					refetchPending();
 				});

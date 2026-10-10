@@ -20,12 +20,14 @@ import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
+import { useTranslation } from "react-i18next";
 
 interface GameViewProps {
 	room: Room<UndercoverRoom>;
 }
 
 function GameView({ room }: GameViewProps) {
+	const { t, i18n } = useTranslation();
 	const [now, setNow] = useState(() => Date.now());
 	const [myWord, setMyWord] = useState("");
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
@@ -66,14 +68,14 @@ function GameView({ room }: GameViewProps) {
 			name: players?.[sessionId]?.name ?? "",
 			avatarUrl: getAvatarUrl(players?.[sessionId]?.avatarUrl ?? null),
 		}));
-	const winnerLabel = winner === "undercover" ? "Undercover wins" : "Civilians win";
+	const winnerLabel = winner === "undercover" ? t("game.undercoverWins") : t("game.civiliansWin");
 	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
-		room.send("getWord");
+		room.send("getWord", i18n.language);
 		return unsubscribe;
-	}, [room]);
+	}, [room, i18n.language]);
 
 	useEffect(() => {
 		const interval = setInterval(() => setNow(Date.now()), 250);
@@ -150,12 +152,12 @@ function GameView({ room }: GameViewProps) {
 							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
-									label="Open chat"
+									label={t("game.openChat")}
 									onClick={() => setDrawer("chat")}
 								/>
 								<MobileDrawerTrigger
 									icon={Users}
-									label="Open players list"
+									label={t("game.openPlayers")}
 									onClick={() => setDrawer("players")}
 								/>
 							</div>

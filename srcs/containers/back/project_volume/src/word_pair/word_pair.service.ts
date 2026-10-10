@@ -12,6 +12,10 @@ export class WordPairService {
       data: {
         civilianWord: createWordPairDto.civilianWord,
         undercoverWord: createWordPairDto.undercoverWord,
+        civilianWordFr: createWordPairDto.civilianWordFr,
+        undercoverWordFr: createWordPairDto.undercoverWordFr,
+        civilianWordEs: createWordPairDto.civilianWordEs,
+        undercoverWordEs: createWordPairDto.undercoverWordEs,
       },
     });
     return createWordPair;
@@ -36,6 +40,10 @@ export class WordPairService {
       data: {
         civilianWord: updateWordPairDto.civilianWord,
         undercoverWord: updateWordPairDto.undercoverWord,
+        civilianWordFr: updateWordPairDto.civilianWordFr,
+        undercoverWordFr: updateWordPairDto.undercoverWordFr,
+        civilianWordEs: updateWordPairDto.civilianWordEs,
+        undercoverWordEs: updateWordPairDto.undercoverWordEs,
       },
     });
     return updateWordPair;

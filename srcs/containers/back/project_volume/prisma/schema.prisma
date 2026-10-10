@@ -11,8 +11,9 @@ generator client {
 model Player {
   id                Int         @id @default(autoincrement())
   name              String      @unique
-  email             String      @unique
+  email             String?     @unique
   password          String
+  isGuest           Boolean     @default(false) @map("is_guest")
   aboutMe           String?     @map("about_me")
   avatarUrl			String?		@map("avatar_url")
   isAdmin           Boolean     @default(false) @map("is_admin")
@@ -105,4 +106,10 @@ model Word_Pair {
   id                Int         @id @default(autoincrement())
   civilianWord      String      @map("civilian_word")
   undercoverWord    String      @map("undercover_word")
+  civilianWordFr    String      @map("civilian_word_fr")
+  undercoverWordFr  String      @map("undercover_word_fr")
+  civilianWordEs    String      @map("civilian_word_es")
+  undercoverWordEs  String      @map("undercover_word_es")
+
+  @@unique([civilianWord, undercoverWord])
 }

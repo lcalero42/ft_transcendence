@@ -27,8 +27,10 @@ import {
 }  from '../../api/player';
 import { clearToken } from "@/api/auth/client";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Profile() {
+	const { t, i18n } = useTranslation();
 	const { user } = useAuth();
 	const { logout } = useAuth();
 	function handleLogout() {
@@ -42,7 +44,7 @@ function Profile() {
 	const [gameList, setGamesList] = useState<GameListOfPlayer[]>([]);
 
 	const [loading, setLoading] = useState(true);
-  	const [error, setError] = useState<string | null>(null);
+  	const [error, setError] = useState(false);
   	const navigate = useNavigate();
 	const { friendsStatus, retryFriends } = useFriends();
 	const friends = useFriendPlayers();
@@ -65,7 +67,7 @@ function Profile() {
 				setGamesList(gameslist);
 		  	} catch (err) {
 				console.error("Profile load error:", err); //debug
-				setError("Error when loading the player");
+				setError(true);
 				clearToken();
 				void navigate("/login", { replace: true });
 		  	} finally {
@@ -77,7 +79,7 @@ function Profile() {
 	},[user, navigate]);
 	if (!user) return null;
     if (loading) return <LoadPage />;
-    if (error) return <ErrorPage error={error} />;
+    if (error) return <ErrorPage error={t("profile.loadError")} />;
   	if (!player) return null;
 
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
@@ -91,15 +93,15 @@ function Profile() {
 					<Identity
 						playerId={user.id}
 						username={player.name}
-						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
+						Since={(new Date(player.createdAt)).toLocaleDateString(i18n.language)}
 						urlAvatar={avatarUrl}
 					/>
 					<div className="md:flex md:flex-col">
 						<Bio
 							playerId={user.id}
-							bio={player.aboutMe ? player.aboutMe : "not description"}
+							bio={player.aboutMe ?? ""}
 						/>
-						<FavoriteRole role="Detective" icon={IconDetective}/>
+						<FavoriteRole role={t("profile.detective")} icon={IconDetective}/>
 					</div>
 				</div>
 
@@ -119,7 +121,7 @@ function Profile() {
 				    className="mt-3 ml-auto flex items-center gap-2 rounded-xl border border-card-border bg-card px-4 py-2 text-sm font-medium text-gray-high transition-colors duration-150 hover:border-defeat hover:text-defeat"
 				>
 				    <LogOut size={16} />
-				    Logout
+				    {t("common.logout")}
 				</button>
 			</main>
 			<Credit />

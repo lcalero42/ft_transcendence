@@ -1,15 +1,17 @@
 import { apiFetch } from "./auth/client";
 
-export interface WordPair {
-	id: number;
-	undercoverWord: string;
-	civilianWord: string;
-}
-
-type CreateWordPairDto = {
+export type CreateWordPairDto = {
 	civilianWord: string;
 	undercoverWord: string;
+	civilianWordFr: string;
+	undercoverWordFr: string;
+	civilianWordEs: string;
+	undercoverWordEs: string;
 };
+
+export interface WordPair extends CreateWordPairDto {
+	id: number;
+}
 
 export async function getWordPairs() {
 	return apiFetch<WordPair[]>("/word-pair");

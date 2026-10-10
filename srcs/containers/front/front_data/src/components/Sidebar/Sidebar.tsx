@@ -1,22 +1,24 @@
 import { NavLink, useNavigate} from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/context/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface SidebarLinkItem {
-	label: string;
+	labelKey: string;
 	path: string;
 }
 
 const links: SidebarLinkItem[] = [
-	{ label: "Home", path: "/home" },
-	{ label: "Profile", path: "/profile" },
-	{ label: "Stats", path: "/stats" },
-	{ label: "Rooms", path: "/gamesRoom" },
-	{ label: "Friends", path: "/friends" },
-	{ label: "Admin", path: "/Admin" },
+	{ labelKey: "sidebar.home", path: "/home" },
+	{ labelKey: "sidebar.profile", path: "/profile" },
+	{ labelKey: "sidebar.stats", path: "/stats" },
+	{ labelKey: "sidebar.rooms", path: "/gamesRoom" },
+	{ labelKey: "sidebar.friends", path: "/friends" },
+	{ labelKey: "sidebar.admin", path: "/Admin" },
 ];
 
 function Sidebar() {
+	const { t } = useTranslation();
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 	const closeMenu = () => setIsMenuOpen(false);
@@ -35,7 +37,7 @@ function Sidebar() {
 				<button
 					className="flex flex-col justify-between clean-btn w-7 h-5"
 					onClick={toggleMenu}
-					aria-label="Open the menu"
+					aria-label={t("sidebar.openMenu")}
 					aria-expanded={isMenuOpen}
 					>
 					{[0,1,2].map((i) => (
@@ -60,14 +62,14 @@ function Sidebar() {
 							${isActive ? "text-gold" : "text-text-dim"}`
 							}
 						>
-							{link.label}
+							{t(link.labelKey)}
 						</NavLink>
 					))}
 					<button
           				onClick={handleLogout}
           				className="flex items-center clean-link font-medium hoverable hover:text-white text-text-dim text-left"
           			>
-          				Logout
+          				{t("common.logout")}
           			</button>
 				</nav>
 			</aside>

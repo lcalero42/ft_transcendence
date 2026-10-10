@@ -22,6 +22,14 @@ export async function register(email:string, password:string, name:string) {
 	return data;
 }
 
+export async function guest(name: string) {
+	const data = await apiFetch<AuthResponse>("/auth/guest", {
+		method: "POST",
+		body: JSON.stringify({name}),
+	});
+	setToken(data.accessToken);
+	return data;
+}
 
 export function logout() {
 	clearToken();

@@ -6,6 +6,7 @@ import { toast } from "@/components/ui/toast";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "@/context/useAuth.ts";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -32,6 +33,7 @@ function Register() {
 	const { register } = useAuth();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
@@ -42,25 +44,27 @@ function Register() {
 		const nextErrors: RegisterErrors = {};
 
 		if (!form.email.trim()) {
-			nextErrors.email = "Email is required.";
+			nextErrors.email = t("auth.errors.emailRequired");
 		} else if (!EMAIL_REGEX.test(form.email)) {
-			nextErrors.email = "Enter a valid email address.";
+			nextErrors.email = t("auth.errors.emailInvalid");
 		}
 
 		if (!form.username.trim()) {
-			nextErrors.username = "Username is required.";
+			nextErrors.username = t("auth.errors.usernameRequired");
 		} else if (form.username.trim().length < 3) {
-			nextErrors.username = "Username must be at least 3 characters.";
+			nextErrors.username = t("auth.errors.usernameTooShort");
+		} else if (form.username.trim().length > 12) {
+			nextErrors.username = t("auth.errors.usernameTooLong");
 		}
 
 		if (!form.password) {
-			nextErrors.password = "Password is required.";
+			nextErrors.password = t("auth.errors.passwordRequired");
 		} else if (form.password.length < 8) {
-			nextErrors.password = "Password must be at least 8 characters.";
+			nextErrors.password = t("auth.errors.passwordTooShort");
 		}
 
 		if (form.confirmPassword !== form.password) {
-			nextErrors.confirmPassword = "Passwords do not match.";
+			nextErrors.confirmPassword = t("auth.errors.passwordMismatch");
 		}
 
 		return nextErrors;
@@ -81,15 +85,15 @@ function Register() {
 			await register(form.email, form.password, form.username);
 			toast.add({
 			  type: "success",
-			  title: "Account registered",
-			  description: "You can now enjoy the best experience of your life.",
+			  title: t("auth.register.successTitle"),
+			  description: t("auth.register.successDescription"),
 			})
 			void navigate("/home");
 		} catch (err) {
 			toast.add({
 				type: "error",
-				title: "Registration failed",
-				description: err instanceof Error ? err.message : "Something went wrong." //for compilo but its not hapy
+				title: t("auth.register.failed"),
+				description: err instanceof Error ? err.message : t("common.somethingWentWrong") //for compilo but its not hapy
 			})
 		} finally {
 			setIsSubmitting(false);
@@ -100,24 +104,24 @@ function Register() {
 
 	return (
 		<AuthLayout
-			subtitle="Register to continue your Undercover journey !"
+			subtitle={t("auth.register.subtitle")}
 			icon="🥷"
-			heading="Register your account"
-			description="Enter your credentials to access to your new account."
+			heading={t("auth.register.heading")}
+			description={t("auth.register.description")}
 			onSubmit={(e) => { void handleSubmit(e); }}
-  			submitLabel={isSubmitting ? "Registering..." : "Register"}
+  			submitLabel={isSubmitting ? t("auth.register.submitting") : t("auth.register.submit")}
   			footer={
 				<p className="mt-4 text-center text-sm text-gray-low">
-					Already have an account ?{" "}
+					{t("auth.register.hasAccount")}{" "}
 					<Link to="/login" className="font-semibold text-accent-purple hover:underline">
-						Log in
+						{t("auth.register.logIn")}
 					</Link>
 				</p>
 			}
 		>
 			<FormField
 				id="email"
-				label="Email"
+				label={t("auth.email")}
 				iconSrc={UserIcon}
 				type="email"
 				placeholder="example@hello.com"
@@ -128,10 +132,10 @@ function Register() {
 
 			<FormField
 				id="username"
-				label="Username"
+				label={t("auth.username")}
 				iconSrc={UserIcon}
 				type="text"
-				placeholder="VeryCoolAndGentle67"
+				placeholder="CoolAgent67"
 				value={form.username}
 				onChange={handleChange}
 				error={errors.username}
@@ -139,7 +143,7 @@ function Register() {
 
 			<FormField
 				id="password"
-				label="Password"
+				label={t("auth.password")}
 				iconSrc={PassIcon}
 				type="password"
 				placeholder="Coolpassword31#"
@@ -150,7 +154,7 @@ function Register() {
 
 			<FormField
 				id="confirmPassword"
-				label="Confirm password"
+				label={t("auth.confirmPassword")}
 				iconSrc={PassIcon}
 				type="password"
 				placeholder="Coolpassword31#"
