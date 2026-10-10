@@ -70,10 +70,7 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games')
-  async getGamesList(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() req: AuthenticatedRequest,
-  ) {
+  async getGamesList(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.getGamesList(id);
   }
 
