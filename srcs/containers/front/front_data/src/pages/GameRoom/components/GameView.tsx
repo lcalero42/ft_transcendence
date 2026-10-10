@@ -150,11 +150,11 @@ function GameView({ room }: GameViewProps) {
 
 	return (
 		<div className="page h-screen overflow-hidden" style={{ background: "#050721" }}>
-			<Header compact />
-			<main className="flex min-h-0 flex-1 items-stretch justify-center px-5 py-[2vh] sm:px-[10vw] md:items-center md:px-[15vw] md:py-[2vh]">
+			<Header compact wide />
+			<main className="flex min-h-0 flex-1 items-stretch justify-center px-5 py-[2vh] sm:px-[10vw] md:items-center md:px-[15vw] md:py-[2vh] 2xl:px-[8vw]">
 				<div className="relative flex min-h-0 w-full flex-col items-center justify-center gap-6 text-center md:h-[80vh] 2xl:flex-row 2xl:items-stretch">
 					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
-						<div className="z-10 flex w-full shrink-0 items-center justify-between md:-translate-y-[3vh]">
+						<div className="z-10 flex w-full shrink-0 items-center justify-between px-6 pt-6 md:px-0 md:pt-0">
 							<Timer secondsLeft={secondsLeft} />
 							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
@@ -169,7 +169,7 @@ function GameView({ room }: GameViewProps) {
 								/>
 							</div>
 						</div>
-						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[3vh]">
+						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[6.5vh] 2xl:translate-x-[4vw]">
 							<PlayerCircle players={participantPlayerList} onAim={setAimedSessionId} onSelect={handleCastVote}>
 								{phase === "finished" ? (
 									<WinnerReveal winners={winners} label={winnerLabel} />
@@ -178,7 +178,7 @@ function GameView({ room }: GameViewProps) {
 								)}
 							</PlayerCircle>
 						</div>
-						<div className="pointer-events-none relative z-20 flex w-full flex-col items-center gap-4 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
+						<div className="pointer-events-none relative z-20 flex w-full flex-col items-center gap-4 px-6 pb-6 md:px-0 md:pb-0 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
 							{phase === "open" && (
 								<div className="pointer-events-auto flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
@@ -192,8 +192,8 @@ function GameView({ room }: GameViewProps) {
 							)}
 							{(phase === "describing" || phase === "voting") && (
 								<>
-									{phase === "describing" && (
-										<div className="pointer-events-auto order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto flex flex-col gap-4">
+									{phase === "describing" && isParticipant && (
+										<div className="pointer-events-auto order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto 2xl:translate-x-[4vw] flex flex-col gap-4">
 											<TurnInput
 												isMyTurn={isMyTurn}
 												activePlayerName={activePlayer?.name}
@@ -201,14 +201,14 @@ function GameView({ room }: GameViewProps) {
 											/>
 										</div>
 									)}
-									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 2xl:order-1 2xl:col-start-1">
+									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 									</div>
 								</>
 							)}
 						</div>
 					</div>
-					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 2xl:flex 2xl:w-[500px]">
+					<aside className="hidden min-h-0 h-full w-full flex-col items-center gap-4 2xl:flex 2xl:w-[380px]">
 						<div className="w-full h-[70%] min-h-0">
 							<ChatBox
 								messages={chatMessages}
