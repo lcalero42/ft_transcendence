@@ -11,7 +11,8 @@
 		"offline": "Hors ligne",
 		"success": "Succès",
 		"errorOccurred": "Une erreur est survenue",
-		"somethingWentWrong": "Quelque chose s'est mal passé."
+		"somethingWentWrong": "Quelque chose s'est mal passé.",
+		"retry": "Réessayer"
 	},
 	"language": {
 		"label": "Langue",
@@ -171,7 +172,8 @@
 		"newRequestTitle": "Nouvelle demande d'ami",
 		"newRequestDescription": "{{name}} vous a envoyé une demande d'ami",
 		"acceptedTitle": "Demande d'ami acceptée",
-		"acceptedDescription": "{{name}} a accepté votre demande d'ami"
+		"acceptedDescription": "{{name}} a accepté votre demande d'ami",
+		"loadError": "Impossible de charger vos amis"
 	},
 	"profile": {
 		"loadError": "Erreur lors du chargement du joueur",

@@ -20,6 +20,8 @@ import PlayerList from "./components/PlayerList";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import { useTranslation } from "react-i18next";
+import { useFriends } from "@/context/useFriends";
+import { useFriendPlayers } from "@/context/useFriendPlayers";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
@@ -30,6 +32,8 @@ export default function CreateRoom() {
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
+	const { friendsStatus, retryFriends } = useFriends();
+	const friends = useFriendPlayers();
 	const targetRoomIdRef = useRef(routeRoomId);
 
 	const { room, error, isConnecting } = useRoom(
@@ -138,18 +142,6 @@ export default function CreateRoom() {
 		room.send("start");
 	};
 
-	const friends = [
-		{ id: 1, name: "bob", avatarUrl: null, isOnline: true },
-		{ id: 2, name: "QueMp4", avatarUrl: null, isOnline: false },
-		{ id: 3, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
-		{ id: 4, name: "QueMp4", avatarUrl: null, isOnline: false },
-		{ id: 5, name: "QueMp4", avatarUrl: null, isOnline: false },
-		{ id: 6, name: "QueMp4", avatarUrl: null, isOnline: false },
-		{ id: 7, name: "jiraaaaf", avatarUrl: null, isOnline: true },
-		{ id: 8, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
-		{ id: 9, name: "MichaelKarate135", avatarUrl: null, isOnline: true },
-	];
-
 	return (
 		<div className="page">
 			<Header />
@@ -172,9 +164,11 @@ export default function CreateRoom() {
 						<p>{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						<div className="w-full md:flex md:justify-center">
-							<FriendList friends={friends} status="ready" onRetry={() => {}} />
-						</div>
+						{!isGuest && (
+							<div className="w-full md:flex md:justify-center">
+								<FriendList friends={friends} status={friendsStatus} onRetry={retryFriends} />
+							</div>
+						)}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>

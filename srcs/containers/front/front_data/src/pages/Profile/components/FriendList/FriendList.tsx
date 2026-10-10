@@ -1,6 +1,7 @@
 import { getAvatarUrl } from "@/api/player";
 import { Spinner } from "@/components/ui/spinner";
 import type { FriendsStatus } from "@/context/friends-context";
+import { useTranslation } from "react-i18next";
 
 type FriendProps = {
 	id: number;
@@ -16,11 +17,12 @@ type FriendListProps = {
 };
 
 function FriendList({friends, status, onRetry}: FriendListProps) {
+	const { t } = useTranslation();
 	return (
 		<div className="card md:bg-transparent md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between mb-3">
 				<div className="flex gap-1">
-					<div className="font-bold"> My friends </div>
+					<div className="font-bold"> {t("profile.myFriends")} </div>
 					{status === "ready" && <span> ({friends.length}) </span>}
 				</div>
 			</div>
@@ -32,18 +34,18 @@ function FriendList({friends, status, onRetry}: FriendListProps) {
 				)}
 				{status === "error" && (
 					<div className="flex flex-col items-center gap-2 text-sm">
-						<p className="text-defeat font-semibold">Could not load your friends</p>
+						<p className="text-defeat font-semibold">{t("friends.loadError")}</p>
 						<button
 							type="button"
 							onClick={onRetry}
 							className="clean-btn hoverable rounded-lg border border-card-border-2 px-3 py-1 text-xs text-text-dim hover:text-defeat"
 						>
-							Retry
+							{t("common.retry")}
 						</button>
 					</div>
 				)}
 				{status === "ready" && friends.length === 0 && (
-					<div className="text-sm text-text-dim">No friends yet</div>
+					<div className="text-sm text-text-dim">{t("friends.none")}</div>
 				)}
 				{status === "ready" && friends.map((f) => (
 					<div className={`flex items-center text-left gap-4
@@ -61,7 +63,7 @@ function FriendList({friends, status, onRetry}: FriendListProps) {
 								 	className={`w-2 h-2 rounded-full
 										${f.isOnline ? "bg-victory" : "bg-text-dim"}`}
 								/>
-								{f.isOnline ? "Online" : "Offline"}
+								{f.isOnline ? t("common.online") : t("common.offline")}
 							</div>
 						</div>
 					</div>
