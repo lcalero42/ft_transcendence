@@ -160,10 +160,6 @@ export class UndercoverGame {
       vote.targetSessionId = targetSessionId;
       this.state.votes.push(vote);
     }
-
-    if (this.state.votes.length >= this.state.alive.length) {
-      this.resolveVoting();
-    }
   }
 
   removePlayer(sessionId: string) {
@@ -194,9 +190,6 @@ export class UndercoverGame {
       if (this.state.votes[i].voterSessionId === sessionId) {
         this.state.votes.splice(i, 1);
       }
-    }
-    if (this.state.votes.length >= this.state.alive.length) {
-      this.resolveVoting();
     }
   }
 
