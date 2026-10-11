@@ -17,6 +17,7 @@ function Home() {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(0);
 
 
 
@@ -28,6 +29,7 @@ function Home() {
                 const data = await fetchRooms();
                 if (!ignore) {
                     setRooms(data);
+                    setError(false);
                 }
             } catch (err) {
                 console.error(err);
@@ -44,7 +46,18 @@ function Home() {
         return () => {
             ignore = true;
         };
-    }, [roomsVersion]);
+    }, [roomsVersion, visibleCount]);
+
+    useEffect(() => {
+        function handleVisibilityChange() {
+            if (document.visibilityState === "visible") {
+                setVisibleCount((count) => count + 1);
+            }
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }, []);
 
     if (loading) return <LoadPage />;
     if (error) return <ErrorPage error={t("home.loadError")} />;

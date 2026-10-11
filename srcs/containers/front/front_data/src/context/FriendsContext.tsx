@@ -17,6 +17,8 @@ import { FriendsContext } from "./friends-context";
 
 type PresenceRoom = Awaited<ReturnType<typeof client.joinOrCreate>>;
 const EMPTY_ONLINE_IDS: Set<number> = new Set();
+const PRESENCE_RETRY_MIN_MS = 2000;
+const PRESENCE_RETRY_MAX_MS = 30000;
 
 function refetchInto<T>(fetcher: () => Promise<T[]>, setState: (value: T[]) => void) {
 	fetcher().then(setState).catch(() => {});
@@ -52,8 +54,18 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		refetchPending();
 
 		let cancelled = false;
+		let hasJoinedBefore = false;
+		let retryDelayMs = PRESENCE_RETRY_MIN_MS;
+		let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
-		client
+		function scheduleRejoin() {
+			if (cancelled) return;
+			retryTimer = setTimeout(joinPresence, retryDelayMs);
+			retryDelayMs = Math.min(retryDelayMs * 2, PRESENCE_RETRY_MAX_MS);
+		}
+
+		function joinPresence() {
+			client
 			.joinOrCreate("presence", { token: getToken() })
 			.then((room) => {
 				if (cancelled) {
@@ -61,6 +73,19 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					return;
 				}
 				roomRef.current = room;
+				retryDelayMs = PRESENCE_RETRY_MIN_MS;
+				room.reconnection.enabled = false;
+				room.onLeave(() => {
+					if (roomRef.current !== room) return;
+					roomRef.current = null;
+					scheduleRejoin();
+				});
+				if (hasJoinedBefore) {
+					refetchFriends();
+					refetchPending();
+					setRoomsVersion((version) => version + 1);
+				}
+				hasJoinedBefore = true;
 
 				room.onMessage("onlineIds", (ids: number[]) => {
 					setOnlineIds(new Set(ids));
@@ -110,12 +135,17 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					setRoomsVersion((version) => version + 1);
 				});
 			})
-			.catch(() => {});
+			.catch(scheduleRejoin);
+		}
+
+		joinPresence();
 
 		return () => {
 			cancelled = true;
-			void roomRef.current?.leave();
+			clearTimeout(retryTimer);
+			const room = roomRef.current;
 			roomRef.current = null;
+			void room?.leave();
 		};
 	}, [isAuth, user?.id, refetchFriends, refetchPending]);
 
