@@ -75,7 +75,7 @@
 			"emailInvalid": "Enter a valid email address.",
 			"usernameRequired": "Username is required.",
 			"usernameTooShort": "Username must be at least 3 characters.",
-			"usernameTooLong": "Username must be at most 12 characters.",
+			"usernameTooLong": "Username must be at most 24 characters.",
 			"passwordRequired": "Password is required.",
 			"passwordTooShort": "Password must be at least 8 characters.",
 			"passwordTooLong": "Password must be at most 72 characters.",

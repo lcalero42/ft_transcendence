@@ -54,7 +54,7 @@ function Register() {
 			nextErrors.username = t("auth.errors.usernameRequired");
 		} else if (form.username.trim().length < 3) {
 			nextErrors.username = t("auth.errors.usernameTooShort");
-		} else if (form.username.trim().length > 12) {
+		} else if (form.username.trim().length > 24) {
 			nextErrors.username = t("auth.errors.usernameTooLong");
 		}
 
