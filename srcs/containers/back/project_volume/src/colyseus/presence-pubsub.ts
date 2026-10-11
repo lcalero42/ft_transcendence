@@ -17,3 +17,7 @@ export function notifyPlayer(
 ): boolean {
   return activeRoom?.notifyPlayer(playerId, type, payload) ?? false;
 }
+
+export function notifyAll(type: string, payload?: unknown) {
+  activeRoom?.broadcast(type, payload);
+}

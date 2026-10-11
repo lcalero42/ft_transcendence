@@ -11,6 +11,7 @@ export interface FriendsContextValue {
 	outgoingRequests: Friendship[];
 	onlineIds: Set<number>;
 	unreadCount: number;
+	roomsVersion: number;
 	isMenuOpen: boolean;
 	toggleMenu: () => void;
 	closeMenu: () => void;

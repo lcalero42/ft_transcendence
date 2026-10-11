@@ -162,7 +162,6 @@
 		"aPlayer": "a player",
 		"typeGuess": "Type your clue...",
 		"waitTurn": "Wait for your turn...",
-		"vote": "vote",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Game opened in another tab"

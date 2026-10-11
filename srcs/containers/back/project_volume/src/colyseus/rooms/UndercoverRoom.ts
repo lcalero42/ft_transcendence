@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Room, type Client, matchMaker } from '@colyseus/core';
+import { Room, type Client, type Delayed, matchMaker } from '@colyseus/core';
 import { UndercoverState, Player } from './UndercoverState';
 import { assignRoles } from './undercoverGameLogic';
 import {
@@ -7,6 +7,7 @@ import {
   MAX_PARTICIPANTS,
   MAX_CLIENTS,
   RECONNECTION_WINDOW_SECONDS,
+  EMPTY_ROOM_GRACE_SECONDS,
   TAKEN_OVER_CODE,
 } from './undercoverConstants';
 import {
@@ -17,7 +18,7 @@ import {
 import { UndercoverGame } from './UndercoverGame';
 import { RoomPersistence } from './RoomPersistence';
 import { getPlayerId, fetchWordPair, areFriends } from '../api';
-import { notifyPlayer } from '../presence-pubsub';
+import { notifyPlayer, notifyAll } from '../presence-pubsub';
 import { prisma } from '../prisma';
 
 export interface JoinOptions {
@@ -50,6 +51,7 @@ export class UndercoverRoom extends Room {
     string,
     ReturnType<Room['allowReconnection']>
   >();
+  private emptyRoomTimer: Delayed | null = null;
 
   messages = {
     start: async (client: Client) => {
@@ -64,6 +66,7 @@ export class UndercoverRoom extends Room {
         roomName + "'s room",
         this.roomId,
       );
+      notifyAll('roomsChanged');
       await this.transferSeats();
     },
 
@@ -177,6 +180,7 @@ export class UndercoverRoom extends Room {
 
   onJoin(client: Client, options?: JoinOptions) {
     this.logger.log('room joined');
+    this.cancelEmptyRoomTimer();
     const auth = client.auth as SeatTransferAuth;
     const previousSessionId = this.pendingHandoffs.has(auth.playerId)
       ? undefined
@@ -229,10 +233,19 @@ export class UndercoverRoom extends Room {
           : `reconnection not possible: ${reason instanceof Error ? reason.message : String(reason)}`,
       );
     });
+
+    if (this.clients.length === 0) {
+      this.cancelEmptyRoomTimer();
+      this.emptyRoomTimer = this.clock.setTimeout(
+        () => this.closeIfEmpty(),
+        EMPTY_ROOM_GRACE_SECONDS * 1000,
+      );
+    }
   }
 
   onReconnect(client: Client) {
     this.logger.log('room reconnected');
+    this.cancelEmptyRoomTimer();
     this.pendingReconnections.delete(client.sessionId);
     const player = this.state.players.get(client.sessionId);
     if (player) {
@@ -262,6 +275,25 @@ export class UndercoverRoom extends Room {
   async onDispose() {
     this.logger.log('room disposed');
     await this.persistence.close();
+    notifyAll('roomsChanged');
+  }
+
+  private cancelEmptyRoomTimer() {
+    this.emptyRoomTimer?.clear();
+    this.emptyRoomTimer = null;
+  }
+
+  private closeIfEmpty() {
+    this.emptyRoomTimer = null;
+    if (this.clients.length > 0) {
+      return;
+    }
+    this.logger.log('room empty, closing without waiting for reconnections');
+    for (const reconnection of this.pendingReconnections.values()) {
+      const reject = reconnection.reject as (reason: Error) => void;
+      reject(new Error('room empty'));
+    }
+    this.pendingReconnections.clear();
   }
 
   private async transferSeats() {
