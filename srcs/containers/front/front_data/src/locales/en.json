@@ -108,6 +108,16 @@
 		"full": "The room is full",
 		"copyLink": "Copy the game link",
 		"inviteHint": "Add players from your friend list or send them the link",
+		"invite": "Invite",
+		"inRoom": "In the room",
+		"noFriendsOnline": "No friends online right now",
+		"inviteSent": "Invitation sent",
+		"errRoomFull": "The room is full",
+		"errGameStarted": "The game has already started",
+		"errAlreadyIn": "This friend is already in the room",
+		"errNotFriend": "This player is not your friend",
+		"errUnavailable": "This friend is no longer available",
+		"errFailed": "Unable to send the invitation",
 		"inviteHintGuest": "Send the link to invite players",
 		"start": "Start the game",
 		"linkCopiedTitle": "Link copied!",
@@ -173,7 +183,10 @@
 		"newRequestDescription": "{{name}} sent you a friend request",
 		"acceptedTitle": "Friend request accepted",
 		"acceptedDescription": "{{name}} accepted your friend request",
-		"loadError": "Could not load your friends"
+		"loadError": "Could not load your friends",
+		"roomInviteTitle": "Game invitation",
+		"roomInviteDescription": "{{name}} invites you to join their room",
+		"join": "Join"
 	},
 	"profile": {
 		"loadError": "Error when loading the player",

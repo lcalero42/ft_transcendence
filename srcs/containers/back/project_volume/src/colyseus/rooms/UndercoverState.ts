@@ -12,6 +12,7 @@ export type RoomPhase =
 export class Player extends Schema {
   @type('string') name: string = '';
   @type('string') avatarUrl: string = '';
+  @type('number') playerId: number = 0;
   @type('boolean') connected: boolean = true;
 }
 

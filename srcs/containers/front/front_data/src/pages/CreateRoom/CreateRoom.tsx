@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
 import type { SeatReservation } from "@colyseus/sdk";
-import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
+import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { toast } from "@/components/ui/toast";
 import { client } from "@/lib/colyseusClient";
 import { getToken } from "@/api/auth/client";
@@ -15,7 +15,7 @@ import { useAuth } from "@/context/useAuth";
 import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
-import FriendList from "../Profile/components/FriendList/FriendList";
+import InviteFriendList from "./components/InviteFriendList";
 import PlayerList from "./components/PlayerList";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
@@ -40,21 +40,21 @@ export default function CreateRoom() {
 		profileLoading
 			? null
 			: async () => {
-					const targetRoomId = targetRoomIdRef.current;
-					const stored = readStoredReconnection();
-					if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
-						try {
-							return await client.reconnect<UndercoverRoom>(stored.token);
-						} catch {
-							clearReconnection();
-						}
+				const targetRoomId = targetRoomIdRef.current;
+				const stored = readStoredReconnection();
+				if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
+					try {
+						return await client.reconnect<UndercoverState>(stored.token);
+					} catch {
+						clearReconnection();
 					}
-					client.auth.token = getToken() ?? "";
-					const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
-					return targetRoomId
-						? client.joinById<UndercoverRoom>(targetRoomId, options)
-						: client.create<UndercoverRoom>("undercover", options);
-				},
+				}
+				client.auth.token = getToken() ?? "";
+				const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
+				return targetRoomId
+					? client.joinById<UndercoverState>(targetRoomId, options)
+					: client.create<UndercoverState>("undercover", options);
+			},
 		[profileLoading],
 	);
 
@@ -62,6 +62,24 @@ export default function CreateRoom() {
 	const hostSessionId = useRoomState(room, (s) => s.hostSessionId);
 	const maxClients = useRoomState(room, (s) => s.maxParticipants);
 	const phase = useRoomState(room, (s) => s.phase);
+
+	useEffect(() => {
+		if (!room) return;
+		return room.onMessage("inviteResult", ({ ok, code }: { ok: boolean; code?: string }) => {
+			const errors: Record<string, string> = {
+				ROOM_FULL: "lobby.errRoomFull",
+				GAME_STARTED: "lobby.errGameStarted",
+				ALREADY_IN_ROOM: "lobby.errAlreadyIn",
+				NOT_FRIEND: "lobby.errNotFriend",
+				FRIEND_UNAVAILABLE: "lobby.errUnavailable",
+			};
+			if (ok) {
+				toast.add({ type: "success", title: t("lobby.inviteSent") });
+			} else {
+				toast.add({ type: "error", title: t(errors[code ?? ""] ?? "lobby.errFailed") });
+			}
+		});
+	}, [room, t]);
 	const joinedPhaseRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
@@ -142,6 +160,21 @@ export default function CreateRoom() {
 		room.send("start");
 	};
 
+	const playerIdsInRoom = new Set(playerEntries.map(([, p]) => p.playerId));
+	const onlineFriends = friends
+		.filter((f) => f.isOnline)
+		.map((f) => ({
+			id: f.id,
+			name: f.name,
+			avatarUrl: resolveAvatar(f.avatarUrl ?? ""),
+			inRoom: playerIdsInRoom.has(f.id),
+		}));
+	const inviteDisabled = phase !== "setup" || playerEntries.length >= (maxClients ?? 0);
+
+	const handleInvite = (friendId: number) => {
+		room.send("inviteFriend", { friendId });
+	};
+
 	return (
 		<div className="page">
 			<Header />
@@ -166,14 +199,20 @@ export default function CreateRoom() {
 					<div className="px-[10vw] py-5 md:flex">
 						{!isGuest && (
 							<div className="w-full md:flex md:justify-center">
-								<FriendList friends={friends} status={friendsStatus} onRetry={retryFriends} />
+								<InviteFriendList
+									friends={onlineFriends}
+									status={friendsStatus}
+									onRetry={retryFriends}
+									disabled={inviteDisabled}
+									onInvite={handleInvite}
+								/>
 							</div>
 						)}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>
-					</div>
-				</div>
+					</div >
+				</div >
 
 				{isHost && <div className="max-w-2xl m-10 mx-auto flex flex-1 items-center justify-center">
 					<button
@@ -182,8 +221,9 @@ export default function CreateRoom() {
 					>
 						{t("lobby.start")}
 					</button>
-				</div>}
-			</main>
-		</div>
+				</div>
+				}
+			</main >
+		</div >
 	);
 }

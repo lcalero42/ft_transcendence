@@ -59,6 +59,17 @@ export async function getPlayerId(token: string) {
   return player?.id ?? null;
 }
 
+export async function areFriends(token: string, friendId: number) {
+  const friendships = await apiRequest<
+    { requesterId: number; addresseeId: number }[]
+  >('/friendship?status=ACCEPTED', { token });
+  return (
+    friendships?.some(
+      (f) => f.requesterId === friendId || f.addresseeId === friendId,
+    ) ?? false
+  );
+}
+
 export async function createRoom(
   token: string,
   name: string,
