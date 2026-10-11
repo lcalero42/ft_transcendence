@@ -78,6 +78,11 @@
 			"usernameTooLong": "El nombre de usuario debe tener como máximo 12 caracteres.",
 			"passwordRequired": "La contraseña es obligatoria.",
 			"passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+			"passwordTooLong": "La contraseña debe tener como máximo 72 caracteres.",
+			"passwordNoUppercase": "La contraseña debe contener al menos una mayúscula.",
+			"passwordNoLowercase": "La contraseña debe contener al menos una minúscula.",
+			"passwordNoNumber": "La contraseña debe contener al menos un número.",
+			"passwordNoSpecial": "La contraseña debe contener al menos un carácter especial.",
 			"passwordMismatch": "Las contraseñas no coinciden."
 		}
 	},

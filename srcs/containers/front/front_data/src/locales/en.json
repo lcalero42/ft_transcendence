@@ -78,6 +78,11 @@
 			"usernameTooLong": "Username must be at most 12 characters.",
 			"passwordRequired": "Password is required.",
 			"passwordTooShort": "Password must be at least 8 characters.",
+			"passwordTooLong": "Password must be at most 72 characters.",
+			"passwordNoUppercase": "Password must contain at least one uppercase letter.",
+			"passwordNoLowercase": "Password must contain at least one lowercase letter.",
+			"passwordNoNumber": "Password must contain at least one number.",
+			"passwordNoSpecial": "Password must contain at least one special character.",
 			"passwordMismatch": "Passwords do not match."
 		}
 	},

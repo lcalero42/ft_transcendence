@@ -7,6 +7,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useAuth } from "@/context/useAuth.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { firstPasswordError } from "@/lib/passwordPolicy";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -57,10 +58,11 @@ function Register() {
 			nextErrors.username = t("auth.errors.usernameTooLong");
 		}
 
+		const passwordError = firstPasswordError(form.password);
 		if (!form.password) {
 			nextErrors.password = t("auth.errors.passwordRequired");
-		} else if (form.password.length < 8) {
-			nextErrors.password = t("auth.errors.passwordTooShort");
+		} else if (passwordError) {
+			nextErrors.password = t(passwordError);
 		}
 
 		if (form.confirmPassword !== form.password) {
@@ -98,8 +100,6 @@ function Register() {
 		} finally {
 			setIsSubmitting(false);
 		}
-
-		console.log("submit fired", form);
 	}
 
 	return (
