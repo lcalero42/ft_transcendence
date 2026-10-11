@@ -11,7 +11,8 @@
 		"offline": "Desconectado",
 		"success": "Éxito",
 		"errorOccurred": "Se ha producido un error",
-		"somethingWentWrong": "Algo ha salido mal."
+		"somethingWentWrong": "Algo ha salido mal.",
+		"retry": "Reintentar"
 	},
 	"language": {
 		"label": "Idioma",
@@ -182,6 +183,7 @@
 		"newRequestDescription": "{{name}} te ha enviado una solicitud de amistad",
 		"acceptedTitle": "Solicitud de amistad aceptada",
 		"acceptedDescription": "{{name}} ha aceptado tu solicitud de amistad",
+		"loadError": "No se pudieron cargar tus amigos",
 		"roomInviteTitle": "Invitación a una partida",
 		"roomInviteDescription": "{{name}} te invita a unirte a su sala",
 		"join": "Unirse"

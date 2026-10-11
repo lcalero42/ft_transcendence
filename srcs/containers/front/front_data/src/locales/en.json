@@ -11,7 +11,8 @@
 		"offline": "Offline",
 		"success": "Success",
 		"errorOccurred": "An error occurred",
-		"somethingWentWrong": "Something went wrong."
+		"somethingWentWrong": "Something went wrong.",
+		"retry": "Retry"
 	},
 	"language": {
 		"label": "Language",
@@ -182,6 +183,7 @@
 		"newRequestDescription": "{{name}} sent you a friend request",
 		"acceptedTitle": "Friend request accepted",
 		"acceptedDescription": "{{name}} accepted your friend request",
+		"loadError": "Could not load your friends",
 		"roomInviteTitle": "Game invitation",
 		"roomInviteDescription": "{{name}} invites you to join their room",
 		"join": "Join"

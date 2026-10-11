@@ -11,7 +11,8 @@
 		"offline": "Hors ligne",
 		"success": "Succès",
 		"errorOccurred": "Une erreur est survenue",
-		"somethingWentWrong": "Quelque chose s'est mal passé."
+		"somethingWentWrong": "Quelque chose s'est mal passé.",
+		"retry": "Réessayer"
 	},
 	"language": {
 		"label": "Langue",
@@ -182,6 +183,7 @@
 		"newRequestDescription": "{{name}} vous a envoyé une demande d'ami",
 		"acceptedTitle": "Demande d'ami acceptée",
 		"acceptedDescription": "{{name}} a accepté votre demande d'ami",
+		"loadError": "Impossible de charger vos amis",
 		"roomInviteTitle": "Invitation à une partie",
 		"roomInviteDescription": "{{name}} vous invite à rejoindre son salon",
 		"join": "Rejoindre"
