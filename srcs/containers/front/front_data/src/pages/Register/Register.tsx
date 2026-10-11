@@ -58,7 +58,7 @@ function Register() {
 			nextErrors.username = t("auth.errors.usernameTooLong");
 		}
 
-		const passwordError = firstPasswordError(form.password);
+		const passwordError = firstPasswordError(form.password, { username: form.username, email: form.email });
 		if (!form.password) {
 			nextErrors.password = t("auth.errors.passwordRequired");
 		} else if (passwordError) {

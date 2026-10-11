@@ -83,6 +83,8 @@
 			"passwordNoLowercase": "La contraseña debe contener al menos una minúscula.",
 			"passwordNoNumber": "La contraseña debe contener al menos un número.",
 			"passwordNoSpecial": "La contraseña debe contener al menos un carácter especial.",
+			"passwordTooCommon": "Esta contraseña es demasiado común.",
+			"passwordContainsIdentity": "La contraseña no debe contener tu nombre de usuario ni tu correo.",
 			"passwordMismatch": "Las contraseñas no coinciden."
 		}
 	},

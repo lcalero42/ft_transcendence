@@ -83,6 +83,8 @@
 			"passwordNoLowercase": "Le mot de passe doit contenir au moins une minuscule.",
 			"passwordNoNumber": "Le mot de passe doit contenir au moins un chiffre.",
 			"passwordNoSpecial": "Le mot de passe doit contenir au moins un caractère spécial.",
+			"passwordTooCommon": "Ce mot de passe est trop courant.",
+			"passwordContainsIdentity": "Le mot de passe ne doit pas contenir votre nom d'utilisateur ou votre e-mail.",
 			"passwordMismatch": "Les mots de passe ne correspondent pas."
 		}
 	},
