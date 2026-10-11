@@ -11,7 +11,8 @@
 		"offline": "Offline",
 		"success": "Success",
 		"errorOccurred": "An error occurred",
-		"somethingWentWrong": "Something went wrong."
+		"somethingWentWrong": "Something went wrong.",
+		"retry": "Retry"
 	},
 	"language": {
 		"label": "Language",
@@ -74,9 +75,16 @@
 			"emailInvalid": "Enter a valid email address.",
 			"usernameRequired": "Username is required.",
 			"usernameTooShort": "Username must be at least 3 characters.",
-			"usernameTooLong": "Username must be at most 12 characters.",
+			"usernameTooLong": "Username must be at most 24 characters.",
 			"passwordRequired": "Password is required.",
 			"passwordTooShort": "Password must be at least 8 characters.",
+			"passwordTooLong": "Password must be at most 72 characters.",
+			"passwordNoUppercase": "Password must contain at least one uppercase letter.",
+			"passwordNoLowercase": "Password must contain at least one lowercase letter.",
+			"passwordNoNumber": "Password must contain at least one number.",
+			"passwordNoSpecial": "Password must contain at least one special character.",
+			"passwordTooCommon": "This password is too common.",
+			"passwordContainsIdentity": "Password must not contain your username or email.",
 			"passwordMismatch": "Passwords do not match."
 		}
 	},
@@ -181,6 +189,7 @@
 		"newRequestDescription": "{{name}} sent you a friend request",
 		"acceptedTitle": "Friend request accepted",
 		"acceptedDescription": "{{name}} accepted your friend request",
+		"loadError": "Could not load your friends",
 		"roomInviteTitle": "Game invitation",
 		"roomInviteDescription": "{{name}} invites you to join their room",
 		"join": "Join"

@@ -12,8 +12,6 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { useFriends } from "@/context/useFriends";
-import { otherPlayer } from "@/api/friendship";
 import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
@@ -22,17 +20,20 @@ import PlayerList from "./components/PlayerList";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import { useTranslation } from "react-i18next";
+import { useFriends } from "@/context/useFriends";
+import { useFriendPlayers } from "@/context/useFriendPlayers";
 
 function resolveAvatar(avatarUrl: string) {
 	return avatarUrl ? `${import.meta.env.VITE_API_URL}${avatarUrl}` : DefaultAvatar;
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading, user, isGuest } = useAuth();
-	const { friends, onlineIds } = useFriends();
+	const { profile, profileLoading, isGuest } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
+	const { friendsStatus, retryFriends } = useFriends();
+	const friends = useFriendPlayers();
 	const targetRoomIdRef = useRef(routeRoomId);
 
 	const { room, error, isConnecting } = useRoom(
@@ -161,8 +162,7 @@ export default function CreateRoom() {
 
 	const playerIdsInRoom = new Set(playerEntries.map(([, p]) => p.playerId));
 	const onlineFriends = friends
-		.map((f) => otherPlayer(f, user?.id))
-		.filter((f) => onlineIds.has(f.id))
+		.filter((f) => f.isOnline)
 		.map((f) => ({
 			id: f.id,
 			name: f.name,
@@ -197,13 +197,17 @@ export default function CreateRoom() {
 						<p>{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
-						{!isGuest && <div className="w-full md:flex md:justify-center">
-							<InviteFriendList
-								friends={onlineFriends}
-								disabled={inviteDisabled}
-								onInvite={handleInvite}
-							/>
-						</div>}
+						{!isGuest && (
+							<div className="w-full md:flex md:justify-center">
+								<InviteFriendList
+									friends={onlineFriends}
+									status={friendsStatus}
+									onRetry={retryFriends}
+									disabled={inviteDisabled}
+									onInvite={handleInvite}
+								/>
+							</div>
+						)}
 						<div className="w-full md:flex md:justify-center">
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>
