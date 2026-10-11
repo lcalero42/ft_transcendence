@@ -38,6 +38,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	const [pending, setPending] = useState<Friendship[]>([]);
 	const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 	const [unreadCount, setUnreadCount] = useState(0);
+	const [roomsVersion, setRoomsVersion] = useState(0);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const roomRef = useRef<PresenceRoom | null>(null);
 
@@ -105,6 +106,9 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				room.onMessage("friendRemoved", () => {
 					refetchFriends();
 				});
+				room.onMessage("roomsChanged", () => {
+					setRoomsVersion((version) => version + 1);
+				});
 			})
 			.catch(() => {});
 
@@ -149,6 +153,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				outgoingRequests,
 				onlineIds: isAuth ? onlineIds : EMPTY_ONLINE_IDS,
 				unreadCount: isAuth ? unreadCount : 0,
+				roomsVersion,
 				isMenuOpen,
 				toggleMenu,
 				closeMenu,

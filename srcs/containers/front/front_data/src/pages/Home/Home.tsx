@@ -9,9 +9,11 @@ import Header from "@/components/Header/Header";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import { useTranslation } from "react-i18next";
+import { useFriends } from "@/context/useFriends";
 
 function Home() {
     const { t } = useTranslation();
+    const { roomsVersion } = useFriends();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -23,7 +25,6 @@ function Home() {
 
         async function loadRooms() {
             try {
-                setLoading(true);
                 const data = await fetchRooms();
                 if (!ignore) {
                     setRooms(data);
@@ -43,7 +44,7 @@ function Home() {
         return () => {
             ignore = true;
         };
-    }, []);
+    }, [roomsVersion]);
 
     if (loading) return <LoadPage />;
     if (error) return <ErrorPage error={t("home.loadError")} />;
