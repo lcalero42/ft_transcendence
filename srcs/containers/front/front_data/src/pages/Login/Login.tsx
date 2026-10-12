@@ -3,10 +3,11 @@ import FormField from "../../components/FormField/FormField";
 import Checkbox from "./components/Checkbox/Checkbox";
 import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { Link, useNavigate} from "react-router-dom";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { Link, Navigate, useNavigate} from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useTranslation } from "react-i18next";
+import { toast } from "@/components/ui/toast";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,7 +25,7 @@ const initialForm: LoginForm = {
 
 function Login() {
 
-	const {login} = useAuth();
+	const {login, isAuth, isGuest, isLoading, profileLoading} = useAuth();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
@@ -34,6 +35,23 @@ function Login() {
 
 	const [authError, setAuthError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	const justLoggedIn = useRef(false);
+	const alreadyLogged = !isLoading && isAuth && !profileLoading && !isGuest;
+
+	useEffect(() => {
+		if (alreadyLogged && !justLoggedIn.current) {
+			toast.add({ id: "already-logged-in", type: "info", title: t("auth.alreadyLogged") });
+		}
+	}, [alreadyLogged, t]);
+
+	if (isLoading || (isAuth && profileLoading)) {
+		return null;
+	}
+
+	if (alreadyLogged) {
+		return <Navigate to="/home" replace />;
+	}
 
 	function handleChange(e: ChangeEvent<HTMLInputElement>) {
 		const { name, value } = e.target;
@@ -69,9 +87,11 @@ function Login() {
 
 		setIsSubmitting(true);
 		try {
+			justLoggedIn.current = true;
 			await login(form.email, form.password, rememberMe);
 			void navigate("/");
 		} catch (err) {
+			justLoggedIn.current = false;
       		setAuthError(err instanceof Error ? err.message : t("auth.login.failed"));
 		} finally {
 			setIsSubmitting(false);
