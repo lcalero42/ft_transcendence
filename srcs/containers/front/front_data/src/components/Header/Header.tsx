@@ -22,7 +22,7 @@ function Header({ compact, wide }: HeaderProps) {
 			</div>
 			<div className="flex shrink-0 items-center gap-3 sm:gap-4">
 				<LanguageSwitcher />
-				<LinkProfile name={profile?.name ? profile.name : t("auth.guest")} icon="🥷" />
+				<LinkProfile name={profile?.name ? profile.name : t("auth.guest")} avatarUrl={profile?.avatarUrl || null} />
 			</div>
 		</header>
 	);
