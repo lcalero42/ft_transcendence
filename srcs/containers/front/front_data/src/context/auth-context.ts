@@ -14,7 +14,7 @@ export interface AuthContextValue {
   isGuest: boolean;
   isAdmin: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   guest: (name: string) => Promise<void>;
   logout: () => void;

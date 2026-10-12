@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { getToken } from "../api/auth/client";
+import { getToken, onTokenCleared, requestSessionToken } from "../api/auth/client";
 import * as authApi from "../api/auth/auth";
 import { getMe, type Player } from "../api/player";
 import { AuthContext, type User } from "./auth-context";
@@ -25,6 +25,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return token ? decodeToken(token) : null;
   });
   const [fetchedProfile, setFetchedProfile] = useState<{ userId: number; profile: Player | null } | null>(null);
+  const [isLoading, setIsLoading] = useState(() => !getToken() && typeof BroadcastChannel !== "undefined");
+
+  useEffect(() => {
+    if (!isLoading) return;
+
+    let ignore = false;
+    void requestSessionToken().then((token) => {
+      if (ignore) return;
+      if (token) setUser(decodeToken(token));
+      setIsLoading(false);
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [isLoading]);
+
+  useEffect(() => onTokenCleared(() => setUser(null)), []);
 
   useEffect(() => {
     if (!user) return;
@@ -52,8 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const profileLoading = !!user && fetchedProfile?.userId !== user.id;
   const isGuest = profile?.isGuest ?? false;
 
-  async function login(email: string, pw: string) {
-    const { accessToken } = await authApi.login(email, pw);
+  async function login(email: string, pw: string, rememberMe: boolean) {
+    const { accessToken } = await authApi.login(email, pw, rememberMe);
     setUser(decodeToken(accessToken));
   }
 
@@ -81,7 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuth: !!user,
         isGuest,
         isAdmin: !!profile?.isAdmin,
-        isLoading: false,
+        isLoading,
         login,
         register,
         guest,

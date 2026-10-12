@@ -69,15 +69,13 @@ function Login() {
 
 		setIsSubmitting(true);
 		try {
-			await login(form.email, form.password);
+			await login(form.email, form.password, rememberMe);
 			void navigate("/");
 		} catch (err) {
       		setAuthError(err instanceof Error ? err.message : t("auth.login.failed"));
 		} finally {
 			setIsSubmitting(false);
 		}
-
-		console.log("submit fired", { ...form, rememberMe });
 	}
 
 	return (

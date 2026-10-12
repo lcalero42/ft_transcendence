@@ -16,6 +16,7 @@ export DATABASE_URL="postgresql://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_N
   echo "DATABASE_URL=${DATABASE_URL}"
   echo "JWT_SECRET=${JWT_SECRET}"
   echo "JWT_EXPIRES_IN=1d"
+  echo "JWT_REMEMBER_EXPIRES_IN=30d"
   echo "INTERNAL_API_KEY=${INTERNAL_API_KEY}"
 } > /app/.env
 
