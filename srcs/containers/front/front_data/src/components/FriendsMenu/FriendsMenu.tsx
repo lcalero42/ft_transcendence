@@ -1,24 +1,19 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@/context/useAuth";
 import { useFriends } from "@/context/useFriends";
-import { otherPlayer } from "@/api/friendship";
+import { useFriendPlayers } from "@/context/useFriendPlayers";
 import RequestInput from "./RequestInput";
 import SentRequests from "./SentRequests";
 import PendingRequests from "./PendingRequests";
 import FriendListItem from "./FriendListItem";
 
 function FriendsMenu() {
-	const { user } = useAuth();
-	const { isMenuOpen, closeMenu, friends, onlineIds, removeFriend } = useFriends();
+	const { isMenuOpen, closeMenu, removeFriend } = useFriends();
+	const friendPlayers = useFriendPlayers();
 	const [expandedFriendId, setExpandedFriendId] = useState<number | null>(null);
 	const { t } = useTranslation();
 
-	const friendPlayers = friends.map((f) => ({
-		friendshipId: f.id,
-		...otherPlayer(f, user?.id),
-	}));
-	const onlineCount = friendPlayers.filter((p) => onlineIds.has(p.id)).length;
+	const onlineCount = friendPlayers.filter((p) => p.isOnline).length;
 
 	return (
 		<>
@@ -49,7 +44,7 @@ function FriendsMenu() {
 										key={p.id}
 										name={p.name}
 										avatarUrl={p.avatarUrl}
-										isOnline={onlineIds.has(p.id)}
+										isOnline={p.isOnline}
 										expanded={expandedFriendId === p.friendshipId}
 										onToggle={() => setExpandedFriendId((prev) => (prev === p.friendshipId ? null : p.friendshipId))}
 										onRemove={() => { void removeFriend(p.friendshipId); }}

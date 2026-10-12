@@ -11,7 +11,8 @@
 		"offline": "Offline",
 		"success": "Success",
 		"errorOccurred": "An error occurred",
-		"somethingWentWrong": "Something went wrong."
+		"somethingWentWrong": "Something went wrong.",
+		"retry": "Retry"
 	},
 	"language": {
 		"label": "Language",
@@ -74,9 +75,16 @@
 			"emailInvalid": "Enter a valid email address.",
 			"usernameRequired": "Username is required.",
 			"usernameTooShort": "Username must be at least 3 characters.",
-			"usernameTooLong": "Username must be at most 12 characters.",
+			"usernameTooLong": "Username must be at most 24 characters.",
 			"passwordRequired": "Password is required.",
 			"passwordTooShort": "Password must be at least 8 characters.",
+			"passwordTooLong": "Password must be at most 72 characters.",
+			"passwordNoUppercase": "Password must contain at least one uppercase letter.",
+			"passwordNoLowercase": "Password must contain at least one lowercase letter.",
+			"passwordNoNumber": "Password must contain at least one number.",
+			"passwordNoSpecial": "Password must contain at least one special character.",
+			"passwordTooCommon": "This password is too common.",
+			"passwordContainsIdentity": "Password must not contain your username or email.",
 			"passwordMismatch": "Passwords do not match."
 		}
 	},
@@ -107,6 +115,16 @@
 		"full": "The room is full",
 		"copyLink": "Copy the game link",
 		"inviteHint": "Add players from your friend list or send them the link",
+		"invite": "Invite",
+		"inRoom": "In the room",
+		"noFriendsOnline": "No friends online right now",
+		"inviteSent": "Invitation sent",
+		"errRoomFull": "The room is full",
+		"errGameStarted": "The game has already started",
+		"errAlreadyIn": "This friend is already in the room",
+		"errNotFriend": "This player is not your friend",
+		"errUnavailable": "This friend is no longer available",
+		"errFailed": "Unable to send the invitation",
 		"inviteHintGuest": "Send the link to invite players",
 		"start": "Start the game",
 		"linkCopiedTitle": "Link copied!",
@@ -144,7 +162,6 @@
 		"aPlayer": "a player",
 		"typeGuess": "Type your clue...",
 		"waitTurn": "Wait for your turn...",
-		"vote": "vote",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Game opened in another tab"
@@ -171,7 +188,11 @@
 		"newRequestTitle": "New friend request",
 		"newRequestDescription": "{{name}} sent you a friend request",
 		"acceptedTitle": "Friend request accepted",
-		"acceptedDescription": "{{name}} accepted your friend request"
+		"acceptedDescription": "{{name}} accepted your friend request",
+		"loadError": "Could not load your friends",
+		"roomInviteTitle": "Game invitation",
+		"roomInviteDescription": "{{name}} invites you to join their room",
+		"join": "Join"
 	},
 	"profile": {
 		"loadError": "Error when loading the player",

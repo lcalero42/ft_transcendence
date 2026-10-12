@@ -9,12 +9,15 @@ import Header from "@/components/Header/Header";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import { useTranslation } from "react-i18next";
+import { useFriends } from "@/context/useFriends";
 
 function Home() {
     const { t } = useTranslation();
+    const { roomsVersion } = useFriends();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(0);
 
 
 
@@ -23,10 +26,10 @@ function Home() {
 
         async function loadRooms() {
             try {
-                setLoading(true);
                 const data = await fetchRooms();
                 if (!ignore) {
                     setRooms(data);
+                    setError(false);
                 }
             } catch (err) {
                 console.error(err);
@@ -43,6 +46,17 @@ function Home() {
         return () => {
             ignore = true;
         };
+    }, [roomsVersion, visibleCount]);
+
+    useEffect(() => {
+        function handleVisibilityChange() {
+            if (document.visibilityState === "visible") {
+                setVisibleCount((count) => count + 1);
+            }
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
     }, []);
 
     if (loading) return <LoadPage />;

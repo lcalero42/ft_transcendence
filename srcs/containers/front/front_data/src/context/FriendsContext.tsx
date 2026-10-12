@@ -13,10 +13,12 @@ import {
 	type Friendship,
 } from "../api/friendship";
 import { useAuth } from "./useAuth";
-import { FriendsContext } from "./friends-context";
+import { FriendsContext, type FriendsStatus } from "./friends-context";
 
 type PresenceRoom = Awaited<ReturnType<typeof client.joinOrCreate>>;
 const EMPTY_ONLINE_IDS: Set<number> = new Set();
+const PRESENCE_RETRY_MIN_MS = 2000;
+const PRESENCE_RETRY_MAX_MS = 30000;
 
 function refetchInto<T>(fetcher: () => Promise<T[]>, setState: (value: T[]) => void) {
 	fetcher().then(setState).catch(() => {});
@@ -34,14 +36,32 @@ function withRefetch<Args extends unknown[]>(
 
 export function FriendsProvider({ children }: { children: ReactNode }) {
 	const { isAuth, user } = useAuth();
-	const [friends, setFriends] = useState<Friendship[]>([]);
+	const [friendsState, setFriendsState] = useState<{
+		userId: number | undefined;
+		list: Friendship[];
+		status: FriendsStatus;
+	}>({ userId: undefined, list: [], status: "loading" });
 	const [pending, setPending] = useState<Friendship[]>([]);
 	const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 	const [unreadCount, setUnreadCount] = useState(0);
+	const [roomsVersion, setRoomsVersion] = useState(0);
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const roomRef = useRef<PresenceRoom | null>(null);
 
-	const refetchFriends = useCallback(() => refetchInto(getFriends, setFriends), []);
+	const userId = user?.id;
+	const refetchFriends = useCallback(() => {
+		getFriends()
+			.then((list) => {
+				setFriendsState({ userId, list, status: "ready" });
+			})
+			.catch(() => {
+				setFriendsState((prev) =>
+					prev.userId === userId && prev.status === "ready"
+						? prev
+						: { userId, list: [], status: "error" },
+				);
+			});
+	}, [userId]);
 	const refetchPending = useCallback(() => refetchInto(getPendingRequests, setPending), []);
 
 	useEffect(() => {
@@ -51,8 +71,18 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 		refetchPending();
 
 		let cancelled = false;
+		let hasJoinedBefore = false;
+		let retryDelayMs = PRESENCE_RETRY_MIN_MS;
+		let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
-		client
+		function scheduleRejoin() {
+			if (cancelled) return;
+			retryTimer = setTimeout(joinPresence, retryDelayMs);
+			retryDelayMs = Math.min(retryDelayMs * 2, PRESENCE_RETRY_MAX_MS);
+		}
+
+		function joinPresence() {
+			client
 			.joinOrCreate("presence", { token: getToken() })
 			.then((room) => {
 				if (cancelled) {
@@ -60,6 +90,19 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					return;
 				}
 				roomRef.current = room;
+				retryDelayMs = PRESENCE_RETRY_MIN_MS;
+				room.reconnection.enabled = false;
+				room.onLeave(() => {
+					if (roomRef.current !== room) return;
+					roomRef.current = null;
+					scheduleRejoin();
+				});
+				if (hasJoinedBefore) {
+					refetchFriends();
+					refetchPending();
+					setRoomsVersion((version) => version + 1);
+				}
+				hasJoinedBefore = true;
 
 				room.onMessage("onlineIds", (ids: number[]) => {
 					setOnlineIds(new Set(ids));
@@ -79,7 +122,19 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 					setUnreadCount((c) => c + 1);
 					refetchPending();
 				});
-				room.onMessage("friendRequestAccepted", ({ fromName }: { fromName: string }) => {
+				room.onMessage("roomInvite", ({ roomId, fromName }: { roomId: string; fromName: string }) => {
+					toast.add({
+						type: "info",
+						title: i18n.t("friends.roomInviteTitle"),
+						description: i18n.t("friends.roomInviteDescription", { name: fromName }),
+						timeout: 15000,
+						actionProps: {
+							children: i18n.t("friends.join"),
+							onClick: () => window.location.assign(`/create-room/${roomId}`),
+						},
+					});
+				});
+				room.onMessage("friendRequestAccepted",({ fromName }: { fromName: string }) => {
 					toast.add({ type: "success", title: i18n.t("friends.acceptedTitle"), description: i18n.t("friends.acceptedDescription", { name: fromName }) });
 					refetchFriends();
 					refetchPending();
@@ -93,15 +148,28 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 				room.onMessage("friendRemoved", () => {
 					refetchFriends();
 				});
+				room.onMessage("roomsChanged", () => {
+					setRoomsVersion((version) => version + 1);
+				});
 			})
-			.catch(() => {});
+			.catch(scheduleRejoin);
+		}
+
+		joinPresence();
 
 		return () => {
 			cancelled = true;
-			void roomRef.current?.leave();
+			clearTimeout(retryTimer);
+			const room = roomRef.current;
 			roomRef.current = null;
+			void room?.leave();
 		};
 	}, [isAuth, user?.id, refetchFriends, refetchPending]);
+
+	function retryFriends() {
+		setFriendsState({ userId, list: [], status: "loading" });
+		refetchFriends();
+	}
 
 	function toggleMenu() {
 		setIsMenuOpen((prev) => {
@@ -126,17 +194,25 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	const cancelRequest = withRefetch(cancelRequestApi, [refetchPending]);
 	const removeFriend = withRefetch(removeFriendApi, [refetchFriends]);
 
+	// Friends loaded for another account are stale: show them as still loading
+	const friendsAreCurrent = isAuth && friendsState.userId === userId;
+	const friends = friendsAreCurrent ? friendsState.list : [];
+	const friendsStatus: FriendsStatus = friendsAreCurrent ? friendsState.status : "loading";
+
 	const incomingRequests = isAuth ? pending.filter((f) => f.addresseeId === user?.id) : [];
 	const outgoingRequests = isAuth ? pending.filter((f) => f.requesterId === user?.id) : [];
 
 	return (
 		<FriendsContext.Provider
 			value={{
-				friends: isAuth ? friends : [],
+				friends,
+				friendsStatus,
+				retryFriends,
 				incomingRequests,
 				outgoingRequests,
 				onlineIds: isAuth ? onlineIds : EMPTY_ONLINE_IDS,
 				unreadCount: isAuth ? unreadCount : 0,
+				roomsVersion,
 				isMenuOpen,
 				toggleMenu,
 				closeMenu,

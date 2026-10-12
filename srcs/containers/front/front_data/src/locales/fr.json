@@ -11,7 +11,8 @@
 		"offline": "Hors ligne",
 		"success": "Succès",
 		"errorOccurred": "Une erreur est survenue",
-		"somethingWentWrong": "Quelque chose s'est mal passé."
+		"somethingWentWrong": "Quelque chose s'est mal passé.",
+		"retry": "Réessayer"
 	},
 	"language": {
 		"label": "Langue",
@@ -74,9 +75,16 @@
 			"emailInvalid": "Entrez une adresse e-mail valide.",
 			"usernameRequired": "Le nom d'utilisateur est requis.",
 			"usernameTooShort": "Le nom d'utilisateur doit contenir au moins 3 caractères.",
-			"usernameTooLong": "Le nom d'utilisateur doit contenir au plus 12 caractères.",
+			"usernameTooLong": "Le nom d'utilisateur doit contenir au plus 24 caractères.",
 			"passwordRequired": "Le mot de passe est requis.",
 			"passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères.",
+			"passwordTooLong": "Le mot de passe doit contenir au plus 72 caractères.",
+			"passwordNoUppercase": "Le mot de passe doit contenir au moins une majuscule.",
+			"passwordNoLowercase": "Le mot de passe doit contenir au moins une minuscule.",
+			"passwordNoNumber": "Le mot de passe doit contenir au moins un chiffre.",
+			"passwordNoSpecial": "Le mot de passe doit contenir au moins un caractère spécial.",
+			"passwordTooCommon": "Ce mot de passe est trop courant.",
+			"passwordContainsIdentity": "Le mot de passe ne doit pas contenir votre nom d'utilisateur ou votre e-mail.",
 			"passwordMismatch": "Les mots de passe ne correspondent pas."
 		}
 	},
@@ -107,6 +115,16 @@
 		"full": "Le salon est complet",
 		"copyLink": "Copier le lien de la partie",
 		"inviteHint": "Ajoutez des joueurs depuis votre liste d'amis ou envoyez-leur le lien",
+		"invite": "Inviter",
+		"inRoom": "Dans le salon",
+		"noFriendsOnline": "Aucun ami en ligne pour le moment",
+		"inviteSent": "Invitation envoyée",
+		"errRoomFull": "Le salon est complet",
+		"errGameStarted": "La partie a déjà commencé",
+		"errAlreadyIn": "Cet ami est déjà dans le salon",
+		"errNotFriend": "Ce joueur n'est pas dans vos amis",
+		"errUnavailable": "Cet ami n'est plus disponible",
+		"errFailed": "Impossible d'envoyer l'invitation",
 		"inviteHintGuest": "Envoyez le lien pour inviter des joueurs",
 		"start": "Lancer la partie",
 		"linkCopiedTitle": "Lien copié !",
@@ -144,7 +162,6 @@
 		"aPlayer": "un joueur",
 		"typeGuess": "Écrivez votre indice...",
 		"waitTurn": "Attendez votre tour...",
-		"vote": "voter",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Partie ouverte dans un autre onglet"
@@ -171,7 +188,11 @@
 		"newRequestTitle": "Nouvelle demande d'ami",
 		"newRequestDescription": "{{name}} vous a envoyé une demande d'ami",
 		"acceptedTitle": "Demande d'ami acceptée",
-		"acceptedDescription": "{{name}} a accepté votre demande d'ami"
+		"acceptedDescription": "{{name}} a accepté votre demande d'ami",
+		"loadError": "Impossible de charger vos amis",
+		"roomInviteTitle": "Invitation à une partie",
+		"roomInviteDescription": "{{name}} vous invite à rejoindre son salon",
+		"join": "Rejoindre"
 	},
 	"profile": {
 		"loadError": "Erreur lors du chargement du joueur",
