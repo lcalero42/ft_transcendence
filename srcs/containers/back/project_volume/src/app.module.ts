@@ -10,6 +10,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { FriendshipModule } from './friendship/friendship.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BootstrapModule } from './bootstrap/bootstrap.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     WordPairModule,
     GameModule,
     FriendshipModule,
+    BootstrapModule,
   ],
   controllers: [AppController],
   providers: [AppService],

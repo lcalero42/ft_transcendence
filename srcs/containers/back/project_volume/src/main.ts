@@ -5,11 +5,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { colyseusServer } from './colyseus/server';
 import { PrismaExceptionFilter } from './common/prisma-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
+import { requireEnv } from './common/require-env';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', 1);
   app.enableCors({
-    origin: 'http://localhost:5173', // Vite dev server's address
+    origin: requireEnv('CORS_ORIGIN'),
   });
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
