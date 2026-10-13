@@ -19,12 +19,12 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, isVoteTa
 				{name}
 			</span>
 			<div
-				className={`relative flex h-[72px] w-[80px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border transition-[scale,border-color,box-shadow] duration-200 ease-in-out ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"} ${isAimed ? "scale-105 border-accent-purple/70 shadow-[0_0_14px_#8B57FB66]" : ""} ${isVoteTarget ? "ring-accent-purple ring-2 shadow-[0_0_18px_#8B57FB]" : ""}`}
+				className={`relative flex h-[65px] w-[72px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border transition-[scale,border-color,box-shadow] duration-200 ease-in-out ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"} ${isAimed ? "scale-105 border-accent-purple/70 shadow-[0_0_14px_#8B57FB66]" : ""} ${isVoteTarget ? "ring-accent-purple ring-2 shadow-[0_0_18px_#8B57FB]" : ""}`}
 			>
 				<img
 					src={avatarUrl}
 					alt={name}
-					className="size-14 shrink-0 rounded-full object-cover md:size-[max(3vw,92px)]"
+					className="size-[50px] shrink-0 rounded-full object-cover md:size-[max(3vw,92px)]"
 				/>
 				{!!voteCount && (
 					<span
@@ -37,7 +37,7 @@ function PlayerAvatar({ name, avatarUrl, hintWord, isActive, voteCount, isVoteTa
 				)}
 			</div>
 			{hintWord && (
-				<span className="border-winrate/40 bg-winrate/10 text-winrate text-small max-w-[80px] rounded-2xl md:max-w-[max(4.8vw,132px)] border px-3 py-1 font-bold break-words">
+				<span className="border-winrate/40 bg-winrate/10 text-winrate text-[9px] md:text-small max-w-[72px] rounded-2xl md:max-w-[max(4.8vw,132px)] border px-[11px] py-[3px] md:px-3 md:py-1 font-bold break-words">
 					{hintWord}
 				</span>
 			)}
