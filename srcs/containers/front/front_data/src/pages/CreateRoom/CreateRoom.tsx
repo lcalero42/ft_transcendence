@@ -191,7 +191,7 @@ export default function CreateRoom() {
 					</p>
 				</div>
 				<div>
-					<div className="w-screen flex flex-col items-center gap-3 pt-6">
+					<div className="w-screen flex flex-col items-center gap-3 pt-10">
 						<button
 							onClick={() => void handleCopy()}
 							className={`clean-btn group flex items-center gap-2 rounded-xl border bg-card py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
@@ -202,7 +202,7 @@ export default function CreateRoom() {
 							<span aria-live="polite">{copied ? t("lobby.linkCopiedTitle") : t("lobby.copyLink")}</span>
 						</button>
 					</div>
-					<div className="flex flex-col gap-1 px-[10vw] pt-6 pb-5 md:flex-row md:gap-6">
+					<div className="flex flex-col gap-1 px-[10vw] pt-10 pb-5 md:flex-row md:gap-6">
 						{!isGuest && (
 							<div className="w-full md:flex md:justify-end">
 								<InviteFriendList
@@ -220,7 +220,7 @@ export default function CreateRoom() {
 					</div >
 				</div >
 
-				{isHost && <div className="max-w-2xl m-10 mx-auto flex flex-1 items-center justify-center">
+				{isHost && <div className="flex justify-center pb-10">
 					<button
 						onClick={handleStart}
 						className="clean-btn hoverable btn-glow-start rounded-lg bg-linear-to-r from-start-gradient-start to-start-gradient-end px-6 py-3 text-base font-bold text-black"

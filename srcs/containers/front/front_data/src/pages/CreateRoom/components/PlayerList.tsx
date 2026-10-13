@@ -17,14 +17,14 @@ function PlayerList({ players, maxPlayers }: PlayerListProps) {
 	const { t } = useTranslation();
 
 	return (
-		<div className="card md:bg-transparent md:w-[80%] border border-card-border-2">
+		<div className="card bg-transparent md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between mb-3">
 				<div className="flex gap-1">
 					<div className="font-bold"> {t("lobby.playersInGame")} </div>
 					<span> ({players.length}/{maxPlayers}) </span>
 				</div>
 			</div>
-			<div className="flex flex-col gap-5 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
+			<div className="flex flex-col gap-5 min-h-79 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
 				{players.map((p) => (
 					<div className="flex items-center text-left gap-4" key={p.sessionId}>
 						<img
