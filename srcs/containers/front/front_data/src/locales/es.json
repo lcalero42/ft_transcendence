@@ -154,6 +154,8 @@
 		"leave": "Salir",
 		"profile": "PERFIL",
 		"kick": "EXPULSAR",
+		"kickTitle": "Expulsar jugador",
+		"kickConfirm": "¿Seguro que quieres expulsar a {{name}} de la sala?",
 		"players": "Jugadores",
 		"startGame": "Empezar la partida",
 		"timer": "Tiempo",

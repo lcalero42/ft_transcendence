@@ -154,6 +154,8 @@
 		"leave": "Quitter",
 		"profile": "PROFIL",
 		"kick": "EXCLURE",
+		"kickTitle": "Exclure un joueur",
+		"kickConfirm": "Voulez-vous vraiment exclure {{name}} de la salle ?",
 		"players": "Joueurs",
 		"startGame": "Lancer la partie",
 		"timer": "Chrono",

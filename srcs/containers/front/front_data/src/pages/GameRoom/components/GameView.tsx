@@ -17,6 +17,7 @@ import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
 import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
+import KickConfirm from "@/pages/GameRoom/components/KickConfirm";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
 import { useTranslation } from "react-i18next";
@@ -33,6 +34,7 @@ function GameView({ room }: GameViewProps) {
 	const [autoJoin, setAutoJoin] = useState(false);
 	const [chatTab, setChatTab] = useState<ChatTab>("chat");
 	const [aimedSessionId, setAimedSessionId] = useState<string | null>(null);
+	const [kickTargetId, setKickTargetId] = useState<string | null>(null);
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const phase = useRoomState(room, (s) => s.phase);
@@ -125,6 +127,7 @@ function GameView({ room }: GameViewProps) {
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
 	const handleKick = (sessionId: string) => room.send("kick", sessionId);
+	const kickTarget = kickTargetId ? players?.[kickTargetId] : undefined;
 	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
 	const playerList = playerEntries.map(([sessionId, player]) => ({
 		sessionId,
@@ -225,7 +228,7 @@ function GameView({ room }: GameViewProps) {
 							/>
 						</div>
 						<div className="w-full h-[30%] min-h-0 overflow-y-auto">
-							<PlayersList players={playerList} isHost={isHost} onKick={handleKick} />
+							<PlayersList players={playerList} isHost={isHost} onKick={setKickTargetId} />
 						</div>
 					</aside>
 				</div>
@@ -240,8 +243,15 @@ function GameView({ room }: GameViewProps) {
 				/>
 			</MobileDrawer>
 			<MobileDrawer open={drawer === "players"} onClose={() => setDrawer(null)}>
-				<PlayersList players={playerList} isHost={isHost} onKick={handleKick} />
+				<PlayersList players={playerList} isHost={isHost} onKick={setKickTargetId} />
 			</MobileDrawer>
+			{kickTargetId && kickTarget && (
+				<KickConfirm
+					name={kickTarget.name}
+					onClose={() => setKickTargetId(null)}
+					onConfirm={() => handleKick(kickTargetId)}
+				/>
+			)}
 		</div>
 	);
 }

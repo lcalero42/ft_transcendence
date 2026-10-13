@@ -154,6 +154,8 @@
 		"leave": "Leave",
 		"profile": "PROFILE",
 		"kick": "KICK",
+		"kickTitle": "Kick player",
+		"kickConfirm": "Are you sure you want to kick {{name}} from the room?",
 		"players": "Players",
 		"startGame": "Start Game",
 		"timer": "Timer",
