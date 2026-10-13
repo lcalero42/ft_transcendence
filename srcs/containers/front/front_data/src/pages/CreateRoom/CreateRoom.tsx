@@ -194,7 +194,7 @@ export default function CreateRoom() {
 					<div className="w-screen flex flex-col items-center gap-3 pt-10">
 						<button
 							onClick={() => void handleCopy()}
-							className={`clean-btn group flex items-center gap-2 rounded-xl border bg-card py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
+							className={`clean-btn group flex items-center gap-2 rounded-lg border bg-card py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
 						>
 							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 md:size-9 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple group-hover:text-white"}`}>
 								{copied ? <Check className="size-3.5 sm:size-4 md:size-5" /> : <Copy className="size-3.5 sm:size-4 md:size-5" />}
@@ -223,7 +223,7 @@ export default function CreateRoom() {
 				{isHost && <div className="flex justify-center pb-10">
 					<button
 						onClick={handleStart}
-						className="clean-btn hoverable btn-glow-start rounded-lg bg-linear-to-r from-start-gradient-start to-start-gradient-end px-6 py-3 text-base font-bold text-black"
+						className="clean-btn transition-[color,box-shadow] duration-200 ease-in-out hover:shadow-[0_0_18px_color-mix(in_srgb,var(--color-start-gradient-start)_30%,transparent)] relative isolate rounded-lg border border-start-gradient-start bg-transparent px-6 py-3 text-base font-bold text-black hover:text-start-gradient-start before:absolute before:-inset-px before:-z-10 before:rounded-lg before:bg-linear-to-r before:from-start-gradient-start before:to-start-gradient-end before:transition-opacity before:duration-200 before:ease-in-out hover:before:opacity-0"
 					>
 						{t("lobby.start")}
 					</button>
