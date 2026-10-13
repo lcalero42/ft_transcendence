@@ -4,12 +4,12 @@ export interface AuthResponse {
 	accessToken: string;
 }
 
-export async function login(email: string, password: string) {
+export async function login(email: string, password: string, rememberMe: boolean) {
 	const data = await apiFetch<AuthResponse>("/auth/login", {
 		method: "POST",
-		body: JSON.stringify({email, password}),
+		body: JSON.stringify({email, password, rememberMe}),
 	});
-	setToken(data.accessToken);
+	setToken(data.accessToken, rememberMe);
 	return data;
 }
 

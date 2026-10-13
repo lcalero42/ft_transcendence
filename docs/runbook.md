@@ -173,22 +173,25 @@ disconnected even though `back` is healthy.
 
 ### UI still shows me as logged in, but requests fail
 
-- The JWT lives in `localStorage` under the key `accessToken`
-  (`src/api/auth/client.ts`) and is decoded client-side to populate
+- The JWT lives under the key `accessToken`, in `localStorage` for
+  "remember me" / register / guest logins and in `sessionStorage` for a
+  login without "remember me" (`src/api/auth/client.ts`). It is decoded
+  client-side to populate
   `AuthContext`'s `user`. A `401` response clears that stored token, but
   doesn't currently update `AuthContext`'s in-memory state — so the UI can
   keep rendering as logged in (nav shows your name, protected routes don't
   redirect) while every request is actually failing, until you hit
   "Logout" or reload the page. If you hit this while developing, clearing
-  `localStorage` (DevTools → Application → Local Storage) and reloading is
-  the quick fix.
+  Local Storage and Session Storage (DevTools → Application) and reloading
+  is the quick fix.
 
 ### `401 Unauthorized` on routes that used to work
 
 - Most `player`, `room`, and `game` mutation routes require a JWT
   (`JwtAuthGuard`). Confirm the frontend is sending
   `Authorization: Bearer <token>` and that the token hasn't expired
-  (`JWT_EXPIRES_IN`, default `1d`).
+  (`JWT_EXPIRES_IN`, default `1d`; `JWT_REMEMBER_EXPIRES_IN`, default
+  `30d`, for "remember me" logins).
 - `word-pair` writes require the internal API key header
   (`x-internal-api-key`), not a JWT — this endpoint is meant for
   service-to-service calls, not the browser.

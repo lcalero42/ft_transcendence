@@ -37,6 +37,7 @@
 		"confirmPassword": "Confirm password",
 		"rememberMe": "Remember me",
 		"notLogged": "You're not logged in",
+		"alreadyLogged": "You're already logged in",
 		"adminRequired": "Admin access required",
 		"guestBlocked": "Create an account to access this page",
 		"guest": "login",

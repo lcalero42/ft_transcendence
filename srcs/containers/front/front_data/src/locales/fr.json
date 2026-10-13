@@ -37,6 +37,7 @@
 		"confirmPassword": "Confirmer le mot de passe",
 		"rememberMe": "Se souvenir de moi",
 		"notLogged": "Vous n'êtes pas connecté",
+		"alreadyLogged": "Vous êtes déjà connecté",
 		"adminRequired": "Accès administrateur requis",
 		"guestBlocked": "Créez un compte pour accéder à cette page",
 		"guest": "connexion",

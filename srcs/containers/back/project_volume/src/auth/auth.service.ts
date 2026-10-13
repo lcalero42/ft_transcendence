@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
+import type { StringValue } from 'ms';
 import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -59,7 +60,7 @@ export class AuthService {
     if (!player || !isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.signToken(player.id, player.email);
+    return this.signToken(player.id, player.email, dto.rememberMe);
   }
 
   private async assertNameAvailable(name: string) {
@@ -69,7 +70,14 @@ export class AuthService {
     if (existingName) throw new ConflictException('Username already taken');
   }
 
-  private signToken(sub: number, email: string | null) {
-    return { accessToken: this.jwtService.sign({ sub, email }) };
+  private signToken(sub: number, email: string | null, remember = false) {
+    const payload = { sub, email };
+    const accessToken = remember
+      ? this.jwtService.sign(payload, {
+          expiresIn: (process.env.JWT_REMEMBER_EXPIRES_IN ??
+            '30d') as StringValue,
+        })
+      : this.jwtService.sign(payload);
+    return { accessToken };
   }
 }
