@@ -148,6 +148,7 @@ function GameView({ room }: GameViewProps) {
 			voteCount,
 			isVoteTarget: canVote && myVoteTargetId === sessionId,
 			isAimable: canVote && !isSelf,
+			isAimed: canVote && aimedSessionId === sessionId,
 		};
 	});
 

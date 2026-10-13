@@ -11,6 +11,7 @@ interface PlayerCircleEntry {
 	voteCount?: number;
 	isVoteTarget?: boolean;
 	isAimable?: boolean;
+	isAimed?: boolean;
 }
 
 interface PlayerCircleProps {
@@ -94,6 +95,7 @@ function PlayerCircle({ players, children, onAim, onSelect }: PlayerCircleProps)
 							isActive={player.isActive}
 							voteCount={player.voteCount}
 							isVoteTarget={player.isVoteTarget}
+							isAimed={player.isAimed}
 						/>
 					</div>
 				);
