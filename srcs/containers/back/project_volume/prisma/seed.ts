@@ -127,7 +127,7 @@ async function main() {
   const aliceGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "civilian",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: alice.id
     }
   })
@@ -135,7 +135,7 @@ async function main() {
   const bobGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "civilian",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: bob.id
     }
   })
@@ -143,7 +143,7 @@ async function main() {
   const marleyGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "undercover",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: marley.id
     }
   })

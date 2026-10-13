@@ -33,6 +33,21 @@ export class PlayerService {
     return player;
   }
 
+  async findPublicProfile(name: string) {
+    const player = await this.prisma.player.findFirst({
+      where: { name, isGuest: false, deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        avatarUrl: true,
+        aboutMe: true,
+        createdAt: true,
+      },
+    });
+    if (!player) throw new NotFoundException('Player not found');
+    return player;
+  }
+
   async getGamesList(id: number) {
     const gamePlayers = await this.prisma.game_Players.findMany({
       where: { playerId: id },

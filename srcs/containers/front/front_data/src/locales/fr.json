@@ -155,6 +155,8 @@
 		"leave": "Quitter",
 		"profile": "PROFIL",
 		"kick": "EXCLURE",
+		"kickTitle": "Exclure un joueur",
+		"kickConfirm": "Voulez-vous vraiment exclure {{name}} de la salle ?",
 		"players": "Joueurs",
 		"startGame": "Lancer la partie",
 		"timer": "Chrono",
@@ -165,7 +167,8 @@
 		"waitTurn": "Attendez votre tour...",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
-		"seatTakenOver": "Partie ouverte dans un autre onglet"
+		"seatTakenOver": "Partie ouverte dans un autre onglet",
+		"kicked": "Vous avez été expulsé de la salle"
 	},
 	"friends": {
 		"title": "Amis",

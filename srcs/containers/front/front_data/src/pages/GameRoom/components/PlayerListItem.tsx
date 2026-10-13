@@ -1,19 +1,22 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 interface PlayerListItemProps {
 	name: string;
 	avatarUrl?: string;
 	isSelf?: boolean;
 	isHost?: boolean;
+	isGuest?: boolean;
 	canKick?: boolean;
 	expanded?: boolean;
 	onToggle?: () => void;
 	onKick?: () => void;
 }
 
-function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
+function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
 	const showKick = expanded && canKick && !isSelf;
+	const showProfile = expanded && !isGuest;
 	const itemRef = useRef<HTMLDivElement>(null);
 	const { t } = useTranslation();
 
@@ -43,10 +46,17 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, canKick, expanded, on
 					{isHost ? name + " 👑" : name}
 				</span>
 			</button>
-			{(expanded || showKick) && (
+			{(showProfile || showKick) && (
 				<div className="flex shrink-0 gap-1">
-					{expanded && (
-						<span className="badge bg-victory! border-victory! text-small">{t("game.profile")}</span>
+					{showProfile && (
+						<Link
+							to={`/profile/${encodeURIComponent(name)}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="badge bg-victory! border-victory! hoverable text-small"
+						>
+							{t("game.profile")}
+						</Link>
 					)}
 					{showKick && (
 						<button type="button" onClick={onKick} className="badge bg-defeat! border-defeat! hoverable text-small">

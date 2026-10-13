@@ -56,6 +56,12 @@ export class PlayerController {
     return this.playerService.findOne(req.user.id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('profile/:name')
+  async getPublicProfile(@Param('name') name: string) {
+    return this.playerService.findPublicProfile(name);
+  }
+
   @adminOnly()
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
@@ -64,13 +70,7 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games')
-  async getGamesList(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() req: AuthenticatedRequest,
-  ) {
-    if (req.user.id !== id) {
-      throw new ForbiddenException('Cannot view games of another player');
-    }
+  async getGamesList(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.getGamesList(id);
   }
 
