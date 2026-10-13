@@ -73,12 +73,25 @@ function GameView({ room }: GameViewProps) {
 	const canVote = phase === "voting" && isParticipant;
 	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
 	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
-	const arrowTargetIndex = phase === "voting" ? voteArrowTargetIndex : activePlayerIndex;
-	const isArrowIdle = phase === "voting" && voteArrowTargetIndex === -1;
+	const eliminationHistory = useRoomState(room, (s) => s.eliminationHistory);
+	const lastElimination = phase === "reveal" ? eliminationHistory?.[(eliminationHistory?.length ?? 1) - 1] : undefined;
+	const eliminatedSessionId = lastElimination?.eliminatedSessionId || undefined;
+	const circleEntries = eliminatedSessionId
+		? playerEntries.filter(([sessionId]) => participants?.includes(sessionId) || sessionId === eliminatedSessionId)
+		: participantEntries;
+	const revealTargetIndex = circleEntries.findIndex(([sessionId]) => sessionId === eliminatedSessionId);
+	let arrowTargetIndex = activePlayerIndex;
+	if (phase === "voting") arrowTargetIndex = voteArrowTargetIndex;
+	else if (phase === "reveal") arrowTargetIndex = revealTargetIndex;
+	const isArrowIdle = (phase === "voting" || phase === "reveal") && arrowTargetIndex === -1;
 	const arrowDirection =
-		(phase === "describing" || phase === "voting") && arrowTargetIndex !== -1
-			? getPlayerAngleDeg(arrowTargetIndex, participantEntries.length)
+		(phase === "describing" || phase === "voting" || phase === "reveal") && arrowTargetIndex !== -1
+			? getPlayerAngleDeg(arrowTargetIndex, circleEntries.length)
 			: 0;
+	const eliminatedPlayer = eliminatedSessionId ? players?.[eliminatedSessionId] : undefined;
+	const revealedRole = lastElimination?.eliminatedRole;
+	const centerWord = phase === "reveal" && revealedRole ? t(`roles.${revealedRole}`) : currentWord;
+	const centerBadgeTone = phase === "reveal" && revealedRole === "undercover" ? "defeat" : "victory";
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -133,7 +146,7 @@ function GameView({ room }: GameViewProps) {
 		isSelf: sessionId === room.sessionId,
 		isHost: sessionId === hostSessionId,
 	}));
-	const participantPlayerList = participantEntries.map(([sessionId, player]) => {
+	const participantPlayerList = circleEntries.map(([sessionId, player]) => {
 		const isSelf = sessionId === room.sessionId;
 		const voteCount =
 			phase === "voting" ? (votes ?? []).filter((vote) => vote.targetSessionId === sessionId).length : undefined;
@@ -149,6 +162,7 @@ function GameView({ room }: GameViewProps) {
 			isVoteTarget: canVote && myVoteTargetId === sessionId,
 			isAimable: canVote && !isSelf,
 			isAimed: canVote && aimedSessionId === sessionId,
+			isEliminated: sessionId === eliminatedSessionId,
 		};
 	});
 
@@ -179,7 +193,14 @@ function GameView({ room }: GameViewProps) {
 								{phase === "finished" ? (
 									<WinnerReveal winners={winners} label={winnerLabel} />
 								) : (
-									<CenterWord word={currentWord} direction={arrowDirection} dimmed={isArrowIdle} />
+									<CenterWord
+										word={centerWord}
+										direction={arrowDirection}
+										dimmed={isArrowIdle}
+										badgeTone={phase === "reveal" && revealedRole ? centerBadgeTone : undefined}
+										avatarUrl={getAvatarUrl(eliminatedPlayer?.avatarUrl ?? null)}
+										avatarName={eliminatedPlayer?.name}
+									/>
 								)}
 							</PlayerCircle>
 						</div>
