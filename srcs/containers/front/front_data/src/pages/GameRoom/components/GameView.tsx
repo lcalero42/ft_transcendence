@@ -108,7 +108,7 @@ function GameView({ room }: GameViewProps) {
 
 	if (phase !== prevPhase) {
 		setPrevPhase(phase);
-		if (phase === "starting") setChatTab("clues");
+		if (phase === "starting") setChatTab("log");
 	}
 
 	useEffect(() => {
@@ -130,6 +130,22 @@ function GameView({ room }: GameViewProps) {
 		word: clue.word,
 		round: clue.round,
 	}));
+	const eliminationEntries = (eliminationHistory ?? [])
+		.filter((record) => record.eliminatedSessionId)
+		.map((record, index) => ({
+			id: `${record.eliminatedSessionId}-${record.round}-${index}`,
+			name: record.eliminatedName,
+			role: record.eliminatedRole,
+			round: record.round,
+		}));
+	const revealedWords = useRoomState(room, (s) => s.revealedWords);
+	const language = i18n.language.slice(0, 2);
+	const pickRevealedWord = (role: "civilian" | "undercover") =>
+		revealedWords?.[`${role}_${language}`] || revealedWords?.[`${role}_en`] || "";
+	const logWords =
+		phase === "finished" && revealedWords?.civilian_en
+			? { civilian: pickRevealedWord("civilian"), undercover: pickRevealedWord("undercover") }
+			: null;
 	const chat = useRoomState(room, (s) => s.chat);
 	const chatMessages = (chat ?? []).map((message, index) => ({
 		id: `${message.sessionId}-${message.sentAt}-${index}`,
@@ -248,6 +264,8 @@ function GameView({ room }: GameViewProps) {
 							<ChatBox
 								messages={chatMessages}
 								clues={clueEntries}
+								eliminations={eliminationEntries}
+								words={logWords}
 								tab={chatTab}
 								onTabChange={setChatTab}
 								onSend={handleSendChat}
@@ -263,6 +281,8 @@ function GameView({ room }: GameViewProps) {
 				<ChatBox
 					messages={chatMessages}
 					clues={clueEntries}
+								eliminations={eliminationEntries}
+								words={logWords}
 					tab={chatTab}
 					onTabChange={setChatTab}
 					onSend={handleSendChat}
