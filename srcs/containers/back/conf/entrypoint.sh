@@ -18,7 +18,3 @@ npx prisma generate
 npx prisma db seed
 npx prisma studio --browser none &
 npm run start:dev
-
-# while :; do
-#     sleep infinity
-# done
