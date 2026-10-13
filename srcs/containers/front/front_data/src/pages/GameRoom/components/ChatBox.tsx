@@ -9,6 +9,7 @@ interface ChatEntry {
 	text: string;
 	time: string;
 	avatarUrl?: string;
+	isSelf?: boolean;
 }
 
 interface ClueEntry {
@@ -72,6 +73,7 @@ function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
 							text={message.text}
 							time={message.time}
 							avatarUrl={message.avatarUrl}
+							isSelf={message.isSelf}
 						/>
 					))
 				) : (

@@ -136,6 +136,7 @@ function GameView({ room }: GameViewProps) {
 		name: message.name,
 		text: message.text,
 		time: formatChatTime(message.sentAt),
+		isSelf: message.sessionId === room.sessionId,
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
