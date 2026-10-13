@@ -1,24 +1,27 @@
 services:
-  front:
-    build: ./containers/front
-    container_name: front
+  nginx:
+    build:
+      context: ./containers
+      dockerfile: nginx/Dockerfile
+    container_name: nginx
     restart: unless-stopped
     ports:
-      - "5173:5173"
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    environment:
+      HTTPS_PORT: ${HTTPS_PORT:-8443}
     volumes:
-      - front_data:/app
-      - back_src_readonly:/back/project_volume/src:ro
+      - nginx_certs:/etc/nginx/certs
+    depends_on:
+      - back
 
   back:
-    build: ./containers/back
+    build:
+      context: ./containers/back
     container_name: back
     restart: unless-stopped
-    ports:
-      - "3000:3000"
-      - "51212:51212"
-      - "2567:2567"
-    volumes:
-      - back_project:/app
+    environment:
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://localhost:${HTTPS_PORT:-8443}}
     secrets:
       - db_user
       - db_password
@@ -34,6 +37,7 @@ services:
   postgres:
     container_name: postgres
     image: postgres:16
+    restart: unless-stopped
     secrets:
       - db_user
       - db_password
@@ -49,26 +53,7 @@ services:
       retries: 15
 
 volumes:
-  front_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/srcs/containers/front/front_data
-
-  back_project:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/srcs/containers/back/project_volume
-
-  back_src_readonly:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/srcs/containers/back/project_volume/src
+  nginx_certs:
 
 secrets:
   db_user:
