@@ -4,6 +4,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "./styles/glow.css";
+@import "./styles/neon-orbit.css";
+@import "./styles/dashed-orbit.css";
+@import "./styles/meteor.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -75,45 +79,6 @@ body {
 @utility clean-btn {
 	@apply bg-none
 	cursor-pointer;
-}
-
-@utility btn-glow-start {
-	box-shadow: 0 0 25px 6px color-mix(in srgb, var(--color-start-gradient-end) 55%, transparent);
-	transition: box-shadow 200ms ease-in-out;
-
-	&:hover {
-		box-shadow: 0 0 40px 12px color-mix(in srgb, var(--color-start-gradient-end) 80%, transparent);
-	}
-}
-
-@utility btn-glow-accent {
-	transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
-
-	&:hover,
-	&:focus-visible {
-		border-color: var(--color-stroke-accent);
-		box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-stroke-accent) 45%, transparent);
-	}
-}
-
-@utility border-sweep {
-	position: relative;
-
-	&::before {
-		content: "";
-		position: absolute;
-		inset: 0 0 0 -2px;
-		border: 1px solid var(--color-stroke-accent);
-		border-radius: inherit;
-		pointer-events: none;
-		clip-path: inset(0 100% 0 0);
-		transition: clip-path 400ms ease-out;
-	}
-
-	&:hover::before,
-	&:focus-visible::before {
-		clip-path: inset(0);
-	}
 }
 
 @utility text-outline {
@@ -228,21 +193,4 @@ body {
 		mb-5;
 	}
 
-}
-
-@theme inline {
-	--animate-meteor: meteor 5s linear infinite;
-	@keyframes meteor {
-		0% {
-			transform: rotate(var(--angle)) translateX(0);
-			opacity: 1;
-		}
-		90% {
-			opacity: 1;
-		}
-		100% {
-			transform: rotate(var(--angle)) translateX(-130vh);
-			opacity: 0;
-		}
-	}
 }

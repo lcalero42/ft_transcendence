@@ -1,0 +1,63 @@
+@keyframes marching-ants {
+	to {
+		stroke-dashoffset: -11;
+	}
+}
+
+@utility dashed-orbit {
+	position: relative;
+	border-color: transparent;
+	transition: box-shadow 300ms ease-out;
+
+	& > svg {
+		position: absolute;
+		inset: -1.5px;
+		width: calc(100% + 3px);
+		height: calc(100% + 3px);
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	& rect {
+		x: 0.75px;
+		y: 0.75px;
+		width: calc(100% - 1.5px);
+		height: calc(100% - 1.5px);
+		rx: 11.25px;
+		fill: none;
+		stroke-width: 1.5px;
+		stroke-dasharray: 6 5;
+		animation: marching-ants 900ms linear infinite paused;
+	}
+
+	& stop {
+		stop-color: var(--color-card-accent-border);
+		transition: stop-color 300ms ease-out;
+	}
+
+	&:is(:hover, :focus-visible) {
+		box-shadow: 0 0 22px color-mix(in srgb, var(--color-stroke-accent) 35%, transparent);
+
+		& rect {
+			animation-play-state: running;
+		}
+
+		& stop:nth-child(1) {
+			stop-color: var(--color-stroke-accent);
+		}
+
+		& stop:nth-child(2) {
+			stop-color: var(--color-accent-purple);
+		}
+
+		& stop:nth-child(3) {
+			stop-color: var(--color-friends);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		& rect {
+			animation: none;
+		}
+	}
+}
