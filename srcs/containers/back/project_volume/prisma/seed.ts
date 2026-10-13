@@ -3,7 +3,6 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import * as bcrypt from 'bcrypt';
-import { wordPairs } from "./data/word-pairs";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
@@ -12,24 +11,10 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
 
-  //admin
-  const adminEmail = process.env.ADMIN_EMAIL;
-  const adminPassword = process.env.ADMIN_PASSWORD;
-  if (!adminEmail || !adminPassword) {
-    throw new Error("ADMIN_EMAIL and ADMIN_PASSWORD must be set to seed the admin account");
+  if (await prisma.player.findUnique({ where: { email: "alice@prisma.io" } })) {
+    console.log("demo data already seeded, skipping");
+    return;
   }
-  const adminHash = await bcrypt.hash(adminPassword, 10);
-
-  await prisma.player.upsert({
-    where: { email: adminEmail },
-    update: { password: adminHash, isAdmin: true },
-    create: {
-      name: "admin",
-      email: adminEmail,
-      password: adminHash,
-      isAdmin: true,
-    },
-  });
 
   //players
   const alicePassword = await bcrypt.hash("Alice1234#", 10);
@@ -74,7 +59,7 @@ async function main() {
   const aliceRoom = await prisma.rooms.create({
     data: {
       name: "alice's room",
-      createdBy: 1,
+      createdBy: alice.id,
     },
   });
 
@@ -186,13 +171,6 @@ async function main() {
       playerId: marley.id
     }
   })
-
-  // wordPairs
-
-  await prisma.word_Pair.createMany({
-    data: wordPairs,
-    skipDuplicates: true,
-  });
 
   console.log({ alice, bob, aliceRoom });
 }

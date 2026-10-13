@@ -18,7 +18,7 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
      level up is invisible to Vite and every `VITE_API_URL`-based fetch
      call silently resolves to `undefined/...` (see "Frontend can't reach
      the backend" below — this exact mistake has happened before).
-     Minimal contents: `VITE_API_URL=http://localhost:3000`.
+     Minimal contents: `VITE_API_URL=/api` (see `front_data/.env.example`).
 2. Create the Docker secrets (`make check-secrets` verifies these exist and
    are non-empty):
    ```
@@ -33,26 +33,63 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    Each file holds a single value, no trailing newline conventions
    enforced — just don't leave them empty.
    `admin_email.txt` / `admin_password.txt` are the credentials of the
-   `admin` account created by the seed (the only player with `isAdmin`,
-   which unlocks `/admin`). Get the shared values from the team password
-   manager, or pick your own (e.g. `admin@transcendence.local`) since the
-   database is local. Never commit them; changing them and restarting
-   `back` re-seeds the account with the new password.
-3. `make buildd` — build and start everything, detached.
+   `admin` account created by `back` at startup (the only player with
+   `isAdmin`, which unlocks `/admin`). Get the shared values from the team
+   password manager, or pick your own (e.g. `admin@transcendence.local`)
+   since the database is local. Never commit them; changing them and
+   restarting `back` updates the account with the new password.
+3. `make dev` (attached) or `make upd` (detached) — build and start the dev
+   stack. Use `make prod` for the production stack (see "Dev and prod
+   modes").
+4. Open `https://localhost:8443`. NGINX is the only entry point (`8080`
+   redirects to `8443`) and serves a self-signed certificate generated on
+   its first start, so the browser shows a security warning once: accept it
+   to continue. Rootless Docker can't publish ports below 1024, hence the
+   defaults; with regular Docker you can set `HTTPS_PORT=443` and
+   `HTTP_PORT=80` in `srcs/.env`.
+
+## Dev and prod modes
+
+Both modes use the same URL (`https://localhost:8443`), the same NGINX
+routes and the same secrets. Compose files: `srcs/docker-compose.yml`
+(shared) + `docker-compose.dev.yml` or `docker-compose.prod.yml`.
+
+| | `make dev` | `make prod` |
+|---|---|---|
+| Front | Vite dev server behind NGINX, hot reload | `vite build` output served by NGINX, no front container |
+| Back | source bind-mounted, `nest start --watch` | image with `dist/` and production packages only, `node dist/main` |
+| On start | `npm ci`, migrations, demo seed, Prisma Studio | migrations only |
+| Published ports | NGINX, plus `127.0.0.1` 3000 (API) and 51212 (Studio) | NGINX only |
+| Postgres data | volume `postgres_dev_data` | volume `postgres_prod_data` |
+| Avatars | `project_volume/uploads/` (bind mount) | volume `back_uploads` |
+
+In both modes `back` creates or updates the admin account and the word
+pairs at startup (`src/bootstrap/`); new word pairs go in
+`src/bootstrap/word-pairs.data.ts`. The demo players, rooms and games of
+`prisma/seed.ts` only exist in dev and are inserted once.
+
+`make down`, `make logs*` and `make ps` work in both modes. Lint, typecheck,
+tests, bots and Prisma commands need the dev stack.
 
 ## Everyday commands
 
 All commands run from the repo root; run `make help` for the full list.
 
 ```bash
-make up / make upd      # start (attached / detached)
+make dev / make upd     # dev stack (attached / detached), make up = make dev
+make prod               # prod stack (detached)
 make down               # stop and remove containers
-make re                 # down + up (keeps volumes, i.e. keeps DB data)
+make re                 # down + dev (keeps volumes, i.e. keeps DB data)
 make re-front            # rebuild only the front container
 make re-back             # rebuild only the back container
-make logs / make logs-front / make logs-back
+make logs / make logs-front / make logs-back / make logs-nginx
 make ps                  # container status
+make bots ARGS="--create"  # run test bots inside the back container
 ```
+
+Only `nginx` is published to other machines. For local debugging, the
+NestJS API (`http://localhost:3000`, e.g. for Postman) and Prisma Studio are
+published on `127.0.0.1` only.
 
 ## Database
 
@@ -60,30 +97,36 @@ make ps                  # container status
   container or `docker compose exec postgres psql ...`.
 - Prisma Studio is auto-started by `back`'s entrypoint and reachable at
   `http://localhost:51212`.
+- Postgres data lives in a named volume per mode, so it survives
+  `make down` / `make re`. It is stored in Docker's data directory
+  (`docker volume inspect srcs_postgres_dev_data --format '{{.Mountpoint}}'`,
+  e.g. under `/goinfre/<login>/docker/volumes/` on school machines). Don't
+  delete it by hand (permission denied with rootless Docker): use
+  `make fclean`.
 - Migrations run automatically on every `back` container start
-  (`prisma migrate deploy`), followed by `prisma generate` and
-  `prisma db seed`.
+  (`prisma migrate deploy`); in dev they are followed by `prisma generate`
+  and `prisma db seed`.
 - To create a new migration during development:
   ```bash
   make prisma-migrate     # runs `prisma migrate dev` inside back
   make prisma-generate    # regenerate the Prisma client only
   ```
 - To fully reset the database, `make fclean` (asks for confirmation) removes
-  named volumes including Postgres data, then `make buildd` reseeds from
+  named volumes including Postgres data, then `make dev` reseeds from
   scratch.
 
 ## Realtime (Colyseus)
 
 - The Colyseus server runs inside the `back` container alongside the REST
-  API, listening on `ws://localhost:2567` (published in
-  `docker-compose.yml`). There's no separate container/service for it.
+  API on port `2567`. It is not published: browsers reach it through NGINX
+  at `wss://localhost:8443/colyseus`. There's no separate container/service for it.
 - Room logic is wired but the game loop isn't — see
   [architecture.md](architecture.md#realtime-game-state). To exercise it,
   log in and create a room from the Home page: you land on
   `/create-room/<roomId>`, and the invite link shown there lets a second
   account join the same room. If a page hangs on "Connecting...", check
-  `make logs-back` for Colyseus errors and confirm port `2567` isn't
-  already in use on the host.
+  `make logs-back` for Colyseus errors and `make logs-nginx` for proxy
+  errors on `/colyseus/`.
 
 ## Checks (mirrors CI)
 
@@ -102,7 +145,7 @@ others).
 
 ### Frontend can't reach the backend / pages show no data
 
-Symptom: network requests to `localhost:3000/...` fail or resolve to a
+Symptom: network requests to `/api/...` fail or resolve to a
 literal `undefined/...` URL; UI looks like the database is empty or
 disconnected even though `back` is healthy.
 
@@ -113,12 +156,11 @@ disconnected even though `back` is healthy.
    If this errors with "No such file or directory", the `.env` is sitting
    outside `front_data/` — move it to
    `srcs/containers/front/front_data/.env` and `make re-front`.
-2. Confirm `VITE_API_URL` matches how you're accessing the app
-   (`http://localhost:3000` for the default local setup).
-3. Check CORS: `src/main.ts` in `back` only allows the origin
-   `http://localhost:5173`. If you're accessing the front from a different
-   host/port, requests will be blocked by the browser — update
-   `enableCors` in `back`'s `main.ts`.
+2. Confirm `VITE_API_URL=/api` and that you opened the app through NGINX
+   (`https://localhost:8443`), not a container port directly.
+3. Check CORS: `back` only allows the origin set in `CORS_ORIGIN`
+   (`srcs/.env`, defaults to `https://localhost:<HTTPS_PORT>`). If you're accessing the
+   app from a different host, set it there and `make re-back`.
 
 ### `back` won't start / crashes on boot
 
