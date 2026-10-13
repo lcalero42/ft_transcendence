@@ -8,7 +8,7 @@ function CreateRoomButton() {
 	return (
 		<Link
 			to="/create-room"
-			className="group card flex-row items-center justify-center py-6 border-[1.5px] dashed-orbit"
+			className="group card flex-row items-center justify-center py-6 min-h-[88px] border-[1.5px] dashed-orbit"
 		>
 			<DashedOrbit />
 			<h3 className="text-outline font-bold m-0">{t("home.createRoom")}</h3>

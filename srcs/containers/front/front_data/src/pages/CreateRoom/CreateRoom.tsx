@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRoom, useRoomState } from "@colyseus/react";
 import type { SeatReservation } from "@colyseus/sdk";
@@ -20,6 +20,7 @@ import PlayerList from "./components/PlayerList";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import { useTranslation } from "react-i18next";
+import { Check, Copy } from "lucide-react";
 import { useFriends } from "@/context/useFriends";
 import { useFriendPlayers } from "@/context/useFriendPlayers";
 
@@ -35,6 +36,13 @@ export default function CreateRoom() {
 	const { friendsStatus, retryFriends } = useFriends();
 	const friends = useFriendPlayers();
 	const targetRoomIdRef = useRef(routeRoomId);
+	const [copied, setCopied] = useState(false);
+
+	useEffect(() => {
+		if (!copied) return;
+		const timeout = setTimeout(() => setCopied(false), 2000);
+		return () => clearTimeout(timeout);
+	}, [copied]);
 
 	const { room, error, isConnecting } = useRoom(
 		profileLoading
@@ -149,11 +157,7 @@ export default function CreateRoom() {
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(inviteLink);
-		toast.add({
-			type: "success",
-			title: t("lobby.linkCopiedTitle"),
-			description: t("lobby.linkCopiedDescription"),
-		});
+		setCopied(true);
 	};
 
 	const handleStart = () => {
@@ -190,9 +194,12 @@ export default function CreateRoom() {
 					<div className="w-screen flex flex-col items-center gap-3 py-6">
 						<button
 							onClick={() => void handleCopy()}
-							className="clean-btn hoverable rounded-lg bg-linear-to-r from-btn-gradient-start to-btn-gradient-end px-4 py-2 text-sm text-white whitespace-nowrap sm:px-6 sm:py-3 sm:text-base"
+							className={`clean-btn group flex items-center gap-2 rounded-xl border bg-card py-1.5 pl-1.5 pr-4 text-xs font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
 						>
-							{t("lobby.copyLink")}
+							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple group-hover:text-white"}`}>
+								{copied ? <Check className="size-3.5 sm:size-4" /> : <Copy className="size-3.5 sm:size-4" />}
+							</span>
+							<span aria-live="polite">{copied ? t("lobby.linkCopiedTitle") : t("lobby.copyLink")}</span>
 						</button>
 						<p className="px-[10vw] text-center">{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
