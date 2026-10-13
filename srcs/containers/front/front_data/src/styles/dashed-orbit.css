@@ -8,22 +8,16 @@
 	position: relative;
 	border-color: transparent;
 	transition: box-shadow 300ms ease-out;
-
 	& > svg {
 		position: absolute;
-		inset: -1.5px;
-		width: calc(100% + 3px);
-		height: calc(100% + 3px);
+		inset: -0.75px;
+		width: calc(100% + 1.5px);
+		height: calc(100% + 1.5px);
 		overflow: visible;
 		pointer-events: none;
 	}
 
 	& rect {
-		x: 0.75px;
-		y: 0.75px;
-		width: calc(100% - 1.5px);
-		height: calc(100% - 1.5px);
-		rx: 11.25px;
 		fill: none;
 		stroke-width: 1.5px;
 		stroke-dasharray: 6 5;

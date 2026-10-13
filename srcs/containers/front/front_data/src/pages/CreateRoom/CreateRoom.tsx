@@ -191,21 +191,20 @@ export default function CreateRoom() {
 					</p>
 				</div>
 				<div>
-					<div className="w-screen flex flex-col items-center gap-3 py-6">
+					<div className="w-screen flex flex-col items-center gap-3 pt-6">
 						<button
 							onClick={() => void handleCopy()}
-							className={`clean-btn group flex items-center gap-2 rounded-xl border bg-card py-1.5 pl-1.5 pr-4 text-xs font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
+							className={`clean-btn group flex items-center gap-2 rounded-xl border bg-card py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
 						>
-							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple group-hover:text-white"}`}>
-								{copied ? <Check className="size-3.5 sm:size-4" /> : <Copy className="size-3.5 sm:size-4" />}
+							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 md:size-9 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple group-hover:text-white"}`}>
+								{copied ? <Check className="size-3.5 sm:size-4 md:size-5" /> : <Copy className="size-3.5 sm:size-4 md:size-5" />}
 							</span>
 							<span aria-live="polite">{copied ? t("lobby.linkCopiedTitle") : t("lobby.copyLink")}</span>
 						</button>
-						<p className="px-[10vw] text-center">{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
-					<div className="px-[10vw] py-5 md:flex">
+					<div className="flex flex-col gap-1 px-[10vw] pt-6 pb-5 md:flex-row md:gap-6">
 						{!isGuest && (
-							<div className="w-full md:flex md:justify-center">
+							<div className="w-full md:flex md:justify-end">
 								<InviteFriendList
 									friends={onlineFriends}
 									status={friendsStatus}
@@ -215,7 +214,7 @@ export default function CreateRoom() {
 								/>
 							</div>
 						)}
-						<div className="w-full md:flex md:justify-center">
+						<div className={`w-full md:flex ${isGuest ? "md:justify-center" : "md:justify-start"}`}>
 							<PlayerList players={roomPlayers} maxPlayers={maxClients ?? 0} />
 						</div>
 					</div >

@@ -12,7 +12,7 @@ export function DashedOrbit() {
 					<stop offset="100%" />
 				</linearGradient>
 			</defs>
-			<rect stroke={`url(#${gradientId})`} />
+			<rect width="100%" height="100%" rx="11.25" stroke={`url(#${gradientId})`} />
 		</svg>
 	);
 }
