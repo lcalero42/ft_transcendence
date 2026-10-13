@@ -10,6 +10,8 @@ import IconDetective from "../../assets/icons/brand-redhat.svg";
 import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useFriends } from "@/context/useFriends";
+import { useFriendPlayers } from "@/context/useFriendPlayers";
 import { LogOut } from "lucide-react";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
@@ -46,6 +48,8 @@ function Profile() {
 	const [loading, setLoading] = useState(true);
   	const [error, setError] = useState(false);
   	const navigate = useNavigate();
+	const { friendsStatus, retryFriends } = useFriends();
+	const friends = useFriendPlayers();
 	useEffect(() => {
 		if (!user) return;
 		async function loadData() {
@@ -82,17 +86,6 @@ function Profile() {
   	if (!player) return null;
 	const isOwn = player.id === user.id;
 
-	const friends = [
-		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true},
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true},
-		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-	];
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
@@ -122,11 +115,11 @@ function Profile() {
 					games={gamesPlayed}
 					victories={victory}
 					winrate={Number(winrate.toFixed(2))}
-					friends={-1}
+					friends={friends.length}
 				/>
 
 				<div className="md:gap-3 md:flex">
-					{isOwn && <FriendList friends={friends}/>}
+					{isOwn && <FriendList friends={friends} status={friendsStatus} onRetry={retryFriends}/>}
 					<GamesList games={gameList}/>
 				</div>
 				{isOwn && <button

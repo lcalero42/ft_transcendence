@@ -10,6 +10,14 @@ export function unregisterPresenceRoom(room: PresenceRoom) {
   if (activeRoom === room) activeRoom = null;
 }
 
-export function notifyPlayer(playerId: number, type: string, payload: unknown) {
-  activeRoom?.notifyPlayer(playerId, type, payload);
+export function notifyPlayer(
+  playerId: number,
+  type: string,
+  payload: unknown,
+): boolean {
+  return activeRoom?.notifyPlayer(playerId, type, payload) ?? false;
+}
+
+export function notifyAll(type: string, payload?: unknown) {
+  activeRoom?.broadcast(type, payload);
 }

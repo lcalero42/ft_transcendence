@@ -7,7 +7,7 @@ import { useAuth } from "../../context/useAuth";
 import { useTranslation } from "react-i18next";
 
 const NAME_MIN_LENGTH = 3;
-const NAME_MAX_LENGTH = 12;
+const NAME_MAX_LENGTH = 24;
 
 function Guest() {
 	const { guest, isAuth } = useAuth();

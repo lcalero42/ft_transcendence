@@ -30,7 +30,7 @@ function Bio({playerId, bio, editable = true}: BioProps) {
 	};
 	return (
 		<div className="card gap-0 pr-2 pt-2 border border-card-border-2
-		md:bg-transparent md:border-none md:pb-0">
+		bg-transparent md:border-none md:pb-0">
 			<div className="flex justify-between">
 				<div className="text-left font-bold">{t("profile.aboutMe")}</div>
 

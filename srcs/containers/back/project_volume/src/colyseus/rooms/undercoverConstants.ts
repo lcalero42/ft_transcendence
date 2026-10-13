@@ -12,6 +12,7 @@ export const VOTING_DURATION_MS = 30000;
 export const REVEAL_DURATION_MS = 5000;
 export const FINISHED_DURATION_MS = 5000;
 export const RECONNECTION_WINDOW_SECONDS = 20;
+export const EMPTY_ROOM_GRACE_SECONDS = 5;
 export const TAKEN_OVER_CODE = 4100;
 export const KICKED_CODE = 4101;
 export const MAX_ROOM_NAME_LENGTH = 32;

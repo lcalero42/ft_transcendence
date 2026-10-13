@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/coverage
+**/.env
+**/.env.*
+**/*.log
+**/*.tsbuildinfo
+back
+front/conf
+front/Dockerfile
+front/.dockerignore

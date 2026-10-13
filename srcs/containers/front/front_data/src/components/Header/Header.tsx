@@ -7,21 +7,22 @@ import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
 	compact?: boolean;
+	wide?: boolean;
 }
 
-function Header({ compact }: HeaderProps) {
+function Header({ compact, wide }: HeaderProps) {
 	const { profile, isAuth, isGuest } = useAuth();
 	const { t } = useTranslation();
 
 	return (
-		<header className={`page-header relative ${compact ? "py-3! md:py-3!" : ""}`}>
-			<div className="flex items-center gap-4">
+		<header className={`page-header relative items-center gap-3 px-5! sm:px-[10vw]! md:px-[15vw]! ${wide ? "2xl:px-[8vw]!" : ""} ${compact ? "py-3! md:py-3!" : ""}`}>
+			<div className="flex min-w-0 items-center gap-3 sm:gap-4">
 				{isAuth && !isGuest && <FriendsMenuButton />}
-				<Logo />
+				<Logo className="text-[1.5rem] sm:text-[2rem]" />
 			</div>
-			<div className="flex items-center gap-4">
+			<div className="flex shrink-0 items-center gap-3 sm:gap-4">
 				<LanguageSwitcher />
-				<LinkProfile name={profile?.name ? profile.name : t("auth.guest")} icon="🥷" />
+				<LinkProfile name={profile?.name ? profile.name : t("auth.guest")} avatarUrl={profile?.avatarUrl || null} />
 			</div>
 		</header>
 	);
