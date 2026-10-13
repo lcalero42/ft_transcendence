@@ -13,7 +13,8 @@ function CreateRoomButton() {
 				justify-center
 				border-[1.5px]
 				border-dashed
-				border-card-accent-border">
+				border-card-accent-border
+				btn-glow-accent">
 			<h3 className="text-outline font-bold m-0 ">{t("home.createRoom")}</h3>
 			<span className="circle-purple w-7 h-7">+</span>
 		</Link>

@@ -86,6 +86,16 @@ body {
 	}
 }
 
+@utility btn-glow-accent {
+	transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
+
+	&:hover,
+	&:focus-visible {
+		border-color: var(--color-stroke-accent);
+		box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-stroke-accent) 45%, transparent);
+	}
+}
+
 @utility text-outline {
 	-webkit-text-stroke: 0.6px var(--color-stroke-accent);
 }
