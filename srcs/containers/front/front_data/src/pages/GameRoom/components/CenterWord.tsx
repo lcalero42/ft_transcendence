@@ -58,6 +58,11 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 							className={`size-[clamp(64px,7vw,110px)] rounded-full border-2 object-cover ${BADGE_AVATAR_CLASSES[badgeTone]}`}
 						/>
 					)}
+					{avatarName && (
+						<span className="max-w-[min(30vw,240px)] truncate text-[clamp(14px,1.4vw,28px)] font-bold">
+							{avatarName}
+						</span>
+					)}
 					<span
 						className={`rounded-2xl border px-4 py-1 text-[clamp(14px,1.4vw,28px)] font-bold tracking-wide uppercase ${BADGE_TONE_CLASSES[badgeTone]}`}
 					>
