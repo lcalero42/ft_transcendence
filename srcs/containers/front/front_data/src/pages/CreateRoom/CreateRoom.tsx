@@ -106,8 +106,6 @@ export default function CreateRoom() {
 		}
 	}, [room, phase, navigate]);
 
-	// The server issues a new reconnection token on every join, and the SDK's
-	// automatic retry rewrites it on the same room object, so re-store it.
 	useEffect(() => {
 		if (!room) return;
 		const onReconnect = () => storeReconnection(room);

@@ -33,7 +33,7 @@ function PlayerList({ players, maxPlayers }: PlayerListProps) {
 							className="w-8 h-8 rounded-full object-cover shrink-0"
 						/>
 						<div className="flex flex-col text-left">
-							<div className="flex items-center gap-1.5 text-sm font-semibold hoverable hover:font-bold">
+							<div className="flex items-center gap-1.5 text-sm font-semibold">
 								{p.isHost && <span title={t("lobby.host")}>👑</span>}
 								{p.name}
 								{p.isMe ? ` ${t("lobby.you")}` : ""}
