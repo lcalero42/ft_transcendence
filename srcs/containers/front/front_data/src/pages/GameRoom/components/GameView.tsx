@@ -74,7 +74,9 @@ function GameView({ room }: GameViewProps) {
 	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
 	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
 	const eliminationHistory = useRoomState(room, (s) => s.eliminationHistory);
-	const lastElimination = phase === "reveal" ? eliminationHistory?.[(eliminationHistory?.length ?? 1) - 1] : undefined;
+	const latestElimination = eliminationHistory?.[(eliminationHistory?.length ?? 1) - 1];
+	const lastElimination =
+		(phase === "reveal" || phase === "finished") && latestElimination?.round === round ? latestElimination : undefined;
 	const eliminatedSessionId = lastElimination?.eliminatedSessionId || undefined;
 	const circleEntries = eliminatedSessionId
 		? playerEntries.filter(([sessionId]) => participants?.includes(sessionId) || sessionId === eliminatedSessionId)
@@ -162,7 +164,9 @@ function GameView({ room }: GameViewProps) {
 			isVoteTarget: canVote && myVoteTargetId === sessionId,
 			isAimable: canVote && !isSelf,
 			isAimed: canVote && aimedSessionId === sessionId,
-			isEliminated: sessionId === eliminatedSessionId,
+			isEliminated:
+				sessionId === eliminatedSessionId ||
+				(phase === "finished" && !!revealedRoles?.[sessionId] && revealedRoles[sessionId] !== winningRole),
 		};
 	});
 
@@ -191,7 +195,11 @@ function GameView({ room }: GameViewProps) {
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[6.5vh] 2xl:translate-x-[4vw]">
 							<PlayerCircle players={participantPlayerList} onAim={setAimedSessionId} onSelect={handleCastVote}>
 								{phase === "finished" ? (
-									<WinnerReveal winners={winners} label={winnerLabel} />
+									<WinnerReveal
+										winners={winners}
+										label={winnerLabel}
+										tone={winner === "undercover" ? "defeat" : "victory"}
+									/>
 								) : (
 									<CenterWord
 										word={centerWord}
