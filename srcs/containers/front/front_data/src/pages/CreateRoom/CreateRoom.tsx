@@ -194,7 +194,7 @@ export default function CreateRoom() {
 						>
 							{t("lobby.copyLink")}
 						</button>
-						<p>{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
+						<p className="px-[10vw] text-center">{isGuest ? t("lobby.inviteHintGuest") : t("lobby.inviteHint")}</p>
 					</div>
 					<div className="px-[10vw] py-5 md:flex">
 						{!isGuest && (
