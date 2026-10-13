@@ -19,6 +19,8 @@ import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
 import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
+import { useHasUnread } from "@/pages/GameRoom/components/useHasUnread";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { useTranslation } from "react-i18next";
 
 interface GameViewProps {
@@ -124,6 +126,21 @@ function GameView({ room }: GameViewProps) {
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
+	const isDesktop = useMediaQuery("(min-width: 96rem)");
+	const isChatBoxVisible = isDesktop || drawer === "chat";
+	const chatUnread = useHasUnread(
+		chat,
+		(message) => message.sentAt,
+		room.sessionId,
+		isChatBoxVisible && chatTab === "chat",
+	);
+	const cluesUnread = useHasUnread(
+		clues,
+		(clue) => clue.submittedAt,
+		room.sessionId,
+		isChatBoxVisible && chatTab === "clues",
+	);
+	const unreadTabs = { chat: chatUnread, clues: cluesUnread };
 	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
 	const playerList = playerEntries.map(([sessionId, player]) => ({
 		sessionId,
@@ -164,6 +181,7 @@ function GameView({ room }: GameViewProps) {
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label={t("game.openChat")}
+									hasUnread={chatUnread || cluesUnread}
 									onClick={() => setDrawer("chat")}
 								/>
 								<MobileDrawerTrigger
@@ -218,6 +236,7 @@ function GameView({ room }: GameViewProps) {
 								messages={chatMessages}
 								clues={clueEntries}
 								tab={chatTab}
+								unread={unreadTabs}
 								onTabChange={setChatTab}
 								onSend={handleSendChat}
 							/>
@@ -233,6 +252,7 @@ function GameView({ room }: GameViewProps) {
 					messages={chatMessages}
 					clues={clueEntries}
 					tab={chatTab}
+					unread={unreadTabs}
 					onTabChange={setChatTab}
 					onSend={handleSendChat}
 				/>
