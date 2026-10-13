@@ -103,7 +103,7 @@ body {
 		content: "";
 		position: absolute;
 		inset: 0 0 0 -2px;
-		border: 2px solid var(--color-stroke-accent);
+		border: 1px solid var(--color-stroke-accent);
 		border-radius: inherit;
 		pointer-events: none;
 		clip-path: inset(0 100% 0 0);
