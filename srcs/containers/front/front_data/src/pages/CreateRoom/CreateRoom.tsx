@@ -194,9 +194,9 @@ export default function CreateRoom() {
 					<div className="w-screen flex flex-col items-center gap-3 pt-10">
 						<button
 							onClick={() => void handleCopy()}
-							className={`clean-btn group flex items-center gap-2 rounded-lg border bg-card py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory text-victory" : "border-card-accent-border text-gray-high hover:border-stroke-accent hover:text-white hover:ring-2 hover:ring-card-border-2"}`}
+							className={`clean-btn flex items-center gap-2 rounded-lg border py-1.5 pl-1.5 pr-4 text-xs md:gap-3 md:py-2 md:pl-2 md:pr-5 font-semibold whitespace-nowrap transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-in-out active:scale-95 sm:text-sm md:text-base ${copied ? "border-victory bg-transparent text-victory" : "border-card-accent-border bg-card text-gray-high hover:border-stroke-accent hover:bg-transparent hover:text-accent-purple hover:shadow-[0_0_18px_color-mix(in_srgb,var(--color-stroke-accent)_30%,transparent)]"}`}
 						>
-							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 md:size-9 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple group-hover:text-white"}`}>
+							<span className={`flex size-6 shrink-0 items-center justify-center rounded-full transition-colors duration-200 ease-in-out sm:size-7 md:size-9 ${copied ? "bg-victory text-black" : "bg-circle-bg text-accent-purple"}`}>
 								{copied ? <Check className="size-3.5 sm:size-4 md:size-5" /> : <Copy className="size-3.5 sm:size-4 md:size-5" />}
 							</span>
 							<span aria-live="polite">{copied ? t("lobby.linkCopiedTitle") : t("lobby.copyLink")}</span>
