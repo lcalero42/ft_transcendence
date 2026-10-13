@@ -96,6 +96,26 @@ body {
 	}
 }
 
+@utility border-sweep {
+	position: relative;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0 0 0 -2px;
+		border: 2px solid var(--color-stroke-accent);
+		border-radius: inherit;
+		pointer-events: none;
+		clip-path: inset(0 100% 0 0);
+		transition: clip-path 400ms ease-out;
+	}
+
+	&:hover::before,
+	&:focus-visible::before {
+		clip-path: inset(0);
+	}
+}
+
 @utility text-outline {
 	-webkit-text-stroke: 0.6px var(--color-stroke-accent);
 }
