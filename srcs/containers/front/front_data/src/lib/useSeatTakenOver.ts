@@ -5,7 +5,10 @@ import type { Room } from "@colyseus/sdk";
 import { toast } from "@/components/ui/toast";
 import { clearReconnection } from "./roomReconnection";
 
-const SEAT_TAKEN_OVER_CODE = 4100;
+const FORCED_LEAVE_MESSAGES: Record<number, string> = {
+	4100: "game.seatTakenOver",
+	4101: "game.kicked",
+};
 
 export function useSeatTakenOver<T>(room: Room<T> | null | undefined) {
 	const navigate = useNavigate();
@@ -14,9 +17,10 @@ export function useSeatTakenOver<T>(room: Room<T> | null | undefined) {
 	useEffect(() => {
 		if (!room) return;
 		const onLeave = (code: number) => {
-			if (code !== SEAT_TAKEN_OVER_CODE) return;
+			const message = FORCED_LEAVE_MESSAGES[code];
+			if (!message) return;
 			clearReconnection();
-			toast.add({ id: "seat-taken-over", type: "warning", title: t("game.seatTakenOver") });
+			toast.add({ id: "forced-leave", type: "warning", title: t(message) });
 			void navigate("/home", { replace: true });
 		};
 		room.onLeave(onLeave);

@@ -17,16 +17,17 @@ import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import {
 	getMe,
+	getPublicProfile,
 	getAvatarUrl,
 	getCountGamesPlayed,
 	getCountVictory,
 	getWinRate,
 	getGamesList,
-	type Player,
+	type PublicProfile,
 	type GameListOfPlayer
 }  from '../../api/player';
 import { clearToken } from "@/api/auth/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 function Profile() {
@@ -37,7 +38,8 @@ function Profile() {
     	logout();
     	void navigate("/login");
   	}
-	const [player, setPlayer] = useState<Player | null>(null);
+	const { name } = useParams();
+	const [player, setPlayer] = useState<PublicProfile | null>(null);
 	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
 	const [victory, setVictory] = useState<number>(0);
 	const [winrate, setWinrate] = useState<number>(0);
@@ -50,17 +52,16 @@ function Profile() {
 	const friends = useFriendPlayers();
 	useEffect(() => {
 		if (!user) return;
-		const cpUser = user;
 		async function loadData() {
 			try {
-				const [me, games, victories, winrate, gameslist] = await Promise.all([
-					getMe(),
-					getCountGamesPlayed(cpUser.id),
-					getCountVictory(cpUser.id),
-					getWinRate(cpUser.id),
-					getGamesList(cpUser.id),
+				const profile = name ? await getPublicProfile(name) : await getMe();
+				const [games, victories, winrate, gameslist] = await Promise.all([
+					getCountGamesPlayed(profile.id),
+					getCountVictory(profile.id),
+					getWinRate(profile.id),
+					getGamesList(profile.id),
 				])
-				setPlayer(me);
+				setPlayer(profile);
 				setGamesPlayed(games);
 				setVictory(victories);
 				setWinrate(winrate);
@@ -68,19 +69,22 @@ function Profile() {
 		  	} catch (err) {
 				console.error("Profile load error:", err); //debug
 				setError(true);
-				clearToken();
-				void navigate("/login", { replace: true });
+				if (!name) {
+					clearToken();
+					void navigate("/login", { replace: true });
+				}
 		  	} finally {
 				setLoading(false);
 		  	}
 		}
 
 		void loadData();
-	},[user, navigate]);
+	},[user, name, navigate]);
 	if (!user) return null;
     if (loading) return <LoadPage />;
     if (error) return <ErrorPage error={t("profile.loadError")} />;
   	if (!player) return null;
+	const isOwn = player.id === user.id;
 
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
@@ -91,15 +95,17 @@ function Profile() {
 			<main className="page-main pt-25">
 				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
 					<Identity
-						playerId={user.id}
+						playerId={player.id}
 						username={player.name}
 						Since={(new Date(player.createdAt)).toLocaleDateString(i18n.language)}
 						urlAvatar={avatarUrl}
+						editable={isOwn}
 					/>
 					<div className="md:flex md:flex-col">
 						<Bio
-							playerId={user.id}
+							playerId={player.id}
 							bio={player.aboutMe ?? ""}
+							editable={isOwn}
 						/>
 						<FavoriteRole role={t("profile.detective")} icon={IconDetective}/>
 					</div>
@@ -113,16 +119,16 @@ function Profile() {
 				/>
 
 				<div className="md:gap-3 md:flex">
-					<FriendList friends={friends} status={friendsStatus} onRetry={retryFriends}/>
+					{isOwn && <FriendList friends={friends} status={friendsStatus} onRetry={retryFriends}/>}
 					<GamesList games={gameList}/>
 				</div>
-				<button
+				{isOwn && <button
 				    onClick={handleLogout}
 				    className="mt-3 ml-auto flex items-center gap-2 rounded-xl border border-card-border bg-card px-4 py-2 text-sm font-medium text-gray-high transition-colors duration-150 hover:border-defeat hover:text-defeat"
 				>
 				    <LogOut size={16} />
 				    {t("common.logout")}
-				</button>
+				</button>}
 			</main>
 			<Credit />
 		</div>

@@ -45,7 +45,11 @@ proxying to Nest. Compose files: `srcs/docker-compose.yml` (shared) plus
 - Auth state is a React context (`src/context/AuthContext.tsx`): it holds
   the decoded JWT payload as `user`, and `login`/`register`/`logout`
   delegate to `src/api/auth/auth.ts`. The token itself lives in
-  `localStorage` (`src/api/auth/client.ts`), and every request goes through
+  `localStorage` after a "remember me" login, a register, or a guest login,
+  and in `sessionStorage` otherwise (`src/api/auth/client.ts`). A
+  `BroadcastChannel` shares a `sessionStorage` token with newly opened tabs,
+  so an un-remembered session lasts until the browser is closed. Every
+  request goes through
   a shared `apiFetch()` helper there that attaches
   `Authorization: Bearer <token>` automatically — `src/api/player.ts` and
   `src/api/rooms.ts` are both thin wrappers around it.

@@ -37,6 +37,7 @@
 		"confirmPassword": "Confirmar contraseña",
 		"rememberMe": "Recordarme",
 		"notLogged": "No has iniciado sesión",
+		"alreadyLogged": "Ya has iniciado sesión",
 		"adminRequired": "Se requiere acceso de administrador",
 		"guestBlocked": "Crea una cuenta para acceder a esta página",
 		"guest": "iniciar sesión",
@@ -154,6 +155,8 @@
 		"leave": "Salir",
 		"profile": "PERFIL",
 		"kick": "EXPULSAR",
+		"kickTitle": "Expulsar jugador",
+		"kickConfirm": "¿Seguro que quieres expulsar a {{name}} de la sala?",
 		"players": "Jugadores",
 		"startGame": "Empezar la partida",
 		"timer": "Tiempo",
@@ -164,7 +167,8 @@
 		"waitTurn": "Espera tu turno...",
 		"votes_one": "{{count}} voto",
 		"votes_other": "{{count}} votos",
-		"seatTakenOver": "Partida abierta en otra pestaña"
+		"seatTakenOver": "Partida abierta en otra pestaña",
+		"kicked": "Has sido expulsado de la sala"
 	},
 	"friends": {
 		"title": "Amigos",

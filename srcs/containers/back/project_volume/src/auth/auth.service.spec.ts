@@ -210,6 +210,38 @@ describe('AuthService', () => {
       });
 
       expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(jwtServiceMock.sign).toHaveBeenCalledWith({
+        sub: 1,
+        email: 'bob@test.com',
+      });
+    });
+    it('should sign a long-lived token when rememberMe is set', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Bob',
+        email: 'bob@test.com',
+        password: 'stored-bcrypt-hash',
+        isGuest: false,
+        aboutMe: null,
+        avatarUrl: null,
+        isAdmin: false,
+        createdAt: new Date(),
+        deletedAt: null,
+      });
+      jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+      jwtServiceMock.sign.mockReturnValue('fake-jwt-token');
+
+      const result = await service.login({
+        email: 'bob@test.com',
+        password: 'CorrectPassword1!',
+        rememberMe: true,
+      });
+
+      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(jwtServiceMock.sign).toHaveBeenCalledWith(
+        { sub: 1, email: 'bob@test.com' },
+        { expiresIn: '30d' },
+      );
     });
     it('should throw an UnauthorizedException when the password is wrong', async () => {
       prismaMock.player.findUnique.mockResolvedValue({

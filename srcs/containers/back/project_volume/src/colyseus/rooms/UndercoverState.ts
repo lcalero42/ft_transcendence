@@ -14,6 +14,7 @@ export class Player extends Schema {
   @type('string') avatarUrl: string = '';
   @type('number') playerId: number = 0;
   @type('boolean') connected: boolean = true;
+  @type('boolean') isGuest: boolean = false;
 }
 
 export class ChatMessage extends Schema {

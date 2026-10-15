@@ -35,12 +35,13 @@ function withRefetch<Args extends unknown[]>(
 }
 
 export function FriendsProvider({ children }: { children: ReactNode }) {
-	const { isAuth, user } = useAuth();
+	const { isAuth, user, isGuest, profileLoading } = useAuth();
 	const [friendsState, setFriendsState] = useState<{
 		userId: number | undefined;
 		list: Friendship[];
 		status: FriendsStatus;
 	}>({ userId: undefined, list: [], status: "loading" });
+
 	const [pending, setPending] = useState<Friendship[]>([]);
 	const [onlineIds, setOnlineIds] = useState<Set<number>>(new Set());
 	const [unreadCount, setUnreadCount] = useState(0);
@@ -65,10 +66,14 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 	const refetchPending = useCallback(() => refetchInto(getPendingRequests, setPending), []);
 
 	useEffect(() => {
-		if (!isAuth) return;
+		if (!isAuth || profileLoading || isGuest) return;
 
 		refetchFriends();
 		refetchPending();
+	}, [isAuth, profileLoading, isGuest, user?.id, refetchFriends, refetchPending]);
+
+	useEffect(() => {
+		if (!isAuth) return;
 
 		let cancelled = false;
 		let hasJoinedBefore = false;

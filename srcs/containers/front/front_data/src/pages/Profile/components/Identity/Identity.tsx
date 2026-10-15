@@ -12,9 +12,10 @@ type IdentityProps = {
 	username: string;
 	Since: string;
 	urlAvatar: string;
+	editable?: boolean;
 };
 
-function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
+function Identity({playerId, username, Since, urlAvatar, editable = true}: IdentityProps) {
 	const [isPopupOpen, setIsPopupOpen] = useState(false);
 	const [avatar, setAvatar] = useState(urlAvatar);
 	const { t } = useTranslation();
@@ -39,7 +40,7 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 			<div className="relative w-24 h-24 shrink-0">
 
 				<img src={avatar} alt={username} className="w-full h-full rounded-full object-cover"/>
-				<button
+				{editable && <button
 					className=" flex clean-btn justify-center items-center
 					absolute bottom-1 right-1
 					h-8 w-9.5 rounded-xl bg-card/87 border-2 border-card-border
@@ -48,7 +49,7 @@ function Identity({playerId, username, Since, urlAvatar}: IdentityProps) {
 					onClick={() => setIsPopupOpen(true)}
 				>
 					<EditIcon/>
-				</button>
+				</button>}
 			</div>
 			<div className="flex flex-col pb-5 gap-2">
 				<div className="flex font-black text-2xl">

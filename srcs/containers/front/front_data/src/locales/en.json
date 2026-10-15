@@ -37,6 +37,7 @@
 		"confirmPassword": "Confirm password",
 		"rememberMe": "Remember me",
 		"notLogged": "You're not logged in",
+		"alreadyLogged": "You're already logged in",
 		"adminRequired": "Admin access required",
 		"guestBlocked": "Create an account to access this page",
 		"guest": "login",
@@ -154,6 +155,8 @@
 		"leave": "Leave",
 		"profile": "PROFILE",
 		"kick": "KICK",
+		"kickTitle": "Kick player",
+		"kickConfirm": "Are you sure you want to kick {{name}} from the room?",
 		"players": "Players",
 		"startGame": "Start Game",
 		"timer": "Timer",
@@ -164,7 +167,8 @@
 		"waitTurn": "Wait for your turn...",
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
-		"seatTakenOver": "Game opened in another tab"
+		"seatTakenOver": "Game opened in another tab",
+		"kicked": "You were kicked from the room"
 	},
 	"friends": {
 		"title": "Friends",

@@ -33,13 +33,13 @@ function GamesList({games}: RecentGamesListProps) {
 	const { t } = useTranslation();
 
 	return (
-		<div className="card w-full md:bg-transparent border border-card-border-2 ">
+		<div className="card w-full bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
 				<div className="font-bold"> {t("profile.recentGames")} </div>
 			</div>
 			<div className="flex flex-col max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
 				{games.map((g) => (
-					<div className="card flex-row justify-between items-center border border-card-border-2" key={g.id}>
+					<div className="card bg-card/50 flex-row justify-between items-center border border-card-border-2" key={g.id}>
 						<div className="flex flex-1 min-w-0 text-left gap-3 items-center">
 							<div className="circle-purple w-9 h-9 rounded-xl">
 								<span className="mask-icon w-7 h-7 bg-accent-purple"

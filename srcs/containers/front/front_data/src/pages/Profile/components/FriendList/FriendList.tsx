@@ -19,7 +19,7 @@ type FriendListProps = {
 function FriendList({friends, status, onRetry}: FriendListProps) {
 	const { t } = useTranslation();
 	return (
-		<div className="card md:bg-transparent md:w-[80%] border border-card-border-2">
+		<div className="card bg-transparent md:w-[80%] border border-card-border-2">
 			<div className="flex justify-between mb-3">
 				<div className="flex gap-1">
 					<div className="font-bold"> {t("profile.myFriends")} </div>

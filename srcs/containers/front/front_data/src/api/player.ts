@@ -12,6 +12,13 @@ export interface Player {
 	isAdmin: boolean;
 	createdAt: string;
 }
+export interface PublicProfile {
+	id: number;
+	name: string;
+	avatarUrl: string | null;
+	aboutMe: string | null;
+	createdAt: string;
+}
 export interface GameListOfPlayer {
   id: number;
   name: string;
@@ -73,6 +80,10 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 
 export async function getMe(): Promise<Player> {
 	return apiFetch<Player>("/player/me");
+}
+
+export async function getPublicProfile(name: string): Promise<PublicProfile> {
+	return apiFetch<PublicProfile>(`/player/profile/${encodeURIComponent(name)}`);
 }
 
 export async function getGamesList(playerId: number): Promise<GameListOfPlayer[]> {
