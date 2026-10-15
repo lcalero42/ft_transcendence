@@ -253,14 +253,5 @@
 		"identicalWords": "Las palabras civil y undercover son idénticas",
 		"pairRegistered": "El par de palabras se ha registrado",
 		"pairDeleted": "Par de palabras eliminado"
-	},
-	"sidebar": {
-		"home": "Inicio",
-		"profile": "Perfil",
-		"stats": "Estadísticas",
-		"rooms": "Salas",
-		"friends": "Amigos",
-		"admin": "Admin",
-		"openMenu": "Abrir el menú"
 	}
 }

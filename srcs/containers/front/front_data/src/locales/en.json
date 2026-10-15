@@ -253,14 +253,5 @@
 		"identicalWords": "The civilian and undercover words are identical",
 		"pairRegistered": "The word pair was registered",
 		"pairDeleted": "Word pair deleted"
-	},
-	"sidebar": {
-		"home": "Home",
-		"profile": "Profile",
-		"stats": "Stats",
-		"rooms": "Rooms",
-		"friends": "Friends",
-		"admin": "Admin",
-		"openMenu": "Open the menu"
 	}
 }
