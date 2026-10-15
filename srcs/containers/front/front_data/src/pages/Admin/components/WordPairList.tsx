@@ -92,7 +92,7 @@ function CreateWordPair({ onAdded }: { onAdded: (newPair: WordPair) => void }) {
 				))}
 			</div>
 			<div className="flex items-center">
-				<button className="text-victory hoverable hover:text-green-300"
+				<button className="text-victory rounded-full px-4 py-1.5 bg-victory/10 border border-victory/40 cursor-pointer hoverable hover:bg-victory/20"
 				onClick={handleSubmit}>
 					{t("admin.add")}
 				</button>
@@ -160,7 +160,7 @@ function WordPairList() {
 							))}
 						</div>
 						<div className="flex items-center">
-							<button className="text-defeat hoverable hover:text-red-300"
+							<button className="text-defeat rounded-full px-4 py-1.5 bg-defeat/10 border border-defeat/40 cursor-pointer hoverable hover:bg-defeat/20"
 							onClick={() =>handleRemove(WordPair.id)}>
 								{t("admin.remove")}
 							</button>
