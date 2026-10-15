@@ -227,6 +227,10 @@
 	"admin": {
 		"title": "Tableau de bord administrateur",
 		"users": "Utilisateurs",
+		"filterAll": "Tous",
+		"filterPlayers": "Joueurs",
+		"filterGuests": "Invités",
+		"guestBadge": "Invité",
 		"gamesFinished": "Parties terminées",
 		"activeRooms": "Salons actifs",
 		"profileCreatedAt": "profil créé le :",

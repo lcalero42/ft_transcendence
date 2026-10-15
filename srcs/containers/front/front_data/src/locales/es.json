@@ -227,6 +227,10 @@
 	"admin": {
 		"title": "Panel de administración",
 		"users": "Usuarios",
+		"filterAll": "Todos",
+		"filterPlayers": "Jugadores",
+		"filterGuests": "Invitados",
+		"guestBadge": "Invitado",
 		"gamesFinished": "Partidas terminadas",
 		"activeRooms": "Salas activas",
 		"profileCreatedAt": "perfil creado el:",

@@ -33,6 +33,7 @@ export interface PlayerSummary {
 	createdAt: string;
 	avatarUrl: string | null;
 	isLog: boolean;
+	isGuest: boolean;
 }
 
 interface GamesPlayedResponse {

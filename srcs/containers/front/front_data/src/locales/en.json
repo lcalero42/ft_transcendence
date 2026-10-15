@@ -227,6 +227,10 @@
 	"admin": {
 		"title": "Administrator dashboard",
 		"users": "Users",
+		"filterAll": "All",
+		"filterPlayers": "Players",
+		"filterGuests": "Guests",
+		"guestBadge": "Guest",
 		"gamesFinished": "Finished games",
 		"activeRooms": "Active rooms",
 		"profileCreatedAt": "profile created on:",
