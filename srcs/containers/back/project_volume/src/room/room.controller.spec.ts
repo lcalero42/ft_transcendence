@@ -6,6 +6,10 @@ import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { GameStatus, Role } from '../generated/prisma/enums';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 
+jest.mock('@colyseus/core', () => ({
+  matchMaker: { query: jest.fn() },
+}));
+
 function requestAs(
   id: number,
   email: string,
@@ -109,6 +113,8 @@ describe('RoomController', () => {
           createdBy: 3,
           createdAt: new Date(),
           deletedAt: null,
+          playerCount: 0,
+          maxClients: 12,
         },
       ];
       jest

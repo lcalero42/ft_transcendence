@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+import { matchMaker } from '@colyseus/core';
 import { RoomService } from './room.service';
 import { PrismaService } from '../prisma.service';
+import { MAX_CLIENTS } from '../colyseus/rooms/undercoverConstants';
 import {
   Games,
   GameStatus,
@@ -10,6 +12,12 @@ import {
   Role,
   Rooms,
 } from '../generated/prisma/client';
+
+jest.mock('@colyseus/core', () => ({
+  matchMaker: { query: jest.fn() },
+}));
+
+const queryMock = matchMaker.query as jest.Mock;
 
 describe('RoomService', () => {
   let service: RoomService;
@@ -30,6 +38,19 @@ describe('RoomService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('onApplicationBootstrap', () => {
+    it('should close every open room that was linked to a Colyseus room', async () => {
+      prismaMock.rooms.updateMany.mockResolvedValue({ count: 2 });
+
+      await service.onApplicationBootstrap();
+
+      expect(prismaMock.rooms.updateMany).toHaveBeenCalledWith({
+        where: { deletedAt: null, colyseusRoomId: { not: null } },
+        data: { deletedAt: expect.any(Date) as Date },
+      });
+    });
   });
 
   describe('create', () => {
@@ -90,25 +111,40 @@ describe('RoomService', () => {
   });
 
   describe('findCurrent', () => {
-    it('should return rooms that are not deleted', async () => {
-      const result = [
-        {
-          id: 5,
-          name: 'Room1',
-          minPlayers: 3,
-          maxPlayers: 6,
-          colyseusRoomId: null,
-          createdBy: 3,
-          createdAt: new Date(),
-          deletedAt: null,
-        },
-      ];
-      prismaMock.rooms.findMany.mockResolvedValue(result);
+    const baseRoom = {
+      minPlayers: 3,
+      maxPlayers: 6,
+      createdBy: 3,
+      createdAt: new Date(),
+      deletedAt: null,
+    };
 
-      expect(await service.findCurrent()).toBe(result);
+    it('should return rooms that are not deleted with their live player count', async () => {
+      const liveRoom = {
+        ...baseRoom,
+        id: 5,
+        name: 'Room1',
+        colyseusRoomId: 'abc',
+      };
+      const deadRoom = {
+        ...baseRoom,
+        id: 6,
+        name: 'Room2',
+        colyseusRoomId: null,
+      };
+      prismaMock.rooms.findMany.mockResolvedValue([liveRoom, deadRoom]);
+      queryMock.mockResolvedValue([
+        { roomId: 'abc', maxClients: 12, metadata: { playerCount: 4 } },
+      ]);
+
+      expect(await service.findCurrent()).toEqual([
+        { ...liveRoom, playerCount: 4, maxClients: 12 },
+        { ...deadRoom, playerCount: 0, maxClients: MAX_CLIENTS },
+      ]);
       expect(prismaMock.rooms.findMany).toHaveBeenCalledWith({
         where: { deletedAt: null },
       });
+      expect(queryMock).toHaveBeenCalledWith({ name: 'undercover' });
     });
   });
 

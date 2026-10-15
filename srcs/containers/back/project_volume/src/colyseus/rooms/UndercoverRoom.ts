@@ -222,6 +222,7 @@ export class UndercoverRoom extends Room {
     if (auth.isHost || !this.state.hostSessionId) {
       this.state.hostSessionId = client.sessionId;
     }
+    void this.publishPlayerCount();
   }
 
   onDrop(client: Client) {
@@ -284,12 +285,20 @@ export class UndercoverRoom extends Room {
     this.identities.delete(client.sessionId);
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
+    void this.publishPlayerCount();
   }
 
   async onDispose() {
     this.logger.log('room disposed');
     await this.persistence.close();
     notifyAll('roomsChanged');
+  }
+
+  private async publishPlayerCount() {
+    await this.setMetadata({ playerCount: this.state.players.size });
+    if (this.state.phase !== 'setup') {
+      notifyAll('roomsChanged');
+    }
   }
 
   private cancelEmptyRoomTimer() {

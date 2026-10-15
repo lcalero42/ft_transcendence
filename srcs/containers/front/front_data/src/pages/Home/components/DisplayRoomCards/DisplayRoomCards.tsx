@@ -12,7 +12,7 @@ function DisplayRoomCards({ rooms }: Rooms) {
         md:grid md:grid-cols-3 md:gap-[clamp(15px,2vw,30px)]">
             <CreateRoomButton />
             {rooms.map((room) => room.colyseusRoomId && (
-                <RoomCard key={room.id} name={room.name} colyseusRoomId={room.colyseusRoomId} min_players={room.min_player} max_players={room.max_player} />
+                <RoomCard key={room.id} name={room.name} colyseusRoomId={room.colyseusRoomId} playerCount={room.playerCount} maxClients={room.maxClients} />
             ))}
         </section>
     );
