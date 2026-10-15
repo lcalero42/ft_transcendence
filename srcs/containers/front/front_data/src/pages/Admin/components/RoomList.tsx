@@ -67,7 +67,7 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 							)}
 						</div>
 
-						<span className="text-sm md:text-base font-semibold hoverable hover:font-black">{player.name}</span>
+						<span className="text-sm md:text-base font-semibold hoverable hover:text-accent-purple">{player.name}</span>
 					</div>
 					<span
 						className={`text-sm md:text-base ${
@@ -108,12 +108,12 @@ function GameList({roomId}: {roomId: number}) {
 			{games.map((game) => (
 				<div key={game.id} className="border border-card-border-2 rounded-4xl">
 					<button
-						className="w-full flex justify-between items-center p-3 md:py-3 md:px-6 hoverable"
+						className="w-full flex justify-between items-center p-3 md:py-3 md:px-6 hoverable group"
 						onClick={() =>
 							setOpenGameId((prev) => (prev === game.id ? null : game.id))
 						}
 					>
-						<div className="flex md:gap-2 font-semibold hoverable hover:font-black text-sm md:text-lg">
+						<div className="flex md:gap-2 font-semibold hoverable hover:text-accent-purple text-sm md:text-lg">
 							<p className="hidden md:inline">{t("admin.gameOf")}</p>
 							<p>{new Date(game.createdAt).toLocaleDateString(i18n.language)}</p>
 						</div>
@@ -122,8 +122,9 @@ function GameList({roomId}: {roomId: number}) {
 							<p className="hidden text-text-dim md:inline"> : </p>
 							<p className="hidden md:inline"> {game.victory ? t(`roles.${game.victory}`) : ""} </p>
 						 </div>
-						<span className="text-sm md:text-base hoverable text-accent hover:font-black">
+						<span className="flex items-center gap-1 text-sm md:text-base hoverable text-accent group-hover:text-accent-purple">
 							{openGameId === game.id ? t("admin.hide") : t("admin.view")}
+							<span className={`inline-block transition-transform duration-200 ease-in-out ${openGameId === game.id ? "rotate-90 translate-x-1 group-hover:translate-y-0.5" : "group-hover:translate-x-1"}`}>›</span>
 						</span>
 					</button>
 					{openGameId === game.id && <PlayerList gameId={game.id} wUnderCover={game.undercoverWord} wCivil={game.civilianWord}/>}
