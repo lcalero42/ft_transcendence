@@ -2,6 +2,7 @@ import { useEffect,useState  } from "react";
 import {getPlayers} from "@/api/player"
 import { toast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import i18n from "@/i18n";
 import AvatarDefault from "@/assets/profile-photo/avatar-default.svg";
 import {getAvatarUrl} from "@/api/player";
@@ -16,6 +17,27 @@ type PlayerListPros = {
 };
 
 type Filter = "all" | "players" | "guests";
+
+function PlayerAvatar({ player }: { player: PlayerListPros }) {
+	return (
+		<div className={`w-10 h-10 rounded-full overflow-hidden bg-card-border-2 flex items-center justify-center shrink-0 ${
+			player.isGuest ? "border border-dashed border-text-dim" : ""}`}>
+			{player.avatarUrl ? (
+				<img className="w-full h-full rounded-full object-cover"
+					src={getAvatarUrl(player.avatarUrl)}
+					alt={player.name}
+				/>
+			) : (
+				<span className="mask-icon w-6 h-6 bg-text-dim"
+					style={{
+						WebkitMaskImage: `url(${AvatarDefault})`,
+						maskImage: `url("${AvatarDefault}")`,
+					}}
+				/>
+			)}
+		</div>
+	);
+}
 
 function PlayerList() {
 	const { t } = useTranslation();
@@ -63,22 +85,19 @@ function PlayerList() {
 				{displayed.map((player) => (
 					<div className="card flex-row justify-between items-center border border-card-border-2" key={player.id}>
 						<div className="flex flex-1 min-w-0 text-left gap-3 items-center">
-							<div className={`w-10 h-10 rounded-full overflow-hidden bg-card-border-2 flex items-center justify-center shrink-0 ${
-								player.isGuest ? "border border-dashed border-text-dim" : ""}`}>
-								{player.avatarUrl ? (
-									<img className="w-full h-full rounded-full object-cover"
-										src={getAvatarUrl(player.avatarUrl)}
-										alt={player.name}
-									/>
-								) : (
-									<span className="mask-icon w-6 h-6 bg-text-dim"
-										style={{
-											WebkitMaskImage: `url(${AvatarDefault})`,
-											maskImage: `url("${AvatarDefault}")`,
-										}}
-									/>
-								)}
-							</div>
+							{player.isGuest ? (
+								<PlayerAvatar player={player} />
+							) : (
+								<Link
+									to={`/profile/${encodeURIComponent(player.name)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									title={t("game.profile")}
+									className="shrink-0 rounded-full transition-shadow duration-200 hover:ring-2 hover:ring-accent"
+								>
+									<PlayerAvatar player={player} />
+								</Link>
+							)}
 
 							<div className="flex flex-1 gap-2 min-w-0 justify-between items-center">
 
