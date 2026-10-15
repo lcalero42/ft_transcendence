@@ -239,6 +239,8 @@
 		"hide": "Hide",
 		"view": "View",
 		"noGames": "No games played yet",
+		"gamesCount_one": "{{count}} game",
+		"gamesCount_other": "{{count}} games",
 		"rooms": "Rooms",
 		"createdAt": "created on",
 		"wordPairs": "Word Pairs",

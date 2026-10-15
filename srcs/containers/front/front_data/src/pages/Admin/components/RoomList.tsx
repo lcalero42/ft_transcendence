@@ -67,10 +67,10 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 							)}
 						</div>
 
-						<span className="text-sm md:text-base font-semibold hoverable hover:text-accent-purple">{player.name}</span>
+						<span className="text-xs md:text-sm font-semibold hoverable hover:text-accent-purple">{player.name}</span>
 					</div>
 					<span
-						className={`text-sm md:text-base ${
+						className={`text-xs md:text-sm ${
 							player.role === "undercover" ? "text-orange-400" : "text-blue-400"
 						}`}
 					>
@@ -83,14 +83,14 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 	);
 }
 
-function GameList({roomId}: {roomId: number}) {
+function RoomItem({room}: {room: Room}) {
 	const { t } = useTranslation();
 	const [games, setGames] = useState<Game[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [openGameId, setOpenGameId] = useState<number | null>(null);
 
 	useEffect(() => {
-	getGamesByRoom(roomId)
+	getGamesByRoom(room.id)
 		.then((data) => setGames(data))
 		.catch((err: unknown) =>
 			toast.add({
@@ -99,30 +99,41 @@ function GameList({roomId}: {roomId: number}) {
 			})
 		)
 		.finally(() =>setLoading(false));
-	}, [roomId]);
-
-	if (loading) return <div className="text-xs text-text-dim px-3 py-2">{t("admin.loadingGames")}</div>;
+	}, [room.id]);
 
 	return (
-		<div className="flex flex-col gap-5 ">
+		<div className="flex flex-col rounded-xl bg-card border-l-4 border-accent px-3 py-3 md:px-4">
+			<div className="flex justify-between items-center pb-2 border-b border-card-border-2">
+				<div className="font-semibold text-base md:text-lg truncate">{room.name}</div>
+				<span className="text-xs md:text-sm text-text-dim shrink-0">
+					{!loading && <>{t("admin.gamesCount", { count: games.length })} · </>}
+					<p className="hidden md:inline">{t("admin.createdAt")} </p>
+					{new Date(room.createdAt).toLocaleDateString(i18n.language)}
+				</span>
+			</div>
+			{loading ? (
+				<div className="text-xs text-text-dim px-2 py-2">{t("admin.loadingGames")}</div>
+			) : (
+			<div className="flex flex-col divide-y divide-card-border-2">
 			{games.map((game) => (
-				<div key={game.id} className="border border-card-border-2 rounded-4xl">
+				<div key={game.id}>
 					<button
-						className="w-full flex justify-between items-center p-3 md:py-3 md:px-6 hoverable group"
+						className="w-full flex justify-between items-center px-2 py-2 my-1 rounded-lg cursor-pointer hoverable hover:bg-white/5 group"
 						onClick={() =>
 							setOpenGameId((prev) => (prev === game.id ? null : game.id))
 						}
 					>
-						<div className="flex md:gap-2 font-semibold hoverable hover:text-accent-purple text-sm md:text-lg">
+						<div className="flex items-center md:gap-2 font-semibold hoverable group-hover:text-accent-purple text-xs md:text-sm">
+							<span className={`w-2 h-2 mr-2 md:mr-0 rounded-full shrink-0 ${game.victory === "undercover" ? "bg-orange-400" : "bg-blue-400"}`} />
 							<p className="hidden md:inline">{t("admin.gameOf")}</p>
 							<p>{new Date(game.createdAt).toLocaleDateString(i18n.language)}</p>
 						</div>
-						<div className={`font-semibold text-xs md:text-base ${game.victory === "undercover" ? "text-orange-400" : "text-blue-400"}`}>
+						<div className={`font-semibold text-xs md:text-sm ${game.victory === "undercover" ? "text-orange-400" : "text-blue-400"}`}>
 						 	<p className="md:text-text-dim inline"> {t("admin.victory")} </p>
 							<p className="hidden text-text-dim md:inline"> : </p>
 							<p className="hidden md:inline"> {game.victory ? t(`roles.${game.victory}`) : ""} </p>
 						 </div>
-						<span className="flex items-center gap-1 text-sm md:text-base hoverable text-accent group-hover:text-accent-purple">
+						<span className="flex items-center gap-1 text-xs md:text-sm hoverable text-accent group-hover:text-accent-purple">
 							{openGameId === game.id ? t("admin.hide") : t("admin.view")}
 							<span className={`inline-block transition-transform duration-200 ease-in-out ${openGameId === game.id ? "rotate-90 translate-x-1 group-hover:translate-y-0.5" : "group-hover:translate-x-1"}`}>›</span>
 						</span>
@@ -131,7 +142,9 @@ function GameList({roomId}: {roomId: number}) {
 				</div>
 			))}
 			{games.length === 0 && (
-				<div className="text-xs text-text-dim">{t("admin.noGames")}</div>
+				<div className="text-xs text-text-dim px-2 py-2">{t("admin.noGames")}</div>
+			)}
+			</div>
 			)}
 		</div>
 	);
@@ -157,22 +170,9 @@ function RoomList() {
 			<div className="flex justify-between">
 				<div className="font-bold text-xl"> {t("admin.rooms")} </div>
 			</div>
-			<div className="flex flex-col max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
+			<div className="flex flex-col gap-4 max-h-80 overflow-y-auto [&::-webkit-scrollbar]:w-0">
 				{rooms.map((room) => (
-					<div
-						className="card border border-card-border-2"
-						key={room.id}
-					>
-						<div className="w-full flex justify-between items-center">
-							<div className="font-semibold ">{room.name}</div>
-							<span className="text-sm text-text-dim">
-								<p className="hidden md:inline">{t("admin.createdAt")} </p>
-								{new Date(room.createdAt).toLocaleDateString(i18n.language)}
-							</span>
-						</div>
-
-						<GameList roomId={room.id} />
-					</div>
+					<RoomItem room={room} key={room.id} />
 				))}
 			</div>
 		</div>

@@ -239,6 +239,8 @@
 		"hide": "Ocultar",
 		"view": "Ver",
 		"noGames": "Aún no se ha jugado ninguna partida",
+		"gamesCount_one": "{{count}} partida",
+		"gamesCount_other": "{{count}} partidas",
 		"rooms": "Salas",
 		"createdAt": "creada el",
 		"wordPairs": "Pares de palabras",
