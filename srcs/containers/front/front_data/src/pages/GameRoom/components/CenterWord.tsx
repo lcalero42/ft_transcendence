@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ShieldCheck } from "lucide-react";
 import {
 	BADGE_AVATAR_CLASSES,
 	BADGE_TONE_CLASSES,
@@ -40,10 +40,25 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 					style={{ animationDelay: "1500ms" }}
 					className="animate-out fade-out fill-mode-forwards flex duration-300"
 				>
-					<span className="animate-in spin-in-[720deg] flex duration-[1500ms] ease-out">{arrow}</span>
+					<span
+						className={
+							badgeTone === "neutral"
+								? "animate-arrow-wobble flex"
+								: "animate-in spin-in-[720deg] flex duration-[1500ms] ease-out"
+						}
+					>
+						{arrow}
+					</span>
 				</span>
 			) : (
 				arrow
+			)}
+			{badgeTone === "neutral" && (
+				<span
+					aria-hidden
+					style={{ animationDelay: "1000ms" }}
+					className="animate-safe-ring border-friends pointer-events-none absolute size-[max(11vw,120px)] rounded-full border-2 shadow-[0_0_24px_#2EA0E199]"
+				/>
 			)}
 			{badgeTone ? (
 				<div
@@ -51,6 +66,12 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 					style={{ animationDelay: "1700ms" }}
 					className="animate-in fade-in zoom-in-75 fill-mode-backwards absolute flex flex-col items-center gap-2 duration-500"
 				>
+					{badgeTone === "neutral" && (
+						<ShieldCheck
+							className="text-friends size-[clamp(64px,7vw,110px)] drop-shadow-[0_0_14px_#2EA0E199]"
+							strokeWidth={1.5}
+						/>
+					)}
 					{avatarUrl && (
 						<img
 							src={avatarUrl}

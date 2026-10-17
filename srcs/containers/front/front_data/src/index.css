@@ -8,6 +8,8 @@
 @import "./styles/neon-orbit.css";
 @import "./styles/dashed-orbit.css";
 @import "./styles/meteor.css";
+@import "./styles/arrow-wobble.css";
+@import "./styles/safe-reveal.css";
 
 @custom-variant dark (&:is(.dark *));
 

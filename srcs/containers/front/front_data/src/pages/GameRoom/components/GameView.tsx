@@ -8,7 +8,7 @@ import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
@@ -92,8 +92,13 @@ function GameView({ room }: GameViewProps) {
 			: 0;
 	const eliminatedPlayer = eliminatedSessionId ? players?.[eliminatedSessionId] : undefined;
 	const revealedRole = lastElimination?.eliminatedRole;
-	const centerWord = phase === "reveal" && revealedRole ? t(`roles.${revealedRole}`) : currentWord;
-	const centerBadgeTone = phase === "reveal" && revealedRole === "undercover" ? "defeat" : "victory";
+	const isNoElimination = phase === "reveal" && !!lastElimination && !eliminatedSessionId;
+	let centerWord = currentWord;
+	if (isNoElimination) centerWord = t("game.noElimination");
+	else if (phase === "reveal" && revealedRole) centerWord = t(`roles.${revealedRole}`);
+	let centerBadgeTone: RevealTone = "victory";
+	if (isNoElimination) centerBadgeTone = "neutral";
+	else if (revealedRole === "undercover") centerBadgeTone = "defeat";
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -210,7 +215,12 @@ function GameView({ room }: GameViewProps) {
 							</div>
 						</div>
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[6.5vh] 2xl:translate-x-[4vw]">
-							<PlayerCircle players={participantPlayerList} onAim={setAimedSessionId} onSelect={handleCastVote}>
+							<PlayerCircle
+								players={participantPlayerList}
+								onAim={setAimedSessionId}
+								onSelect={handleCastVote}
+								safeRevealStartMs={isNoElimination ? 1100 : undefined}
+							>
 								{phase === "finished" ? (
 									<WinnerReveal
 										winners={winners}
@@ -221,9 +231,11 @@ function GameView({ room }: GameViewProps) {
 									<CenterWord
 										word={centerWord}
 										direction={arrowDirection}
-										dimmed={isArrowIdle}
-										badgeTone={phase === "reveal" && revealedRole ? centerBadgeTone : undefined}
-										avatarUrl={getAvatarUrl(eliminatedPlayer?.avatarUrl ?? null)}
+										dimmed={isArrowIdle && !isNoElimination}
+										badgeTone={
+											phase === "reveal" && (revealedRole || isNoElimination) ? centerBadgeTone : undefined
+										}
+										avatarUrl={eliminatedPlayer ? getAvatarUrl(eliminatedPlayer.avatarUrl ?? null) : undefined}
 										avatarName={eliminatedPlayer?.name}
 									/>
 								)}
