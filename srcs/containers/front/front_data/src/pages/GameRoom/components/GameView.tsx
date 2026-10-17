@@ -293,8 +293,8 @@ function GameView({ room }: GameViewProps) {
 				<ChatBox
 					messages={chatMessages}
 					clues={clueEntries}
-								eliminations={eliminationEntries}
-								words={logWords}
+					eliminations={eliminationEntries}
+					words={logWords}
 					tab={chatTab}
 					onTabChange={setChatTab}
 					onSend={handleSendChat}
