@@ -39,14 +39,13 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				placeholder={isMyTurn ? t("game.typeGuess") : t("game.waitTurn")}
 				className={`input disabled:opacity-50 ${isAtLimit ? "border-defeat" : ""}`}
 			/>
-			{isMyTurn && (
-				<p
-					aria-live="polite"
-					className={`text-small mt-1 text-right transition-colors duration-200 ${isAtLimit ? "text-defeat font-bold" : "text-gray-low"}`}
-				>
-					{value.length}/{CLUE_MAX_LENGTH}
-				</p>
-			)}
+			<p
+				aria-live="polite"
+				aria-hidden={!isMyTurn}
+				className={`text-small mt-1 text-right transition-colors duration-200 ${isMyTurn ? "" : "invisible"} ${isAtLimit ? "text-defeat font-bold" : "text-gray-low"}`}
+			>
+				{value.length}/{CLUE_MAX_LENGTH}
+			</p>
 		</form>
 	);
 }

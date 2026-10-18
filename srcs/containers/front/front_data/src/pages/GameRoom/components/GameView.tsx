@@ -246,7 +246,7 @@ function GameView({ room }: GameViewProps) {
 								)}
 							</PlayerCircle>
 						</div>
-						<div className="pointer-events-none relative z-20 flex w-full flex-col items-center gap-4 px-6 pb-6 md:px-0 md:pb-0 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
+						<div className="pointer-events-none relative z-20 flex min-h-[9rem] w-full shrink-0 flex-col items-center justify-end gap-4 px-6 pb-6 md:px-0 md:pb-0 2xl:grid 2xl:grid-cols-3 2xl:items-end md:gap-6">
 							{phase === "open" && (
 								<div className="pointer-events-auto flex items-end gap-3 2xl:col-start-1 2xl:mx-auto">
 									<JoinButton isParticipant={isParticipant} onClick={handleToggleParticipant} />
