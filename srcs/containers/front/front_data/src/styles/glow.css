@@ -1,0 +1,17 @@
+@utility btn-glow-start {
+	box-shadow: 0 0 25px 6px color-mix(in srgb, var(--color-start-gradient-end) 55%, transparent);
+	transition: box-shadow 200ms ease-in-out;
+
+	&:hover {
+		box-shadow: 0 0 40px 12px color-mix(in srgb, var(--color-start-gradient-end) 80%, transparent);
+	}
+}
+
+@utility btn-glow-accent {
+	transition: border-color 300ms ease-out, box-shadow 300ms ease-out;
+
+	&:is(:hover, :focus-visible) {
+		border-color: var(--color-stroke-accent);
+		box-shadow: 0 0 14px 2px color-mix(in srgb, var(--color-stroke-accent) 45%, transparent);
+	}
+}

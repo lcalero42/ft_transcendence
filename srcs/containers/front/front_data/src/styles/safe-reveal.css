@@ -1,0 +1,32 @@
+@theme inline {
+	--animate-safe-ring: safe-ring 1400ms ease-out both;
+	--animate-safe-glow: safe-glow 1600ms ease-in-out both;
+
+	@keyframes safe-ring {
+		0% {
+			transform: scale(0.2);
+			opacity: 0;
+		}
+		15% {
+			transform: scale(0.4);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(5.5);
+			opacity: 0;
+		}
+	}
+
+	@keyframes safe-glow {
+		0%,
+		100% {
+			border-color: transparent;
+			box-shadow: 0 0 0 transparent;
+		}
+		30%,
+		60% {
+			border-color: var(--color-friends);
+			box-shadow: 0 0 22px #2ea0e199;
+		}
+	}
+}

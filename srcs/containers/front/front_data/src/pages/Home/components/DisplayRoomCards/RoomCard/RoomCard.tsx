@@ -9,7 +9,7 @@ export type RoomCardProps = {
 
 function RoomCard({ colyseusRoomId, name, min_players, max_players }: RoomCardProps) {
     return (
-        <Link to={`/game/${colyseusRoomId}`} className="card border-l-2 border-card-accent-border">
+        <Link to={`/game/${colyseusRoomId}`} className="card border-l-2 border-card-accent-border card-neon">
             <h3 className="truncate text-outline text-left font-bold">{name}</h3>
 
             <div className="flex items-center gap-1">

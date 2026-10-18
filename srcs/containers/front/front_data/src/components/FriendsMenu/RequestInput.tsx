@@ -44,7 +44,7 @@ function RequestInput() {
 				<button
 					type="submit"
 					disabled={isSubmitting}
-					className="clean-btn hoverable shrink-0 rounded-lg bg-linear-to-r from-btn-gradient-start to-btn-gradient-end px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+					className="clean-btn shrink-0 rounded-lg border border-card-accent-border bg-card px-4 py-2 text-sm font-semibold text-gray-high transition-[color,border-color,box-shadow,scale] duration-200 ease-in-out enabled:hover:border-stroke-accent enabled:hover:text-white enabled:hover:ring-2 enabled:hover:ring-card-border-2 enabled:active:scale-95 disabled:opacity-50"
 				>
 					{t("friends.add")}
 				</button>

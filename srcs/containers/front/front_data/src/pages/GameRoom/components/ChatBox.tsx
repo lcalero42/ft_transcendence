@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "@/pages/GameRoom/components/ChatMessage";
-import ClueList from "@/pages/GameRoom/components/ClueList";
+import LogList from "@/pages/GameRoom/components/LogList";
 import { useTranslation } from "react-i18next";
 
 interface ChatEntry {
@@ -9,6 +9,7 @@ interface ChatEntry {
 	text: string;
 	time: string;
 	avatarUrl?: string;
+	isSelf?: boolean;
 }
 
 interface ClueEntry {
@@ -18,26 +19,35 @@ interface ClueEntry {
 	round: number;
 }
 
-export type ChatTab = "chat" | "clues";
+interface EliminationEntry {
+	id: string;
+	name: string;
+	role: string;
+	round: number;
+}
+
+export type ChatTab = "chat" | "log";
 
 interface ChatBoxProps {
 	messages: ChatEntry[];
 	clues: ClueEntry[];
+	eliminations: EliminationEntry[];
+	words?: { civilian: string; undercover: string } | null;
 	tab: ChatTab;
 	onTabChange: (tab: ChatTab) => void;
 	onSend?: (text: string) => void;
 }
 
-const TABS: ChatTab[] = ["chat", "clues"];
+const TABS: ChatTab[] = ["chat", "log"];
 
-function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
+function ChatBox({ messages, clues, eliminations, words, tab, onTabChange, onSend }: ChatBoxProps) {
 	const { t } = useTranslation();
 	const [value, setValue] = useState("");
 	const listRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
-	}, [tab, messages.length, clues.length]);
+	}, [tab, messages.length, clues.length, eliminations.length, words?.civilian]);
 
 	function handleSubmit(event: React.FormEvent) {
 		event.preventDefault();
@@ -72,10 +82,11 @@ function ChatBox({ messages, clues, tab, onTabChange, onSend }: ChatBoxProps) {
 							text={message.text}
 							time={message.time}
 							avatarUrl={message.avatarUrl}
+							isSelf={message.isSelf}
 						/>
 					))
 				) : (
-					<ClueList clues={clues} />
+					<LogList clues={clues} eliminations={eliminations} words={words} />
 				)}
 			</div>
 			{tab === "chat" && (

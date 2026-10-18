@@ -11,6 +11,8 @@ interface PlayerCircleEntry {
 	voteCount?: number;
 	isVoteTarget?: boolean;
 	isAimable?: boolean;
+	isAimed?: boolean;
+	isEliminated?: boolean;
 }
 
 interface PlayerCircleProps {
@@ -18,11 +20,13 @@ interface PlayerCircleProps {
 	children?: ReactNode;
 	onAim?: (sessionId: string | null) => void;
 	onSelect?: (sessionId: string) => void;
+	safeRevealStartMs?: number;
 }
 
 const RADIUS_PERCENT = 40;
+const SAFE_STAGGER_MS = 150;
 
-function PlayerCircle({ players, children, onAim, onSelect }: PlayerCircleProps) {
+function PlayerCircle({ players, children, onAim, onSelect, safeRevealStartMs }: PlayerCircleProps) {
 	const canAim = players.some((player) => player.isAimable);
 
 	function findAimedSessionId(event: React.MouseEvent<HTMLDivElement>) {
@@ -94,6 +98,9 @@ function PlayerCircle({ players, children, onAim, onSelect }: PlayerCircleProps)
 							isActive={player.isActive}
 							voteCount={player.voteCount}
 							isVoteTarget={player.isVoteTarget}
+							isAimed={player.isAimed}
+							isEliminated={player.isEliminated}
+							safeDelayMs={safeRevealStartMs === undefined ? undefined : safeRevealStartMs + index * SAFE_STAGGER_MS}
 						/>
 					</div>
 				);
