@@ -20,6 +20,8 @@ import PlayersList from "@/pages/GameRoom/components/PlayersList";
 import KickConfirm from "@/pages/GameRoom/components/KickConfirm";
 import MobileDrawer from "@/pages/GameRoom/components/MobileDrawer";
 import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger";
+import { useHasUnread } from "@/pages/GameRoom/components/useHasUnread";
+import { useMediaQuery } from "@/lib/useMediaQuery";
 import { useTranslation } from "react-i18next";
 
 interface GameViewProps {
@@ -163,6 +165,21 @@ function GameView({ room }: GameViewProps) {
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
+	const isDesktop = useMediaQuery("(min-width: 96rem)");
+	const isChatBoxVisible = isDesktop || drawer === "chat";
+	const chatUnread = useHasUnread(
+		chat,
+		(message) => message.sentAt,
+		room.sessionId,
+		isChatBoxVisible && chatTab === "chat",
+	);
+	const logUnread = useHasUnread(
+		clues,
+		(clue) => clue.submittedAt,
+		room.sessionId,
+		isChatBoxVisible && chatTab === "log",
+	);
+	const unreadTabs = { chat: chatUnread, log: logUnread };
 	const handleKick = (sessionId: string) => room.send("kick", sessionId);
 	const kickTarget = kickTargetId ? players?.[kickTargetId] : undefined;
 	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
@@ -210,6 +227,7 @@ function GameView({ room }: GameViewProps) {
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label={t("game.openChat")}
+									hasUnread={chatUnread || logUnread}
 									onClick={() => setDrawer("chat")}
 								/>
 								<MobileDrawerTrigger
@@ -284,6 +302,7 @@ function GameView({ room }: GameViewProps) {
 								eliminations={eliminationEntries}
 								words={logWords}
 								tab={chatTab}
+								unread={unreadTabs}
 								onTabChange={setChatTab}
 								onSend={handleSendChat}
 							/>
@@ -301,6 +320,7 @@ function GameView({ room }: GameViewProps) {
 					eliminations={eliminationEntries}
 					words={logWords}
 					tab={chatTab}
+					unread={unreadTabs}
 					onTabChange={setChatTab}
 					onSend={handleSendChat}
 				/>
