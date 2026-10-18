@@ -9,7 +9,7 @@ type LinkProfileProps = {
 
 function LinkProfile({name, avatarUrl}: LinkProfileProps) {
 	return (
-		<Link to="/profile" className="badge py-1">
+		<Link to="/profile" className="badge btn-glow-accent py-1">
 				<span className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full bg-card-border-2">
 					{avatarUrl ? (
 						<img className="h-full w-full rounded-full object-cover" src={getAvatarUrl(avatarUrl)} alt="" />

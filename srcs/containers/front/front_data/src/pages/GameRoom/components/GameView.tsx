@@ -8,7 +8,7 @@ import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg, formatChatTime } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
@@ -77,12 +77,32 @@ function GameView({ room }: GameViewProps) {
 	const canVote = phase === "voting" && isParticipant;
 	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
 	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
-	const arrowTargetIndex = phase === "voting" ? voteArrowTargetIndex : activePlayerIndex;
-	const isArrowIdle = phase === "voting" && voteArrowTargetIndex === -1;
+	const eliminationHistory = useRoomState(room, (s) => s.eliminationHistory);
+	const latestElimination = eliminationHistory?.[(eliminationHistory?.length ?? 1) - 1];
+	const lastElimination =
+		(phase === "reveal" || phase === "finished") && latestElimination?.round === round ? latestElimination : undefined;
+	const eliminatedSessionId = lastElimination?.eliminatedSessionId || undefined;
+	const circleEntries = eliminatedSessionId
+		? playerEntries.filter(([sessionId]) => participants?.includes(sessionId) || sessionId === eliminatedSessionId)
+		: participantEntries;
+	const revealTargetIndex = circleEntries.findIndex(([sessionId]) => sessionId === eliminatedSessionId);
+	let arrowTargetIndex = activePlayerIndex;
+	if (phase === "voting") arrowTargetIndex = voteArrowTargetIndex;
+	else if (phase === "reveal") arrowTargetIndex = revealTargetIndex;
+	const isArrowIdle = (phase === "voting" || phase === "reveal") && arrowTargetIndex === -1;
 	const arrowDirection =
-		(phase === "describing" || phase === "voting") && arrowTargetIndex !== -1
-			? getPlayerAngleDeg(arrowTargetIndex, participantEntries.length)
+		(phase === "describing" || phase === "voting" || phase === "reveal") && arrowTargetIndex !== -1
+			? getPlayerAngleDeg(arrowTargetIndex, circleEntries.length)
 			: 0;
+	const eliminatedPlayer = eliminatedSessionId ? players?.[eliminatedSessionId] : undefined;
+	const revealedRole = lastElimination?.eliminatedRole;
+	const isNoElimination = phase === "reveal" && !!lastElimination && !eliminatedSessionId;
+	let centerWord = currentWord;
+	if (isNoElimination) centerWord = t("game.noElimination");
+	else if (phase === "reveal" && revealedRole) centerWord = t(`roles.${revealedRole}`);
+	let centerBadgeTone: RevealTone = "victory";
+	if (isNoElimination) centerBadgeTone = "neutral";
+	else if (revealedRole === "undercover") centerBadgeTone = "defeat";
 
 	useEffect(() => {
 		const unsubscribe = room.onMessage("word", ({ word }: { word: string }) => setMyWord(word));
@@ -97,7 +117,7 @@ function GameView({ room }: GameViewProps) {
 
 	if (phase !== prevPhase) {
 		setPrevPhase(phase);
-		if (phase === "starting") setChatTab("clues");
+		if (phase === "starting") setChatTab("log");
 	}
 
 	useEffect(() => {
@@ -119,12 +139,29 @@ function GameView({ room }: GameViewProps) {
 		word: clue.word,
 		round: clue.round,
 	}));
+	const eliminationEntries = (eliminationHistory ?? [])
+		.filter((record) => record.eliminatedSessionId)
+		.map((record, index) => ({
+			id: `${record.eliminatedSessionId}-${record.round}-${index}`,
+			name: record.eliminatedName,
+			role: record.eliminatedRole,
+			round: record.round,
+		}));
+	const revealedWords = useRoomState(room, (s) => s.revealedWords);
+	const language = i18n.language.slice(0, 2);
+	const pickRevealedWord = (role: "civilian" | "undercover") =>
+		revealedWords?.[`${role}_${language}`] || revealedWords?.[`${role}_en`] || "";
+	const logWords =
+		phase === "finished" && revealedWords?.civilian_en
+			? { civilian: pickRevealedWord("civilian"), undercover: pickRevealedWord("undercover") }
+			: null;
 	const chat = useRoomState(room, (s) => s.chat);
 	const chatMessages = (chat ?? []).map((message, index) => ({
 		id: `${message.sessionId}-${message.sentAt}-${index}`,
 		name: message.name,
 		text: message.text,
 		time: formatChatTime(message.sentAt),
+		isSelf: message.sessionId === room.sessionId,
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => room.send("chat", text);
@@ -155,7 +192,7 @@ function GameView({ room }: GameViewProps) {
 		isHost: sessionId === hostSessionId,
 		isGuest: player.isGuest,
 	}));
-	const participantPlayerList = participantEntries.map(([sessionId, player]) => {
+	const participantPlayerList = circleEntries.map(([sessionId, player]) => {
 		const isSelf = sessionId === room.sessionId;
 		const voteCount =
 			phase === "voting" ? (votes ?? []).filter((vote) => vote.targetSessionId === sessionId).length : undefined;
@@ -170,6 +207,10 @@ function GameView({ room }: GameViewProps) {
 			voteCount,
 			isVoteTarget: canVote && myVoteTargetId === sessionId,
 			isAimable: canVote && !isSelf,
+			isAimed: canVote && aimedSessionId === sessionId,
+			isEliminated:
+				sessionId === eliminatedSessionId ||
+				(phase === "finished" && !!revealedRoles?.[sessionId] && revealedRoles[sessionId] !== winningRole),
 		};
 	});
 
@@ -197,11 +238,29 @@ function GameView({ room }: GameViewProps) {
 							</div>
 						</div>
 						<div className="relative flex min-h-0 flex-1 w-full items-center justify-center md:-translate-y-[6.5vh] 2xl:translate-x-[4vw]">
-							<PlayerCircle players={participantPlayerList} onAim={setAimedSessionId} onSelect={handleCastVote}>
+							<PlayerCircle
+								players={participantPlayerList}
+								onAim={setAimedSessionId}
+								onSelect={handleCastVote}
+								safeRevealStartMs={isNoElimination ? 1100 : undefined}
+							>
 								{phase === "finished" ? (
-									<WinnerReveal winners={winners} label={winnerLabel} />
+									<WinnerReveal
+										winners={winners}
+										label={winnerLabel}
+										tone={winner === "undercover" ? "defeat" : "victory"}
+									/>
 								) : (
-									<CenterWord word={currentWord} direction={arrowDirection} dimmed={isArrowIdle} />
+									<CenterWord
+										word={centerWord}
+										direction={arrowDirection}
+										dimmed={isArrowIdle && !isNoElimination}
+										badgeTone={
+											phase === "reveal" && (revealedRole || isNoElimination) ? centerBadgeTone : undefined
+										}
+										avatarUrl={eliminatedPlayer ? getAvatarUrl(eliminatedPlayer.avatarUrl ?? null) : undefined}
+										avatarName={eliminatedPlayer?.name}
+									/>
 								)}
 							</PlayerCircle>
 						</div>
@@ -240,6 +299,8 @@ function GameView({ room }: GameViewProps) {
 							<ChatBox
 								messages={chatMessages}
 								clues={clueEntries}
+								eliminations={eliminationEntries}
+								words={logWords}
 								tab={chatTab}
 								unread={unreadTabs}
 								onTabChange={setChatTab}
@@ -256,6 +317,8 @@ function GameView({ room }: GameViewProps) {
 				<ChatBox
 					messages={chatMessages}
 					clues={clueEntries}
+					eliminations={eliminationEntries}
+					words={logWords}
 					tab={chatTab}
 					unread={unreadTabs}
 					onTabChange={setChatTab}

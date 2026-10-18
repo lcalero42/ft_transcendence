@@ -64,4 +64,5 @@ export class UndercoverState extends Schema {
   @type('number') phaseEndsAt: number = 0;
   @type('string') winner: string = '';
   @type({ map: 'string' }) revealedRoles = new MapSchema<string>();
+  @type({ map: 'string' }) revealedWords = new MapSchema<string>();
 }

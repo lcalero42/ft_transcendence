@@ -68,6 +68,7 @@ export class UndercoverGame {
     this.state.eliminationHistory.clear();
     this.state.winner = '';
     this.state.revealedRoles.clear();
+    this.state.revealedWords.clear();
     this.setPhase('starting', STARTING_DURATION_MS, () => this.beginRound());
 
     this.logger.log(
@@ -291,7 +292,26 @@ export class UndercoverGame {
     for (const sessionId of this.state.participants) {
       this.state.revealedRoles.set(sessionId, this.roles.get(sessionId) ?? '');
     }
+    this.revealWords();
     this.setPhase('finished', FINISHED_DURATION_MS, () => this.reset());
+  }
+
+  private revealWords() {
+    if (!this.wordPair) {
+      return;
+    }
+    const pair = this.wordPair;
+    const words = {
+      en: { civilian: pair.civilianWord, undercover: pair.undercoverWord },
+      fr: { civilian: pair.civilianWordFr, undercover: pair.undercoverWordFr },
+      es: { civilian: pair.civilianWordEs, undercover: pair.undercoverWordEs },
+    };
+    for (const language of LANGUAGES) {
+      for (const role of ['civilian', 'undercover'] as const) {
+        const word = words[language][role] || words[DEFAULT_LANGUAGE][role];
+        this.state.revealedWords.set(`${role}_${language}`, word);
+      }
+    }
   }
 
   private reset() {
@@ -306,6 +326,7 @@ export class UndercoverGame {
     this.state.eliminationHistory.clear();
     this.state.winner = '';
     this.state.revealedRoles.clear();
+    this.state.revealedWords.clear();
     this.wordPair = null;
     this.roles.clear();
   }
