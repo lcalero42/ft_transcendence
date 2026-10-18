@@ -173,13 +173,13 @@ function GameView({ room }: GameViewProps) {
 		room.sessionId,
 		isChatBoxVisible && chatTab === "chat",
 	);
-	const cluesUnread = useHasUnread(
+	const logUnread = useHasUnread(
 		clues,
 		(clue) => clue.submittedAt,
 		room.sessionId,
-		isChatBoxVisible && chatTab === "clues",
+		isChatBoxVisible && chatTab === "log",
 	);
-	const unreadTabs = { chat: chatUnread, clues: cluesUnread };
+	const unreadTabs = { chat: chatUnread, log: logUnread };
 	const handleKick = (sessionId: string) => room.send("kick", sessionId);
 	const kickTarget = kickTargetId ? players?.[kickTargetId] : undefined;
 	const activePlayerSessionId = phase === "describing" ? participantEntries[activePlayerIndex]?.[0] : undefined;
@@ -227,7 +227,7 @@ function GameView({ room }: GameViewProps) {
 								<MobileDrawerTrigger
 									icon={MessageCircle}
 									label={t("game.openChat")}
-									hasUnread={chatUnread || cluesUnread}
+									hasUnread={chatUnread || logUnread}
 									onClick={() => setDrawer("chat")}
 								/>
 								<MobileDrawerTrigger
