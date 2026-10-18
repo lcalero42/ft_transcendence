@@ -1,0 +1,52 @@
+@property --neon-angle {
+	syntax: "<angle>";
+	inherits: false;
+	initial-value: 0deg;
+}
+
+@keyframes neon-orbit {
+	to {
+		--neon-angle: 360deg;
+	}
+}
+
+@utility card-neon {
+	position: relative;
+	transition: box-shadow 300ms ease-out;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0 0 0 -2px;
+		border-radius: inherit;
+		padding: 2px;
+		pointer-events: none;
+		background: conic-gradient(
+			from var(--neon-angle),
+			transparent 0 55%,
+			var(--color-stroke-accent) 70%,
+			var(--color-accent-purple) 82%,
+			var(--color-friends) 92%,
+			transparent 100%
+		);
+		mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+		opacity: 0;
+		transition: opacity 250ms ease-out;
+		animation: neon-orbit 2.2s linear infinite paused;
+	}
+
+	&:is(:hover, :focus-visible) {
+		box-shadow: 0 0 22px color-mix(in srgb, var(--color-stroke-accent) 35%, transparent);
+
+		&::before {
+			opacity: 1;
+			animation-play-state: running;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		&::before {
+			animation: none;
+		}
+	}
+}

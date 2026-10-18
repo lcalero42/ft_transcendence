@@ -4,6 +4,12 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "./styles/glow.css";
+@import "./styles/neon-orbit.css";
+@import "./styles/dashed-orbit.css";
+@import "./styles/meteor.css";
+@import "./styles/arrow-wobble.css";
+@import "./styles/safe-reveal.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -75,15 +81,6 @@ body {
 @utility clean-btn {
 	@apply bg-none
 	cursor-pointer;
-}
-
-@utility btn-glow-start {
-	box-shadow: 0 0 25px 6px color-mix(in srgb, var(--color-start-gradient-end) 55%, transparent);
-	transition: box-shadow 200ms ease-in-out;
-
-	&:hover {
-		box-shadow: 0 0 40px 12px color-mix(in srgb, var(--color-start-gradient-end) 80%, transparent);
-	}
 }
 
 @utility text-outline {
@@ -198,21 +195,4 @@ body {
 		mb-5;
 	}
 
-}
-
-@theme inline {
-	--animate-meteor: meteor 5s linear infinite;
-	@keyframes meteor {
-		0% {
-			transform: rotate(var(--angle)) translateX(0);
-			opacity: 1;
-		}
-		90% {
-			opacity: 1;
-		}
-		100% {
-			transform: rotate(var(--angle)) translateX(-130vh);
-			opacity: 0;
-		}
-	}
 }
