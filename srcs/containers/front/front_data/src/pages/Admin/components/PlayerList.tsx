@@ -70,7 +70,7 @@ function PlayerList() {
 		);
 }, []);
 	return (
-		<div className="card w-full md:bg-transparent border border-card-border-2 ">
+		<div className="card w-full bg-transparent border border-card-border-2 ">
 			<div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-3">
 				<div className="font-bold text-xl text-left"> {t("admin.users")} </div>
 				<div className="flex flex-col md:flex-row gap-2 self-start md:self-auto md:items-center">

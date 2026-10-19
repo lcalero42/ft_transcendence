@@ -166,7 +166,7 @@ function RoomList() {
 	}, []);
 
 	return (
-		<div className="card w-full md:bg-transparent border border-card-border-2 ">
+		<div className="card w-full bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between">
 				<div className="font-bold text-xl"> {t("admin.rooms")} </div>
 			</div>

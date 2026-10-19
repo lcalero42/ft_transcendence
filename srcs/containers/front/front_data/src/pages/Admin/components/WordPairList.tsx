@@ -138,7 +138,7 @@ function WordPairList() {
 	}
 
 	return (
-		<div className="card w-full md:bg-transparent border border-card-border-2 ">
+		<div className="card w-full bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
 				<div className="font-bold text-xl"> {t("admin.wordPairs")} </div>
 			</div>
