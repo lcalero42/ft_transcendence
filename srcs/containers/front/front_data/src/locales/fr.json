@@ -41,6 +41,7 @@
 		"adminRequired": "Accès administrateur requis",
 		"guestBlocked": "Créez un compte pour accéder à cette page",
 		"guest": "connexion",
+		"oauthFailed": "La connexion avec Google / Discord a échoué, réessayez",
 		"login": {
 			"subtitle": "Connectez-vous pour continuer votre aventure Undercover !",
 			"heading": "Connectez-vous à votre compte",

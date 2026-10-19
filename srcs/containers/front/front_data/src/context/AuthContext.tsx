@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { getToken, onTokenCleared, requestSessionToken } from "../api/auth/client";
+import { getToken, onTokenCleared, requestSessionToken, setToken } from "../api/auth/client";
 import * as authApi from "../api/auth/auth";
 import { getMe, type Player } from "../api/player";
 import { AuthContext, type User } from "./auth-context";
@@ -85,6 +85,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(decodeToken(accessToken));
   }
 
+  // OAuth: the token comes from the callback URL instead of a fetch response.
+  // The backend signs it for 30 days, so it is kept like a "remember me" one.
+  function loginWithToken(token: string) {
+    setToken(token, true);
+    setUser(decodeToken(token));
+  }
+
   function logout() {
     authApi.logout();
     setUser(null);
@@ -103,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         guest,
+        loginWithToken,
         logout,
       }}
     >

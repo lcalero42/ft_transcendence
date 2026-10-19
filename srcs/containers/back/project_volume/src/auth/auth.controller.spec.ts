@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { OAuthService } from './oauth/oauth.service';
 import { PrismaService } from '../prisma.service';
 
 describe('AuthController', () => {
@@ -15,6 +16,7 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        { provide: OAuthService, useValue: {} },
         { provide: JwtService, useValue: {} },
         { provide: PrismaService, useValue: {} },
       ],

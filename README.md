@@ -20,8 +20,13 @@
    ```
 2. Create the Docker secrets in `srcs/secrets/` (`db_user.txt`,
    `db_password.txt`, `db_name.txt`, `jwt_secret.txt`,
-   `internal_api_key.txt`, `admin_email.txt`, `admin_password.txt`), one
-   value per file. They are git-ignored; `make check-secrets` verifies them.
+   `internal_api_key.txt`, `admin_email.txt`, `admin_password.txt`,
+   `google_client_id.txt`, `google_client_secret.txt`,
+   `discord_client_id.txt`, `discord_client_secret.txt`), one value per
+   file. They are git-ignored; `make check-secrets` verifies them.
+   The OAuth values come from the team's Google Cloud and Discord developer
+   apps, whose redirect URIs are
+   `https://localhost:8443/api/auth/{google,discord}/callback`.
 
 Details and troubleshooting: [`docs/runbook.md`](docs/runbook.md).
 

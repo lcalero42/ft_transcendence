@@ -29,7 +29,15 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    srcs/secrets/internal_api_key.txt
    srcs/secrets/admin_email.txt
    srcs/secrets/admin_password.txt
+   srcs/secrets/google_client_id.txt
+   srcs/secrets/google_client_secret.txt
+   srcs/secrets/discord_client_id.txt
+   srcs/secrets/discord_client_secret.txt
    ```
+   The four OAuth files hold the credentials of the team's Google Cloud and
+   Discord developer apps (shared privately, never committed). Their redirect
+   URIs must be `https://localhost:8443/api/auth/google/callback` and
+   `https://localhost:8443/api/auth/discord/callback`.
    Each file holds a single value, no trailing newline conventions
    enforced — just don't leave them empty.
    `admin_email.txt` / `admin_password.txt` are the credentials of the

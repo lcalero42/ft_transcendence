@@ -7,6 +7,7 @@ import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
+import OAuthCallback from "./pages/OAuthCallback/OAuthCallback";
 import { AuthProvider } from "./context/AuthContext";
 import { FriendsProvider } from "./context/FriendsContext";
 import ProtectedRoute from "./context/ProtectedRoute";
@@ -26,6 +27,7 @@ function App() {
 							<Route path="/login" element={<Login />} />
 							<Route path="/register" element={<Register />} />
 							<Route path="/guest" element={<Guest />} />
+							<Route path="/auth/callback" element={<OAuthCallback />} />
 							<Route path="/admin" element={<ProtectedRoute allowGuest={false} adminOnly><Admin /></ProtectedRoute>} />
 							<Route path="/profile" element={<ProtectedRoute allowGuest={false}><Profile /></ProtectedRoute>} />
 							<Route path="/profile/:name" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
