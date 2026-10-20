@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ChatMessage from "@/pages/GameRoom/components/ChatMessage";
 import LogList from "@/pages/GameRoom/components/LogList";
+import UnreadDot from "@/pages/GameRoom/components/UnreadDot";
 import { useTranslation } from "react-i18next";
 
 interface ChatEntry {
@@ -34,13 +35,14 @@ interface ChatBoxProps {
 	eliminations: EliminationEntry[];
 	words?: { civilian: string; undercover: string } | null;
 	tab: ChatTab;
+	unread: Record<ChatTab, boolean>;
 	onTabChange: (tab: ChatTab) => void;
 	onSend?: (text: string) => void;
 }
 
 const TABS: ChatTab[] = ["chat", "log"];
 
-function ChatBox({ messages, clues, eliminations, words, tab, onTabChange, onSend }: ChatBoxProps) {
+function ChatBox({ messages, clues, eliminations, words, tab, unread, onTabChange, onSend }: ChatBoxProps) {
 	const { t } = useTranslation();
 	const [value, setValue] = useState("");
 	const listRef = useRef<HTMLDivElement>(null);
@@ -69,7 +71,10 @@ function ChatBox({ messages, clues, eliminations, words, tab, onTabChange, onSen
 						onClick={() => onTabChange(id)}
 						className={`text-title cursor-pointer font-bold ${tab === id ? "text-accent-purple" : "text-gray-low"}`}
 					>
-						{t(`game.${id}`)}
+						<span className="relative">
+							{t(`game.${id}`)}
+							{unread[id] && <UnreadDot className="-top-0.5 -right-2.5" />}
+						</span>
 					</button>
 				))}
 			</div>
