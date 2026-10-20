@@ -55,7 +55,7 @@ export const OAUTH_PROVIDERS: Record<OAuthProviderName, OAuthProviderConfig> = {
         email: user.email ?? null,
         emailVerified: user.email_verified === true,
         name: user.given_name ?? user.name ?? '',
-        avatarUrl: user.picture ?? null,
+        avatarUrl: user.picture?.replace(/=s\d+-c$/, '=s256-c') ?? null,
       };
     },
   },
@@ -74,7 +74,7 @@ export const OAUTH_PROVIDERS: Record<OAuthProviderName, OAuthProviderConfig> = {
         emailVerified: user.verified === true,
         name: user.global_name ?? user.username,
         avatarUrl: user.avatar
-          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`
           : null,
       };
     },

@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { PrismaService } from '../../prisma.service';
 import { requireEnv } from '../../common/require-env';
 import { AuthService } from '../auth.service';
+import { detectImageType } from '../../player/avatar-validation';
+import { saveAvatar } from '../../player/avatar-storage';
+import { AVATAR_MAX_SIZE } from '../../player/avatar.constants';
 import {
   OAUTH_PROVIDERS,
   OAuthProfile,
@@ -13,6 +16,7 @@ import {
 const STATE_EXPIRES_IN = '5m';
 const NAME_MAX_LENGTH = 24;
 const NAME_MIN_LENGTH = 3;
+const AVATAR_FETCH_TIMEOUT_MS = 5000;
 
 interface TokenResponse {
   // eslint-disable-next-line @typescript-eslint/naming-convention -- OAuth2 spec field name
@@ -21,6 +25,8 @@ interface TokenResponse {
 
 @Injectable()
 export class OAuthService {
+  private readonly logger = new Logger(OAuthService.name);
+
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
@@ -143,7 +149,8 @@ export class OAuthService {
           data: {
             ...providerIdField,
             // Keep the avatar the player chose, only fill an empty one.
-            avatarUrl: byEmail.avatarUrl ?? profile.avatarUrl,
+            avatarUrl:
+              byEmail.avatarUrl ?? (await this.importAvatar(profile.avatarUrl)),
           },
         });
       }
@@ -155,9 +162,26 @@ export class OAuthService {
         ...providerIdField,
         name: await this.findAvailableName(profile.name),
         email: verifiedEmail,
-        avatarUrl: profile.avatarUrl,
+        avatarUrl: await this.importAvatar(profile.avatarUrl),
       },
     });
+  }
+
+  private async importAvatar(url: string | null) {
+    if (!url) return null;
+    try {
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(AVATAR_FETCH_TIMEOUT_MS),
+      });
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const buffer = Buffer.from(await res.arrayBuffer());
+      if (buffer.length > AVATAR_MAX_SIZE) throw new Error('image too large');
+      if (!detectImageType(buffer)) throw new Error('not an image');
+      return await saveAvatar(buffer);
+    } catch (error) {
+      this.logger.warn(`could not import avatar ${url}: ${String(error)}`);
+      return null;
+    }
   }
 
   private assertActive<T extends { deletedAt: Date | null }>(player: T) {

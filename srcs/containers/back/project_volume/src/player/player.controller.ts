@@ -23,17 +23,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NotGuestGuard } from '../auth/not-guest.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { detectImageType } from './avatar-validation';
-import { randomUUID } from 'node:crypto';
-import { join } from 'node:path';
-import sharp from 'sharp';
-import {
-  AVATAR_DIR,
-  AVATAR_URL_PREFIX,
-  AVATAR_MAX_SIZE,
-  AVATAR_OUTPUT_SIZE,
-  AVATAR_MAX_INPUT_PIXELS,
-  AVATAR_MIMES,
-} from './avatar.constants';
+import { saveAvatar } from './avatar-storage';
+import { AVATAR_MAX_SIZE, AVATAR_MIMES } from './avatar.constants';
 
 @Controller('player')
 export class PlayerController {
@@ -159,19 +150,12 @@ export class PlayerController {
         'File content is not a valid image',
       );
     }
-    const filename = `${randomUUID()}.webp`;
+    let avatarUrl: string;
     try {
-      await sharp(file.buffer, { limitInputPixels: AVATAR_MAX_INPUT_PIXELS })
-        .rotate()
-        .resize(AVATAR_OUTPUT_SIZE, AVATAR_OUTPUT_SIZE, { fit: 'cover' })
-        .webp({ quality: 80 })
-        .toFile(join(AVATAR_DIR, filename));
+      avatarUrl = await saveAvatar(file.buffer);
     } catch {
       throw new BadRequestException('Image is corrupted or unsupported');
     }
-    return this.playerService.updateAvatar(
-      id,
-      `${AVATAR_URL_PREFIX}${filename}`,
-    );
+    return this.playerService.updateAvatar(id, avatarUrl);
   }
 }
