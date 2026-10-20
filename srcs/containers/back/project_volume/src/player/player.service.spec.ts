@@ -180,7 +180,7 @@ describe('PlayerService', () => {
 
   describe('update', () => {
     it('should update a player and return it', async () => {
-      const updateDto = { name: 'Bob', email: 'boblebricoleur@test.com' };
+      const updateDto = { name: 'Bob' };
       const result = {
         id: 5,
         name: 'Bob',
@@ -199,10 +199,8 @@ describe('PlayerService', () => {
       expect(prismaMock.player.update).toHaveBeenCalledWith({
         where: { id: 5, deletedAt: null },
         data: {
-          email: updateDto.email,
           name: updateDto.name,
           aboutMe: undefined,
-          avatarUrl: undefined,
         },
       });
     });
@@ -227,6 +225,7 @@ describe('PlayerService', () => {
         avatarUrl: '/uploads/avatars/old.webp',
       } as PlayerRow);
       prismaMock.player.update.mockResolvedValue(updated);
+      prismaMock.player.count.mockResolvedValue(0);
       unlinkMock.mockResolvedValue(undefined);
 
       expect(await service.updateAvatar(5, '/uploads/avatars/new.webp')).toBe(
@@ -239,6 +238,23 @@ describe('PlayerService', () => {
       expect(unlinkMock).toHaveBeenCalledWith(
         expect.stringContaining('old.webp'),
       );
+    });
+
+    it('should not delete the old file when another player still uses it', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        avatarUrl: '/uploads/avatars/shared.webp',
+      } as PlayerRow);
+      prismaMock.player.update.mockResolvedValue({
+        ...basePlayer,
+        avatarUrl: '/uploads/avatars/new.webp',
+      });
+      prismaMock.player.count.mockResolvedValue(1);
+
+      await service.updateAvatar(5, '/uploads/avatars/new.webp');
+      expect(prismaMock.player.count).toHaveBeenCalledWith({
+        where: { avatarUrl: '/uploads/avatars/shared.webp' },
+      });
+      expect(unlinkMock).not.toHaveBeenCalled();
     });
 
     it('should not delete anything when there was no previous avatar', async () => {
@@ -273,6 +289,7 @@ describe('PlayerService', () => {
         avatarUrl: '/uploads/avatars/old.webp',
       } as PlayerRow);
       prismaMock.player.update.mockResolvedValue(updated);
+      prismaMock.player.count.mockResolvedValue(0);
       unlinkMock.mockRejectedValue(new Error('ENOENT'));
 
       await expect(

@@ -1,7 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { unlink } from 'node:fs/promises';
 import { basename, join } from 'node:path';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from '../prisma.service';
 import { AVATAR_DIR, AVATAR_URL_PREFIX } from './avatar.constants';
 
@@ -72,14 +72,12 @@ export class PlayerService {
     }));
   }
 
-  async update(id: number, updatePlayerDto: UpdatePlayerDto) {
+  async update(id: number, updateProfileDto: UpdateProfileDto) {
     const updatePlayer = await this.prisma.player.update({
       where: { id: id, deletedAt: null },
       data: {
-        email: updatePlayerDto.email,
-        name: updatePlayerDto.name,
-        aboutMe: updatePlayerDto.aboutMe,
-        avatarUrl: updatePlayerDto.avatarUrl,
+        name: updateProfileDto.name,
+        aboutMe: updateProfileDto.aboutMe,
       },
     });
     return updatePlayer;
@@ -96,8 +94,14 @@ export class PlayerService {
       data: { avatarUrl },
     });
 
-    if (current?.avatarUrl?.startsWith(AVATAR_URL_PREFIX)) {
-      await this.deleteAvatarFile(current.avatarUrl);
+    const oldUrl = current?.avatarUrl;
+    if (oldUrl?.startsWith(AVATAR_URL_PREFIX)) {
+      const stillUsed = await this.prisma.player.count({
+        where: { avatarUrl: oldUrl },
+      });
+      if (stillUsed === 0) {
+        await this.deleteAvatarFile(oldUrl);
+      }
     }
     return updatedPlayer;
   }
