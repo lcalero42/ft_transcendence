@@ -70,7 +70,7 @@ export class AuthService {
     if (existingName) throw new ConflictException('Username already taken');
   }
 
-  private signToken(sub: number, email: string | null, remember = false) {
+  signToken(sub: number, email: string | null, remember = false) {
     const payload = { sub, email };
     const accessToken = remember
       ? this.jwtService.sign(payload, {

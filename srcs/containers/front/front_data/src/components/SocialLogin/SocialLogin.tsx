@@ -1,20 +1,19 @@
 import GoogleIcon from "../../assets/icons/google.svg";
 import DiscordIcon from "../../assets/icons/discord.svg";
-import FortyTwoIcon from "../../assets/icons/42.svg";
 
 const providers = [
-	{ name: "google", icon: GoogleIcon },
-	{ name: "discord", icon: DiscordIcon },
-	{ name: "42", icon: FortyTwoIcon },
+	{ name: "google", label: "Google", icon: GoogleIcon },
+	{ name: "discord", label: "Discord", icon: DiscordIcon },
 ];
 
 function SocialLogin() {
 	return (
 		<div className="flex justify-center gap-4">
 			{providers.map((provider) => (
-				<button
+				<a
 					key={provider.name}
-					type="button"
+					href={`${import.meta.env.VITE_API_URL}/auth/${provider.name}`}
+					aria-label={provider.label}
 					className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-card-border hover:border-accent-purple"
 				>
 					<div
@@ -24,7 +23,7 @@ function SocialLogin() {
 							maskImage: `url("${provider.icon}")`,
 						}}
 					/>
-				</button>
+				</a>
 			))}
 		</div>
 	);

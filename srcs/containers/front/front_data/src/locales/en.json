@@ -41,6 +41,7 @@
 		"adminRequired": "Admin access required",
 		"guestBlocked": "Create an account to access this page",
 		"guest": "login",
+		"oauthFailed": "Google / Discord sign-in failed, please try again",
 		"login": {
 			"subtitle": "Log in to continue your Undercover journey!",
 			"heading": "Log in to your account",
