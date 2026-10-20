@@ -34,7 +34,6 @@ function Login() {
 	const [rememberMe, setRememberMe] = useState(false);
 
 	const [searchParams] = useSearchParams();
-	// Set by the backend when a Google / Discord login fails or is cancelled.
 	const [authError, setAuthError] = useState<string | null>(() =>
 		searchParams.get("error") === "oauth" ? t("auth.oauthFailed") : null,
 	);

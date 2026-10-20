@@ -6,8 +6,6 @@ const providers = [
 	{ name: "discord", label: "Discord", icon: DiscordIcon },
 ];
 
-// Plain links, not fetch: the whole page must navigate to the provider's
-// login screen, then come back through the backend callback.
 function SocialLogin() {
 	return (
 		<div className="flex justify-center gap-4">

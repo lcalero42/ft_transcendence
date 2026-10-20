@@ -85,8 +85,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(decodeToken(accessToken));
   }
 
-  // OAuth: the token comes from the callback URL instead of a fetch response.
-  // The backend signs it for 30 days, so it is kept like a "remember me" one.
   function loginWithToken(token: string) {
     setToken(token, true);
     setUser(decodeToken(token));

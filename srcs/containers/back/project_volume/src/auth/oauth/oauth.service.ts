@@ -6,6 +6,7 @@ import { requireEnv } from '../../common/require-env';
 import { AuthService } from '../auth.service';
 import { detectImageType } from '../../player/avatar-validation';
 import { saveAvatar } from '../../player/avatar-storage';
+import { PlayerService } from '../../player/player.service';
 import { AVATAR_MAX_SIZE } from '../../player/avatar.constants';
 import {
   OAUTH_PROVIDERS,
@@ -31,9 +32,9 @@ export class OAuthService {
     private jwtService: JwtService,
     private prisma: PrismaService,
     private authService: AuthService,
+    private playerService: PlayerService,
   ) {}
 
-  // The front origin, which is also the origin nginx serves /api from.
   appUrl() {
     return requireEnv('CORS_ORIGIN');
   }
@@ -63,11 +64,11 @@ export class OAuthService {
     const providerToken = await this.exchangeCode(provider, code);
     const profile = await this.fetchProfile(provider, providerToken);
     const player = await this.findOrCreatePlayer(provider, profile);
+    const avatarUrl = await this.importAvatar(profile.avatarUrl);
+    if (avatarUrl) await this.playerService.updateAvatar(player.id, avatarUrl);
     return this.authService.signToken(player.id, player.email, true);
   }
 
-  // A key distinct from JWT_SECRET's own use, so a state can never be
-  // accepted as a login token (and the other way round).
   private stateSecret() {
     return `${requireEnv('JWT_SECRET')}:oauth-state`;
   }
@@ -77,7 +78,6 @@ export class OAuthService {
   }
 
   private verifyState(provider: OAuthProviderName, state: string) {
-    // Throws on a bad signature or an expired state.
     const payload = this.jwtService.verify<{ provider: string }>(state, {
       secret: this.stateSecret(),
     });
@@ -129,14 +129,11 @@ export class OAuthService {
         ? { googleId: profile.providerId }
         : { discordId: profile.providerId };
 
-    // 1. Already signed in with this provider before.
     const linked = await this.prisma.player.findUnique({
       where: providerIdField,
     });
     if (linked) return this.assertActive(linked);
 
-    // 2. Existing account with the same email: link it. Only trusted when the
-    // provider verified the email, otherwise anyone could claim it.
     const verifiedEmail = profile.emailVerified ? profile.email : null;
     if (verifiedEmail) {
       const byEmail = await this.prisma.player.findUnique({
@@ -146,23 +143,16 @@ export class OAuthService {
         this.assertActive(byEmail);
         return this.prisma.player.update({
           where: { id: byEmail.id },
-          data: {
-            ...providerIdField,
-            // Keep the avatar the player chose, only fill an empty one.
-            avatarUrl:
-              byEmail.avatarUrl ?? (await this.importAvatar(profile.avatarUrl)),
-          },
+          data: providerIdField,
         });
       }
     }
 
-    // 3. New player.
     return this.prisma.player.create({
       data: {
         ...providerIdField,
         name: await this.findAvailableName(profile.name),
         email: verifiedEmail,
-        avatarUrl: await this.importAvatar(profile.avatarUrl),
       },
     });
   }
@@ -189,7 +179,6 @@ export class OAuthService {
     return player;
   }
 
-  // "Thibaud Maitre" -> "ThibaudMaitre", then "ThibaudMaitre_2", ... if taken.
   private async findAvailableName(rawName: string) {
     let base = rawName
       .replace(/[^a-zA-Z0-9_-]/g, '')

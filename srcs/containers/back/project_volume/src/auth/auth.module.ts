@@ -8,6 +8,7 @@ import { OAuthService } from './oauth/oauth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { requireEnv } from '../common/require-env';
 import { PrismaService } from '../prisma.service';
+import { PlayerService } from '../player/player.service';
 
 @Module({
   imports: [
@@ -20,6 +21,12 @@ import { PrismaService } from '../prisma.service';
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60000, limit: 5 }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OAuthService, JwtStrategy, PrismaService],
+  providers: [
+    AuthService,
+    OAuthService,
+    JwtStrategy,
+    PrismaService,
+    PlayerService,
+  ],
 })
 export class AuthModule {}

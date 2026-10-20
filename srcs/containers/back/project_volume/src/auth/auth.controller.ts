@@ -29,7 +29,6 @@ export class AuthController {
     private oauthService: OAuthService,
   ) {}
 
-  // Browser navigation (not fetch): we answer with a redirect to the provider.
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Get(':provider')
   oauthStart(@Param('provider') provider: string, @Res() res: Response) {
@@ -47,7 +46,6 @@ export class AuthController {
   ) {
     const appUrl = this.oauthService.appUrl();
     try {
-      // No code when the user cancelled on the provider page.
       if (!isOAuthProvider(provider) || !code || !state) {
         throw new Error('Invalid OAuth callback');
       }
@@ -56,7 +54,6 @@ export class AuthController {
         code,
         state,
       );
-      // Fragment (#) is never sent to a server, so the token stays out of logs.
       res.redirect(`${appUrl}/auth/callback#token=${accessToken}`);
     } catch (err) {
       this.logger.warn(`OAuth ${provider} failed: ${String(err)}`);

@@ -1,6 +1,5 @@
 export type OAuthProviderName = 'google' | 'discord';
 
-// What we keep from a provider profile, whatever the provider.
 export interface OAuthProfile {
   providerId: string;
   email: string | null;
@@ -19,7 +18,6 @@ interface OAuthProviderConfig {
   toProfile: (raw: unknown) => OAuthProfile;
 }
 
-// Field names below are imposed by the Google / Discord APIs.
 /* eslint-disable @typescript-eslint/naming-convention */
 interface GoogleUserInfo {
   sub: string;
