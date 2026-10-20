@@ -13,6 +13,22 @@ export class BootstrapService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     await this.upsertAdmin();
     await this.upsertWordPairs();
+    await this.closeStaleRooms();
+  }
+
+  private async closeStaleRooms() {
+    const now = new Date();
+    const games = await this.prisma.games.updateMany({
+      where: { finishedAt: null },
+      data: { status: 'finished', finishedAt: now },
+    });
+    const rooms = await this.prisma.rooms.updateMany({
+      where: { deletedAt: null },
+      data: { deletedAt: now },
+    });
+    this.logger.log(
+      `closed ${rooms.count} stale rooms and ${games.count} unfinished games`,
+    );
   }
 
   private async upsertAdmin() {

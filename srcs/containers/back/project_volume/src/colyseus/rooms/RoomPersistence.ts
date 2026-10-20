@@ -39,18 +39,20 @@ export class RoomPersistence {
   ) {
     if (!token) {
       this.logger.warn('host has no token, room not saved');
-      return;
+      return false;
     }
     this.dbRoomId = await createRoom(
       token,
       hostName.slice(0, MAX_ROOM_NAME_LENGTH),
       colyseusRoomId,
     );
+    return this.dbRoomId !== null;
   }
 
   async saveGame(pair: WordPair, roles: Map<string, Role>) {
     if (!this.dbRoomId) {
-      return true;
+      this.logger.warn('room was never saved, game not saved');
+      return false;
     }
     this.dbGameId = await createGame(
       this.dbRoomId,

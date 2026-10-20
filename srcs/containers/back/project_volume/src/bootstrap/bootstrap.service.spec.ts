@@ -21,6 +21,8 @@ describe('BootstrapService', () => {
     };
     prismaMock = mockDeep<PrismaClient>();
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
+    prismaMock.games.updateMany.mockResolvedValue({ count: 0 });
+    prismaMock.rooms.updateMany.mockResolvedValue({ count: 0 });
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -68,6 +70,19 @@ describe('BootstrapService', () => {
       },
       update: first,
       create: first,
+    });
+  });
+
+  it('should close the rooms and games left open by a previous run', async () => {
+    await service.onApplicationBootstrap();
+
+    expect(prismaMock.games.updateMany).toHaveBeenCalledWith({
+      where: { finishedAt: null },
+      data: { status: 'finished', finishedAt: expect.any(Date) as Date },
+    });
+    expect(prismaMock.rooms.updateMany).toHaveBeenCalledWith({
+      where: { deletedAt: null },
+      data: { deletedAt: expect.any(Date) as Date },
     });
   });
 

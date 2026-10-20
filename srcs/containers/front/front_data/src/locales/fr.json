@@ -160,6 +160,8 @@
 		"kickConfirm": "Voulez-vous vraiment exclure {{name}} de la salle ?",
 		"players": "Joueurs",
 		"startGame": "Lancer la partie",
+		"errNotSaved": "La partie n'a pas pu être enregistrée, elle n'a pas été lancée",
+		"errNoWordPair": "Aucune paire de mots disponible, la partie n'a pas été lancée",
 		"timer": "Chrono",
 		"yourTurn": "C'est <accent>votre tour</accent>",
 		"playerTurn": "C'est le tour de <accent>{{name}}</accent>",
