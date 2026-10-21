@@ -17,6 +17,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
+import { adminOnly } from '../common/roles.decorator';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import type { Rooms } from '../generated/prisma/client';
 
@@ -52,6 +53,7 @@ export class RoomController {
     return this.roomService.findOne(id);
   }
 
+  @adminOnly()
   @Get(':id/games')
   async getGames(@Param('id', ParseIntPipe) id: number) {
     return this.roomService.getGames(id);

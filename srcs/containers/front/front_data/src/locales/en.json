@@ -231,11 +231,14 @@
 	"admin": {
 		"title": "Administrator dashboard",
 		"users": "Users",
+		"filterAll": "All",
+		"filterPlayers": "Players",
+		"filterGuests": "Guests",
+		"guestBadge": "Guest",
+		"onlineFirst": "Online first",
 		"gamesFinished": "Finished games",
 		"activeRooms": "Active rooms",
 		"profileCreatedAt": "profile created on:",
-		"connected": "connected",
-		"disconnected": "disconnected",
 		"noPlayers": "No players in this game",
 		"loadingGames": "Loading games...",
 		"gameOf": "game of",
@@ -243,6 +246,8 @@
 		"hide": "Hide",
 		"view": "View",
 		"noGames": "No games played yet",
+		"gamesCount_one": "{{count}} game",
+		"gamesCount_other": "{{count}} games",
 		"rooms": "Rooms",
 		"createdAt": "created on",
 		"wordPairs": "Word Pairs",
@@ -255,14 +260,5 @@
 		"identicalWords": "The civilian and undercover words are identical",
 		"pairRegistered": "The word pair was registered",
 		"pairDeleted": "Word pair deleted"
-	},
-	"sidebar": {
-		"home": "Home",
-		"profile": "Profile",
-		"stats": "Stats",
-		"rooms": "Rooms",
-		"friends": "Friends",
-		"admin": "Admin",
-		"openMenu": "Open the menu"
 	}
 }

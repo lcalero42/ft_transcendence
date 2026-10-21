@@ -231,11 +231,14 @@
 	"admin": {
 		"title": "Tableau de bord administrateur",
 		"users": "Utilisateurs",
+		"filterAll": "Tous",
+		"filterPlayers": "Joueurs",
+		"filterGuests": "Invités",
+		"guestBadge": "Invité",
+		"onlineFirst": "En ligne d'abord",
 		"gamesFinished": "Parties terminées",
 		"activeRooms": "Salons actifs",
 		"profileCreatedAt": "profil créé le :",
-		"connected": "connecté",
-		"disconnected": "déconnecté",
 		"noPlayers": "Aucun joueur dans cette partie",
 		"loadingGames": "Chargement des parties...",
 		"gameOf": "partie du",
@@ -243,6 +246,8 @@
 		"hide": "Masquer",
 		"view": "Voir",
 		"noGames": "Aucune partie jouée pour le moment",
+		"gamesCount_one": "{{count}} partie",
+		"gamesCount_other": "{{count}} parties",
 		"rooms": "Salons",
 		"createdAt": "créé le",
 		"wordPairs": "Paires de mots",
@@ -255,14 +260,5 @@
 		"identicalWords": "Les mots civil et undercover sont identiques",
 		"pairRegistered": "La paire de mots a été enregistrée",
 		"pairDeleted": "Paire de mots supprimée"
-	},
-	"sidebar": {
-		"home": "Accueil",
-		"profile": "Profil",
-		"stats": "Statistiques",
-		"rooms": "Salons",
-		"friends": "Amis",
-		"admin": "Admin",
-		"openMenu": "Ouvrir le menu"
 	}
 }

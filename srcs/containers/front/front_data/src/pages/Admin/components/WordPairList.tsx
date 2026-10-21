@@ -74,14 +74,14 @@ function CreateWordPair({ onAdded }: { onAdded: (newPair: WordPair) => void }) {
 				{LANGUAGE_FIELDS.map(({ label, civilian, undercover }) => (
 					<div className="flex flex-col md:flex-row md:items-center gap-2" key={label}>
 						<span className="w-6 text-left text-text-dim">{label}</span>
-						<input className="text-blue-400 w-35 outline-none focus:border-blue-400 border border-card-border-2 rounded-full p-2 hoverable hover:font-black"
+						<input className="text-blue-400 w-35 outline-none focus:border-blue-400 border border-card-border-2 rounded-full p-2 hoverable hover:text-blue-300"
 							type="text"
 							placeholder={t("admin.civilianPlaceholder")}
 							value={words[civilian]}
 							onChange={(e) => handleChange(civilian, e.target.value)}
 							onKeyDown={handleKeyDown}
 						/>
-						<input className="text-orange-400 w-35 outline-none focus:border-orange-400 border border-card-border-2 rounded-full p-2 hoverable hover:font-black"
+						<input className="text-orange-400 w-35 outline-none focus:border-orange-400 border border-card-border-2 rounded-full p-2 hoverable hover:text-orange-300"
 							type="text"
 							placeholder={t("admin.undercoverPlaceholder")}
 							value={words[undercover]}
@@ -92,7 +92,7 @@ function CreateWordPair({ onAdded }: { onAdded: (newPair: WordPair) => void }) {
 				))}
 			</div>
 			<div className="flex items-center">
-				<button className="text-victory hoverable hover:font-black"
+				<button className="text-victory rounded-full px-4 py-1.5 bg-victory/10 border border-victory/40 cursor-pointer hoverable hover:bg-victory/20"
 				onClick={handleSubmit}>
 					{t("admin.add")}
 				</button>
@@ -138,7 +138,7 @@ function WordPairList() {
 	}
 
 	return (
-		<div className="card w-full md:bg-transparent border border-card-border-2 ">
+		<div className="card w-full bg-transparent border border-card-border-2 ">
 			<div className="flex justify-between mb-3">
 				<div className="font-bold text-xl"> {t("admin.wordPairs")} </div>
 			</div>
@@ -160,7 +160,7 @@ function WordPairList() {
 							))}
 						</div>
 						<div className="flex items-center">
-							<button className="text-defeat hoverable hover:font-black"
+							<button className="text-defeat rounded-full px-4 py-1.5 bg-defeat/10 border border-defeat/40 cursor-pointer hoverable hover:bg-defeat/20"
 							onClick={() =>handleRemove(WordPair.id)}>
 								{t("admin.remove")}
 							</button>
