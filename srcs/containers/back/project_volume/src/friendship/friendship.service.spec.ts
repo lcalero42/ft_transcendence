@@ -63,6 +63,8 @@ describe('FriendshipService', () => {
       name: 'Bob',
       email: 'bob@test.com',
       password: 'password123',
+      googleId: null,
+      discordId: null,
       isGuest: false,
       aboutMe: null,
       avatarUrl: null,

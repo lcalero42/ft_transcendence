@@ -17,6 +17,7 @@ export interface AuthContextValue {
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   guest: (name: string) => Promise<void>;
+  loginWithToken: (token: string) => void;
   logout: () => void;
 }
 

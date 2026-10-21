@@ -23,6 +23,7 @@ import MobileDrawerTrigger from "@/pages/GameRoom/components/MobileDrawerTrigger
 import { useHasUnread } from "@/pages/GameRoom/components/useHasUnread";
 import { useMediaQuery } from "@/lib/useMediaQuery";
 import { useTranslation } from "react-i18next";
+import { toast } from "@/components/ui/toast";
 
 interface GameViewProps {
 	room: Room<UndercoverRoom>;
@@ -109,6 +110,16 @@ function GameView({ room }: GameViewProps) {
 		room.send("getWord", i18n.language);
 		return unsubscribe;
 	}, [room, i18n.language]);
+
+	useEffect(() => {
+		return room.onMessage("startError", ({ code }: { code?: string }) => {
+			const errors: Record<string, string> = {
+				NOT_SAVED: "game.errNotSaved",
+				NO_WORD_PAIR: "game.errNoWordPair",
+			};
+			toast.add({ type: "error", title: t(errors[code ?? ""] ?? "game.errNotSaved") });
+		});
+	}, [room, t]);
 
 	useEffect(() => {
 		const interval = setInterval(() => setNow(Date.now()), 250);

@@ -46,6 +46,7 @@
 		"adminRequired": "Admin access required",
 		"guestBlocked": "Create an account to access this page",
 		"guest": "login",
+		"oauthFailed": "Google / Discord sign-in failed, please try again",
 		"login": {
 			"subtitle": "Log in to continue your Undercover journey!",
 			"heading": "Log in to your account",
@@ -165,6 +166,8 @@
 		"kickConfirm": "Are you sure you want to kick {{name}} from the room?",
 		"players": "Players",
 		"startGame": "Start Game",
+		"errNotSaved": "The game could not be saved, it was not started",
+		"errNoWordPair": "No word pair available, the game was not started",
 		"timer": "Timer",
 		"yourTurn": "It's <accent>your turn</accent>",
 		"playerTurn": "It's <accent>{{name}}</accent>'s turn",

@@ -4,7 +4,7 @@ import Checkbox from "./components/Checkbox/Checkbox";
 import UserIcon from "../../assets/icons/user.svg";
 import PassIcon from "../../assets/icons/lock.svg";
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { Link, Navigate, useNavigate} from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/components/ui/toast";
@@ -33,7 +33,10 @@ function Login() {
 	const [errors, setErrors] = useState<LoginErrors>({});
 	const [rememberMe, setRememberMe] = useState(false);
 
-	const [authError, setAuthError] = useState<string | null>(null);
+	const [searchParams] = useSearchParams();
+	const [authError, setAuthError] = useState<string | null>(() =>
+		searchParams.get("error") === "oauth" ? t("auth.oauthFailed") : null,
+	);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const justLoggedIn = useRef(false);

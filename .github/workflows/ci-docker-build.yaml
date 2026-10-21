@@ -50,6 +50,10 @@ jobs:
           echo "ci_internal_api_key" > srcs/secrets/internal_api_key.txt
           echo "admin@ci.local"      > srcs/secrets/admin_email.txt
           echo "ci_admin_password"   > srcs/secrets/admin_password.txt
+          echo "ci_google_id"        > srcs/secrets/google_client_id.txt
+          echo "ci_google_secret"    > srcs/secrets/google_client_secret.txt
+          echo "ci_discord_id"       > srcs/secrets/discord_client_id.txt
+          echo "ci_discord_secret"   > srcs/secrets/discord_client_secret.txt
 
       - name: Build prod stack and verify it serves through nginx
         run: make check-build

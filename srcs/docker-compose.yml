@@ -30,6 +30,10 @@ services:
       - internal_api_key
       - admin_email
       - admin_password
+      - google_client_id
+      - google_client_secret
+      - discord_client_id
+      - discord_client_secret
     depends_on:
       postgres:
         condition: service_healthy
@@ -70,3 +74,11 @@ secrets:
     file: ./secrets/admin_email.txt
   admin_password:
     file: ./secrets/admin_password.txt
+  google_client_id:
+    file: ./secrets/google_client_id.txt
+  google_client_secret:
+    file: ./secrets/google_client_secret.txt
+  discord_client_id:
+    file: ./secrets/discord_client_id.txt
+  discord_client_secret:
+    file: ./secrets/discord_client_secret.txt

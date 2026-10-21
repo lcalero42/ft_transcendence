@@ -53,6 +53,7 @@ export class UndercoverRoom extends Room {
     ReturnType<Room['allowReconnection']>
   >();
   private emptyRoomTimer: Delayed | null = null;
+  private starting = false;
 
   messages = {
     start: async (client: Client) => {
@@ -60,13 +61,18 @@ export class UndercoverRoom extends Room {
         return;
       }
       this.state.phase = 'open';
-      await this.setPrivate(false);
       const roomName = this.state.players.get(client.sessionId)?.name ?? '';
-      await this.persistence.saveRoom(
+      const saved = await this.persistence.saveRoom(
         this.identities.get(client.sessionId)?.token,
         roomName + "'s room",
         this.roomId,
       );
+      if (!saved) {
+        this.state.phase = 'setup';
+        client.send('startError', { code: 'NOT_SAVED' });
+        return;
+      }
+      await this.setPrivate(false);
       notifyAll('roomsChanged');
       await this.transferSeats();
     },
@@ -119,23 +125,31 @@ export class UndercoverRoom extends Room {
 
     startGame: async (client: Client) => {
       if (
+        this.starting ||
         !this.isHost(client) ||
         this.state.phase !== 'open' ||
         this.state.participants.length < this.state.minParticipants
       ) {
         return;
       }
-      const pair = await fetchWordPair();
-      if (!pair) {
-        this.logger.warn('no word pair available, game not started');
-        return;
+      this.starting = true;
+      try {
+        const pair = await fetchWordPair();
+        if (!pair) {
+          this.logger.warn('no word pair available, game not started');
+          client.send('startError', { code: 'NO_WORD_PAIR' });
+          return;
+        }
+        const roles = assignRoles([...this.state.participants]);
+        if (!(await this.persistence.saveGame(pair, roles))) {
+          this.logger.warn('could not save game, game not started');
+          client.send('startError', { code: 'NOT_SAVED' });
+          return;
+        }
+        this.game.start(pair, roles);
+      } finally {
+        this.starting = false;
       }
-      const roles = assignRoles([...this.state.participants]);
-      if (!(await this.persistence.saveGame(pair, roles))) {
-        this.logger.warn('could not save game, game not started');
-        return;
-      }
-      this.game.start(pair, roles);
     },
 
     getWord: (client: Client, lang: unknown) => {
