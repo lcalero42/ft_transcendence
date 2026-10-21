@@ -164,6 +164,9 @@
 		"kick": "EXPULSAR",
 		"kickTitle": "Expulsar jugador",
 		"kickConfirm": "¿Seguro que quieres expulsar a {{name}} de la sala?",
+		"ban": "BANEAR",
+		"banTitle": "Banear jugador",
+		"banConfirm": "¿Seguro que quieres banear a {{name}} de la sala? No podrá volver a entrar.",
 		"players": "Jugadores",
 		"startGame": "Empezar la partida",
 		"errNotSaved": "No se pudo guardar la partida, no se ha iniciado",
@@ -177,7 +180,8 @@
 		"votes_one": "{{count}} voto",
 		"votes_other": "{{count}} votos",
 		"seatTakenOver": "Partida abierta en otra pestaña",
-		"kicked": "Has sido expulsado de la sala"
+		"kicked": "Has sido expulsado de la sala",
+		"banned": "Has sido baneado de esta sala"
 	},
 	"friends": {
 		"title": "Amigos",

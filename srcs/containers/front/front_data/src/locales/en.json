@@ -164,6 +164,9 @@
 		"kick": "KICK",
 		"kickTitle": "Kick player",
 		"kickConfirm": "Are you sure you want to kick {{name}} from the room?",
+		"ban": "BAN",
+		"banTitle": "Ban player",
+		"banConfirm": "Are you sure you want to ban {{name}} from the room? They won't be able to join again.",
 		"players": "Players",
 		"startGame": "Start Game",
 		"errNotSaved": "The game could not be saved, it was not started",
@@ -177,7 +180,8 @@
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Game opened in another tab",
-		"kicked": "You were kicked from the room"
+		"kicked": "You were kicked from the room",
+		"banned": "You are banned from this room"
 	},
 	"friends": {
 		"title": "Friends",

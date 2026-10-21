@@ -12,9 +12,10 @@ interface PlayerListItemProps {
 	expanded?: boolean;
 	onToggle?: () => void;
 	onKick?: () => void;
+	onBan?: () => void;
 }
 
-function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, expanded, onToggle, onKick }: PlayerListItemProps) {
+function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, expanded, onToggle, onKick, onBan }: PlayerListItemProps) {
 	const showKick = expanded && canKick && !isSelf;
 	const showProfile = expanded && !isGuest;
 	const itemRef = useRef<HTMLDivElement>(null);
@@ -61,6 +62,11 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, exp
 					{showKick && (
 						<button type="button" onClick={onKick} className="badge bg-defeat! border-defeat! hoverable text-small">
 							{t("game.kick")}
+						</button>
+					)}
+					{showKick && (
+						<button type="button" onClick={onBan} className="badge bg-defeat! border-defeat! hoverable text-small">
+							{t("game.ban")}
 						</button>
 					)}
 				</div>

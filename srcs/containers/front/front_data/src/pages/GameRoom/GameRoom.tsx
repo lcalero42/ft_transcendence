@@ -15,7 +15,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { joinErrorMessage, useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import { useTranslation } from "react-i18next";
 
 function GameRoom() {
@@ -89,7 +89,7 @@ function GameRoom() {
 	if (!id) return <ErrorPage error={t("game.noRoomId")} />;
 	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
 	if (isConnecting) return <LoadPage text={t("common.connecting")} />;
-	if (error) return <ErrorPage error={error.message} />;
+	if (error) return <ErrorPage error={joinErrorMessage(error, t)} />;
 	if (!room) return <ErrorPage error={t("game.unavailable")} />;
 
 	return <GameView room={room} />;

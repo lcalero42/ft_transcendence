@@ -8,7 +8,13 @@ import { clearReconnection } from "./roomReconnection";
 const FORCED_LEAVE_MESSAGES: Record<number, string> = {
 	4100: "game.seatTakenOver",
 	4101: "game.kicked",
+	4102: "game.banned",
 };
+
+export function joinErrorMessage(error: Error, t: (key: string) => string) {
+	const code = (error as { code?: number }).code;
+	return code === 4102 ? t(FORCED_LEAVE_MESSAGES[code]) : error.message;
+}
 
 export function useSeatTakenOver<T>(room: Room<T> | null | undefined) {
 	const navigate = useNavigate();
