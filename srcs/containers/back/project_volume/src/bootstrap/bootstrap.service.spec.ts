@@ -16,8 +16,8 @@ describe('BootstrapService', () => {
   beforeEach(async () => {
     process.env = {
       ...env,
-      ADMIN_EMAIL: 'admin@test.com',
-      ADMIN_PASSWORD: 'admin-password',
+      ADMINS:
+        'alice:alice@test.com:alice-password\n\nbob:bob@test.com:bob:pass\n',
     };
     prismaMock = mockDeep<PrismaClient>();
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
@@ -38,20 +38,40 @@ describe('BootstrapService', () => {
     process.env = env;
   });
 
-  it('should upsert the admin account from the environment', async () => {
+  it('should upsert every admin account from the environment by name', async () => {
     await service.onApplicationBootstrap();
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('admin-password', 10);
+    expect(prismaMock.player.upsert).toHaveBeenCalledTimes(2);
+    expect(bcrypt.hash).toHaveBeenCalledWith('alice-password', 10);
     expect(prismaMock.player.upsert).toHaveBeenCalledWith({
-      where: { email: 'admin@test.com' },
-      update: { password: 'hashed-password', isAdmin: true },
+      where: { name: 'alice' },
+      update: {
+        email: 'alice@test.com',
+        password: 'hashed-password',
+        isAdmin: true,
+      },
       create: {
-        name: 'admin',
-        email: 'admin@test.com',
+        name: 'alice',
+        email: 'alice@test.com',
         password: 'hashed-password',
         isAdmin: true,
       },
     });
+  });
+
+  it('should keep colons inside the admin password', async () => {
+    await service.onApplicationBootstrap();
+
+    expect(bcrypt.hash).toHaveBeenCalledWith('bob:pass', 10);
+  });
+
+  it('should fail when an admin line is malformed', async () => {
+    process.env.ADMINS = 'alice:alice@test.com';
+
+    await expect(service.onApplicationBootstrap()).rejects.toThrow(
+      'ADMINS line 1 must be formatted as name:email:password',
+    );
+    expect(prismaMock.player.upsert).not.toHaveBeenCalled();
   });
 
   it('should upsert every word pair by its civilian and undercover words', async () => {
@@ -87,10 +107,10 @@ describe('BootstrapService', () => {
   });
 
   it('should fail when the admin credentials are missing', async () => {
-    delete process.env.ADMIN_PASSWORD;
+    delete process.env.ADMINS;
 
     await expect(service.onApplicationBootstrap()).rejects.toThrow(
-      'ADMIN_PASSWORD environment variable is not set',
+      'ADMINS environment variable is not set',
     );
     expect(prismaMock.player.upsert).not.toHaveBeenCalled();
   });

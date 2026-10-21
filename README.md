@@ -20,7 +20,7 @@
    ```
 2. Create the Docker secrets in `srcs/secrets/` (`db_user.txt`,
    `db_password.txt`, `db_name.txt`, `jwt_secret.txt`,
-   `internal_api_key.txt`, `admin_email.txt`, `admin_password.txt`,
+   `internal_api_key.txt`, `admins.txt` (one `name:email:password` per line),
    `google_client_id.txt`, `google_client_secret.txt`,
    `discord_client_id.txt`, `discord_client_secret.txt`), one value per
    file. They are git-ignored; `make check-secrets` verifies them.
