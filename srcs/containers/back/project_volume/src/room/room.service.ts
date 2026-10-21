@@ -2,14 +2,24 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  OnApplicationBootstrap,
 } from '@nestjs/common';
+import { matchMaker } from '@colyseus/core';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from '../prisma.service';
+import { MAX_CLIENTS } from '../colyseus/rooms/undercoverConstants';
 
 @Injectable()
-export class RoomService {
+export class RoomService implements OnApplicationBootstrap {
   constructor(private prisma: PrismaService) {}
+
+  async onApplicationBootstrap() {
+    await this.prisma.rooms.updateMany({
+      where: { deletedAt: null, colyseusRoomId: { not: null } },
+      data: { deletedAt: new Date() },
+    });
+  }
 
   async create(playerId: number, createRoomDto: CreateRoomDto) {
     const roomCount = await this.prisma.rooms.count({
@@ -43,7 +53,19 @@ export class RoomService {
     const currentRooms = await this.prisma.rooms.findMany({
       where: { deletedAt: null },
     });
-    return currentRooms;
+    const liveRooms = await matchMaker.query({ name: 'undercover' });
+    const liveRoomsById = new Map(liveRooms.map((live) => [live.roomId, live]));
+    return currentRooms.map((room) => {
+      const live = room.colyseusRoomId
+        ? liveRoomsById.get(room.colyseusRoomId)
+        : undefined;
+      const metadata = live?.metadata as { playerCount?: number } | undefined;
+      return {
+        ...room,
+        playerCount: metadata?.playerCount ?? 0,
+        maxClients: live?.maxClients ?? MAX_CLIENTS,
+      };
+    });
   }
 
   async findOne(id: number) {

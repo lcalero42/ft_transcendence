@@ -3,8 +3,8 @@ import { apiFetch } from "./auth/client";
 export interface Room {
     id: number;
     name: string;
-    min_player: number;
-    max_player: number;
+    playerCount: number;
+    maxClients: number;
 	colyseusRoomId: string | null;
 	createdAt: string;
 }

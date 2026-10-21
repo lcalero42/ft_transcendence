@@ -7,6 +7,7 @@ import Profile from "./pages/Profile/Profile";
 import Admin from "./pages/Admin/Admin";
 import GameRoom from "./pages/GameRoom/GameRoom";
 import CreateRoom from "./pages/CreateRoom/CreateRoom";
+import NotFound from "./pages/NotFound/NotFound";
 import OAuthCallback from "./pages/OAuthCallback/OAuthCallback";
 import { AuthProvider } from "./context/AuthContext";
 import { FriendsProvider } from "./context/FriendsContext";
@@ -33,6 +34,7 @@ function App() {
 							<Route path="/profile/:name" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 							<Route path="/create-room/:roomId?" element={<ProtectedRoute redirectTo="/guest"><CreateRoom /></ProtectedRoute>} />
 							<Route path="/game/:id" element={<ProtectedRoute redirectTo="/guest"><GameRoom /></ProtectedRoute>} />
+							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</Layout>
 				</BrowserRouter>

@@ -1,4 +1,9 @@
 {
+	"notFound": {
+		"title": "Página no encontrada",
+		"description": "La página que buscas no existe.",
+		"back": "Volver al inicio"
+	},
 	"common": {
 		"loading": "Cargando",
 		"connecting": "Conectando",

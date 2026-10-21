@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 
+const CLUE_MAX_LENGTH = 30;
+
 interface TurnInputProps {
 	isMyTurn: boolean;
 	activePlayerName?: string;
@@ -10,6 +12,7 @@ interface TurnInputProps {
 function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 	const [value, setValue] = useState("");
 	const { t } = useTranslation();
+	const isAtLimit = isMyTurn && value.length >= CLUE_MAX_LENGTH;
 
 	function handleSubmit(event: React.FormEvent) {
 		event.preventDefault();
@@ -31,10 +34,18 @@ function TurnInput({ isMyTurn, activePlayerName, onSubmit }: TurnInputProps) {
 				type="text"
 				value={value}
 				onChange={(event) => setValue(event.target.value)}
+				maxLength={CLUE_MAX_LENGTH}
 				disabled={!isMyTurn}
 				placeholder={isMyTurn ? t("game.typeGuess") : t("game.waitTurn")}
-				className="input disabled:opacity-50"
+				className={`input disabled:opacity-50 ${isAtLimit ? "border-defeat" : ""}`}
 			/>
+			<p
+				aria-live="polite"
+				aria-hidden={!isMyTurn}
+				className={`text-small mt-1 text-right transition-colors duration-200 ${isMyTurn ? "" : "invisible"} ${isAtLimit ? "text-defeat font-bold" : "text-gray-low"}`}
+			>
+				{value.length}/{CLUE_MAX_LENGTH}
+			</p>
 		</form>
 	);
 }
