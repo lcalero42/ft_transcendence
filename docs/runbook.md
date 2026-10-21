@@ -67,7 +67,7 @@ routes and the same secrets. Compose files: `srcs/docker-compose.yml`
 | Front | Vite dev server behind NGINX, hot reload | `vite build` output served by NGINX, no front container |
 | Back | source bind-mounted, `nest start --watch` | image with `dist/` and production packages only, `node dist/main` |
 | On start | `npm ci`, migrations, demo seed, Prisma Studio | migrations only |
-| Published ports | NGINX, plus `127.0.0.1` 3000 (API) and 51212 (Studio) | NGINX only |
+| Published ports | NGINX, plus `127.0.0.1` 3000 (API) and 51212 (Studio) | NGINX, plus `127.0.0.1` 5432 (Postgres) |
 | Postgres data | volume `postgres_dev_data` | volume `postgres_prod_data` |
 | Avatars | `project_volume/uploads/` (bind mount) | volume `back_uploads` |
 
@@ -101,8 +101,15 @@ published on `127.0.0.1` only.
 
 ## Database
 
-- `postgres` has no host-published port — reach it only via the `back`
-  container or `docker compose exec postgres psql ...`.
+- In dev, `postgres` has no host-published port — reach it via the `back`
+  container, Prisma Studio or `docker compose exec postgres psql ...`.
+- In prod, `postgres` is published on `127.0.0.1:5432` only (never through
+  NGINX) so it can be inspected from the host machine. With the VS Code
+  extension [Database Client](https://database-client.com/), add a
+  PostgreSQL connection on `localhost:5432` with the user, password and
+  database from `srcs/secrets/db_user.txt`, `db_password.txt` and
+  `db_name.txt`. If a local Postgres already uses port 5432, change the
+  mapping to `127.0.0.1:5433:5432` and connect on `5433`.
 - Prisma Studio is auto-started by `back`'s entrypoint and reachable at
   `http://localhost:51212`.
 - Postgres data lives in a named volume per mode, so it survives
