@@ -9,7 +9,7 @@ import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus } from '../generated/prisma/enums';
-import { notifyPlayer } from '../colyseus/presence-pubsub';
+import { notifyPlayer, updateFriendship } from '../colyseus/presence-pubsub';
 
 const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
 
@@ -147,6 +147,9 @@ export class FriendshipService {
           ? { status: to, requesterId: playerId, addresseeId: otherId }
           : { status: to },
     });
+    if (to === FriendshipStatus.ACCEPTED || to === FriendshipStatus.BLOCKED) {
+      updateFriendship(playerId, otherId, to === FriendshipStatus.ACCEPTED);
+    }
     if (to === FriendshipStatus.ACCEPTED) {
       notifyPlayer(friendship.requesterId, 'friendRequestAccepted', {
         friendshipId: updated.id,
@@ -184,6 +187,7 @@ export class FriendshipService {
         friendshipId: deleted.id,
       });
     } else if (friendship.status === FriendshipStatus.ACCEPTED) {
+      updateFriendship(playerId, otherId, false);
       notifyPlayer(otherId, 'friendRemoved', {
         friendshipId: deleted.id,
       });

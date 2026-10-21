@@ -55,8 +55,26 @@ async function apiRequest<T>(
 }
 
 export async function getPlayerId(token: string) {
-  const player = await apiRequest<{ id: number }>('/player/me', { token });
+  const player = await getPlayer(token);
   return player?.id ?? null;
+}
+
+export function getPlayer(token: string) {
+  return apiRequest<{ id: number; isAdmin: boolean; isGuest: boolean }>(
+    '/player/me',
+    { token },
+  );
+}
+
+export async function getFriendIds(token: string, playerId: number) {
+  const friendships = await apiRequest<
+    { requesterId: number; addresseeId: number }[]
+  >('/friendship?status=ACCEPTED', { token });
+  return (
+    friendships?.map((f) =>
+      f.requesterId === playerId ? f.addresseeId : f.requesterId,
+    ) ?? null
+  );
 }
 
 export async function areFriends(token: string, friendId: number) {
