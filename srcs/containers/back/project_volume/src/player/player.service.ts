@@ -94,14 +94,8 @@ export class PlayerService {
       data: { avatarUrl },
     });
 
-    const oldUrl = current?.avatarUrl;
-    if (oldUrl?.startsWith(AVATAR_URL_PREFIX)) {
-      const stillUsed = await this.prisma.player.count({
-        where: { avatarUrl: oldUrl },
-      });
-      if (stillUsed === 0) {
-        await this.deleteAvatarFile(oldUrl);
-      }
+    if (current?.avatarUrl?.startsWith(AVATAR_URL_PREFIX)) {
+      await this.deleteAvatarFile(current.avatarUrl);
     }
     return updatedPlayer;
   }
