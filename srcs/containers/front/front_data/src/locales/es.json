@@ -161,6 +161,8 @@
 		"kickConfirm": "¿Seguro que quieres expulsar a {{name}} de la sala?",
 		"players": "Jugadores",
 		"startGame": "Empezar la partida",
+		"errNotSaved": "No se pudo guardar la partida, no se ha iniciado",
+		"errNoWordPair": "No hay ningún par de palabras disponible, la partida no se ha iniciado",
 		"timer": "Tiempo",
 		"yourTurn": "Es <accent>tu turno</accent>",
 		"playerTurn": "Es el turno de <accent>{{name}}</accent>",

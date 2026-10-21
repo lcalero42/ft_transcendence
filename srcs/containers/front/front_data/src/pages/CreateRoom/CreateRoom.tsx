@@ -88,6 +88,13 @@ export default function CreateRoom() {
 			}
 		});
 	}, [room, t]);
+
+	useEffect(() => {
+		if (!room) return;
+		return room.onMessage("startError", () => {
+			toast.add({ type: "error", title: t("game.errNotSaved") });
+		});
+	}, [room, t]);
 	const joinedPhaseRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
