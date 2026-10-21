@@ -1,5 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { Room, type Client, type Delayed, matchMaker } from '@colyseus/core';
+import {
+  Room,
+  type Client,
+  type Delayed,
+  matchMaker,
+  ServerError,
+} from '@colyseus/core';
 import { UndercoverState, Player } from './UndercoverState';
 import { assignRoles } from './undercoverGameLogic';
 import {
@@ -10,6 +16,7 @@ import {
   EMPTY_ROOM_GRACE_SECONDS,
   TAKEN_OVER_CODE,
   KICKED_CODE,
+  BANNED_CODE,
 } from './undercoverConstants';
 import {
   addParticipant,
@@ -48,6 +55,7 @@ export class UndercoverRoom extends Room {
   private readonly identities = new Map<string, PlayerIdentity>();
   private readonly pendingHandoffs = new Set<number>();
   private readonly forcedOutSessions = new Set<string>();
+  private readonly bannedPlayerIds = new Set<number>();
   private readonly pendingReconnections = new Map<
     string,
     ReturnType<Room['allowReconnection']>
@@ -178,6 +186,22 @@ export class UndercoverRoom extends Room {
       }
       this.forceOut(targetSessionId, KICKED_CODE, 'kicked');
     },
+
+    ban: (client: Client, targetSessionId: unknown) => {
+      if (
+        !this.isHost(client) ||
+        typeof targetSessionId !== 'string' ||
+        targetSessionId === client.sessionId ||
+        !this.state.players.has(targetSessionId)
+      ) {
+        return;
+      }
+      const identity = this.identities.get(targetSessionId);
+      if (identity) {
+        this.bannedPlayerIds.add(identity.playerId);
+      }
+      this.forceOut(targetSessionId, BANNED_CODE, 'banned');
+    },
   };
 
   async onCreate() {
@@ -206,9 +230,12 @@ export class UndercoverRoom extends Room {
   }
 
   onJoin(client: Client, options?: JoinOptions) {
+    const auth = client.auth as SeatTransferAuth;
+    if (this.bannedPlayerIds.has(auth.playerId)) {
+      throw new ServerError(BANNED_CODE, 'banned');
+    }
     this.logger.log('room joined');
     this.cancelEmptyRoomTimer();
-    const auth = client.auth as SeatTransferAuth;
     const previousSessionId = this.pendingHandoffs.has(auth.playerId)
       ? undefined
       : this.findSession(auth.playerId);
