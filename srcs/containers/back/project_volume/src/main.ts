@@ -7,9 +7,13 @@ import { PrismaExceptionFilter } from './common/prisma-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { requireEnv } from './common/require-env';
+import { PrismaService } from './prisma.service';
+import { setPrisma } from './colyseus/prisma';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableShutdownHooks([], { useProcessExit: true });
+  setPrisma(app.get(PrismaService));
   app.set('trust proxy', 1);
   app.enableCors({
     origin: requireEnv('CORS_ORIGIN'),

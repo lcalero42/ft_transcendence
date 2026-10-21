@@ -7,6 +7,7 @@ import { PresenceRoom } from './rooms/PresenceRoom';
 export const httpServer = createServer();
 
 export const colyseusServer = defineServer({
+  gracefullyShutdown: false,
   transport: new WebSocketTransport({
     server: httpServer,
   }),

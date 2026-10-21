@@ -20,7 +20,7 @@ import { UndercoverGame } from './UndercoverGame';
 import { RoomPersistence } from './RoomPersistence';
 import { getPlayerId, fetchWordPair, areFriends } from '../api';
 import { notifyPlayer, notifyAll } from '../presence-pubsub';
-import { prisma } from '../prisma';
+import { getPrisma } from '../prisma';
 
 export interface JoinOptions {
   name?: string;
@@ -195,7 +195,7 @@ export class UndercoverRoom extends Room {
     if (!playerId) {
       throw new Error('invalid token');
     }
-    const player = await prisma.player.findUnique({
+    const player = await getPrisma().player.findUnique({
       where: { id: playerId, deletedAt: null },
       select: { id: true, isGuest: true },
     });
