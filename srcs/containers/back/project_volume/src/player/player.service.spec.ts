@@ -184,7 +184,7 @@ describe('PlayerService', () => {
 
   describe('update', () => {
     it('should update a player and return it', async () => {
-      const updateDto = { name: 'Bob', email: 'boblebricoleur@test.com' };
+      const updateDto = { name: 'Bob' };
       const result = {
         id: 5,
         name: 'Bob',
@@ -205,10 +205,8 @@ describe('PlayerService', () => {
       expect(prismaMock.player.update).toHaveBeenCalledWith({
         where: { id: 5, deletedAt: null },
         data: {
-          email: updateDto.email,
           name: updateDto.name,
           aboutMe: undefined,
-          avatarUrl: undefined,
         },
       });
     });

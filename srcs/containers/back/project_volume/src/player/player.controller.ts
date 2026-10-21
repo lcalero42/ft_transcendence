@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -69,13 +69,13 @@ export class PlayerController {
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePlayerDto: UpdatePlayerDto,
+    @Body() updateProfileDto: UpdateProfileDto,
     @Req() req: AuthenticatedRequest,
   ) {
     if (req.user.id !== id) {
       throw new ForbiddenException('Cannot edit another player');
     }
-    return this.playerService.update(id, updatePlayerDto);
+    return this.playerService.update(id, updateProfileDto);
   }
 
   @UseGuards(JwtAuthGuard)

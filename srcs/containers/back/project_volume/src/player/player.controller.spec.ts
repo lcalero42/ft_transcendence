@@ -165,10 +165,7 @@ describe('PlayerController', () => {
 
   describe('update', () => {
     it('should update a player and return it', async () => {
-      const updateDto = {
-        name: 'Bob',
-        email: 'boblebricoleur@test.com',
-      };
+      const updateDto = { name: 'Bob' };
       const result = {
         id: 5,
         name: 'Bob',
@@ -195,11 +192,7 @@ describe('PlayerController', () => {
     it('should reject updating another player', async () => {
       const req = requestAs(6, 'other@test.com');
       await expect(
-        playerController.update(
-          5,
-          { name: 'Bob', email: 'boblebricoleur@test.com' },
-          req,
-        ),
+        playerController.update(5, { name: 'Bob' }, req),
       ).rejects.toThrow('Cannot edit another player');
     });
   });
