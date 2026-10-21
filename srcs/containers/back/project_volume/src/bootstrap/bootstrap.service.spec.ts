@@ -74,23 +74,22 @@ describe('BootstrapService', () => {
     expect(prismaMock.player.upsert).not.toHaveBeenCalled();
   });
 
-  it('should upsert every word pair by its civilian and undercover words', async () => {
+  it('should seed the word pairs when the table is empty', async () => {
+    prismaMock.word_Pair.count.mockResolvedValue(0);
+
     await service.onApplicationBootstrap();
 
-    expect(prismaMock.word_Pair.upsert).toHaveBeenCalledTimes(
-      WORD_PAIRS.length,
-    );
-    const [first] = WORD_PAIRS;
-    expect(prismaMock.word_Pair.upsert).toHaveBeenCalledWith({
-      where: {
-        civilianWord_undercoverWord: {
-          civilianWord: first.civilianWord,
-          undercoverWord: first.undercoverWord,
-        },
-      },
-      update: first,
-      create: first,
+    expect(prismaMock.word_Pair.createMany).toHaveBeenCalledWith({
+      data: WORD_PAIRS,
     });
+  });
+
+  it('should not seed the word pairs when the table already has some', async () => {
+    prismaMock.word_Pair.count.mockResolvedValue(3);
+
+    await service.onApplicationBootstrap();
+
+    expect(prismaMock.word_Pair.createMany).not.toHaveBeenCalled();
   });
 
   it('should close the rooms and games left open by a previous run', async () => {

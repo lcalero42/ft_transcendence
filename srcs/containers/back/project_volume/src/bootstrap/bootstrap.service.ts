@@ -12,7 +12,7 @@ export class BootstrapService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     await this.upsertAdmins();
-    await this.upsertWordPairs();
+    await this.seedWordPairs();
     await this.closeStaleRooms();
   }
 
@@ -68,17 +68,13 @@ export class BootstrapService implements OnApplicationBootstrap {
     this.logger.log(`${admins.length} admin accounts ready`);
   }
 
-  private async upsertWordPairs() {
-    for (const pair of WORD_PAIRS) {
-      const { civilianWord, undercoverWord } = pair;
-      await this.prisma.word_Pair.upsert({
-        where: {
-          civilianWord_undercoverWord: { civilianWord, undercoverWord },
-        },
-        update: pair,
-        create: pair,
-      });
+  private async seedWordPairs() {
+    const count = await this.prisma.word_Pair.count();
+    if (count > 0) {
+      this.logger.log(`${count} word pairs already present, skipping seed`);
+      return;
     }
-    this.logger.log(`${WORD_PAIRS.length} word pairs ready`);
+    await this.prisma.word_Pair.createMany({ data: WORD_PAIRS });
+    this.logger.log(`${WORD_PAIRS.length} word pairs seeded`);
   }
 }
