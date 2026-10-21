@@ -22,11 +22,11 @@ function KickConfirm({ name, action, onClose, onConfirm }: KickConfirmProps) {
 						{t(`game.${action}Confirm`, { name })}
 					</p>
 					<div className="flex justify-around w-full mt-1">
-						<button className="clean-btn text-text-dim hoverable hover:font-black" onClick={handleClose}>
+						<button className="clean-btn text-text-dim transition-[color,text-shadow] duration-200 ease-in-out hover:text-gray-high hover:[text-shadow:0_0_10px_color-mix(in_srgb,var(--color-gray-high)_50%,transparent)]" onClick={handleClose}>
 							{t("common.cancel")}
 						</button>
 						<button
-							className="clean-btn text-defeat font-semibold hoverable hover:font-black"
+							className="clean-btn text-defeat font-semibold transition-[text-shadow] duration-200 ease-in-out hover:[text-shadow:0_0_10px_color-mix(in_srgb,var(--color-defeat)_70%,transparent)]"
 							onClick={() => {
 								onConfirm();
 								handleClose();
