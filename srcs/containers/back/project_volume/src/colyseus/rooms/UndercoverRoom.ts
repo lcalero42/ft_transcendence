@@ -61,6 +61,7 @@ export class UndercoverRoom extends Room {
   >();
   private emptyRoomTimer: Delayed | null = null;
   private starting = false;
+  private shuttingDown = false;
 
   messages = {
     start: async (client: Client) => {
@@ -299,7 +300,7 @@ export class UndercoverRoom extends Room {
     this.state.players.delete(client.sessionId);
     removeParticipant(this.state, client.sessionId);
 
-    if (this.game.isRunning()) {
+    if (this.game.isRunning() && !this.shuttingDown) {
       this.game.removePlayer(client.sessionId);
     }
 
@@ -312,6 +313,12 @@ export class UndercoverRoom extends Room {
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
     void this.publishPlayerCount();
+  }
+
+  onBeforeShutdown() {
+    this.logger.log('server shutting down');
+    this.shuttingDown = true;
+    super.onBeforeShutdown();
   }
 
   async onDispose() {
@@ -392,10 +399,8 @@ export class UndercoverRoom extends Room {
   private takeOverSession(oldId: string, newId: string) {
     this.logger.log('seat taken over by a new session');
     const previous = this.state.players.get(oldId);
-    const player = new Player();
-    player.name = previous?.name ?? 'Player';
-    player.avatarUrl = previous?.avatarUrl ?? '';
-    player.isGuest = previous?.isGuest ?? false;
+    const player = previous ? previous.clone() : new Player();
+    player.connected = true;
     this.state.players.delete(oldId);
     this.state.players.set(newId, player);
 

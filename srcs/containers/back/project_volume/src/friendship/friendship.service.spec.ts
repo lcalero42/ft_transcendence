@@ -8,6 +8,9 @@ import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { FriendshipService } from './friendship.service';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus, PrismaClient } from '../generated/prisma/client';
+import { updateFriendship } from '../colyseus/presence-pubsub';
+
+jest.mock('../colyseus/presence-pubsub');
 
 const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
 
@@ -41,6 +44,7 @@ describe('FriendshipService', () => {
   let prismaMock: DeepMockProxy<PrismaClient>;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     prismaMock = mockDeep<PrismaClient>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -238,6 +242,7 @@ describe('FriendshipService', () => {
         where: { id: 5, status: FriendshipStatus.PENDING },
         data: { status: FriendshipStatus.ACCEPTED },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, true);
     });
 
     it('should let the addressee decline a pending request', async () => {
@@ -254,6 +259,7 @@ describe('FriendshipService', () => {
         where: { id: 5, status: FriendshipStatus.PENDING },
         data: { status: FriendshipStatus.DECLINED },
       });
+      expect(updateFriendship).not.toHaveBeenCalled();
     });
 
     it('should throw a ForbiddenException when the requester accepts its own request', async () => {
@@ -296,6 +302,7 @@ describe('FriendshipService', () => {
           addresseeId: 1,
         },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, false);
     });
 
     it('should throw a ForbiddenException when the friendship is already blocked', async () => {
@@ -329,6 +336,7 @@ describe('FriendshipService', () => {
       expect(prismaMock.friendship.delete).toHaveBeenCalledWith({
         where: { id: 5, status: FriendshipStatus.ACCEPTED },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, false);
     });
 
     it('should let the blocker remove a block', async () => {

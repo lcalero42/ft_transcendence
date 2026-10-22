@@ -387,10 +387,10 @@ describe('GameService', () => {
   });
 
   describe('remove', () => {
-    it('should finish a game without victory and return it', async () => {
+    it('should abort a game without victory and return it', async () => {
       const result = {
         id: 5,
-        status: GameStatus.finished,
+        status: GameStatus.aborted,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
@@ -403,7 +403,7 @@ describe('GameService', () => {
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
         where: { id: 5, finishedAt: null },
-        data: { status: 'finished', finishedAt: expect.any(Date) as Date },
+        data: { status: 'aborted', finishedAt: expect.any(Date) as Date },
       });
     });
   });

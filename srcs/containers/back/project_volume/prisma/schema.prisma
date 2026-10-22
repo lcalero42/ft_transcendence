@@ -48,6 +48,7 @@ enum GameStatus {
   waiting
   playing
   finished
+  aborted
 }
 
 enum Role {
