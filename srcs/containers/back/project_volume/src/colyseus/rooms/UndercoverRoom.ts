@@ -54,6 +54,7 @@ export class UndercoverRoom extends Room {
   >();
   private emptyRoomTimer: Delayed | null = null;
   private starting = false;
+  private shuttingDown = false;
 
   messages = {
     start: async (client: Client) => {
@@ -287,7 +288,7 @@ export class UndercoverRoom extends Room {
     this.state.players.delete(client.sessionId);
     removeParticipant(this.state, client.sessionId);
 
-    if (this.game.isRunning()) {
+    if (this.game.isRunning() && !this.shuttingDown) {
       this.game.removePlayer(client.sessionId);
     }
 
@@ -300,6 +301,12 @@ export class UndercoverRoom extends Room {
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
     void this.publishPlayerCount();
+  }
+
+  onBeforeShutdown() {
+    this.logger.log('server shutting down');
+    this.shuttingDown = true;
+    super.onBeforeShutdown();
   }
 
   async onDispose() {

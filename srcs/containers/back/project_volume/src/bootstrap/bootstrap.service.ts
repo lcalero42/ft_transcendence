@@ -20,7 +20,7 @@ export class BootstrapService implements OnApplicationBootstrap {
     const now = new Date();
     const games = await this.prisma.games.updateMany({
       where: { finishedAt: null },
-      data: { status: 'finished', finishedAt: now },
+      data: { status: 'aborted', finishedAt: now },
     });
     const rooms = await this.prisma.rooms.updateMany({
       where: { deletedAt: null },

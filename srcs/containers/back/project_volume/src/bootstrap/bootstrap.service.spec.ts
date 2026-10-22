@@ -78,7 +78,7 @@ describe('BootstrapService', () => {
 
     expect(prismaMock.games.updateMany).toHaveBeenCalledWith({
       where: { finishedAt: null },
-      data: { status: 'finished', finishedAt: expect.any(Date) as Date },
+      data: { status: 'aborted', finishedAt: expect.any(Date) as Date },
     });
     expect(prismaMock.rooms.updateMany).toHaveBeenCalledWith({
       where: { deletedAt: null },
