@@ -48,6 +48,15 @@ export class RoomController {
     return this.roomService.countActiv();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('live/:colyseusRoomId/banned')
+  async isBanned(
+    @Param('colyseusRoomId') colyseusRoomId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.roomService.isBanned(colyseusRoomId, req.user.id);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.roomService.findOne(id);

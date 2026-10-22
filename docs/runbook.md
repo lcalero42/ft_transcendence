@@ -27,8 +27,7 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    srcs/secrets/db_name.txt
    srcs/secrets/jwt_secret.txt
    srcs/secrets/internal_api_key.txt
-   srcs/secrets/admin_email.txt
-   srcs/secrets/admin_password.txt
+   srcs/secrets/admins.txt
    srcs/secrets/google_client_id.txt
    srcs/secrets/google_client_secret.txt
    srcs/secrets/discord_client_id.txt
@@ -40,12 +39,11 @@ For *why* things are structured this way, see [architecture.md](architecture.md)
    `https://localhost:8443/api/auth/discord/callback`.
    Each file holds a single value, no trailing newline conventions
    enforced — just don't leave them empty.
-   `admin_email.txt` / `admin_password.txt` are the credentials of the
-   `admin` account created by `back` at startup (the only player with
-   `isAdmin`, which unlocks `/admin`). Get the shared values from the team
-   password manager, or pick your own (e.g. `admin@transcendence.local`)
-   since the database is local. Never commit them; changing them and
-   restarting `back` updates the account with the new password.
+   `admins.txt` lists the admin accounts created by `back` at startup, one
+   `name:email:password` per line (`isAdmin` unlocks `/admin`). Get the
+   shared values from the team password manager, or pick your own since the
+   database is local. Never commit it; admins are matched by name, so
+   changing an email or password and restarting `back` updates that account.
 3. `make dev` (attached) or `make upd` (detached) — build and start the dev
    stack. Use `make prod` for the production stack (see "Dev and prod
    modes").
