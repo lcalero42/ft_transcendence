@@ -16,8 +16,8 @@ describe('BootstrapService', () => {
   beforeEach(async () => {
     process.env = {
       ...env,
-      ADMIN_EMAIL: 'admin@test.com',
-      ADMIN_PASSWORD: 'admin-password',
+      ADMINS:
+        'alice:alice@test.com:alice-password\n\nbob:bob@test.com:bob:pass\n',
     };
     prismaMock = mockDeep<PrismaClient>();
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
@@ -38,39 +38,58 @@ describe('BootstrapService', () => {
     process.env = env;
   });
 
-  it('should upsert the admin account from the environment', async () => {
+  it('should upsert every admin account from the environment by name', async () => {
     await service.onApplicationBootstrap();
 
-    expect(bcrypt.hash).toHaveBeenCalledWith('admin-password', 10);
+    expect(prismaMock.player.upsert).toHaveBeenCalledTimes(2);
+    expect(bcrypt.hash).toHaveBeenCalledWith('alice-password', 10);
     expect(prismaMock.player.upsert).toHaveBeenCalledWith({
-      where: { email: 'admin@test.com' },
-      update: { password: 'hashed-password', isAdmin: true },
+      where: { name: 'alice' },
+      update: {
+        email: 'alice@test.com',
+        password: 'hashed-password',
+        isAdmin: true,
+      },
       create: {
-        name: 'admin',
-        email: 'admin@test.com',
+        name: 'alice',
+        email: 'alice@test.com',
         password: 'hashed-password',
         isAdmin: true,
       },
     });
   });
 
-  it('should upsert every word pair by its civilian and undercover words', async () => {
+  it('should keep colons inside the admin password', async () => {
     await service.onApplicationBootstrap();
 
-    expect(prismaMock.word_Pair.upsert).toHaveBeenCalledTimes(
-      WORD_PAIRS.length,
+    expect(bcrypt.hash).toHaveBeenCalledWith('bob:pass', 10);
+  });
+
+  it('should fail when an admin line is malformed', async () => {
+    process.env.ADMINS = 'alice:alice@test.com';
+
+    await expect(service.onApplicationBootstrap()).rejects.toThrow(
+      'ADMINS line 1 must be formatted as name:email:password',
     );
-    const [first] = WORD_PAIRS;
-    expect(prismaMock.word_Pair.upsert).toHaveBeenCalledWith({
-      where: {
-        civilianWord_undercoverWord: {
-          civilianWord: first.civilianWord,
-          undercoverWord: first.undercoverWord,
-        },
-      },
-      update: first,
-      create: first,
+    expect(prismaMock.player.upsert).not.toHaveBeenCalled();
+  });
+
+  it('should seed the word pairs when the table is empty', async () => {
+    prismaMock.word_Pair.count.mockResolvedValue(0);
+
+    await service.onApplicationBootstrap();
+
+    expect(prismaMock.word_Pair.createMany).toHaveBeenCalledWith({
+      data: WORD_PAIRS,
     });
+  });
+
+  it('should not seed the word pairs when the table already has some', async () => {
+    prismaMock.word_Pair.count.mockResolvedValue(3);
+
+    await service.onApplicationBootstrap();
+
+    expect(prismaMock.word_Pair.createMany).not.toHaveBeenCalled();
   });
 
   it('should close the rooms and games left open by a previous run', async () => {
@@ -87,10 +106,10 @@ describe('BootstrapService', () => {
   });
 
   it('should fail when the admin credentials are missing', async () => {
-    delete process.env.ADMIN_PASSWORD;
+    delete process.env.ADMINS;
 
     await expect(service.onApplicationBootstrap()).rejects.toThrow(
-      'ADMIN_PASSWORD environment variable is not set',
+      'ADMINS environment variable is not set',
     );
     expect(prismaMock.player.upsert).not.toHaveBeenCalled();
   });
