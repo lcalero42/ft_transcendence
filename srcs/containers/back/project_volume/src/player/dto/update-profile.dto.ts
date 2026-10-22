@@ -1,10 +1,9 @@
 import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { isUsername } from '../../common/username-policy';
 
 export class UpdateProfileDto {
   @IsOptional()
-  @IsString()
-  @MinLength(3)
-  @MaxLength(24)
+  @isUsername()
   name?: string;
 
   @IsOptional()
