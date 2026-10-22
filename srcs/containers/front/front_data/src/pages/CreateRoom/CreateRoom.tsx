@@ -12,7 +12,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { joinErrorMessage, useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
 import InviteFriendList from "./components/InviteFriendList";
@@ -29,7 +29,7 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading, isGuest } = useAuth();
+	const { profileLoading, isGuest } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
@@ -58,7 +58,7 @@ export default function CreateRoom() {
 					}
 				}
 				client.auth.token = getToken() ?? "";
-				const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
+				const options = { lang: i18n.language };
 				return targetRoomId
 					? client.joinById<UndercoverState>(targetRoomId, options)
 					: client.create<UndercoverState>("undercover", options);
@@ -136,7 +136,7 @@ export default function CreateRoom() {
 		toast.add({
 			type: "error",
 			title: t("lobby.joinError"),
-			description: error.message,
+			description: joinErrorMessage(error, t),
 		});
 		void navigate("/home", { replace: true });
 	}, [error, navigate, t]);

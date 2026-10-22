@@ -165,6 +165,9 @@
 		"kick": "EXCLURE",
 		"kickTitle": "Exclure un joueur",
 		"kickConfirm": "Voulez-vous vraiment exclure {{name}} de la salle ?",
+		"ban": "BANNIR",
+		"banTitle": "Bannir un joueur",
+		"banConfirm": "Voulez-vous vraiment bannir {{name}} de la salle ? Il ne pourra plus la rejoindre.",
 		"players": "Joueurs",
 		"startGame": "Lancer la partie",
 		"errNotSaved": "La partie n'a pas pu être enregistrée, elle n'a pas été lancée",
@@ -178,7 +181,8 @@
 		"votes_one": "{{count}} vote",
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Partie ouverte dans un autre onglet",
-		"kicked": "Vous avez été expulsé de la salle"
+		"kicked": "Vous avez été expulsé de la salle",
+		"banned": "Vous êtes banni de cette salle"
 	},
 	"friends": {
 		"title": "Amis",

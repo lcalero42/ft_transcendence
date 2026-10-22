@@ -57,7 +57,7 @@ function FriendList({friends, status, onRetry}: FriendListProps) {
 							className="h-9 w-9 shrink-0 rounded-full object-cover"
 						/>
 						<div className="flex flex-col text-left">
-							<div className="text-sm font-semibold hoverable hover:font-bold">{f.name}</div>
+							<div className="text-sm font-semibold transition-[text-shadow] duration-200 ease-in-out hover:[text-shadow:0_0_10px_color-mix(in_srgb,currentColor_50%,transparent)]">{f.name}</div>
 							<div className="flex items-center gap-1.5 text-xs text-text-dim">
 								 <span
 								 	className={`w-2 h-2 rounded-full
