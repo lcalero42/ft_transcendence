@@ -8,6 +8,7 @@ import { useAuth } from "@/context/useAuth.ts";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { firstPasswordError } from "@/lib/passwordPolicy";
+import { usernameErrorKey } from "@/lib/usernamePolicy";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -50,12 +51,9 @@ function Register() {
 			nextErrors.email = t("auth.errors.emailInvalid");
 		}
 
-		if (!form.username.trim()) {
-			nextErrors.username = t("auth.errors.usernameRequired");
-		} else if (form.username.trim().length < 3) {
-			nextErrors.username = t("auth.errors.usernameTooShort");
-		} else if (form.username.trim().length > 24) {
-			nextErrors.username = t("auth.errors.usernameTooLong");
+		const usernameError = usernameErrorKey(form.username.trim());
+		if (usernameError) {
+			nextErrors.username = t(usernameError);
 		}
 
 		const passwordError = firstPasswordError(form.password, { username: form.username, email: form.email });

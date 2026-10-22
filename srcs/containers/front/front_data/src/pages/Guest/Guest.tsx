@@ -5,9 +5,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/useAuth";
 import { useTranslation } from "react-i18next";
-
-const NAME_MIN_LENGTH = 3;
-const NAME_MAX_LENGTH = 24;
+import { usernameErrorKey } from "../../lib/usernamePolicy";
 
 function Guest() {
 	const { guest, isAuth } = useAuth();
@@ -29,11 +27,8 @@ function Guest() {
 	}
 
 	function validate(): string | undefined {
-		const trimmed = name.trim();
-		if (!trimmed) return t("auth.errors.usernameRequired");
-		if (trimmed.length < NAME_MIN_LENGTH) return t("auth.errors.usernameTooShort");
-		if (trimmed.length > NAME_MAX_LENGTH) return t("auth.errors.usernameTooLong");
-		return undefined;
+		const errorKey = usernameErrorKey(name.trim());
+		return errorKey ? t(errorKey) : undefined;
 	}
 
 	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
