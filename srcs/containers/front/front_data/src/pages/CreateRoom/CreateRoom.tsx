@@ -29,7 +29,7 @@ function resolveAvatar(avatarUrl: string) {
 }
 
 export default function CreateRoom() {
-	const { profile, profileLoading, isGuest } = useAuth();
+	const { profileLoading, isGuest } = useAuth();
 	const { roomId: routeRoomId } = useParams();
 	const navigate = useNavigate();
 	const { t, i18n } = useTranslation();
@@ -58,7 +58,7 @@ export default function CreateRoom() {
 					}
 				}
 				client.auth.token = getToken() ?? "";
-				const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
+				const options = { lang: i18n.language };
 				return targetRoomId
 					? client.joinById<UndercoverState>(targetRoomId, options)
 					: client.create<UndercoverState>("undercover", options);
