@@ -15,7 +15,8 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { isBannedError, useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { toast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
 
 function GameRoom() {
@@ -80,6 +81,16 @@ function GameRoom() {
 
 	useSeatTakenOver(room);
 
+	useEffect(() => {
+		if (!error || !isBannedError(error)) return;
+		toast.add({
+			type: "error",
+			title: t("lobby.joinError"),
+			description: t("game.banned"),
+		});
+		void navigate("/home", { replace: true });
+	}, [error, navigate, t]);
+
 	const phase = useRoomState(room, (s) => s.phase);
 	useEffect(() => {
 		if (!room || phase !== "setup") return;
@@ -88,7 +99,7 @@ function GameRoom() {
 
 	if (!id) return <ErrorPage error={t("game.noRoomId")} />;
 	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
-	if (isConnecting) return <LoadPage text={t("common.connecting")} />;
+	if (isConnecting || (error && isBannedError(error))) return <LoadPage text={t("common.connecting")} />;
 	if (error) return <ErrorPage error={error.message} />;
 	if (!room) return <ErrorPage error={t("game.unavailable")} />;
 

@@ -12,7 +12,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { joinErrorMessage, useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
 import Header from "../../components/Header/Header";
 import InviteFriendList from "./components/InviteFriendList";
@@ -136,7 +136,7 @@ export default function CreateRoom() {
 		toast.add({
 			type: "error",
 			title: t("lobby.joinError"),
-			description: error.message,
+			description: joinErrorMessage(error, t),
 		});
 		void navigate("/home", { replace: true });
 	}, [error, navigate, t]);
