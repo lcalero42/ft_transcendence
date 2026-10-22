@@ -380,10 +380,8 @@ export class UndercoverRoom extends Room {
   private takeOverSession(oldId: string, newId: string) {
     this.logger.log('seat taken over by a new session');
     const previous = this.state.players.get(oldId);
-    const player = new Player();
-    player.name = previous?.name ?? 'Player';
-    player.avatarUrl = previous?.avatarUrl ?? '';
-    player.isGuest = previous?.isGuest ?? false;
+    const player = previous ? previous.clone() : new Player();
+    player.connected = true;
     this.state.players.delete(oldId);
     this.state.players.set(newId, player);
 
