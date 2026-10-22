@@ -71,8 +71,7 @@ export class RoomService implements OnApplicationBootstrap {
   async isBanned(colyseusRoomId: string, playerId: number) {
     const live = await matchMaker.getRoomById(colyseusRoomId);
     const metadata = live?.metadata as
-      | { bannedPlayerIds?: number[] }
-      | undefined;
+      { bannedPlayerIds?: number[] } | undefined;
     return metadata?.bannedPlayerIds?.includes(playerId) ?? false;
   }
 
