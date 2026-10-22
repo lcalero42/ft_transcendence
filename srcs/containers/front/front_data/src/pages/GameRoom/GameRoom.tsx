@@ -5,7 +5,6 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { client } from "@/lib/colyseusClient";
-import { getToken } from "@/api/auth/client";
 import GameView from "@/pages/GameRoom/components/GameView";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
@@ -53,7 +52,6 @@ function GameRoom() {
 						}
 					}
 
-					client.auth.token = getToken() ?? "";
 					return client.joinById<UndercoverRoom>(id, { lang: i18n.language });
 				},
 		[id, profileLoading],

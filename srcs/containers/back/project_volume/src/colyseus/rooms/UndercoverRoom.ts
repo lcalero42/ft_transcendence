@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import {
   Room,
+  type AuthContext,
   type Client,
   type Delayed,
   matchMaker,
@@ -28,6 +29,7 @@ import { RoomPersistence } from './RoomPersistence';
 import { getPlayerId, fetchWordPair, areFriends } from '../api';
 import { notifyPlayer, notifyAll } from '../presence-pubsub';
 import { prisma } from '../prisma';
+import { tokenFromCookieHeader } from '../../auth/auth-cookie-header';
 
 export interface JoinOptions {
   lang?: string;
@@ -212,7 +214,12 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
-  static async onAuth(token: string): Promise<PlayerIdentity> {
+  static async onAuth(
+    _token: unknown,
+    _options: unknown,
+    context: AuthContext,
+  ): Promise<PlayerIdentity> {
+    const token = tokenFromCookieHeader(context.headers.get('cookie'));
     if (!token) {
       throw new Error('missing token');
     }

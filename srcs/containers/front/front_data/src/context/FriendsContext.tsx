@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { client } from "../lib/colyseusClient";
-import { getToken } from "../api/auth/client";
 import { toast } from "@/components/ui/toast";
 import i18n from "@/i18n";
 import {
@@ -88,7 +87,7 @@ export function FriendsProvider({ children }: { children: ReactNode }) {
 
 		function joinPresence() {
 			client
-			.joinOrCreate("presence", { token: getToken() })
+			.joinOrCreate("presence", {})
 			.then((room) => {
 				if (cancelled) {
 					void room.leave();

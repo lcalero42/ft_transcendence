@@ -135,6 +135,18 @@ check-build: check-env check-secrets ## Build the prod stack, verify nginx serve
 			sleep 2; \
 		done; \
 		printf "$(CYAN)OK:$(NC) $$url\n"; \
+	done; \
+	for path in / /index.html /api/; do \
+		url="https://localhost:$$port$$path"; \
+		headers=$$(curl -skI "$$url"); \
+		for header in Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy; do \
+			if ! printf '%s\n' "$$headers" | grep -qi "^$$header:"; then \
+				printf "$(RED)Error:$(NC) $$url is missing the $$header header.\n"; \
+				printf "$(YELLOW)Fix:$(NC) check srcs/containers/nginx/conf/security-headers.conf and its includes.\n"; \
+				exit 1; \
+			fi; \
+		done; \
+		printf "$(CYAN)OK:$(NC) security headers on $$url\n"; \
 	done
 	@printf "$(CYAN)Prod stack built and serving through nginx. Tearing down...$(NC)\n"
 	$(COMPOSE_PROD) down
