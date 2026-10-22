@@ -263,7 +263,7 @@ export class UndercoverRoom extends Room {
     if (auth.isHost || !this.state.hostSessionId) {
       this.state.hostSessionId = client.sessionId;
     }
-    void this.publishPlayerCount();
+    void this.publishMetadata();
   }
 
   onDrop(client: Client) {
@@ -326,7 +326,7 @@ export class UndercoverRoom extends Room {
     this.identities.delete(client.sessionId);
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
-    void this.publishPlayerCount();
+    void this.publishMetadata();
   }
 
   async onDispose() {
@@ -335,8 +335,11 @@ export class UndercoverRoom extends Room {
     notifyAll('roomsChanged');
   }
 
-  private async publishPlayerCount() {
-    await this.setMetadata({ playerCount: this.state.players.size });
+  private async publishMetadata() {
+    await this.setMetadata({
+      playerCount: this.state.players.size,
+      bannedPlayerIds: [...this.bannedPlayerIds],
+    });
     if (this.state.phase !== 'setup') {
       notifyAll('roomsChanged');
     }

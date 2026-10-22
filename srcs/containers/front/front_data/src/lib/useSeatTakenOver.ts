@@ -11,9 +11,12 @@ const FORCED_LEAVE_MESSAGES: Record<number, string> = {
 	4102: "game.banned",
 };
 
+export function isBannedError(error: Error) {
+	return (error as { code?: number }).code === 4102;
+}
+
 export function joinErrorMessage(error: Error, t: (key: string) => string) {
-	const code = (error as { code?: number }).code;
-	return code === 4102 ? t(FORCED_LEAVE_MESSAGES[code]) : error.message;
+	return isBannedError(error) ? t(FORCED_LEAVE_MESSAGES[4102]) : error.message;
 }
 
 export function useSeatTakenOver<T>(room: Room<T> | null | undefined) {

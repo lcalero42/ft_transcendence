@@ -68,6 +68,14 @@ export class RoomService implements OnApplicationBootstrap {
     });
   }
 
+  async isBanned(colyseusRoomId: string, playerId: number) {
+    const live = await matchMaker.getRoomById(colyseusRoomId);
+    const metadata = live?.metadata as
+      | { bannedPlayerIds?: number[] }
+      | undefined;
+    return metadata?.bannedPlayerIds?.includes(playerId) ?? false;
+  }
+
   async findOne(id: number) {
     const room = await this.prisma.rooms.findUnique({
       where: { id: id, deletedAt: null },
