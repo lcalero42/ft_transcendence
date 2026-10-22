@@ -50,7 +50,7 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, exp
 				<div className="flex shrink-0 gap-1">
 					{showProfile && (
 						<Link
-							to={`/profile/${encodeURIComponent(name)}`}
+							to={`/profile/${encodeURIComponent(name)}`}fix-
 							target="_blank"
 							rel="noopener noreferrer"
 							className="badge bg-victory! border-victory! hoverable text-small"
