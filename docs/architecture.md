@@ -74,10 +74,11 @@ proxying to Nest. Compose files: `srcs/docker-compose.yml` (shared) plus
 - Auth is JWT-based (`@nestjs/jwt` + `passport-jwt`): `POST /auth/register`
   and `POST /auth/login` issue a bearer token; protected routes use
   `JwtAuthGuard` (see `src/auth/`). A separate `InternalApiKeyGuard`
-  (`x-internal-api-key` header) protects service-to-service routes such as
-  `word-pair` creation — intended for the realtime layer (Colyseus, see
-  below) to call back into the API without a user token, though the
-  current Colyseus scaffold doesn't call any REST routes yet.
+  (`x-internal-api-key` header) protects the service-to-service routes
+  Colyseus calls without a user token. They all live under
+  `/<resource>/internal/...`, which NGINX answers with `404` so they are
+  only reachable from inside the backend, and Express routing is case
+  sensitive so `/GAME/INTERNAL` cannot slip past that rule.
 - `ServeStaticModule` serves uploaded files (e.g. avatars) from
   `/uploads`.
 - CORS allows the origin in `CORS_ORIGIN` (set by Compose, defaults to
@@ -138,9 +139,9 @@ Defined in `srcs/containers/back/project_volume/prisma/schema.prisma`:
 |---|---|
 | `auth` | `POST /auth/register`, `POST /auth/login` |
 | `player` | `GET /player`, `GET /player/count-activ`, `GET /player/me`, `GET/PATCH/DELETE /player/:id`, `GET /player/:id/games-played`, `GET /player/:id/victory`, `GET /player/:id/winrate`, `GET /player/:id/about-me`, `PATCH /player/:id/avatar` |
-| `room` | `POST /room`, `GET /room`, `GET /room/current`, `GET /room/:id`, `GET /room/:id/games`, `PATCH/DELETE /room/:id` |
-| `game` | `POST /game`, `GET /game`, `GET /game/count`, `GET /game/:id`, `GET /game/:id/players`, `PATCH/DELETE /game/:id` |
-| `word-pair` | `POST /word-pair` (internal-key only), `GET /word-pair`, `GET/PATCH/DELETE /word-pair/:id` |
+| `room` | `POST /room`, `GET /room`, `GET /room/current`, `GET /room/:id`, `GET /room/:id/games`, `PATCH/DELETE /room/:id`, `DELETE /room/internal/:id` |
+| `game` | `GET /game`, `GET /game/count`, `GET /game/:id`, `GET /game/:id/players`, `GET /game/:id/my-word`, `POST /game/internal`, `PATCH /game/internal/:id/eliminate`, `PATCH /game/internal/:id/finish`, `DELETE /game/internal/:id` |
+| `word-pair` | `POST /word-pair`, `GET /word-pair`, `GET/PATCH/DELETE /word-pair/:id`, `GET /word-pair/internal` |
 
 Routes without a guard annotation are currently public; most mutating
 routes require a valid JWT, and room/game ownership is enforced
