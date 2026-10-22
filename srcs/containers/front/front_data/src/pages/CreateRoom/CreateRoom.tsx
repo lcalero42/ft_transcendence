@@ -5,7 +5,6 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { toast } from "@/components/ui/toast";
 import { client } from "@/lib/colyseusClient";
-import { getToken } from "@/api/auth/client";
 import {
 	clearReconnection,
 	readStoredReconnection,
@@ -57,7 +56,6 @@ export default function CreateRoom() {
 						clearReconnection();
 					}
 				}
-				client.auth.token = getToken() ?? "";
 				const options = { name: profile?.name, avatarUrl: profile?.avatarUrl, lang: i18n.language };
 				return targetRoomId
 					? client.joinById<UndercoverState>(targetRoomId, options)

@@ -69,6 +69,7 @@ describe('FriendshipService', () => {
       aboutMe: null,
       avatarUrl: null,
       isAdmin: false,
+      tokenVersion: 0,
       createdAt: new Date(),
       deletedAt: null,
     };

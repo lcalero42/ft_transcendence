@@ -1,14 +1,11 @@
 import { Logger } from '@nestjs/common';
-import { Room, type Client } from '@colyseus/core';
+import { Room, type AuthContext, type Client } from '@colyseus/core';
 import { getPlayerId } from '../api';
 import {
   registerPresenceRoom,
   unregisterPresenceRoom,
 } from '../presence-pubsub';
-
-interface JoinOptions {
-  token?: string;
-}
+import { tokenFromCookieHeader } from '../../auth/auth-cookie-header';
 
 interface PresenceAuth {
   id: number;
@@ -24,10 +21,15 @@ export class PresenceRoom extends Room {
     ReturnType<typeof setTimeout>
   >();
 
-  async onAuth(_client: Client, options?: JoinOptions): Promise<PresenceAuth> {
-    if (!options?.token) throw new Error('Missing token');
+  async onAuth(
+    _client: Client,
+    _options: unknown,
+    context: AuthContext,
+  ): Promise<PresenceAuth> {
+    const token = tokenFromCookieHeader(context.headers.get('cookie'));
+    if (!token) throw new Error('Missing token');
 
-    const id = await getPlayerId(options.token);
+    const id = await getPlayerId(token);
     if (!id) throw new Error('Unauthorized');
 
     return { id };

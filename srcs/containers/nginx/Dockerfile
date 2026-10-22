@@ -17,6 +17,7 @@ RUN apk add --no-cache openssl
 COPY --chmod=755 ./nginx/conf/generate-cert.sh /docker-entrypoint.d/05-generate-cert.sh
 COPY ./nginx/conf/upgrade-map.conf /etc/nginx/conf.d/upgrade-map.conf
 COPY ./nginx/conf/app.conf /etc/nginx/snippets/app.conf
+COPY ./nginx/conf/security-headers.conf /etc/nginx/snippets/security-headers.conf
 
 EXPOSE 80 443
 

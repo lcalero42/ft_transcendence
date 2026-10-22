@@ -13,7 +13,9 @@ import {
   ForbiddenException,
   UnsupportedMediaTypeException,
   ParseIntPipe,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -21,6 +23,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NotGuestGuard } from '../auth/not-guest.guard';
+import { clearAuthCookie } from '../auth/auth-cookie';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { detectImageType } from './avatar-validation';
 import { saveAvatar } from './avatar-storage';
@@ -83,11 +86,14 @@ export class PlayerController {
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
+    @Res({ passthrough: true }) res: Response,
   ) {
     if (req.user.id !== id) {
       throw new ForbiddenException('Cannot delete another player');
     }
-    return this.playerService.remove(id);
+    const deleted = await this.playerService.remove(id);
+    clearAuthCookie(res);
+    return deleted;
   }
 
   @UseGuards(JwtAuthGuard)
