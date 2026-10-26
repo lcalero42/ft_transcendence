@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Response } from 'express';
 import { PlayerController } from './player.controller';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
@@ -62,6 +63,7 @@ describe('PlayerController', () => {
           aboutMe: 'Hello there',
           avatarUrl: null,
           isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -76,6 +78,7 @@ describe('PlayerController', () => {
           aboutMe: 'Hello there',
           avatarUrl: null,
           isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -113,6 +116,7 @@ describe('PlayerController', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -177,6 +181,7 @@ describe('PlayerController', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -267,6 +272,7 @@ describe('PlayerController', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
@@ -275,15 +281,24 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.remove(5, req)).toBe(result);
+      const res = { clearCookie: jest.fn() };
+      expect(
+        await playerController.remove(5, req, res as unknown as Response),
+      ).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        'access_token',
+        expect.any(Object),
+      );
     });
 
     it('should reject deleting another player', async () => {
       const req = requestAs(6, 'other@test.com');
-      await expect(playerController.remove(5, req)).rejects.toThrow(
-        'Cannot delete another player',
-      );
+      const res = { clearCookie: jest.fn() };
+      await expect(
+        playerController.remove(5, req, res as unknown as Response),
+      ).rejects.toThrow('Cannot delete another player');
+      expect(res.clearCookie).not.toHaveBeenCalled();
     });
   });
 

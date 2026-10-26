@@ -117,7 +117,7 @@ export async function createGame(
   { civilianWord, undercoverWord }: WordPair,
   players: GamePlayer[],
 ) {
-  const game = await apiRequest<{ id: number }>('/game', {
+  const game = await apiRequest<{ id: number }>('/game/internal', {
     method: 'POST',
     body: { roomId, civilianWord, undercoverWord, players },
   });
@@ -125,19 +125,19 @@ export async function createGame(
 }
 
 export function eliminatePlayer(gameId: number, playerId: number) {
-  return apiRequest(`/game/${gameId}/eliminate`, {
+  return apiRequest(`/game/internal/${gameId}/eliminate`, {
     method: 'PATCH',
     body: { playerId },
   });
 }
 
 export function finishGame(gameId: number, victory: Role) {
-  return apiRequest(`/game/${gameId}/finish`, {
+  return apiRequest(`/game/internal/${gameId}/finish`, {
     method: 'PATCH',
     body: { victory },
   });
 }
 
 export function abortGame(gameId: number) {
-  return apiRequest(`/game/${gameId}`, { method: 'DELETE' });
+  return apiRequest(`/game/internal/${gameId}`, { method: 'DELETE' });
 }

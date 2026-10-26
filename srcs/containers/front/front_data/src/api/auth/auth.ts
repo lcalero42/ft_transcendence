@@ -1,36 +1,32 @@
-import { apiFetch, setToken, clearToken } from "./client";
+import { apiFetch, notifyLoggedOut } from "./client";
 
-export interface AuthResponse {
-	accessToken: string;
+export interface SessionUser {
+	id: number;
+	email: string | null;
 }
 
-export async function login(email: string, password: string, rememberMe: boolean) {
-	const data = await apiFetch<AuthResponse>("/auth/login", {
+export function login(email: string, password: string, rememberMe: boolean) {
+	return apiFetch<SessionUser>("/auth/login", {
 		method: "POST",
 		body: JSON.stringify({email, password, rememberMe}),
 	});
-	setToken(data.accessToken, rememberMe);
-	return data;
 }
 
-export async function register(email:string, password:string, name:string) {
-	const data = await apiFetch<AuthResponse>("/auth/register", {
+export function register(email:string, password:string, name:string) {
+	return apiFetch<SessionUser>("/auth/register", {
 		method: "POST",
 		body: JSON.stringify({email,password,name}),
 	});
-	setToken(data.accessToken);
-	return data;
 }
 
-export async function guest(name: string) {
-	const data = await apiFetch<AuthResponse>("/auth/guest", {
+export function guest(name: string) {
+	return apiFetch<SessionUser>("/auth/guest", {
 		method: "POST",
 		body: JSON.stringify({name}),
 	});
-	setToken(data.accessToken);
-	return data;
 }
 
-export function logout() {
-	clearToken();
+export async function logout() {
+	await apiFetch("/auth/logout", { method: "POST" }).catch(() => null);
+	notifyLoggedOut();
 }

@@ -1,4 +1,4 @@
-import type { Client } from '@colyseus/core';
+import type { AuthContext, Client } from '@colyseus/core';
 import { PresenceRoom } from './PresenceRoom';
 import { getFriendIds, getPlayer } from '../api';
 
@@ -45,6 +45,12 @@ function disconnect(room: PresenceRoom, client: FakeClient) {
   room.onLeave(client as unknown as Client);
 }
 
+function authContext(cookie?: string) {
+  return { headers: new Headers(cookie ? { cookie } : {}) } as AuthContext;
+}
+
+const withCookie = authContext('access_token=token');
+
 function sentOnlineIds(client: FakeClient) {
   const calls = client.send.mock.calls as [string, unknown][];
   const call = calls.find(([type]) => type === 'onlineIds');
@@ -66,7 +72,7 @@ describe('PresenceRoom', () => {
         .mockResolvedValue({ id: 1, isAdmin: false, isGuest: false });
       jest.mocked(getFriendIds).mockResolvedValue([2, 3]);
 
-      const auth = await room.onAuth({} as Client, { token: 'token' });
+      const auth = await room.onAuth({} as Client, {}, withCookie);
 
       expect(getFriendIds).toHaveBeenCalledWith('token', 1);
       expect(auth).toEqual({
@@ -81,7 +87,7 @@ describe('PresenceRoom', () => {
         .mocked(getPlayer)
         .mockResolvedValue({ id: 1, isAdmin: false, isGuest: true });
 
-      const auth = await room.onAuth({} as Client, { token: 'token' });
+      const auth = await room.onAuth({} as Client, {}, withCookie);
 
       expect(getFriendIds).not.toHaveBeenCalled();
       expect(auth.friendIds.size).toBe(0);
@@ -93,17 +99,22 @@ describe('PresenceRoom', () => {
         .mockResolvedValue({ id: 1, isAdmin: false, isGuest: false });
       jest.mocked(getFriendIds).mockResolvedValue(null);
 
-      await expect(
-        room.onAuth({} as Client, { token: 'token' }),
-      ).rejects.toThrow();
+      await expect(room.onAuth({} as Client, {}, withCookie)).rejects.toThrow();
     });
 
     it('should reject an invalid token', async () => {
       jest.mocked(getPlayer).mockResolvedValue(null);
 
+      await expect(room.onAuth({} as Client, {}, withCookie)).rejects.toThrow(
+        'Unauthorized',
+      );
+    });
+
+    it('should reject a client without the auth cookie', async () => {
       await expect(
-        room.onAuth({} as Client, { token: 'token' }),
-      ).rejects.toThrow('Unauthorized');
+        room.onAuth({} as Client, {}, authContext()),
+      ).rejects.toThrow('Missing token');
+      expect(getPlayer).not.toHaveBeenCalled();
     });
   });
 

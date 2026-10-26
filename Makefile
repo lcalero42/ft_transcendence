@@ -21,7 +21,7 @@ FRONT_ENV_FILE := srcs/containers/front/front_data/.env
 ENV_FILES      := $(ROOT_ENV_FILE) $(BACK_ENV_FILE) $(FRONT_ENV_FILE)
 
 SECRETS_DIR  := srcs/secrets
-SECRETS      := db_user.txt db_password.txt db_name.txt jwt_secret.txt internal_api_key.txt admin_email.txt admin_password.txt \
+SECRETS      := db_user.txt db_password.txt db_name.txt jwt_secret.txt internal_api_key.txt admins.txt \
                google_client_id.txt google_client_secret.txt discord_client_id.txt discord_client_secret.txt
 
 RED    := \033[0;31m
@@ -135,6 +135,18 @@ check-build: check-env check-secrets ## Build the prod stack, verify nginx serve
 			sleep 2; \
 		done; \
 		printf "$(CYAN)OK:$(NC) $$url\n"; \
+	done; \
+	for path in / /index.html /api/; do \
+		url="https://localhost:$$port$$path"; \
+		headers=$$(curl -skI "$$url"); \
+		for header in Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy; do \
+			if ! printf '%s\n' "$$headers" | grep -qi "^$$header:"; then \
+				printf "$(RED)Error:$(NC) $$url is missing the $$header header.\n"; \
+				printf "$(YELLOW)Fix:$(NC) check srcs/containers/nginx/conf/security-headers.conf and its includes.\n"; \
+				exit 1; \
+			fi; \
+		done; \
+		printf "$(CYAN)OK:$(NC) security headers on $$url\n"; \
 	done
 	@printf "$(CYAN)Prod stack built and serving through nginx. Tearing down...$(NC)\n"
 	$(COMPOSE_PROD) down

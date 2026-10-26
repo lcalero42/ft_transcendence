@@ -12,6 +12,41 @@ async function passwordErrors(password: string) {
     .flatMap((error) => Object.values(error.constraints ?? {}));
 }
 
+async function nameErrors(name: unknown) {
+  const dto = new RegisterDto();
+  dto.email = 'jdoe@test.com';
+  dto.name = name as string;
+  dto.password = 'Kestrel7!maple';
+  const errors = await validate(dto);
+  return errors.filter((error) => error.property === 'name');
+}
+
+describe('RegisterDto name policy', () => {
+  it.each(['abc', 'Alice_42', 'my-name', 'a'.repeat(24)])(
+    'should accept %s',
+    async (name) => {
+      expect(await nameErrors(name)).toEqual([]);
+    },
+  );
+
+  it.each([
+    'ab',
+    'a'.repeat(25),
+    'has space',
+    'émile',
+    'name!',
+    '<script>',
+    'a.b.c',
+    '',
+  ])('should reject %s', async (name) => {
+    expect(await nameErrors(name)).toHaveLength(1);
+  });
+
+  it('should reject a non-string name', async () => {
+    expect(await nameErrors(123)).toHaveLength(1);
+  });
+});
+
 describe('RegisterDto password policy', () => {
   it('should accept a password meeting every rule', async () => {
     expect(await passwordErrors('Kestrel7!maple')).toEqual([]);

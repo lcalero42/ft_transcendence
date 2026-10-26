@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import {
   Room,
+  type AuthContext,
   type Client,
   type Delayed,
   matchMaker,
@@ -33,10 +34,9 @@ import { RoomPersistence } from './RoomPersistence';
 import { getPlayerId, fetchWordPair, areFriends } from '../api';
 import { notifyPlayer, notifyAll } from '../presence-pubsub';
 import { prisma } from '../prisma';
+import { tokenFromCookieHeader } from '../../auth/auth-cookie-header';
 
 export interface JoinOptions {
-  name?: string;
-  avatarUrl?: string;
   lang?: string;
 }
 
@@ -44,6 +44,8 @@ interface PlayerIdentity {
   playerId: number;
   isGuest: boolean;
   token: string;
+  name: string;
+  avatarUrl: string;
 }
 
 interface SeatTransferAuth extends PlayerIdentity {
@@ -231,7 +233,12 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
-  static async onAuth(token: string): Promise<PlayerIdentity> {
+  static async onAuth(
+    _token: unknown,
+    _options: unknown,
+    context: AuthContext,
+  ): Promise<PlayerIdentity> {
+    const token = tokenFromCookieHeader(context.headers.get('cookie'));
     if (!token) {
       throw new Error('missing token');
     }
@@ -241,12 +248,18 @@ export class UndercoverRoom extends Room {
     }
     const player = await prisma.player.findUnique({
       where: { id: playerId, deletedAt: null },
-      select: { id: true, isGuest: true },
+      select: { id: true, isGuest: true, name: true, avatarUrl: true },
     });
     if (!player) {
       throw new Error('player not found');
     }
-    return { playerId: player.id, isGuest: player.isGuest, token };
+    return {
+      playerId: player.id,
+      isGuest: player.isGuest,
+      token,
+      name: player.name,
+      avatarUrl: player.avatarUrl ?? '',
+    };
   }
 
   onJoin(client: Client, options?: JoinOptions) {
@@ -263,6 +276,8 @@ export class UndercoverRoom extends Room {
       playerId: auth.playerId,
       isGuest: auth.isGuest,
       token: auth.token,
+      name: auth.name,
+      avatarUrl: auth.avatarUrl,
     });
     this.persistence.trackPlayer(client.sessionId, auth.playerId);
     this.game.setLanguage(client.sessionId, options?.lang);
@@ -274,10 +289,10 @@ export class UndercoverRoom extends Room {
     }
 
     const player = new Player();
-    player.name = options?.name?.trim() || 'Player';
-    player.avatarUrl = options?.avatarUrl?.trim() || '';
+    player.name = auth.name;
+    player.avatarUrl = auth.avatarUrl;
     player.isGuest = auth.isGuest;
-    player.playerId = auth?.playerId ?? 0;
+    player.playerId = auth.playerId;
     this.state.players.set(client.sessionId, player);
 
     if (auth.isHost || !this.state.hostSessionId) {
@@ -393,7 +408,7 @@ export class UndercoverRoom extends Room {
 
   private async transferSeats() {
     const roomCache = await matchMaker.getRoomById(this.roomId);
-    for (const [sessionId, player] of this.state.players.entries()) {
+    for (const sessionId of this.state.players.keys()) {
       const identity = this.identities.get(sessionId);
       if (!identity) {
         continue;
@@ -406,11 +421,7 @@ export class UndercoverRoom extends Room {
       try {
         const reservation = await matchMaker.reserveSeatFor(
           roomCache,
-          {
-            name: player.name,
-            avatarUrl: player.avatarUrl,
-            lang: this.game.getLanguage(sessionId),
-          },
+          { lang: this.game.getLanguage(sessionId) },
           auth,
         );
         this.clients.getById(sessionId)?.send('seatReservation', reservation);

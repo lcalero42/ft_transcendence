@@ -116,6 +116,7 @@ export class PlayerService {
       where: { id: id },
       data: {
         deletedAt: new Date(),
+        tokenVersion: { increment: 1 },
       },
     });
     return deleteUser;

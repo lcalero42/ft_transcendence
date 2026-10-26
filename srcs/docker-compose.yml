@@ -28,8 +28,7 @@ services:
       - db_name
       - jwt_secret
       - internal_api_key
-      - admin_email
-      - admin_password
+      - admins
       - google_client_id
       - google_client_secret
       - discord_client_id
@@ -70,10 +69,8 @@ secrets:
     file: ./secrets/jwt_secret.txt
   internal_api_key:
     file: ./secrets/internal_api_key.txt
-  admin_email:
-    file: ./secrets/admin_email.txt
-  admin_password:
-    file: ./secrets/admin_password.txt
+  admins:
+    file: ./secrets/admins.txt
   google_client_id:
     file: ./secrets/google_client_id.txt
   google_client_secret:

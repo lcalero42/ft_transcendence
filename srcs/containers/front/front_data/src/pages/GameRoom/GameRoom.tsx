@@ -5,7 +5,6 @@ import type { SeatReservation } from "@colyseus/sdk";
 import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import type { UndercoverState } from "@back/colyseus/rooms/UndercoverState";
 import { client } from "@/lib/colyseusClient";
-import { getToken } from "@/api/auth/client";
 import GameView from "@/pages/GameRoom/components/GameView";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
@@ -22,7 +21,7 @@ import { useTranslation } from "react-i18next";
 function GameRoom() {
 	const { t, i18n } = useTranslation();
 	const { id } = useParams();
-	const { profile, profileLoading } = useAuth();
+	const { profileLoading } = useAuth();
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -53,12 +52,7 @@ function GameRoom() {
 						}
 					}
 
-					client.auth.token = getToken() ?? "";
-					return client.joinById<UndercoverRoom>(id, {
-						name: profile?.name,
-						avatarUrl: profile?.avatarUrl,
-						lang: i18n.language,
-					});
+					return client.joinById<UndercoverRoom>(id, { lang: i18n.language });
 				},
 		[id, profileLoading],
 	);

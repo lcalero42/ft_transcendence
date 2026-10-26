@@ -13,6 +13,7 @@ export class PrismaService extends PrismaClient {
       omit: {
         player: {
           password: true,
+          tokenVersion: true,
         },
       },
     });

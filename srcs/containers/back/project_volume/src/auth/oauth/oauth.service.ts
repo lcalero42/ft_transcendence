@@ -3,6 +3,10 @@ import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { PrismaService } from '../../prisma.service';
 import { requireEnv } from '../../common/require-env';
+import {
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+} from '../../common/username-policy';
 import { AuthService } from '../auth.service';
 import { detectImageType } from '../../player/avatar-validation';
 import { saveAvatar } from '../../player/avatar-storage';
@@ -15,8 +19,6 @@ import {
 } from './oauth.providers';
 
 const STATE_EXPIRES_IN = '5m';
-const NAME_MAX_LENGTH = 24;
-const NAME_MIN_LENGTH = 3;
 const AVATAR_FETCH_TIMEOUT_MS = 5000;
 
 interface TokenResponse {
@@ -182,8 +184,8 @@ export class OAuthService {
   private async findAvailableName(rawName: string) {
     let base = rawName
       .replace(/[^a-zA-Z0-9_-]/g, '')
-      .slice(0, NAME_MAX_LENGTH - 4);
-    if (base.length < NAME_MIN_LENGTH) base = 'player';
+      .slice(0, USERNAME_MAX_LENGTH - 4);
+    if (base.length < USERNAME_MIN_LENGTH) base = 'player';
 
     for (let i = 1; i <= 50; i++) {
       const candidate = i === 1 ? base : `${base}_${i}`;
