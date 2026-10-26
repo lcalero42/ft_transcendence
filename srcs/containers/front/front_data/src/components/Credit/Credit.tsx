@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import GithubIcon from "../../assets/icons/github.svg";
 
 function Credit() {
+	const { t } = useTranslation();
+
 	return (
 		<footer className="flex flex-col items-center gap-1
 		mb-3
@@ -9,7 +12,7 @@ function Credit() {
 		text-text-dim">
 			<div className="flex items-center gap-2">
 				<Link to="/privacy" className="hover:underline hover:text-accent-purple">
-					Privacy Policy
+					{t("legal.privacyPolicy")}
 				</Link>
 				<span>|</span>
 				<a

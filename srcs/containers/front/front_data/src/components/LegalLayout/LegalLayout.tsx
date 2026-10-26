@@ -1,5 +1,6 @@
 import Header from "@/components/Header/Header";
 import Credit from "@/components/Credit/Credit";
+import { useTranslation } from "react-i18next";
 
 export type LegalSection = {
 	title: string;
@@ -14,6 +15,8 @@ type LegalLayoutProps = {
 };
 
 function LegalLayout({ title, lastUpdated, sections }: LegalLayoutProps) {
+	const { t, i18n } = useTranslation();
+
 	return (
 		<div className="page">
 			<Header />
@@ -22,7 +25,8 @@ function LegalLayout({ title, lastUpdated, sections }: LegalLayoutProps) {
 				<article className="mx-auto w-full max-w-3xl text-left">
 					<h1 className="text-2xl md:text-4xl font-extrabold">{title}</h1>
 					<p className="mt-1 mb-6 text-sm text-gray-low">
-						Last updated: <time dateTime={lastUpdated}>{lastUpdated}</time>
+						{t("legal.lastUpdated")}{" "}
+						<time dateTime={lastUpdated}>{new Date(lastUpdated).toLocaleDateString(i18n.language)}</time>
 					</p>
 
 					{sections.map((section, index) => (

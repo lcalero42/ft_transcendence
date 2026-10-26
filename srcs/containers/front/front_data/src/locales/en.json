@@ -275,5 +275,9 @@
 		"identicalWords": "The civilian and undercover words are identical",
 		"pairRegistered": "The word pair was registered",
 		"pairDeleted": "Word pair deleted"
+	},
+	"legal": {
+		"privacyPolicy": "Privacy Policy",
+		"lastUpdated": "Last updated:"
 	}
 }

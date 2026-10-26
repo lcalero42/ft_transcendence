@@ -1,0 +1,93 @@
+{
+	"title": "Política de privacidad",
+	"whoWeAre": {
+		"title": "Quiénes somos",
+		"paragraphs": [
+			"Undercover es un proyecto estudiantil realizado en 42 por {{team}}. Somos responsables de los datos recogidos en este sitio web."
+		]
+	},
+	"data": {
+		"title": "Qué datos recogemos",
+		"paragraphs": ["Solo recogemos lo que el juego necesita para funcionar:"],
+		"items": [
+			"Cuenta: tu nombre de usuario, tu correo electrónico y tu contraseña. Tu contraseña se cifra con bcrypt, así que nunca la guardamos ni la vemos en texto plano.",
+			"Inicio de sesión con Google o Discord: si inicias sesión con Google o Discord, recibimos el ID de tu cuenta, tu nombre, tu correo electrónico (solo si el proveedor lo ha verificado) y tu foto de perfil. Usamos el nombre para crear tu nombre de usuario y guardamos una copia de la foto como avatar. Nunca recibimos tu contraseña de Google o Discord.",
+			"Cuentas de invitado: si juegas como invitado, solo guardamos el nombre de usuario que eliges. No se pide correo ni contraseña.",
+			"Perfil: la biografía y el avatar que decidas añadir, y la fecha de creación de tu cuenta. Los avatares subidos se redimensionan y convierten, lo que elimina metadatos ocultos como la ubicación.",
+			"Amigos: las solicitudes de amistad que envías y recibes, y su estado (pendiente, aceptada, rechazada o bloqueada).",
+			"Partidas: las salas que creas, las partidas que juegas, el rol que tuviste, cuándo fuiste eliminado y quién ganó.",
+			"Chat: los mensajes enviados en una sala solo se guardan en la memoria del servidor mientras la sala está abierta. Nunca se guardan en nuestra base de datos y desaparecen cuando la sala se cierra.",
+			"Datos técnicos: tu dirección IP se usa, solo en memoria, para limitar el número de peticiones enviadas al servidor. Nuestro servidor web y nuestro back-end también escriben registros técnicos, que pueden incluir tu dirección IP, para ayudarnos a corregir errores y proteger el sitio."
+		]
+	},
+	"cookies": {
+		"title": "Cookies y almacenamiento del navegador",
+		"paragraphs": [
+			"No usamos herramientas de análisis, publicidad ni seguimiento. La única cookie que usamos sirve para mantener tu sesión iniciada:"
+		],
+		"items": [
+			"Cookie access_token: tu token de sesión. JavaScript no puede leerla y solo se envía por HTTPS. Por defecto se borra al cerrar el navegador y el token caduca después de {{sessionDays}} día. Si marcas «Recordarme» o inicias sesión con Google o Discord, se conserva {{rememberDays}} días. Cerrar sesión la borra e invalida el token.",
+			"Almacenamiento local: tu navegador recuerda el idioma que elegiste.",
+			"Almacenamiento de sesión: durante una partida, tu navegador guarda un token de reconexión para que puedas volver si pierdes la conexión. Se borra al cerrar la pestaña."
+		]
+	},
+	"thirdParties": {
+		"title": "Servicios de terceros",
+		"paragraphs": [
+			"No vendemos tus datos ni los compartimos con nadie con fines publicitarios. Aun así, intervienen algunos servicios externos:"
+		],
+		"items": [
+			"Google y Discord, solo si decides iniciar sesión con ellos. Sabrán que usaste su cuenta para iniciar sesión en Undercover.",
+			"Google Fonts: nuestra fuente se carga desde los servidores de Google, así que tu navegador envía tu dirección IP a Google al cargar la página."
+		]
+	},
+	"purposes": {
+		"title": "Para qué usamos tus datos",
+		"paragraphs": ["Usamos tus datos solo para:"],
+		"items": [
+			"Crear tu cuenta e iniciar tu sesión.",
+			"Mostrar tu perfil, tus amigos y tus estadísticas de juego.",
+			"Hacer funcionar las partidas y permitirte jugar y chatear con otros jugadores en tiempo real.",
+			"Proteger el sitio, por ejemplo limitando los intentos repetidos de inicio de sesión y el exceso de peticiones."
+		]
+	},
+	"visibility": {
+		"title": "Quién puede ver tus datos",
+		"paragraphs": [
+			"Los demás jugadores conectados pueden ver tu nombre de usuario, avatar, biografía, fecha de creación de la cuenta e historial y estadísticas de juego. Los jugadores de tu misma sala también ven tu nombre de usuario, tu avatar y tus mensajes. Los perfiles de invitado no son públicos.",
+			"Tu correo electrónico y tu contraseña nunca se muestran a otros jugadores. Los administradores del sitio (miembros de nuestro equipo) pueden ver la lista de cuentas, incluidos los correos electrónicos, para gestionar el sitio. Todo está alojado en nuestro propio servidor."
+		]
+	},
+	"retention": {
+		"title": "Cuánto tiempo guardamos tus datos",
+		"paragraphs": [
+			"Guardamos tus datos mientras tu cuenta exista.",
+			"Las cuentas de invitado se cierran automáticamente {{guestHours}} horas después de crearse: el nombre de usuario se sustituye por uno anónimo y la cuenta ya no se puede usar.",
+			"Todavía no hay un botón para eliminar tu cuenta. Para que la eliminemos, contáctanos (ver abajo). La cerraremos y borraremos definitivamente tus datos personales (correo, nombre de usuario, biografía, avatar y amigos) en un plazo de {{answerDays}} días. Tus partidas anteriores se conservan de forma anónima para que las estadísticas de los demás jugadores sigan siendo correctas."
+		]
+	},
+	"rights": {
+		"title": "Tus derechos",
+		"paragraphs": [
+			"Puedes editar tu biografía y tu avatar en cualquier momento desde tu perfil. Para cualquier otra cosa, contáctanos y nuestro equipo gestionará tu solicitud a mano. Puedes pedirnos que:"
+		],
+		"items": [
+			"Te digamos qué datos personales tenemos sobre ti.",
+			"Te enviemos una copia de tus datos.",
+			"Corrijamos tus datos.",
+			"Borremos definitivamente tus datos."
+		]
+	},
+	"contact": {
+		"title": "Contacto",
+		"paragraphs": [
+			"Para hacer una solicitud o una pregunta sobre tus datos, envía un mensaje a uno de nosotros ({{team}}) en el servidor de Discord de 42 Lyon. Responderemos en un plazo de {{answerDays}} días."
+		]
+	},
+	"changes": {
+		"title": "Cambios en esta política",
+		"paragraphs": [
+			"Si cambiamos los datos que recogemos o la forma en que los usamos, actualizaremos esta página y la fecha de arriba."
+		]
+	}
+}

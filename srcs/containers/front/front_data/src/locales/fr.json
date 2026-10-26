@@ -275,5 +275,9 @@
 		"identicalWords": "Les mots civil et undercover sont identiques",
 		"pairRegistered": "La paire de mots a été enregistrée",
 		"pairDeleted": "Paire de mots supprimée"
+	},
+	"legal": {
+		"privacyPolicy": "Politique de confidentialité",
+		"lastUpdated": "Dernière mise à jour :"
 	}
 }
