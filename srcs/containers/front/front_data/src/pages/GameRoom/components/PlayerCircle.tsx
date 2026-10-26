@@ -63,20 +63,17 @@ function PlayerCircle({ players, children, onAim, onSelect, safeRevealStartMs }:
 			onClick={canAim ? handleSelect : undefined}
 		>
 			<div
-				className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+				className="border-game-panel-border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4"
 				style={{
 					width: `${RADIUS_PERCENT * 2}%`,
 					height: `${RADIUS_PERCENT * 2}%`,
-					border: "4px solid #15113A",
 				}}
 			/>
 			<div
-				className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+				className="border-game-panel-border bg-game-circle-bg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4"
 				style={{
 					width: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
 					height: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
-					backgroundColor: "#060C30",
-					border: "4px solid #15113A",
 				}}
 			/>
 			<div className="absolute inset-0 flex items-center justify-center">{children}</div>

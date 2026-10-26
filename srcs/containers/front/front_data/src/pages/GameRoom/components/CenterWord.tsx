@@ -27,9 +27,9 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 
 	const arrow = (
 		<ArrowUp
-			className={`h-[max(11vw,120px)] w-[max(15vw,120px)] transition-[transform,opacity] duration-500 ease-in-out ${dimmed ? "opacity-30" : ""}`}
+			className={`text-game-accent h-[max(11vw,120px)] w-[max(15vw,120px)] transition-[transform,opacity] duration-500 ease-in-out ${dimmed ? "opacity-30" : ""}`}
 			strokeWidth={1.5}
-			style={{ transform: `rotate(${rotation}deg)`, color: "#8B57FB" }}
+			style={{ transform: `rotate(${rotation}deg)` }}
 		/>
 	);
 
@@ -57,7 +57,7 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 				<span
 					aria-hidden
 					style={{ animationDelay: "1000ms" }}
-					className="animate-safe-ring border-friends pointer-events-none absolute size-[max(11vw,120px)] rounded-full border-2 shadow-[0_0_24px_#2EA0E199]"
+					className="animate-safe-ring border-friends pointer-events-none absolute size-[max(11vw,120px)] rounded-full border-2 shadow-[0_0_24px_var(--color-friends)]/60"
 				/>
 			)}
 			{badgeTone ? (
@@ -68,7 +68,7 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 				>
 					{badgeTone === "neutral" && (
 						<ShieldCheck
-							className="text-friends size-[clamp(64px,7vw,110px)] drop-shadow-[0_0_14px_#2EA0E199]"
+							className="text-friends size-[clamp(64px,7vw,110px)] drop-shadow-[0_0_14px_var(--color-friends)]/60"
 							strokeWidth={1.5}
 						/>
 					)}
