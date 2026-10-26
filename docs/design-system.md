@@ -25,6 +25,7 @@ value.** To add a colour, add a token first.
 | `grey-border` | `#3c3c52` | `border-grey-border` | Form inputs (`.input`) |
 | `head-border` | `#928ea4` | `border-head-border` | Underline of the sticky bar on Profile and Admin |
 | `start-gradient-start` → `-end` | `#fbeb54` → `#f5a623` | `from-start-gradient-start` | "Start the game" button |
+| `meteor` | Tailwind `zinc-500` | `bg-meteor` | Shooting stars (`ui/meteors`) |
 
 ### Text
 
@@ -55,15 +56,49 @@ value.** To add a colour, add a token first.
 | `friends` | `#2ea0e1` | `bg-friends` | Friends stat, unread dot, info toasts |
 | `games` | `#7e43f5` | `text-games` | Games-played stat |
 
-`btn-gradient-start`, `btn-gradient-end` and `gold` are defined but not used
-yet.
+### Game room
+
+| Token | Value | Example class | Used for |
+|---|---|---|---|
+| `game-bg` | `#050721` | `bg-game-bg` | Game room backdrop (`GameView`) |
+| `game-panel-border` | `#15113a` | `border-game-panel-border` | Chat and players panels, player circle rings |
+| `game-circle-bg` | `#060c30` | `bg-game-circle-bg` | Inner disc of the player circle |
+| `game-accent` | `#8b57fb` | `text-game-accent` | Centre arrow, aim and vote glow on avatars |
+| `timer-bg` | `#0d0a2d` | `bg-timer-bg` | Timer card |
+| `timer-border` | `#140f39` | `border-timer-border` | Timer card border |
+
+### Roles
+
+| Token | Value | Example class | Used for |
+|---|---|---|---|
+| `civilian` → `civilian-hover` | Tailwind `blue-400` → `blue-300` | `text-civilian` | Civilian words and wins (Admin) |
+| `undercover` → `undercover-hover` | Tailwind `orange-400` → `orange-300` | `text-undercover` | Undercover words and wins (Admin) |
+
+### shadcn/ui aliases
+
+`ui/button` and `ui/toast` use shadcn's semantic names. Each one is an alias
+of a project token, so change the token it points to, not the alias.
+
+| Alias | Points to | Example class |
+|---|---|---|
+| `background` | `bg-deep` | `bg-background` |
+| `foreground`, `primary-foreground`, `popover-foreground` | `white` | `text-foreground` |
+| `primary` | `accent` | `bg-primary` |
+| `secondary` | `card` | `bg-secondary` |
+| `secondary-foreground` | `gray-high` | `text-secondary-foreground` |
+| `muted` | `card-border` | `hover:bg-muted` |
+| `muted-foreground` | `text-dim` | `text-muted-foreground` |
+| `destructive` | `defeat` | `text-destructive` |
+| `border` | `card-border-2` | `border-border` |
+| `input` | `grey-border` | `border-input` |
+| `ring` | `accent-purple` | `focus-visible:ring-ring/50` |
 
 ## Typography
 
 | Role | Font | Where |
 |---|---|---|
 | Base | **Poppins** 300–700 (Google Fonts), token `font-poppins` | `body`, every page |
-| Logo | **UnifrakturMaguntia** (Google Fonts), token `font-logo` | `Logo` only |
+| Logo | **Jacquard 24** (`@fontsource/jacquard-24`), token `font-logo` | `Logo` only |
 
 Fluid type scale (custom utilities in `index.css`, built on `clamp()` so text
 follows the viewport between a minimum and a maximum):
@@ -149,6 +184,9 @@ Animations live in `styles/`: `glow`, `neon-orbit`, `dashed-orbit`,
 ## Rules
 
 - Colours come from tokens. Add a token before using a new colour.
+- For a translucent colour, add an opacity modifier to the token
+  (`bg-victory/10`, `shadow-[0_0_18px_var(--color-victory)]/40`) instead of
+  writing a hex with alpha.
 - Text sizes use the fluid scale or Tailwind sizes, and weights follow the
   convention above.
 - Icons are lucide-react, or an SVG in `assets/icons/` rendered with
