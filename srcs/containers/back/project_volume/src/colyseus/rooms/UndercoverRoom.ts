@@ -102,11 +102,11 @@ export class UndercoverRoom extends Room {
     },
 
     inviteFriend: async (client: Client, payload: { friendId?: unknown }) => {
-      if (!this.inviteLimiter.allow(client.sessionId)) {
-        return;
-      }
       const reply = (code?: string) =>
         client.send('inviteResult', { ok: !code, code });
+      if (!this.inviteLimiter.allow(client.sessionId)) {
+        return reply('RATE_LIMITED');
+      }
       const friendId = payload?.friendId;
       const sender = this.state.players.get(client.sessionId);
       const token = (client.auth as SeatTransferAuth | undefined)?.token;
@@ -137,6 +137,9 @@ export class UndercoverRoom extends Room {
 
     chat: (client: Client, text: unknown) => {
       if (!this.chatLimiter.allow(client.sessionId)) {
+        client.send('chatRateLimited', {
+          retryAfterMs: this.chatLimiter.retryAfterMs(client.sessionId),
+        });
         return;
       }
       addChatMessage(this.state, client.sessionId, text);

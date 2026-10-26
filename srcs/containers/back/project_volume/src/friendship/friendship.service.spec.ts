@@ -174,6 +174,7 @@ describe('FriendshipService', () => {
 
       await expect(service.create({ name: 'Bob' }, 1)).rejects.toMatchObject({
         status: HttpStatus.TOO_MANY_REQUESTS,
+        response: { code: 'FRIEND_REQUEST_COOLDOWN' },
       });
       expect(prismaMock.friendship.update).not.toHaveBeenCalled();
       expect(notifyPlayer).not.toHaveBeenCalled();

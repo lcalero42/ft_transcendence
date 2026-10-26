@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { TFunction } from "i18next";
 import { MessageCircle, Users } from "lucide-react";
 import type { Room } from "@colyseus/sdk";
 import { useRoomState } from "@colyseus/react";
@@ -29,6 +30,14 @@ interface GameViewProps {
 	room: Room<UndercoverRoom>;
 }
 
+function showChatRateLimited(t: TFunction, retryAfterMs: number) {
+	toast.add({
+		id: "chat-rate-limited",
+		type: "error",
+		title: t("game.errChatRateLimited", { count: Math.max(1, Math.ceil(retryAfterMs / 1000)) }),
+	});
+}
+
 function GameView({ room }: GameViewProps) {
 	const { t, i18n } = useTranslation();
 	const [now, setNow] = useState(() => Date.now());
@@ -38,6 +47,9 @@ function GameView({ room }: GameViewProps) {
 	const [chatTab, setChatTab] = useState<ChatTab>("chat");
 	const [aimedSessionId, setAimedSessionId] = useState<string | null>(null);
 	const [kickRequest, setKickRequest] = useState<{ sessionId: string; action: KickAction } | null>(null);
+	const [chatDraft, setChatDraft] = useState("");
+	const chatBlockedUntilRef = useRef(0);
+	const lastChatRef = useRef("");
 	const players = useRoomState(room, (s) => s.players);
 	const playerEntries = Object.entries(players ?? {}) as [string, Player][];
 	const phase = useRoomState(room, (s) => s.phase);
@@ -122,6 +134,14 @@ function GameView({ room }: GameViewProps) {
 	}, [room, t]);
 
 	useEffect(() => {
+		return room.onMessage("chatRateLimited", ({ retryAfterMs }: { retryAfterMs: number }) => {
+			chatBlockedUntilRef.current = Date.now() + retryAfterMs;
+			setChatDraft((draft) => draft || lastChatRef.current);
+			showChatRateLimited(t, retryAfterMs);
+		});
+	}, [room, t]);
+
+	useEffect(() => {
 		const interval = setInterval(() => setNow(Date.now()), 250);
 		return () => clearInterval(interval);
 	}, []);
@@ -175,7 +195,16 @@ function GameView({ room }: GameViewProps) {
 		isSelf: message.sessionId === room.sessionId,
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
-	const handleSendChat = (text: string) => room.send("chat", text);
+	const handleSendChat = (text: string) => {
+		const retryAfterMs = chatBlockedUntilRef.current - Date.now();
+		if (retryAfterMs > 0) {
+			showChatRateLimited(t, retryAfterMs);
+			return;
+		}
+		lastChatRef.current = text;
+		room.send("chat", text);
+		setChatDraft("");
+	};
 	const isDesktop = useMediaQuery("(min-width: 96rem)");
 	const isChatBoxVisible = isDesktop || drawer === "chat";
 	const chatUnread = useHasUnread(
@@ -316,6 +345,8 @@ function GameView({ room }: GameViewProps) {
 								tab={chatTab}
 								unread={unreadTabs}
 								onTabChange={setChatTab}
+								draft={chatDraft}
+								onDraftChange={setChatDraft}
 								onSend={handleSendChat}
 							/>
 						</div>
@@ -334,6 +365,8 @@ function GameView({ room }: GameViewProps) {
 					tab={chatTab}
 					unread={unreadTabs}
 					onTabChange={setChatTab}
+					draft={chatDraft}
+					onDraftChange={setChatDraft}
 					onSend={handleSendChat}
 				/>
 			</MobileDrawer>

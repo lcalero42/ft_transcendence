@@ -49,7 +49,12 @@ export class FriendshipService {
           DECLINED_REQUEST_COOLDOWN_MS
       )
         throw new HttpException(
-          'You must wait before sending another friend request to this player',
+          {
+            statusCode: HttpStatus.TOO_MANY_REQUESTS,
+            message:
+              'You must wait before sending another friend request to this player',
+            code: 'FRIEND_REQUEST_COOLDOWN',
+          },
           HttpStatus.TOO_MANY_REQUESTS,
         );
       return this.reviveFriendship(existingFriendship.id, id, addressee.id);

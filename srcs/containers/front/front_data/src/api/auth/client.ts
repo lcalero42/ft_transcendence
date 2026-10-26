@@ -1,3 +1,5 @@
+import i18n from "@/i18n";
+
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 type AuthMessage = { type: "logout" };
@@ -23,6 +25,15 @@ export function onLoggedOut(cb: () => void) {
 
 interface ErrorBody {
 	message?: string | string[];
+	code?: string;
+}
+
+function tooManyRequestsMessage(body: ErrorBody | null, retryAfter: string | null) {
+	if (body?.code === "FRIEND_REQUEST_COOLDOWN") return i18n.t("friends.errRequestCooldown");
+	const seconds = Number(retryAfter);
+	return seconds > 0
+		? i18n.t("common.tooManyRequestsRetry", { count: Math.ceil(seconds) })
+		: i18n.t("common.tooManyRequests");
 }
 
 export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
@@ -38,6 +49,7 @@ export async function apiFetch<T = unknown>(path: string, options: RequestInit =
 	if (!res.ok) {
 		const body = (await res.json().catch(() => null)) as ErrorBody | null;
 		if (res.status === 401) loggedOutListeners.forEach((cb) => cb());
+		if (res.status === 429) throw new Error(tooManyRequestsMessage(body, res.headers.get("Retry-After")));
 		const msg  = Array.isArray(body?.message) ? body.message.join(", ") : body?.message;
 		throw new Error(msg ?? `Request failed (${res.status})`);
 	}

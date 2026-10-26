@@ -21,6 +21,16 @@ export class MessageRateLimiter {
     return true;
   }
 
+  retryAfterMs(sessionId: string, now = Date.now()) {
+    const recent = (this.timestamps.get(sessionId) ?? []).filter(
+      (timestamp) => now - timestamp < this.windowMs,
+    );
+    if (recent.length < this.limit) {
+      return 0;
+    }
+    return this.windowMs - (now - recent[0]);
+  }
+
   forget(sessionId: string) {
     this.timestamps.delete(sessionId);
   }

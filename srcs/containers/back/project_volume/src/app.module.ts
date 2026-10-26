@@ -21,6 +21,7 @@ import { isInternalRequest } from './common/internal-api-key.guard';
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       throttlers: [{ name: 'default', ttl: 60000, limit: 100 }],
+      errorMessage: 'Too many requests, please try again later.',
       skipIf: (context) =>
         isInternalRequest(context.switchToHttp().getRequest<Request>()),
     }),

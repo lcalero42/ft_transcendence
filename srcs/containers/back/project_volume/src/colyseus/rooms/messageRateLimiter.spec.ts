@@ -41,6 +41,18 @@ describe('MessageRateLimiter', () => {
     expect(limiter.allow('b', 0)).toBe(true);
   });
 
+  it('should report how long until the next message is allowed', () => {
+    limiter.allow('a', 0);
+    limiter.allow('a', 100);
+
+    expect(limiter.retryAfterMs('a', 150)).toBe(0);
+
+    limiter.allow('a', 200);
+
+    expect(limiter.retryAfterMs('a', 300)).toBe(700);
+    expect(limiter.retryAfterMs('a', 1000)).toBe(0);
+  });
+
   it('should reset a session when it is forgotten', () => {
     limiter.allow('a', 0);
     limiter.allow('a', 0);
