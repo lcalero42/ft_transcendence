@@ -18,7 +18,7 @@ function Header({ compact, wide }: HeaderProps) {
 		<header className={`page-header relative items-center gap-3 px-5! sm:px-[10vw]! md:px-[15vw]! ${wide ? "2xl:px-[8vw]!" : ""} ${compact ? "py-3! md:py-3!" : ""}`}>
 			<div className="flex min-w-0 items-center gap-3 sm:gap-4">
 				{isAuth && !isGuest && <FriendsMenuButton />}
-				<Logo className="text-[1.5rem] sm:text-[3rem]" />
+				<Logo className="text-[1.7rem] md:pl-0 pl-2.5 sm:text-[3rem]" />
 			</div>
 			<div className="flex shrink-0 items-center gap-3 sm:gap-4">
 				<LanguageSwitcher />
