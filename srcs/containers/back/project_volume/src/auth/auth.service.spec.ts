@@ -12,11 +12,14 @@ jest.mock('bcrypt');
 describe('AuthService', () => {
   let service: AuthService;
   let prismaMock: DeepMockProxy<PrismaClient>;
-  let jwtServiceMock: { sign: jest.Mock };
+  let jwtServiceMock: { sign: jest.Mock; decode: jest.Mock };
 
   beforeEach(async () => {
     prismaMock = mockDeep<PrismaClient>();
-    jwtServiceMock = { sign: jest.fn() };
+    prismaMock.player.findUniqueOrThrow.mockResolvedValue({
+      tokenVersion: 0,
+    } as never);
+    jwtServiceMock = { sign: jest.fn(), decode: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -47,6 +50,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -59,7 +63,10 @@ describe('AuthService', () => {
         password: 'PlaintextPassword1!',
       });
 
-      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(result).toEqual({
+        accessToken: 'fake-jwt-token',
+        user: { id: 1, email: 'bob@test.com' },
+      });
     });
 
     it('should throw a ConflictException when the email is already registered', async () => {
@@ -74,6 +81,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -103,6 +111,7 @@ describe('AuthService', () => {
           aboutMe: null,
           avatarUrl: null,
           isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         });
@@ -131,6 +140,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -161,6 +171,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -168,11 +179,18 @@ describe('AuthService', () => {
 
       const result = await service.guest({ name: 'Zed' });
 
-      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(result).toEqual({
+        accessToken: 'fake-jwt-token',
+        user: { id: 3, email: null },
+      });
       const createCallArgs = prismaMock.player.create.mock.calls[0][0];
       expect(createCallArgs.data).toMatchObject({ name: 'Zed', isGuest: true });
       expect(createCallArgs.data.email).toBeUndefined();
-      expect(jwtServiceMock.sign).toHaveBeenCalledWith({ sub: 3, email: null });
+      expect(jwtServiceMock.sign).toHaveBeenCalledWith({
+        sub: 3,
+        email: null,
+        ver: 0,
+      });
     });
 
     it('should throw a ConflictException when the name is already taken', async () => {
@@ -187,6 +205,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -212,6 +231,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -223,10 +243,48 @@ describe('AuthService', () => {
         password: 'CorrectPassword1!',
       });
 
-      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(result).toEqual({
+        accessToken: 'fake-jwt-token',
+        user: { id: 1, email: 'bob@test.com' },
+      });
+      expect(result.expires).toBeUndefined();
       expect(jwtServiceMock.sign).toHaveBeenCalledWith({
         sub: 1,
         email: 'bob@test.com',
+        ver: 0,
+      });
+    });
+    it('should embed the current tokenVersion in the token', async () => {
+      prismaMock.player.findUnique.mockResolvedValue({
+        id: 1,
+        name: 'Bob',
+        email: 'bob@test.com',
+        password: 'stored-bcrypt-hash',
+        googleId: null,
+        discordId: null,
+        isGuest: false,
+        aboutMe: null,
+        avatarUrl: null,
+        isAdmin: false,
+        tokenVersion: 4,
+        createdAt: new Date(),
+        deletedAt: null,
+      });
+      prismaMock.player.findUniqueOrThrow.mockResolvedValue({
+        tokenVersion: 4,
+      } as never);
+      jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
+      jwtServiceMock.sign.mockReturnValue('fake-jwt-token');
+
+      await service.login({
+        email: 'bob@test.com',
+        password: 'CorrectPassword1!',
+      });
+
+      expect(jwtServiceMock.sign).toHaveBeenCalledWith({
+        sub: 1,
+        email: 'bob@test.com',
+        ver: 4,
       });
     });
     it('should sign a long-lived token when rememberMe is set', async () => {
@@ -241,11 +299,13 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
       jest.mocked(bcrypt.compare).mockResolvedValue(true as never);
       jwtServiceMock.sign.mockReturnValue('fake-jwt-token');
+      jwtServiceMock.decode.mockReturnValue({ exp: 1_900_000_000 });
 
       const result = await service.login({
         email: 'bob@test.com',
@@ -253,9 +313,13 @@ describe('AuthService', () => {
         rememberMe: true,
       });
 
-      expect(result).toEqual({ accessToken: 'fake-jwt-token' });
+      expect(result).toEqual({
+        accessToken: 'fake-jwt-token',
+        expires: new Date(1_900_000_000 * 1000),
+        user: { id: 1, email: 'bob@test.com' },
+      });
       expect(jwtServiceMock.sign).toHaveBeenCalledWith(
-        { sub: 1, email: 'bob@test.com' },
+        { sub: 1, email: 'bob@test.com', ver: 0 },
         { expiresIn: '30d' },
       );
     });
@@ -271,6 +335,7 @@ describe('AuthService', () => {
         aboutMe: null,
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       });
@@ -289,6 +354,17 @@ describe('AuthService', () => {
       ).rejects.toThrow(UnauthorizedException);
 
       expect(bcrypt.compare).toHaveBeenCalled();
+    });
+  });
+
+  describe('logout', () => {
+    it('should bump the tokenVersion so previously issued tokens die', async () => {
+      await service.logout(1);
+
+      expect(prismaMock.player.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { tokenVersion: { increment: 1 } },
+      });
     });
   });
 });

@@ -55,8 +55,26 @@ async function apiRequest<T>(
 }
 
 export async function getPlayerId(token: string) {
-  const player = await apiRequest<{ id: number }>('/player/me', { token });
+  const player = await getPlayer(token);
   return player?.id ?? null;
+}
+
+export function getPlayer(token: string) {
+  return apiRequest<{ id: number; isAdmin: boolean; isGuest: boolean }>(
+    '/player/me',
+    { token },
+  );
+}
+
+export async function getFriendIds(token: string, playerId: number) {
+  const friendships = await apiRequest<
+    { requesterId: number; addresseeId: number }[]
+  >('/friendship?status=ACCEPTED', { token });
+  return (
+    friendships?.map((f) =>
+      f.requesterId === playerId ? f.addresseeId : f.requesterId,
+    ) ?? null
+  );
 }
 
 export async function areFriends(token: string, friendId: number) {
@@ -100,7 +118,7 @@ export async function createGame(
   { civilianWord, undercoverWord }: WordPair,
   players: GamePlayer[],
 ) {
-  const game = await apiRequest<{ id: number }>('/game', {
+  const game = await apiRequest<{ id: number }>('/game/internal', {
     method: 'POST',
     body: { roomId, civilianWord, undercoverWord, players },
   });
@@ -108,19 +126,19 @@ export async function createGame(
 }
 
 export function eliminatePlayer(gameId: number, playerId: number) {
-  return apiRequest(`/game/${gameId}/eliminate`, {
+  return apiRequest(`/game/internal/${gameId}/eliminate`, {
     method: 'PATCH',
     body: { playerId },
   });
 }
 
 export function finishGame(gameId: number, victory: Role) {
-  return apiRequest(`/game/${gameId}/finish`, {
+  return apiRequest(`/game/internal/${gameId}/finish`, {
     method: 'PATCH',
     body: { victory },
   });
 }
 
 export function abortGame(gameId: number) {
-  return apiRequest(`/game/${gameId}`, { method: 'DELETE' });
+  return apiRequest(`/game/internal/${gameId}`, { method: 'DELETE' });
 }

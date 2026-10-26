@@ -145,7 +145,7 @@ export class GameService {
     const deleteGame = await this.prisma.games.update({
       where: { id: id, finishedAt: null },
       data: {
-        status: 'finished',
+        status: 'aborted',
         finishedAt: new Date(),
       },
     });

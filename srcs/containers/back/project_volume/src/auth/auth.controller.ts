@@ -9,9 +9,15 @@ import {
   UseGuards,
   Logger,
   NotFoundException,
+  HttpCode,
+  HttpStatus,
+  Req,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { AuthService } from './auth.service';
+import { AuthService, type AuthSession } from './auth.service';
+import { clearAuthCookie, setAuthCookie } from './auth-cookie';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { OAuthService } from './oauth/oauth.service';
 import { isOAuthProvider } from './oauth/oauth.providers';
 import { RegisterDto } from './dto/register.dto';
@@ -49,12 +55,13 @@ export class AuthController {
       if (!isOAuthProvider(provider) || !code || !state) {
         throw new Error('Invalid OAuth callback');
       }
-      const { accessToken } = await this.oauthService.handleCallback(
+      const session = await this.oauthService.handleCallback(
         provider,
         code,
         state,
       );
-      res.redirect(`${appUrl}/auth/callback#token=${accessToken}`);
+      setAuthCookie(res, session.accessToken, session.expires);
+      res.redirect(`${appUrl}/auth/callback`);
     } catch (err) {
       this.logger.warn(`OAuth ${provider} failed: ${String(err)}`);
       res.redirect(`${appUrl}/login?error=oauth`);
@@ -63,19 +70,45 @@ export class AuthController {
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
+  async register(
+    @Body() dto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.startSession(res, await this.authService.register(dto));
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.startSession(res, await this.authService.login(dto));
   }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('guest')
-  guest(@Body() dto: GuestDto) {
-    return this.authService.guest(dto);
+  async guest(
+    @Body() dto: GuestDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.startSession(res, await this.authService.guest(dto));
+  }
+
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(
+    @Req() req: AuthenticatedRequest,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.logout(req.user.id);
+    clearAuthCookie(res);
+  }
+
+  private startSession(res: Response, session: AuthSession) {
+    setAuthCookie(res, session.accessToken, session.expires);
+    return session.user;
   }
 }

@@ -16,6 +16,7 @@ export class PrismaService
       omit: {
         player: {
           password: true,
+          tokenVersion: true,
         },
       },
     });

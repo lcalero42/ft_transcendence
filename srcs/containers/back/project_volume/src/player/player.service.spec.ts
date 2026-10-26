@@ -54,6 +54,7 @@ describe('PlayerService', () => {
           aboutMe: 'Hello there',
           avatarUrl: null,
           isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -97,6 +98,7 @@ describe('PlayerService', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -196,6 +198,7 @@ describe('PlayerService', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -223,6 +226,7 @@ describe('PlayerService', () => {
       isGuest: false,
       aboutMe: 'Hello there',
       isAdmin: false,
+      tokenVersion: 0,
       createdAt: new Date(),
       deletedAt: null,
     };
@@ -312,6 +316,7 @@ describe('PlayerService', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
@@ -320,7 +325,10 @@ describe('PlayerService', () => {
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.player.update).toHaveBeenCalledWith({
         where: { id: 5 },
-        data: { deletedAt: expect.any(Date) as Date },
+        data: {
+          deletedAt: expect.any(Date) as Date,
+          tokenVersion: { increment: 1 },
+        },
       });
     });
   });
@@ -433,6 +441,7 @@ describe('PlayerService', () => {
         aboutMe: 'Hello there',
         avatarUrl: null,
         isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };

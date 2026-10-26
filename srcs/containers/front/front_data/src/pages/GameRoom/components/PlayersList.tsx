@@ -15,9 +15,10 @@ interface PlayersListProps {
 	players: PlayersListEntry[];
 	isHost?: boolean;
 	onKick?: (sessionId: string) => void;
+	onBan?: (sessionId: string) => void;
 }
 
-function PlayersList({ players, isHost, onKick }: PlayersListProps) {
+function PlayersList({ players, isHost, onKick, onBan }: PlayersListProps) {
 	const [expandedId, setExpandedId] = useState<string | null>(null);
 	const { t } = useTranslation();
 
@@ -42,6 +43,7 @@ function PlayersList({ players, isHost, onKick }: PlayersListProps) {
 						expanded={expandedId === player.sessionId}
 						onToggle={() => setExpandedId((current) => (current === player.sessionId ? null : player.sessionId))}
 						onKick={() => onKick?.(player.sessionId)}
+						onBan={() => onBan?.(player.sessionId)}
 					/>
 				))}
 			</div>

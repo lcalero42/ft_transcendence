@@ -1,5 +1,12 @@
 import { Logger } from '@nestjs/common';
-import { Room, type Client, type Delayed, matchMaker } from '@colyseus/core';
+import {
+  Room,
+  type AuthContext,
+  type Client,
+  type Delayed,
+  matchMaker,
+  ServerError,
+} from '@colyseus/core';
 import { UndercoverState, Player } from './UndercoverState';
 import { assignRoles } from './undercoverGameLogic';
 import {
@@ -10,6 +17,7 @@ import {
   EMPTY_ROOM_GRACE_SECONDS,
   TAKEN_OVER_CODE,
   KICKED_CODE,
+  BANNED_CODE,
 } from './undercoverConstants';
 import {
   addParticipant,
@@ -21,10 +29,9 @@ import { RoomPersistence } from './RoomPersistence';
 import { getPlayerId, fetchWordPair, areFriends } from '../api';
 import { notifyPlayer, notifyAll } from '../presence-pubsub';
 import { getPrisma } from '../prisma';
+import { tokenFromCookieHeader } from '../../auth/auth-cookie-header';
 
 export interface JoinOptions {
-  name?: string;
-  avatarUrl?: string;
   lang?: string;
 }
 
@@ -32,6 +39,8 @@ interface PlayerIdentity {
   playerId: number;
   isGuest: boolean;
   token: string;
+  name: string;
+  avatarUrl: string;
 }
 
 interface SeatTransferAuth extends PlayerIdentity {
@@ -48,12 +57,14 @@ export class UndercoverRoom extends Room {
   private readonly identities = new Map<string, PlayerIdentity>();
   private readonly pendingHandoffs = new Set<number>();
   private readonly forcedOutSessions = new Set<string>();
+  private readonly bannedPlayerIds = new Set<number>();
   private readonly pendingReconnections = new Map<
     string,
     ReturnType<Room['allowReconnection']>
   >();
   private emptyRoomTimer: Delayed | null = null;
   private starting = false;
+  private shuttingDown = false;
 
   messages = {
     start: async (client: Client) => {
@@ -178,6 +189,22 @@ export class UndercoverRoom extends Room {
       }
       this.forceOut(targetSessionId, KICKED_CODE, 'kicked');
     },
+
+    ban: (client: Client, targetSessionId: unknown) => {
+      if (
+        !this.isHost(client) ||
+        typeof targetSessionId !== 'string' ||
+        targetSessionId === client.sessionId ||
+        !this.state.players.has(targetSessionId)
+      ) {
+        return;
+      }
+      const identity = this.identities.get(targetSessionId);
+      if (identity) {
+        this.bannedPlayerIds.add(identity.playerId);
+      }
+      this.forceOut(targetSessionId, BANNED_CODE, 'banned');
+    },
   };
 
   async onCreate() {
@@ -187,7 +214,12 @@ export class UndercoverRoom extends Room {
     await this.setPrivate(true);
   }
 
-  static async onAuth(token: string): Promise<PlayerIdentity> {
+  static async onAuth(
+    _token: unknown,
+    _options: unknown,
+    context: AuthContext,
+  ): Promise<PlayerIdentity> {
+    const token = tokenFromCookieHeader(context.headers.get('cookie'));
     if (!token) {
       throw new Error('missing token');
     }
@@ -197,18 +229,27 @@ export class UndercoverRoom extends Room {
     }
     const player = await getPrisma().player.findUnique({
       where: { id: playerId, deletedAt: null },
-      select: { id: true, isGuest: true },
+      select: { id: true, isGuest: true, name: true, avatarUrl: true },
     });
     if (!player) {
       throw new Error('player not found');
     }
-    return { playerId: player.id, isGuest: player.isGuest, token };
+    return {
+      playerId: player.id,
+      isGuest: player.isGuest,
+      token,
+      name: player.name,
+      avatarUrl: player.avatarUrl ?? '',
+    };
   }
 
   onJoin(client: Client, options?: JoinOptions) {
+    const auth = client.auth as SeatTransferAuth;
+    if (this.bannedPlayerIds.has(auth.playerId)) {
+      throw new ServerError(BANNED_CODE, 'banned');
+    }
     this.logger.log('room joined');
     this.cancelEmptyRoomTimer();
-    const auth = client.auth as SeatTransferAuth;
     const previousSessionId = this.pendingHandoffs.has(auth.playerId)
       ? undefined
       : this.findSession(auth.playerId);
@@ -216,6 +257,8 @@ export class UndercoverRoom extends Room {
       playerId: auth.playerId,
       isGuest: auth.isGuest,
       token: auth.token,
+      name: auth.name,
+      avatarUrl: auth.avatarUrl,
     });
     this.persistence.trackPlayer(client.sessionId, auth.playerId);
     this.game.setLanguage(client.sessionId, options?.lang);
@@ -227,16 +270,16 @@ export class UndercoverRoom extends Room {
     }
 
     const player = new Player();
-    player.name = options?.name?.trim() || 'Player';
-    player.avatarUrl = options?.avatarUrl?.trim() || '';
+    player.name = auth.name;
+    player.avatarUrl = auth.avatarUrl;
     player.isGuest = auth.isGuest;
-    player.playerId = auth?.playerId ?? 0;
+    player.playerId = auth.playerId;
     this.state.players.set(client.sessionId, player);
 
     if (auth.isHost || !this.state.hostSessionId) {
       this.state.hostSessionId = client.sessionId;
     }
-    void this.publishPlayerCount();
+    void this.publishMetadata();
   }
 
   onDrop(client: Client) {
@@ -287,7 +330,7 @@ export class UndercoverRoom extends Room {
     this.state.players.delete(client.sessionId);
     removeParticipant(this.state, client.sessionId);
 
-    if (this.game.isRunning()) {
+    if (this.game.isRunning() && !this.shuttingDown) {
       this.game.removePlayer(client.sessionId);
     }
 
@@ -299,7 +342,13 @@ export class UndercoverRoom extends Room {
     this.identities.delete(client.sessionId);
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
-    void this.publishPlayerCount();
+    void this.publishMetadata();
+  }
+
+  onBeforeShutdown() {
+    this.logger.log('server shutting down');
+    this.shuttingDown = true;
+    super.onBeforeShutdown();
   }
 
   async onDispose() {
@@ -308,8 +357,11 @@ export class UndercoverRoom extends Room {
     notifyAll('roomsChanged');
   }
 
-  private async publishPlayerCount() {
-    await this.setMetadata({ playerCount: this.state.players.size });
+  private async publishMetadata() {
+    await this.setMetadata({
+      playerCount: this.state.players.size,
+      bannedPlayerIds: [...this.bannedPlayerIds],
+    });
     if (this.state.phase !== 'setup') {
       notifyAll('roomsChanged');
     }
@@ -335,7 +387,7 @@ export class UndercoverRoom extends Room {
 
   private async transferSeats() {
     const roomCache = await matchMaker.getRoomById(this.roomId);
-    for (const [sessionId, player] of this.state.players.entries()) {
+    for (const sessionId of this.state.players.keys()) {
       const identity = this.identities.get(sessionId);
       if (!identity) {
         continue;
@@ -348,11 +400,7 @@ export class UndercoverRoom extends Room {
       try {
         const reservation = await matchMaker.reserveSeatFor(
           roomCache,
-          {
-            name: player.name,
-            avatarUrl: player.avatarUrl,
-            lang: this.game.getLanguage(sessionId),
-          },
+          { lang: this.game.getLanguage(sessionId) },
           auth,
         );
         this.clients.getById(sessionId)?.send('seatReservation', reservation);
@@ -380,10 +428,8 @@ export class UndercoverRoom extends Room {
   private takeOverSession(oldId: string, newId: string) {
     this.logger.log('seat taken over by a new session');
     const previous = this.state.players.get(oldId);
-    const player = new Player();
-    player.name = previous?.name ?? 'Player';
-    player.avatarUrl = previous?.avatarUrl ?? '';
-    player.isGuest = previous?.isGuest ?? false;
+    const player = previous ? previous.clone() : new Player();
+    player.connected = true;
     this.state.players.delete(oldId);
     this.state.players.set(newId, player);
 

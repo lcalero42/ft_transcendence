@@ -26,6 +26,10 @@ export async function fetchRooms(): Promise<Room[]> {
   return apiFetch<Room[]>("/room/current");
 }
 
+export async function isBannedFromRoom(colyseusRoomId: string) {
+  return apiFetch<boolean>(`/room/live/${encodeURIComponent(colyseusRoomId)}/banned`);
+}
+
 export async function createRoom(data: { name: string }): Promise<Room> {
   return apiFetch<Room>("/room", {
     method: 'POST',

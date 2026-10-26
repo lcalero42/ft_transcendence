@@ -26,7 +26,7 @@ import {
 	type PublicProfile,
 	type GameListOfPlayer
 }  from '../../api/player';
-import { clearToken } from "@/api/auth/client";
+import * as authApi from "@/api/auth/auth";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -35,8 +35,7 @@ function Profile() {
 	const { user } = useAuth();
 	const { logout } = useAuth();
 	function handleLogout() {
-    	logout();
-    	void navigate("/login");
+    	void logout().then(() => navigate("/login"));
   	}
 	const { name } = useParams();
 	const [player, setPlayer] = useState<PublicProfile | null>(null);
@@ -70,7 +69,7 @@ function Profile() {
 				console.error("Profile load error:", err); //debug
 				setError(true);
 				if (!name) {
-					clearToken();
+					await authApi.logout();
 					void navigate("/login", { replace: true });
 				}
 		  	} finally {

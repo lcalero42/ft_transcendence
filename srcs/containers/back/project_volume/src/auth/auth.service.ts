@@ -17,6 +17,12 @@ import { GuestDto } from './dto/guest.dto';
 const DUMMY_PASSWORD_HASH =
   '$2b$10$6Q5D0vqYWA5tSynigYdJZed9BeYujQsIBIMl7bXra16kqaaGSepiG';
 
+export interface AuthSession {
+  accessToken: string;
+  expires?: Date;
+  user: { id: number; email: string | null };
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -70,14 +76,31 @@ export class AuthService {
     if (existingName) throw new ConflictException('Username already taken');
   }
 
-  signToken(sub: number, email: string | null, remember = false) {
-    const payload = { sub, email };
-    const accessToken = remember
-      ? this.jwtService.sign(payload, {
-          expiresIn: (process.env.JWT_REMEMBER_EXPIRES_IN ??
-            '30d') as StringValue,
-        })
-      : this.jwtService.sign(payload);
-    return { accessToken };
+  async logout(playerId: number) {
+    await this.prisma.player.update({
+      where: { id: playerId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+  }
+
+  async signToken(
+    sub: number,
+    email: string | null,
+    remember = false,
+  ): Promise<AuthSession> {
+    const { tokenVersion } = await this.prisma.player.findUniqueOrThrow({
+      where: { id: sub },
+      select: { tokenVersion: true },
+    });
+    const payload = { sub, email, ver: tokenVersion };
+    const user = { id: sub, email };
+    if (!remember) {
+      return { accessToken: this.jwtService.sign(payload), user };
+    }
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: (process.env.JWT_REMEMBER_EXPIRES_IN ?? '30d') as StringValue,
+    });
+    const { exp } = this.jwtService.decode<{ exp: number }>(accessToken);
+    return { accessToken, expires: new Date(exp * 1000), user };
   }
 }
