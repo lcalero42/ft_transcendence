@@ -45,6 +45,8 @@ not enough.
     shared UI goes in `src/components/`.
   - API calls go through `src/api/*.ts` (one file per resource), all using
     `apiFetch()`.
+  - Use the theme tokens and shared components described in
+    [design-system.md](design-system.md), never raw hex colours.
 
 ## Language
 

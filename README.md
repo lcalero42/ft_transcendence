@@ -215,6 +215,7 @@ Source of truth: [`prisma/schema.prisma`](srcs/containers/back/project_volume/pr
 | Web: real-time features with WebSockets | Major | 2 | A turn-based party game needs every client to see the same state instantly | Colyseus rooms sync the state to every client; disconnects get a reconnection window; presence pushes notifications |
 | Web: user interaction | Major | 2 | A social game needs players to talk, find each other and play again together | In-room chat, public profiles (`/profile/:name`), friends system (add, accept, remove, list) |
 | Web: ORM | Minor | 1 | Type-safe queries and versioned migrations | Prisma 7 on PostgreSQL, migrations applied at every start |
+| Web: custom-made design system | Minor | 1 | One consistent identity across every page, and faster UI work by reusing pieces instead of restyling them | Colour tokens in Tailwind `@theme`, fluid type scale, lucide-react and custom SVG mask icons, 15+ shared components; see [`docs/design-system.md`](docs/design-system.md) |
 | Accessibility: multiple languages | Minor | 1 | The team and players speak English, French and Spanish | i18next with `en`, `fr`, `es` locales and a language switcher; word pairs stored in all 3 languages |
 | User Management: standard user management | Major | 2 | Players need an identity that persists between games | Profile edit, avatar upload with a default avatar, friends with live online status, profile page with stats |
 | User Management: remote authentication with OAuth 2.0 | Minor | 1 | One-click sign-in without creating a password | OAuth2 code flow for Google and Discord, accounts linked by provider id |
@@ -223,11 +224,12 @@ Source of truth: [`prisma/schema.prisma`](srcs/containers/back/project_volume/pr
 | Gaming: multiplayer (more than 2 players) | Major | 2 | UnderCover needs at least 3 players to make sense | 3 to 6 participants per game, server-side turns and timers keep every client in sync |
 | Gaming: spectator mode | Minor | 1 | Friends can watch a game or wait for the next one | Clients beyond the participants join as spectators (up to 12 per room), get live updates and can use the chat |
 
-**Total:** 7 Major × 2 + 4 Minor × 1 = **18 points** (14 required)
+**Total:** 7 Major × 2 + 5 Minor × 1 = **19 points** (14 required)
 
 ## Further documentation
 
 - [`docs/architecture.md`](docs/architecture.md): services, auth, API and realtime design
 - [`docs/runbook.md`](docs/runbook.md): commands, database and troubleshooting
+- [`docs/design-system.md`](docs/design-system.md): colour palette, typography, icons and reusable components
 - [`docs/engineering-guidelines.md`](docs/engineering-guidelines.md): workflow and conventions
 - [`docs/adr/`](docs/adr/): architecture decision records
