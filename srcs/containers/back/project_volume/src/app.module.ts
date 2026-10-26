@@ -15,9 +15,12 @@ import { FriendshipModule } from './friendship/friendship.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BootstrapModule } from './bootstrap/bootstrap.module';
 import { isInternalRequest } from './common/internal-api-key.guard';
+import { PrismaModule } from './prisma.module';
+import { ColyseusModule } from './colyseus/colyseus.module';
 
 @Module({
   imports: [
+    PrismaModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       throttlers: [{ name: 'default', ttl: 60000, limit: 100 }],
@@ -36,6 +39,7 @@ import { isInternalRequest } from './common/internal-api-key.guard';
     GameModule,
     FriendshipModule,
     BootstrapModule,
+    ColyseusModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

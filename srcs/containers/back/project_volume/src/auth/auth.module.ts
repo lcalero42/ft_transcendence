@@ -6,7 +6,6 @@ import { AuthService } from './auth.service';
 import { OAuthService } from './oauth/oauth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { requireEnv } from '../common/require-env';
-import { PrismaService } from '../prisma.service';
 import { PlayerService } from '../player/player.service';
 
 @Module({
@@ -19,12 +18,6 @@ import { PlayerService } from '../player/player.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    OAuthService,
-    JwtStrategy,
-    PrismaService,
-    PlayerService,
-  ],
+  providers: [AuthService, OAuthService, JwtStrategy, PlayerService],
 })
 export class AuthModule {}

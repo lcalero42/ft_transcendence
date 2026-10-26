@@ -1,5 +1,9 @@
 import { parseArgs } from 'node:util';
 import { Client, type Room, type SeatReservation } from '@colyseus/sdk';
+import {
+  AUTH_COOKIE,
+  tokenFromCookieHeader,
+} from '../src/auth/auth-cookie-header';
 
 type State = any;
 
@@ -45,7 +49,7 @@ const pickRandom = <T>(items: T[]) =>
   items[Math.floor(Math.random() * items.length)];
 
 class Bot {
-  private readonly client = new Client(values.url);
+  private client!: Client;
   private room: Room<any, State> | null = null;
   private acted = new Set<string>();
   private lastPhase = '';
@@ -74,8 +78,16 @@ class Bot {
           : `${this.name}: guest login failed (${res.status})`,
       );
     }
-    const { accessToken } = (await res.json()) as { accessToken: string };
-    this.client.auth.token = accessToken;
+    const token = res.headers
+      .getSetCookie()
+      .map(tokenFromCookieHeader)
+      .find((value) => value !== null);
+    if (!token) {
+      throw new Error(`${this.name}: guest login returned no auth cookie`);
+    }
+    this.client = new Client(values.url, {
+      headers: { Cookie: `${AUTH_COOKIE}=${token}` },
+    });
   }
 
   async create() {
