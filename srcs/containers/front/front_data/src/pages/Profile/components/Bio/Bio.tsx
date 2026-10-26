@@ -30,7 +30,7 @@ function Bio({playerId, bio, editable = true}: BioProps) {
 	};
 	return (
 		<div className="card gap-0 pr-2 pt-2 border border-card-border-2
-		bg-transparent md:border-none md:pb-0">
+		w-full bg-transparent md:mb-0">
 			<div className="flex justify-between">
 				<div className="text-left font-bold">{t("profile.aboutMe")}</div>
 
@@ -42,7 +42,7 @@ function Bio({playerId, bio, editable = true}: BioProps) {
 					<EditIcon color="var(--color-text-dim)"/>
 				</button>}
 			</div>
-			<p className="text-text-dim text-xs text-left max-w-[75%] break-all">
+			<p className="text-text-dim text-xs text-left break-all">
 					{currentBio || t("profile.noDescription")}
 			</p>
 			{isPopupOpen && (

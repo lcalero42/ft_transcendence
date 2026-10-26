@@ -5,8 +5,6 @@ import Bio from "./components/Bio/Bio";
 import Counter from "./components/Counter/Counter";
 import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
-import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
-import IconDetective from "../../assets/icons/brand-redhat.svg";
 import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
@@ -88,26 +86,23 @@ function Profile() {
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
-			<div className="z-100 sticky top-0 w-full border-b py-2 bg-bg-deep/70 border-head-border">
-				<Header compact />
-			</div>
-			<main className="page-main pt-3">
-				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity
-						playerId={player.id}
-						username={player.name}
-						Since={(new Date(player.createdAt)).toLocaleDateString(i18n.language)}
-						urlAvatar={avatarUrl}
-						editable={isOwn}
-					/>
-					<div className="md:flex md:flex-col">
-						<Bio
+			<Header/>
+			<main className="page-main pt-10">
+				<div className="md:flex md:gap-3">
+					<div className="min-w-0 md:flex md:items-center md:w-full md:px-5 md:py-4 md:border md:border-card-border-2 md:rounded-xl">
+						<Identity
 							playerId={player.id}
-							bio={player.aboutMe ?? ""}
+							username={player.name}
+							Since={(new Date(player.createdAt)).toLocaleDateString(i18n.language)}
+							urlAvatar={avatarUrl}
 							editable={isOwn}
 						/>
-						<FavoriteRole role={t("profile.detective")} icon={IconDetective}/>
 					</div>
+					<Bio
+						playerId={player.id}
+						bio={player.aboutMe ?? ""}
+						editable={isOwn}
+					/>
 				</div>
 
 				<Counter

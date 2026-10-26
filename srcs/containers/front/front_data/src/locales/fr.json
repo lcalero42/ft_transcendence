@@ -17,7 +17,10 @@
 		"success": "Succès",
 		"errorOccurred": "Une erreur est survenue",
 		"somethingWentWrong": "Quelque chose s'est mal passé.",
-		"retry": "Réessayer"
+		"retry": "Réessayer",
+		"tooManyRequests": "Trop de tentatives. Patientez un instant puis réessayez.",
+		"tooManyRequestsRetry_one": "Trop de tentatives. Réessayez dans {{count}} seconde.",
+		"tooManyRequestsRetry_other": "Trop de tentatives. Réessayez dans {{count}} secondes."
 	},
 	"language": {
 		"label": "Langue",
@@ -132,6 +135,7 @@
 		"errNotFriend": "Ce joueur n'est pas dans vos amis",
 		"errUnavailable": "Cet ami n'est plus disponible",
 		"errFailed": "Impossible d'envoyer l'invitation",
+		"errRateLimited": "Vous envoyez des invitations trop vite. Patientez un instant.",
 		"start": "Lancer la partie",
 		"linkCopiedTitle": "Lien copié !",
 		"joinError": "Impossible de rejoindre la partie",
@@ -182,7 +186,9 @@
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Partie ouverte dans un autre onglet",
 		"kicked": "Vous avez été expulsé de la salle",
-		"banned": "Vous êtes banni de cette salle"
+		"banned": "Vous êtes banni de cette salle",
+		"errChatRateLimited_one": "Vous envoyez des messages trop vite. Patientez {{count}} seconde.",
+		"errChatRateLimited_other": "Vous envoyez des messages trop vite. Patientez {{count}} secondes."
 	},
 	"friends": {
 		"title": "Amis",
@@ -210,15 +216,14 @@
 		"loadError": "Impossible de charger vos amis",
 		"roomInviteTitle": "Invitation à une partie",
 		"roomInviteDescription": "{{name}} vous invite à rejoindre son salon",
-		"join": "Rejoindre"
+		"join": "Rejoindre",
+		"errRequestCooldown": "Vous avez récemment envoyé une demande à ce joueur. Réessayez plus tard."
 	},
 	"profile": {
 		"loadError": "Erreur lors du chargement du joueur",
 		"noDescription": "Aucune description",
 		"aboutMe": "À propos de moi",
 		"bioUpdateFailed": "Échec de la mise à jour de la bio",
-		"favoriteRole": "Rôle favori",
-		"detective": "Détective",
 		"memberSince": "membre depuis le {{date}}",
 		"gamesPlayed": "Parties jouées",
 		"victories": "Victoires",

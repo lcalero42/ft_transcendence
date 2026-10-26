@@ -2,13 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
   ForbiddenException,
+  HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { FriendshipService } from './friendship.service';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus, PrismaClient } from '../generated/prisma/client';
-import { updateFriendship } from '../colyseus/presence-pubsub';
+import { notifyPlayer, updateFriendship } from '../colyseus/presence-pubsub';
 
 jest.mock('../colyseus/presence-pubsub');
 
@@ -163,6 +164,37 @@ describe('FriendshipService', () => {
         include: { requester: playerSelect },
       });
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw a 429 when the requester resends a declined request during the cooldown', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(
+        friendshipRow(FriendshipStatus.DECLINED, 1, 2),
+      );
+
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toMatchObject({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        response: { code: 'FRIEND_REQUEST_COOLDOWN' },
+      });
+      expect(prismaMock.friendship.update).not.toHaveBeenCalled();
+      expect(notifyPlayer).not.toHaveBeenCalled();
+    });
+
+    it('should revive a declined request resent by the requester once the cooldown is over', async () => {
+      const declined = {
+        ...friendshipRow(FriendshipStatus.DECLINED, 1, 2),
+        updatedAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+      };
+      const revived = friendshipRow(FriendshipStatus.PENDING);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(declined);
+      prismaMock.friendship.update.mockResolvedValue(revived);
+
+      expect(await service.create({ name: 'Bob' }, 1)).toBe(revived);
+      expect(notifyPlayer).toHaveBeenCalledWith(2, 'friendRequest', {
+        friendshipId: revived.id,
+        fromName: revived.requester.name,
+      });
     });
   });
 

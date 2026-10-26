@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import ChatMessage from "@/pages/GameRoom/components/ChatMessage";
 import LogList from "@/pages/GameRoom/components/LogList";
 import UnreadDot from "@/pages/GameRoom/components/UnreadDot";
@@ -37,14 +37,26 @@ interface ChatBoxProps {
 	tab: ChatTab;
 	unread: Record<ChatTab, boolean>;
 	onTabChange: (tab: ChatTab) => void;
+	draft: string;
+	onDraftChange: (value: string) => void;
 	onSend?: (text: string) => void;
 }
 
 const TABS: ChatTab[] = ["chat", "log"];
 
-function ChatBox({ messages, clues, eliminations, words, tab, unread, onTabChange, onSend }: ChatBoxProps) {
+function ChatBox({
+	messages,
+	clues,
+	eliminations,
+	words,
+	tab,
+	unread,
+	onTabChange,
+	draft,
+	onDraftChange,
+	onSend,
+}: ChatBoxProps) {
 	const { t } = useTranslation();
-	const [value, setValue] = useState("");
 	const listRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -53,9 +65,8 @@ function ChatBox({ messages, clues, eliminations, words, tab, unread, onTabChang
 
 	function handleSubmit(event: React.FormEvent) {
 		event.preventDefault();
-		if (!value.trim()) return;
-		onSend?.(value.trim());
-		setValue("");
+		if (!draft.trim()) return;
+		onSend?.(draft.trim());
 	}
 
 	return (
@@ -98,8 +109,8 @@ function ChatBox({ messages, clues, eliminations, words, tab, unread, onTabChang
 				<form onSubmit={handleSubmit} className="mt-3">
 					<input
 						type="text"
-						value={value}
-						onChange={(event) => setValue(event.target.value)}
+						value={draft}
+						onChange={(event) => onDraftChange(event.target.value)}
 						placeholder={t("game.typeMessage")}
 						className="input h-10 py-2 text-sm"
 					/>

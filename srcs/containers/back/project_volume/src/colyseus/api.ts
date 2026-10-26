@@ -31,11 +31,10 @@ async function apiRequest<T>(
 ): Promise<T | null> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    'x-internal-api-key': requireEnv('INTERNAL_API_KEY'),
   };
   if (token) {
     headers.Authorization = `Bearer ${token}`;
-  } else {
-    headers['x-internal-api-key'] = requireEnv('INTERNAL_API_KEY');
   }
   try {
     const res = await fetch(`${API_URL}${path}`, {
