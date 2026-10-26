@@ -7,9 +7,9 @@ export const BADGE_TONE_CLASSES: Record<RevealTone, string> = {
 };
 
 export const BADGE_AVATAR_CLASSES: Record<RevealTone, string> = {
-	victory: "border-victory shadow-[0_0_18px_#45E26D66]",
-	defeat: "border-defeat shadow-[0_0_18px_#F04C4C66]",
-	neutral: "border-friends shadow-[0_0_18px_#2EA0E166]",
+	victory: "border-victory shadow-[0_0_18px_var(--color-victory)]/40",
+	defeat: "border-defeat shadow-[0_0_18px_var(--color-defeat)]/40",
+	neutral: "border-friends shadow-[0_0_18px_var(--color-friends)]/40",
 };
 
 export function getPlayerAngleDeg(index: number, total: number) {

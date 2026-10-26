@@ -34,7 +34,7 @@ function PlayerAvatar({
 			</span>
 			<div
 				style={safeDelayMs === undefined ? undefined : { animationDelay: `${safeDelayMs}ms` }}
-				className={`${safeDelayMs === undefined ? "" : "animate-safe-glow"} relative flex h-[65px] w-[72px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border transition-[scale,border-color,box-shadow] duration-200 ease-in-out ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"} ${isAimed ? "scale-105 border-accent-purple/70 shadow-[0_0_14px_#8B57FB66]" : ""} ${isEliminated ? "border-defeat shadow-[0_0_18px_#F04C4C99] delay-[1500ms]" : ""} ${isVoteTarget ? "ring-accent-purple ring-2 shadow-[0_0_18px_#8B57FB]" : ""}`}
+				className={`${safeDelayMs === undefined ? "" : "animate-safe-glow"} relative flex h-[65px] w-[72px] shrink-0 md:h-[max(3.8vw,120px)] md:w-[max(4.8vw,132px)] items-center justify-center rounded-full border transition-[scale,border-color,box-shadow] duration-200 ease-in-out ${isActive ? "border-card-accent-border/50" : "border-card-border-2/60"} ${isAimed ? "scale-105 border-accent-purple/70 shadow-[0_0_14px_var(--color-game-accent)]/40" : ""} ${isEliminated ? "border-defeat shadow-[0_0_18px_var(--color-defeat)]/60 delay-[1500ms]" : ""} ${isVoteTarget ? "ring-accent-purple ring-2 shadow-[0_0_18px_var(--color-game-accent)]" : ""}`}
 			>
 				<img
 					src={avatarUrl}

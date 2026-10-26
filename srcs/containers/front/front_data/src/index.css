@@ -3,7 +3,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
 @import "./styles/glow.css";
 @import "./styles/neon-orbit.css";
 @import "./styles/dashed-orbit.css";
@@ -27,8 +26,6 @@
 	--color-card-border-2: #8d5adf4f;
 	--color-card-accent-border: #8e5adf;
 	--color-circle-bg: #45237f;
-	--color-btn-gradient-start: #602AAF;
-	--color-btn-gradient-end: #281249;
 	--color-start-gradient-start: #fbeb54;
 	--color-start-gradient-end: #f5a623;
 	--color-banner-bg: #141433;
@@ -50,8 +47,22 @@
 	--color-friends: #2ea0e1;
 	--color-games: #7e43f5;
 
-	/* Favorite role / crown */
-	--color-gold: #d9a441;
+	/* Game room */
+	--color-game-bg: #050721;
+	--color-game-panel-border: #15113a;
+	--color-game-circle-bg: #060c30;
+	--color-game-accent: #8b57fb;
+	--color-timer-bg: #0d0a2d;
+	--color-timer-border: #140f39;
+
+	/* Roles */
+	--color-civilian: var(--color-blue-400);
+	--color-civilian-hover: var(--color-blue-300);
+	--color-undercover: var(--color-orange-400);
+	--color-undercover-hover: var(--color-orange-300);
+
+	/* Background effects */
+	--color-meteor: var(--color-zinc-500);
 }
 
 * {
