@@ -17,7 +17,12 @@ import {
   TAKEN_OVER_CODE,
   KICKED_CODE,
   BANNED_CODE,
+  CHAT_RATE_LIMIT,
+  CHAT_RATE_WINDOW_MS,
+  INVITE_RATE_LIMIT,
+  INVITE_RATE_WINDOW_MS,
 } from './undercoverConstants';
+import { MessageRateLimiter } from './messageRateLimiter';
 import {
   addParticipant,
   removeParticipant,
@@ -56,6 +61,14 @@ export class UndercoverRoom extends Room {
   private readonly pendingHandoffs = new Set<number>();
   private readonly forcedOutSessions = new Set<string>();
   private readonly bannedPlayerIds = new Set<number>();
+  private readonly chatLimiter = new MessageRateLimiter(
+    CHAT_RATE_LIMIT,
+    CHAT_RATE_WINDOW_MS,
+  );
+  private readonly inviteLimiter = new MessageRateLimiter(
+    INVITE_RATE_LIMIT,
+    INVITE_RATE_WINDOW_MS,
+  );
   private readonly pendingReconnections = new Map<
     string,
     ReturnType<Room['allowReconnection']>
@@ -87,6 +100,9 @@ export class UndercoverRoom extends Room {
     },
 
     inviteFriend: async (client: Client, payload: { friendId?: unknown }) => {
+      if (!this.inviteLimiter.allow(client.sessionId)) {
+        return;
+      }
       const reply = (code?: string) =>
         client.send('inviteResult', { ok: !code, code });
       const friendId = payload?.friendId;
@@ -118,6 +134,9 @@ export class UndercoverRoom extends Room {
     },
 
     chat: (client: Client, text: unknown) => {
+      if (!this.chatLimiter.allow(client.sessionId)) {
+        return;
+      }
       addChatMessage(this.state, client.sessionId, text);
     },
 
@@ -327,6 +346,8 @@ export class UndercoverRoom extends Room {
     this.identities.delete(client.sessionId);
     this.persistence.forgetPlayer(client.sessionId);
     this.game.forgetLanguage(client.sessionId);
+    this.chatLimiter.forget(client.sessionId);
+    this.inviteLimiter.forget(client.sessionId);
     void this.publishMetadata();
   }
 
@@ -453,6 +474,8 @@ export class UndercoverRoom extends Room {
     this.identities.delete(oldId);
     this.persistence.forgetPlayer(oldId);
     this.game.forgetLanguage(oldId);
+    this.chatLimiter.forget(oldId);
+    this.inviteLimiter.forget(oldId);
 
     this.forceOut(oldId, TAKEN_OVER_CODE, 'seat taken over');
   }

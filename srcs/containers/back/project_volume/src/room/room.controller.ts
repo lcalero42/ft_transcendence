@@ -12,6 +12,7 @@ import {
   NotFoundException,
   ParseIntPipe,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
@@ -25,6 +26,7 @@ import type { Rooms } from '../generated/prisma/client';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(

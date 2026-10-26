@@ -6,7 +6,6 @@ import {
   Param,
   Query,
   Res,
-  UseGuards,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,9 +16,8 @@ import { isOAuthProvider } from './oauth/oauth.providers';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { GuestDto } from './dto/guest.dto';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 
-@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);

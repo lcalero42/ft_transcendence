@@ -18,6 +18,7 @@ import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Throttle } from '@nestjs/throttler';
 import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { NotGuestGuard } from '../auth/not-guest.guard';
@@ -114,6 +115,7 @@ export class PlayerController {
     return this.playerService.getAboutMe(id);
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id/avatar')
   @UseInterceptors(
