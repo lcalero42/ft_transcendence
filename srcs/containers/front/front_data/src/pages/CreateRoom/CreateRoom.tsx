@@ -13,10 +13,6 @@ import {
 import { useAuth } from "@/context/useAuth";
 import { joinErrorMessage, useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import DefaultAvatar from "@/assets/profile-photo/moon.png";
-import LinkProfile from "../../components/LinkProfile/LinkProfile";
-import Logo from "../../components/Logo/Logo";
-import Credit from "../../components/Credit/Credit";
-import FriendList from "../Profile/components/FriendList/FriendList";
 import Header from "../../components/Header/Header";
 import InviteFriendList from "./components/InviteFriendList";
 import PlayerList from "./components/PlayerList";

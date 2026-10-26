@@ -18,25 +18,26 @@ function LegalLayout({ title, lastUpdated, sections }: LegalLayoutProps) {
 		<div className="page">
 			<Header />
 
-			<main className="page-main flex flex-col items-center">
-				<article className="w-full max-w-3xl">
-					<h1 className="mb-2 text-2xl md:text-4xl font-semibold">{title}</h1>
-					<p className="mb-8 text-sm text-gray-low">
+			<main className="page-main pt-10 md:pt-10">
+				<article className="mx-auto w-full max-w-3xl text-left">
+					<h1 className="text-2xl md:text-4xl font-extrabold">{title}</h1>
+					<p className="mt-1 mb-6 text-sm text-gray-low">
 						Last updated: <time dateTime={lastUpdated}>{lastUpdated}</time>
 					</p>
 
-					{sections.map((section) => (
-						<section key={section.title} className="mb-8">
-							<h2 className="mb-3 text-lg md:text-xl font-semibold text-accent-purple">
+					{sections.map((section, index) => (
+						<section key={section.title} className="card border border-card-border-2 bg-transparent">
+							<h2 className="flex items-center gap-3 font-bold">
+								<span className="circle-purple size-7 text-sm">{index + 1}</span>
 								{section.title}
 							</h2>
 							{section.paragraphs?.map((paragraph) => (
-								<p key={paragraph} className="mb-3 leading-relaxed text-gray-high">
+								<p key={paragraph} className="text-sm leading-relaxed text-text-dim">
 									{paragraph}
 								</p>
 							))}
 							{section.items && (
-								<ul className="mb-3 list-disc space-y-2 pl-6 leading-relaxed text-gray-high">
+								<ul className="list-disc space-y-1 pl-6 text-sm leading-relaxed text-text-dim marker:text-accent-purple">
 									{section.items.map((item) => (
 										<li key={item}>{item}</li>
 									))}
