@@ -47,7 +47,6 @@
 	--color-friends: #2ea0e1;
 	--color-games: #7e43f5;
 
-	/* Game room */
 	--color-game-bg: #050721;
 	--color-game-panel-border: #15113a;
 	--color-game-circle-bg: #060c30;
@@ -55,14 +54,26 @@
 	--color-timer-bg: #0d0a2d;
 	--color-timer-border: #140f39;
 
-	/* Roles */
 	--color-civilian: var(--color-blue-400);
 	--color-civilian-hover: var(--color-blue-300);
 	--color-undercover: var(--color-orange-400);
 	--color-undercover-hover: var(--color-orange-300);
 
-	/* Background effects */
 	--color-meteor: var(--color-zinc-500);
+
+	--color-background: var(--color-bg-deep);
+	--color-foreground: var(--color-white);
+	--color-primary: var(--color-accent);
+	--color-primary-foreground: var(--color-white);
+	--color-secondary: var(--color-card);
+	--color-secondary-foreground: var(--color-gray-high);
+	--color-muted: var(--color-card-border);
+	--color-muted-foreground: var(--color-text-dim);
+	--color-popover-foreground: var(--color-white);
+	--color-destructive: var(--color-defeat);
+	--color-border: var(--color-card-border-2);
+	--color-input: var(--color-grey-border);
+	--color-ring: var(--color-accent-purple);
 }
 
 * {
