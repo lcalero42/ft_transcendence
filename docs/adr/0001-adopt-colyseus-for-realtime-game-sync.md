@@ -2,10 +2,10 @@
 
 ## Status
 
-Accepted — a Colyseus server now runs, but only as a generic starter-template
-scaffold, not the actual game loop; see
-[architecture.md](../architecture.md#realtime-game-state) for the current
-state.
+Accepted and implemented: the lobby, the full game loop and presence run on
+Colyseus. See [architecture.md](../architecture.md#realtime-backsrccolyseus)
+for the current design. The authentication question left open below is
+settled by [ADR 0002](0002-store-the-session-in-an-httponly-cookie.md).
 
 ## Context
 
