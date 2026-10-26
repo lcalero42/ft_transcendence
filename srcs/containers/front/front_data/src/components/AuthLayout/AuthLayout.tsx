@@ -23,8 +23,8 @@ function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabe
 
 	return (
 		<div className="page">
-			<header className="flex w-full items-center justify-between gap-3 px-5 py-3 shadow-sm text-outline sm:px-[10vw] md:py-5">
-				<Logo className="text-[1.7rem] md:pl-0 pl-3 sm:text-[3rem]" />
+			<header className="flex w-full items-center justify-between gap-3 px-8 py-3 shadow-sm text-outline sm:px-[10vw] md:py-5">
+				<Logo />
 				<LanguageSwitcher />
 			</header>
 

@@ -15,7 +15,8 @@
 
 @theme {
 	--font-poppins: "Poppins", sans-serif;
-  --font-logo: "Jacquard 24", serif;
+	--font-logo: "Jacquard 24", serif;
+
 	/* Backgrounds */
 	--color-bg-deep: #020221;
 	--color-bg-deep-end: #170e48;
