@@ -86,10 +86,8 @@ function Profile() {
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
-			<div className="z-100 fixed w-full border-b py-2 bg-bg-deep/70 border-head-border">
-				<Header compact />
-			</div>
-			<main className="page-main pt-25">
+			<Header/>
+			<main className="page-main pt-10">
 				<div className="md:flex md:gap-3">
 					<div className="min-w-0 md:flex md:items-center md:w-full md:px-5 md:py-4 md:border md:border-card-border-2 md:rounded-xl">
 						<Identity

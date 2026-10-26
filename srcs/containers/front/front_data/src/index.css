@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+@import "@fontsource/jacquard-24";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -15,7 +15,7 @@
 
 @theme {
 	--font-poppins: "Poppins", sans-serif;
-	--font-logo: "UnifrakturMaguntia", serif;
+	--font-logo: "Jacquard 24", serif;
 
 	/* Backgrounds */
 	--color-bg-deep: #020221;

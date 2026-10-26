@@ -12,10 +12,8 @@ function Admin() {
 
 	return (
 		<div className="page">
-			<div className="z-100 fixed w-full border-b py-2 bg-bg-deep/70 border-head-border">
-				<Header compact />
-			</div>
-			<main className="page-main pt-25">
+			<Header/>
+			<main className="page-main pt-10">
 				<div className=" text-left text-xl font-black pb-4"> {t("admin.title")}</div>
 				<CountCards />
 				<PlayerList />
