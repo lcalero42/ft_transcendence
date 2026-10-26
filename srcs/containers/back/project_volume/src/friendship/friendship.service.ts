@@ -2,6 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,6 +14,7 @@ import { FriendshipStatus } from '../generated/prisma/enums';
 import { notifyPlayer, updateFriendship } from '../colyseus/presence-pubsub';
 
 const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
+const DECLINED_REQUEST_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class FriendshipService {
@@ -39,8 +42,23 @@ export class FriendshipService {
       },
     });
 
-    if (existingFriendship?.status === FriendshipStatus.DECLINED)
+    if (existingFriendship?.status === FriendshipStatus.DECLINED) {
+      if (
+        existingFriendship.requesterId === id &&
+        Date.now() - existingFriendship.updatedAt.getTime() <
+          DECLINED_REQUEST_COOLDOWN_MS
+      )
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.TOO_MANY_REQUESTS,
+            message:
+              'You must wait before sending another friend request to this player',
+            code: 'FRIEND_REQUEST_COOLDOWN',
+          },
+          HttpStatus.TOO_MANY_REQUESTS,
+        );
       return this.reviveFriendship(existingFriendship.id, id, addressee.id);
+    }
 
     if (existingFriendship?.status === FriendshipStatus.PENDING)
       throw new ConflictException(

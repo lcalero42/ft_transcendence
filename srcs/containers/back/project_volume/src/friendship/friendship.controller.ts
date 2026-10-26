@@ -12,6 +12,7 @@ import {
   Query,
   ParseEnumPipe,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { FriendshipService } from './friendship.service';
 import { CreateFriendshipDto } from './dto/create-friendship.dto';
 import { UpdateFriendshipDto } from './dto/update-friendship.dto';
@@ -24,6 +25,7 @@ import { FriendshipStatus } from '../generated/prisma/enums';
 export class FriendshipController {
   constructor(private readonly friendshipService: FriendshipService) {}
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Post()
   create(

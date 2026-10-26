@@ -78,6 +78,7 @@ export default function CreateRoom() {
 				ALREADY_IN_ROOM: "lobby.errAlreadyIn",
 				NOT_FRIEND: "lobby.errNotFriend",
 				FRIEND_UNAVAILABLE: "lobby.errUnavailable",
+				RATE_LIMITED: "lobby.errRateLimited",
 			};
 			if (ok) {
 				toast.add({ type: "success", title: t("lobby.inviteSent") });

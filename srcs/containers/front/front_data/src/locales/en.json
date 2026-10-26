@@ -17,7 +17,10 @@
 		"success": "Success",
 		"errorOccurred": "An error occurred",
 		"somethingWentWrong": "Something went wrong.",
-		"retry": "Retry"
+		"retry": "Retry",
+		"tooManyRequests": "Too many attempts. Please wait a moment and try again.",
+		"tooManyRequestsRetry_one": "Too many attempts. Please try again in {{count}} second.",
+		"tooManyRequestsRetry_other": "Too many attempts. Please try again in {{count}} seconds."
 	},
 	"language": {
 		"label": "Language",
@@ -132,6 +135,7 @@
 		"errNotFriend": "This player is not your friend",
 		"errUnavailable": "This friend is no longer available",
 		"errFailed": "Unable to send the invitation",
+		"errRateLimited": "You're sending invitations too fast. Please wait a moment.",
 		"start": "Start the game",
 		"linkCopiedTitle": "Link copied!",
 		"joinError": "Unable to join the game",
@@ -182,7 +186,9 @@
 		"votes_other": "{{count}} votes",
 		"seatTakenOver": "Game opened in another tab",
 		"kicked": "You were kicked from the room",
-		"banned": "You are banned from this room"
+		"banned": "You are banned from this room",
+		"errChatRateLimited_one": "You're sending messages too fast. Wait {{count}} second.",
+		"errChatRateLimited_other": "You're sending messages too fast. Wait {{count}} seconds."
 	},
 	"friends": {
 		"title": "Friends",
@@ -210,7 +216,8 @@
 		"loadError": "Could not load your friends",
 		"roomInviteTitle": "Game invitation",
 		"roomInviteDescription": "{{name}} invites you to join their room",
-		"join": "Join"
+		"join": "Join",
+		"errRequestCooldown": "You recently sent a request to this player. Please try again later."
 	},
 	"profile": {
 		"loadError": "Error when loading the player",

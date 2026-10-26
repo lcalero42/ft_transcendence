@@ -17,7 +17,10 @@
 		"success": "Éxito",
 		"errorOccurred": "Se ha producido un error",
 		"somethingWentWrong": "Algo ha salido mal.",
-		"retry": "Reintentar"
+		"retry": "Reintentar",
+		"tooManyRequests": "Demasiados intentos. Espera un momento y vuelve a intentarlo.",
+		"tooManyRequestsRetry_one": "Demasiados intentos. Vuelve a intentarlo en {{count}} segundo.",
+		"tooManyRequestsRetry_other": "Demasiados intentos. Vuelve a intentarlo en {{count}} segundos."
 	},
 	"language": {
 		"label": "Idioma",
@@ -132,6 +135,7 @@
 		"errNotFriend": "Este jugador no es tu amigo",
 		"errUnavailable": "Este amigo ya no está disponible",
 		"errFailed": "No se pudo enviar la invitación",
+		"errRateLimited": "Estás enviando invitaciones demasiado rápido. Espera un momento.",
 		"start": "Empezar la partida",
 		"linkCopiedTitle": "¡Enlace copiado!",
 		"joinError": "No se pudo unir a la partida",
@@ -182,7 +186,9 @@
 		"votes_other": "{{count}} votos",
 		"seatTakenOver": "Partida abierta en otra pestaña",
 		"kicked": "Has sido expulsado de la sala",
-		"banned": "Has sido baneado de esta sala"
+		"banned": "Has sido baneado de esta sala",
+		"errChatRateLimited_one": "Estás enviando mensajes demasiado rápido. Espera {{count}} segundo.",
+		"errChatRateLimited_other": "Estás enviando mensajes demasiado rápido. Espera {{count}} segundos."
 	},
 	"friends": {
 		"title": "Amigos",
@@ -210,7 +216,8 @@
 		"loadError": "No se pudieron cargar tus amigos",
 		"roomInviteTitle": "Invitación a una partida",
 		"roomInviteDescription": "{{name}} te invita a unirte a su sala",
-		"join": "Unirse"
+		"join": "Unirse",
+		"errRequestCooldown": "Has enviado una solicitud a este jugador hace poco. Vuelve a intentarlo más tarde."
 	},
 	"profile": {
 		"loadError": "Error al cargar el jugador",
