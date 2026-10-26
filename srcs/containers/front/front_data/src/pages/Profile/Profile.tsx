@@ -91,7 +91,7 @@ function Profile() {
 			</div>
 			<main className="page-main pt-25">
 				<div className="md:flex md:gap-3">
-					<div className="min-w-0 md:flex md:items-center md:w-[80%] md:px-5 md:py-4 md:border md:border-card-border-2 md:rounded-xl">
+					<div className="min-w-0 md:flex md:items-center md:w-full md:px-5 md:py-4 md:border md:border-card-border-2 md:rounded-xl">
 						<Identity
 							playerId={player.id}
 							username={player.name}
