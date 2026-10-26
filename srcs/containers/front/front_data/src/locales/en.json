@@ -224,8 +224,6 @@
 		"noDescription": "No description",
 		"aboutMe": "About me",
 		"bioUpdateFailed": "Failed to update bio",
-		"favoriteRole": "Favorite role",
-		"detective": "Detective",
 		"memberSince": "member since {{date}}",
 		"gamesPlayed": "Games played",
 		"victories": "Victories",

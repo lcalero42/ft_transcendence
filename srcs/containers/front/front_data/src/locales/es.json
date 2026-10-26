@@ -224,8 +224,6 @@
 		"noDescription": "Sin descripción",
 		"aboutMe": "Sobre mí",
 		"bioUpdateFailed": "No se pudo actualizar la biografía",
-		"favoriteRole": "Rol favorito",
-		"detective": "Detective",
 		"memberSince": "miembro desde el {{date}}",
 		"gamesPlayed": "Partidas jugadas",
 		"victories": "Victorias",
