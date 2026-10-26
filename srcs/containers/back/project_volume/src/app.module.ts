@@ -11,9 +11,12 @@ import { join } from 'path';
 import { FriendshipModule } from './friendship/friendship.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BootstrapModule } from './bootstrap/bootstrap.module';
+import { PrismaModule } from './prisma.module';
+import { ColyseusModule } from './colyseus/colyseus.module';
 
 @Module({
   imports: [
+    PrismaModule,
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'uploads'),
@@ -26,6 +29,7 @@ import { BootstrapModule } from './bootstrap/bootstrap.module';
     GameModule,
     FriendshipModule,
     BootstrapModule,
+    ColyseusModule,
   ],
   controllers: [AppController],
   providers: [AppService],
