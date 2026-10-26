@@ -5,14 +5,23 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
+import type { StringValue } from 'ms';
 import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { GuestDto } from './dto/guest.dto';
 
 // A precomputed bcrypt hash with no matching plaintext, compared against on a
 // login miss so the response time doesn't reveal whether the email exists.
 const DUMMY_PASSWORD_HASH =
   '$2b$10$6Q5D0vqYWA5tSynigYdJZed9BeYujQsIBIMl7bXra16kqaaGSepiG';
+
+export interface AuthSession {
+  accessToken: string;
+  expires?: Date;
+  user: { id: number; email: string | null };
+}
 
 @Injectable()
 export class AuthService {
@@ -28,13 +37,19 @@ export class AuthService {
     if (existingEmail) {
       throw new ConflictException('Email already registered');
     }
-    const existingName = await this.prisma.player.findUnique({
-      where: { name: dto.name },
-    });
-    if (existingName) throw new ConflictException('Username already taken');
+    await this.assertNameAvailable(dto.name);
     const hashed = await bcrypt.hash(dto.password, 10);
     const player = await this.prisma.player.create({
       data: { email: dto.email, name: dto.name, password: hashed },
+    });
+    return this.signToken(player.id, player.email);
+  }
+
+  async guest(dto: GuestDto) {
+    await this.assertNameAvailable(dto.name);
+    const hashed = await bcrypt.hash(randomUUID(), 10);
+    const player = await this.prisma.player.create({
+      data: { name: dto.name, password: hashed, isGuest: true },
     });
     return this.signToken(player.id, player.email);
   }
@@ -51,10 +66,41 @@ export class AuthService {
     if (!player || !isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.signToken(player.id, player.email);
+    return this.signToken(player.id, player.email, dto.rememberMe);
   }
 
-  private signToken(sub: number, email: string) {
-    return { accessToken: this.jwtService.sign({ sub, email }) };
+  private async assertNameAvailable(name: string) {
+    const existingName = await this.prisma.player.findUnique({
+      where: { name },
+    });
+    if (existingName) throw new ConflictException('Username already taken');
+  }
+
+  async logout(playerId: number) {
+    await this.prisma.player.update({
+      where: { id: playerId },
+      data: { tokenVersion: { increment: 1 } },
+    });
+  }
+
+  async signToken(
+    sub: number,
+    email: string | null,
+    remember = false,
+  ): Promise<AuthSession> {
+    const { tokenVersion } = await this.prisma.player.findUniqueOrThrow({
+      where: { id: sub },
+      select: { tokenVersion: true },
+    });
+    const payload = { sub, email, ver: tokenVersion };
+    const user = { id: sub, email };
+    if (!remember) {
+      return { accessToken: this.jwtService.sign(payload), user };
+    }
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: (process.env.JWT_REMEMBER_EXPIRES_IN ?? '30d') as StringValue,
+    });
+    const { exp } = this.jwtService.decode<{ exp: number }>(accessToken);
+    return { accessToken, expires: new Date(exp * 1000), user };
   }
 }

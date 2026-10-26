@@ -12,7 +12,8 @@ import {
 } from '@nestjs/common';
 import { GameService } from './game.service';
 import { CreateGameDto } from './dto/create-game.dto';
-import { UpdateGameDto } from './dto/update-game.dto';
+import { EliminatePlayerDto } from './dto/eliminate-player.dto';
+import { FinishGameDto } from './dto/finish-game.dto';
 import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
@@ -22,7 +23,7 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @UseGuards(InternalApiKeyGuard)
-  @Post()
+  @Post('internal')
   async create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);
   }
@@ -61,16 +62,25 @@ export class GameController {
   }
 
   @UseGuards(InternalApiKeyGuard)
-  @Patch(':id')
-  async update(
+  @Patch('internal/:id/eliminate')
+  async eliminate(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateGameDto: UpdateGameDto,
+    @Body() eliminatePlayerDto: EliminatePlayerDto,
   ) {
-    return this.gameService.update(id, updateGameDto);
+    return this.gameService.eliminate(id, eliminatePlayerDto.playerId);
   }
 
   @UseGuards(InternalApiKeyGuard)
-  @Delete(':id')
+  @Patch('internal/:id/finish')
+  async finish(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() finishGameDto: FinishGameDto,
+  ) {
+    return this.gameService.finish(id, finishGameDto.victory);
+  }
+
+  @UseGuards(InternalApiKeyGuard)
+  @Delete('internal/:id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.gameService.remove(id);
   }

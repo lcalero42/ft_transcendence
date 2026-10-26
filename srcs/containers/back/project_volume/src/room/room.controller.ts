@@ -12,10 +12,13 @@ import {
   NotFoundException,
   ParseIntPipe,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
+import { adminOnly } from '../common/roles.decorator';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import type { Rooms } from '../generated/prisma/client';
 
@@ -23,6 +26,7 @@ import type { Rooms } from '../generated/prisma/client';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
@@ -46,11 +50,21 @@ export class RoomController {
     return this.roomService.countActiv();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('live/:colyseusRoomId/banned')
+  async isBanned(
+    @Param('colyseusRoomId') colyseusRoomId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    return this.roomService.isBanned(colyseusRoomId, req.user.id);
+  }
+
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.roomService.findOne(id);
   }
 
+  @adminOnly()
   @Get(':id/games')
   async getGames(@Param('id', ParseIntPipe) id: number) {
     return this.roomService.getGames(id);
@@ -75,6 +89,12 @@ export class RoomController {
       throw new ForbiddenException('Cannot edit a room you did not create');
     }
     return this.roomService.update(id, updateRoomDto);
+  }
+
+  @UseGuards(InternalApiKeyGuard)
+  @Delete('internal/:id')
+  async close(@Param('id', ParseIntPipe) id: number) {
+    return this.roomService.remove(id);
   }
 
   @UseGuards(JwtAuthGuard)

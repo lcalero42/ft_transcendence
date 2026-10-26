@@ -3,8 +3,9 @@ import { apiFetch } from "./auth/client";
 export interface Room {
     id: number;
     name: string;
-    min_player: number;
-    max_player: number;
+    playerCount: number;
+    maxClients: number;
+	colyseusRoomId: string | null;
 	createdAt: string;
 }
 
@@ -23,6 +24,10 @@ export async function countRoomActives() {
 
 export async function fetchRooms(): Promise<Room[]> {
   return apiFetch<Room[]>("/room/current");
+}
+
+export async function isBannedFromRoom(colyseusRoomId: string) {
+  return apiFetch<boolean>(`/room/live/${encodeURIComponent(colyseusRoomId)}/banned`);
 }
 
 export async function createRoom(data: { name: string }): Promise<Room> {

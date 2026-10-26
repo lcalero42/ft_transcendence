@@ -1,135 +1,128 @@
-import Logo from "@/components/Logo/Logo";
+import Header from "@/components/Header/Header";
 import Credit from "@/components/Credit/Credit";
 import Identity from "./components/Identity/Identity";
 import Bio from "./components/Bio/Bio";
 import Counter from "./components/Counter/Counter";
 import FriendList from "./components/FriendList/FriendList";
 import GamesList from "./components/GamesList/GamesList";
-import FavoriteRole from "./components/FavoriteRole/FavoriteRole";
-import IconDetective from "../../assets/icons/brand-redhat.svg";
 import AvatarDefault from "../../assets/profile-photo/avatar-default.svg";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/useAuth";
+import { useFriends } from "@/context/useFriends";
+import { useFriendPlayers } from "@/context/useFriendPlayers";
 import { LogOut } from "lucide-react";
 import LoadPage from "@/components/LoadPage/LoadPage";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import {
 	getMe,
+	getPublicProfile,
 	getAvatarUrl,
 	getCountGamesPlayed,
 	getCountVictory,
 	getWinRate,
 	getGamesList,
-	type Player,
+	type PublicProfile,
 	type GameListOfPlayer
 }  from '../../api/player';
-import { clearToken } from "@/api/auth/client";
-import { useNavigate } from "react-router-dom";
+import * as authApi from "@/api/auth/auth";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Profile() {
+	const { t, i18n } = useTranslation();
 	const { user } = useAuth();
 	const { logout } = useAuth();
 	function handleLogout() {
-    	logout();
-    	void navigate("/login");
+    	void logout().then(() => navigate("/login"));
   	}
-	const [player, setPlayer] = useState<Player | null>(null);
+	const { name } = useParams();
+	const [player, setPlayer] = useState<PublicProfile | null>(null);
 	const [gamesPlayed, setGamesPlayed] = useState<number>(0);
 	const [victory, setVictory] = useState<number>(0);
 	const [winrate, setWinrate] = useState<number>(0);
 	const [gameList, setGamesList] = useState<GameListOfPlayer[]>([]);
 
 	const [loading, setLoading] = useState(true);
-  	const [error, setError] = useState<string | null>(null);
+  	const [error, setError] = useState(false);
   	const navigate = useNavigate();
+	const { friendsStatus, retryFriends } = useFriends();
+	const friends = useFriendPlayers();
 	useEffect(() => {
 		if (!user) return;
-		const cpUser = user;
 		async function loadData() {
 			try {
-				const [me, games, victories, winrate, gameslist] = await Promise.all([
-					getMe(),
-					getCountGamesPlayed(cpUser.id),
-					getCountVictory(cpUser.id),
-					getWinRate(cpUser.id),
-					getGamesList(cpUser.id),
+				const profile = name ? await getPublicProfile(name) : await getMe();
+				const [games, victories, winrate, gameslist] = await Promise.all([
+					getCountGamesPlayed(profile.id),
+					getCountVictory(profile.id),
+					getWinRate(profile.id),
+					getGamesList(profile.id),
 				])
-				setPlayer(me);
+				setPlayer(profile);
 				setGamesPlayed(games);
 				setVictory(victories);
 				setWinrate(winrate);
 				setGamesList(gameslist);
 		  	} catch (err) {
 				console.error("Profile load error:", err); //debug
-				setError("Error when loading the player");
-				clearToken();
-				void navigate("/login", { replace: true });
+				setError(true);
+				if (!name) {
+					await authApi.logout();
+					void navigate("/login", { replace: true });
+				}
 		  	} finally {
 				setLoading(false);
 		  	}
 		}
 
 		void loadData();
-	},[user, navigate]);
+	},[user, name, navigate]);
 	if (!user) return null;
     if (loading) return <LoadPage />;
-    if (error) return <ErrorPage error={error} />;
+    if (error) return <ErrorPage error={t("profile.loadError")} />;
   	if (!player) return null;
+	const isOwn = player.id === user.id;
 
-	const friends = [
-		{ id: 1, name: "bob", icon: "🤠​", isOnLine: true},
-		{ id: 2, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 3, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-		{ id: 4, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 5, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 6, name: "QueMp4", icon: "🦒", isOnLine: false},
-		{ id: 7, name: "jiraaaaf", icon: "🦒", isOnLine: true},
-		{ id: 8, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-		{ id: 9, name: "MichaelKarate135", icon: "🦒", isOnLine: true},
-	];
 	const avatarUrl = getAvatarUrl(player.avatarUrl) ?? AvatarDefault;
 	return (
 		<div className="page">
-			<div className="page-header z-100 fixed w-full justify-center border-b py-2 bg-bg-deep/70 border-head-border">
-				<div className="text-[1.3rem]">
-					<Logo />
-				</div>
-			</div>
-			<main className="page-main pt-25">
-				<div className=" md:flex justify-between md:border md:px-4 md:p-3 md:border-card-border-2 md:rounded-xl">
-					<Identity
-						playerId={user.id}
-						username={player.name}
-						Since={(new Date(player.createdAt)).toLocaleDateString("fr-FR")}
-						urlAvatar={avatarUrl}
-					/>
-					<div className="md:flex md:flex-col">
-						<Bio
-							playerId={user.id}
-							bio={player.aboutMe ? player.aboutMe : "not description"}
+			<Header/>
+			<main className="page-main pt-10">
+				<div className="md:flex md:gap-3">
+					<div className="min-w-0 md:flex md:items-center md:w-full md:px-5 md:py-4 md:border md:border-card-border-2 md:rounded-xl">
+						<Identity
+							playerId={player.id}
+							username={player.name}
+							Since={(new Date(player.createdAt)).toLocaleDateString(i18n.language)}
+							urlAvatar={avatarUrl}
+							editable={isOwn}
 						/>
-						<FavoriteRole role="Detective" icon={IconDetective}/>
 					</div>
+					<Bio
+						playerId={player.id}
+						bio={player.aboutMe ?? ""}
+						editable={isOwn}
+					/>
 				</div>
 
 				<Counter
 					games={gamesPlayed}
 					victories={victory}
 					winrate={Number(winrate.toFixed(2))}
-					friends={-1}
+					friends={friends.length}
 				/>
 
 				<div className="md:gap-3 md:flex">
-					<FriendList friends={friends}/>
+					{isOwn && <FriendList friends={friends} status={friendsStatus} onRetry={retryFriends}/>}
 					<GamesList games={gameList}/>
 				</div>
-				<button
+				{isOwn && <button
 				    onClick={handleLogout}
 				    className="mt-3 ml-auto flex items-center gap-2 rounded-xl border border-card-border bg-card px-4 py-2 text-sm font-medium text-gray-high transition-colors duration-150 hover:border-defeat hover:text-defeat"
 				>
 				    <LogOut size={16} />
-				    Logout
-				</button>
+				    {t("common.logout")}
+				</button>}
 			</main>
 			<Credit />
 		</div>

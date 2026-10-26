@@ -13,26 +13,28 @@ import {
   ForbiddenException,
   UnsupportedMediaTypeException,
   ParseIntPipe,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { adminOnly } from '../common/roles.decorator';
 import { PlayerService } from './player.service';
-import { UpdatePlayerDto } from './dto/update-player.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { Throttle } from '@nestjs/throttler';
+import { memoryStorage } from 'multer';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { NotGuestGuard } from '../auth/not-guest.guard';
+import { clearAuthCookie } from '../auth/auth-cookie';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
-
-const AVATAR_MIME_TO_EXT = new Map<string, string>([
-  ['image/png', '.png'],
-  ['image/jpeg', '.jpg'],
-  ['image/webp', '.webp'],
-  ['image/gif', '.gif'],
-]);
+import { detectImageType } from './avatar-validation';
+import { saveAvatar } from './avatar-storage';
+import { AVATAR_MAX_SIZE, AVATAR_MIMES } from './avatar.constants';
 
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @adminOnly()
   @Get()
   async findAll() {
     return this.playerService.findAll();
@@ -50,6 +52,12 @@ export class PlayerController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('profile/:name')
+  async getPublicProfile(@Param('name') name: string) {
+    return this.playerService.findPublicProfile(name);
+  }
+
+  @adminOnly()
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.findOne(id);
@@ -57,27 +65,21 @@ export class PlayerController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/games')
-  async getGamesList(
-    @Param('id', ParseIntPipe) id: number,
-    @Req() req: AuthenticatedRequest,
-  ) {
-    if (req.user.id !== id) {
-      throw new ForbiddenException('Cannot view games of another player');
-    }
+  async getGamesList(@Param('id', ParseIntPipe) id: number) {
     return this.playerService.getGamesList(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePlayerDto: UpdatePlayerDto,
+    @Body() updateProfileDto: UpdateProfileDto,
     @Req() req: AuthenticatedRequest,
   ) {
     if (req.user.id !== id) {
       throw new ForbiddenException('Cannot edit another player');
     }
-    return this.playerService.update(id, updatePlayerDto);
+    return this.playerService.update(id, updateProfileDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -85,11 +87,14 @@ export class PlayerController {
   async remove(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
+    @Res({ passthrough: true }) res: Response,
   ) {
     if (req.user.id !== id) {
       throw new ForbiddenException('Cannot delete another player');
     }
-    return this.playerService.remove(id);
+    const deleted = await this.playerService.remove(id);
+    clearAuthCookie(res);
+    return deleted;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -116,21 +121,15 @@ export class PlayerController {
     return this.playerService.getAboutMe(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @UseGuards(JwtAuthGuard, NotGuestGuard)
   @Patch(':id/avatar')
   @UseInterceptors(
     FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: './uploads/avatars',
-        filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = AVATAR_MIME_TO_EXT.get(file.mimetype);
-          callback(null, `${uniqueSuffix}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
+      limits: { fileSize: AVATAR_MAX_SIZE, files: 1 },
       fileFilter: (req, file, callback) => {
-        if (!AVATAR_MIME_TO_EXT.has(file.mimetype)) {
+        if (!AVATAR_MIMES.has(file.mimetype)) {
           callback(
             new UnsupportedMediaTypeException(
               'Avatar must be a PNG, JPEG, WEBP, or GIF image',
@@ -141,7 +140,6 @@ export class PlayerController {
         }
         callback(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 },
     }),
   )
   async updateAvatar(
@@ -155,7 +153,17 @@ export class PlayerController {
     if (!file) {
       throw new BadRequestException('No avatar file was uploaded');
     }
-    const avatarUrl = `/uploads/avatars/${file.filename}`;
+    if (!detectImageType(file.buffer)) {
+      throw new UnsupportedMediaTypeException(
+        'File content is not a valid image',
+      );
+    }
+    let avatarUrl: string;
+    try {
+      avatarUrl = await saveAvatar(file.buffer);
+    } catch {
+      throw new BadRequestException('Image is corrupted or unsupported');
+    }
     return this.playerService.updateAvatar(id, avatarUrl);
   }
 }

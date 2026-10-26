@@ -8,28 +8,33 @@ import { fetchRooms, type Room } from '../../api/rooms';
 import Header from "@/components/Header/Header";
 import ErrorPage from "@/components/ErrorPage/ErrorPage";
 import LoadPage from "@/components/LoadPage/LoadPage";
+import { useTranslation } from "react-i18next";
+import { useFriends } from "@/context/useFriends";
 
 function Home() {
+    const { t } = useTranslation();
+    const { roomsVersion } = useFriends();
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState(false);
+    const [visibleCount, setVisibleCount] = useState(0);
 
-    // Runs once when the component first mounts — the initial load
+
 
 	useEffect(() => {
         let ignore = false;
 
         async function loadRooms() {
             try {
-                setLoading(true);
                 const data = await fetchRooms();
                 if (!ignore) {
                     setRooms(data);
+                    setError(false);
                 }
             } catch (err) {
                 console.error(err);
                 if (!ignore) {
-                    setError('Could not load rooms');
+                    setError(true);
                 }
             } finally {
                 if (!ignore) {
@@ -41,10 +46,21 @@ function Home() {
         return () => {
             ignore = true;
         };
+    }, [roomsVersion, visibleCount]);
+
+    useEffect(() => {
+        function handleVisibilityChange() {
+            if (document.visibilityState === "visible") {
+                setVisibleCount((count) => count + 1);
+            }
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
     }, []);
 
     if (loading) return <LoadPage />;
-    if (error) return <ErrorPage error={error} />;
+    if (error) return <ErrorPage error={t("home.loadError")} />;
 
 	return (
 		<div className="page">
@@ -56,7 +72,7 @@ function Home() {
 					md:text-left
 					font-semibold"
 					style={{color: "var(--color-gray-low)"}}>
-						Join a game and unmask the impostors.
+						{t("home.subtitle")}
 				</h5>
 				<AvailableRooms />
 				<DisplayRoomCards rooms={rooms} />

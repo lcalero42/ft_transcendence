@@ -1,5 +1,6 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useEffect, useState } from 'react';
+import { useTranslation } from "react-i18next";
 
 function LoadingDots() {
 	const [dots, setDots]= useState(0);
@@ -21,12 +22,14 @@ interface LoadPageProps {
   text?: string;
 }
 
-function LoadPage({ text = "Loading" }: LoadPageProps) {
+function LoadPage({ text }: LoadPageProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="page flex flex-col items-center justify-center gap-4 py-20">
 			<Spinner className="size-10 text-accent-hover" />
 			<p className="text-accent-hover font-bold">
-				{text} <LoadingDots />
+				{text ?? t("common.loading")} <LoadingDots />
 			</p>
 		</div>
 	);

@@ -37,11 +37,8 @@ jobs:
       - name: Create frontend .env file
         run: |
           cat <<EOF > srcs/containers/front/front_data/.env
-          VITE_API_URL=http://localhost:3000
+          VITE_API_URL=/api
           EOF
-
-      - name: Create frontend .env file
-        run: touch srcs/containers/front/front_data/.env
 
       - name: Create secrets files
         run: |
@@ -51,10 +48,15 @@ jobs:
           echo "ci_db"               > srcs/secrets/db_name.txt
           echo "ci_jwt_secret"       > srcs/secrets/jwt_secret.txt
           echo "ci_internal_api_key" > srcs/secrets/internal_api_key.txt
+          echo "admin:admin@ci.local:ci_admin_password" > srcs/secrets/admins.txt
+          echo "ci_google_id"        > srcs/secrets/google_client_id.txt
+          echo "ci_google_secret"    > srcs/secrets/google_client_secret.txt
+          echo "ci_discord_id"       > srcs/secrets/discord_client_id.txt
+          echo "ci_discord_secret"   > srcs/secrets/discord_client_secret.txt
 
-      - name: Build stack and verify containers launch
+      - name: Build prod stack and verify it serves through nginx
         run: make check-build
 
       - name: Dump container logs on failure
         if: failure()
-        run: docker compose -f srcs/docker-compose.yml logs --no-color
+        run: docker compose -f srcs/docker-compose.yml -f srcs/docker-compose.prod.yml logs --no-color

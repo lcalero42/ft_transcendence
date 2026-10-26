@@ -1,4 +1,5 @@
 import { Timer as TimerIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface TimerProps {
 	secondsLeft: number;
@@ -11,14 +12,16 @@ function formatTime(secondsLeft: number) {
 }
 
 function Timer({ secondsLeft }: TimerProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div
-			className="card mb-0! w-fit flex-row items-center gap-[max(0.94vw,11px)] px-[max(0.67vw,13px)]"
+			className="card mb-0! w-fit flex-row items-center gap-[max(0.94vw,11px)] px-[max(0.67vw,13px)] py-1.5 md:py-4"
 			style={{ backgroundColor: "#0D0A2D", borderColor: "#140F39", borderWidth: "4px", borderStyle: "solid" }}
 		>
 			<TimerIcon className="text-accent-purple size-[clamp(22px,2.66vw,47px)] shrink-0" />
 			<div className="flex flex-col items-start">
-				<span className="text-gray-low">Timer</span>
+				<span className="text-gray-low hidden md:inline">{t("game.timer")}</span>
 				<span className="text-[clamp(19px,2vw,26px)] font-bold">{formatTime(secondsLeft)}</span>
 			</div>
 		</div>

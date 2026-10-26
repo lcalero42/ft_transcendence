@@ -1,11 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Response } from 'express';
 import { PlayerController } from './player.controller';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { PlayerService } from './player.service';
 import { PrismaService } from '../prisma.service';
+import sharp from 'sharp';
 
-function requestAs(id: number, email: string): AuthenticatedRequest {
-  return { user: { id, email } } as AuthenticatedRequest;
+jest.mock('sharp', () => {
+  const instance = {
+    rotate: jest.fn().mockReturnThis(),
+    resize: jest.fn().mockReturnThis(),
+    webp: jest.fn().mockReturnThis(),
+    toFile: jest.fn().mockResolvedValue(undefined),
+  };
+  return { __esModule: true, default: jest.fn(() => instance) };
+});
+
+type SharpInstance = { toFile: jest.Mock };
+const sharpInstance = () => (sharp as unknown as jest.Mock<SharpInstance>)();
+
+function requestAs(
+  id: number,
+  email: string,
+  isAdmin = false,
+): AuthenticatedRequest {
+  return { user: { id, email, isAdmin } } as AuthenticatedRequest;
 }
 
 describe('PlayerController', () => {
@@ -38,8 +57,13 @@ describe('PlayerController', () => {
           name: 'Bob',
           email: 'bob@test.com',
           password: 'password123',
+          googleId: null,
+          discordId: null,
+          isGuest: false,
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -48,8 +72,13 @@ describe('PlayerController', () => {
           name: 'Jean',
           email: 'valjean@test.com',
           password: 'password123',
+          googleId: null,
+          discordId: null,
+          isGuest: false,
           aboutMe: 'Hello there',
           avatarUrl: null,
+          isAdmin: false,
+          tokenVersion: 0,
           createdAt: new Date(),
           deletedAt: null,
         },
@@ -81,8 +110,13 @@ describe('PlayerController', () => {
         name: 'Bob',
         email: 'bob@test.com',
         password: 'password123',
+        googleId: null,
+        discordId: null,
+        isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -110,32 +144,44 @@ describe('PlayerController', () => {
         .spyOn(playerService, 'getGamesList')
         .mockImplementation(() => Promise.resolve(result));
 
-      const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.getGamesList(5, req)).toBe(result);
+      expect(await playerController.getGamesList(5)).toBe(result);
       expect(playerService.getGamesList).toHaveBeenCalledWith(5);
     });
 
-    it('should reject viewing another player games', async () => {
-      const req = requestAs(6, 'other@test.com');
-      await expect(playerController.getGamesList(5, req)).rejects.toThrow(
-        'Cannot view games of another player',
-      );
+    it('should allow viewing another player games', async () => {
+      const result = [
+        {
+          id: 2,
+          name: 'Room #7',
+          nbPlayers: 4,
+          date: new Date('2026-07-26T10:00:00Z'),
+          victory: false,
+        },
+      ];
+      jest
+        .spyOn(playerService, 'getGamesList')
+        .mockImplementation(() => Promise.resolve(result));
+
+      expect(await playerController.getGamesList(6)).toBe(result);
+      expect(playerService.getGamesList).toHaveBeenCalledWith(6);
     });
   });
 
   describe('update', () => {
     it('should update a player and return it', async () => {
-      const updateDto = {
-        name: 'Bob',
-        email: 'boblebricoleur@test.com',
-      };
+      const updateDto = { name: 'Bob' };
       const result = {
         id: 5,
         name: 'Bob',
         email: 'boblebricoleur@test.com',
         password: 'password123',
+        googleId: null,
+        discordId: null,
+        isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: null,
       };
@@ -151,12 +197,65 @@ describe('PlayerController', () => {
     it('should reject updating another player', async () => {
       const req = requestAs(6, 'other@test.com');
       await expect(
-        playerController.update(
-          5,
-          { name: 'Bob', email: 'boblebricoleur@test.com' },
-          req,
-        ),
+        playerController.update(5, { name: 'Bob' }, req),
       ).rejects.toThrow('Cannot edit another player');
+    });
+  });
+
+  describe('updateAvatar', () => {
+    const pngBuffer = Buffer.concat([
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      Buffer.alloc(32),
+    ]);
+    const makeFile = (buffer: Buffer) =>
+      ({ buffer, mimetype: 'image/png' }) as Express.Multer.File;
+
+    it('should process the image and save the new avatar url', async () => {
+      const result = { id: 5, avatarUrl: '/uploads/avatars/x.webp' };
+      jest
+        .spyOn(playerService, 'updateAvatar')
+        .mockResolvedValue(result as never);
+
+      const req = requestAs(5, 'bob@test.com');
+      expect(
+        await playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).toBe(result);
+      expect(playerService.updateAvatar).toHaveBeenCalledWith(
+        5,
+        expect.stringMatching(/^\/uploads\/avatars\/[0-9a-f-]+\.webp$/),
+      );
+    });
+
+    it('should reject editing another player avatar', async () => {
+      const req = requestAs(6, 'other@test.com');
+      await expect(
+        playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).rejects.toThrow('Cannot edit another player');
+    });
+
+    it('should reject a missing file', async () => {
+      const req = requestAs(5, 'bob@test.com');
+      await expect(
+        playerController.updateAvatar(5, undefined as never, req),
+      ).rejects.toThrow('No avatar file was uploaded');
+    });
+
+    it('should reject a file whose content is not an image', async () => {
+      const req = requestAs(5, 'bob@test.com');
+      const fake = makeFile(
+        Buffer.from('<?php echo 1; ?> not an image at all'),
+      );
+      await expect(playerController.updateAvatar(5, fake, req)).rejects.toThrow(
+        'File content is not a valid image',
+      );
+    });
+
+    it('should reject a corrupted image', async () => {
+      sharpInstance().toFile.mockRejectedValueOnce(new Error('bad'));
+      const req = requestAs(5, 'bob@test.com');
+      await expect(
+        playerController.updateAvatar(5, makeFile(pngBuffer), req),
+      ).rejects.toThrow('Image is corrupted or unsupported');
     });
   });
 
@@ -167,8 +266,13 @@ describe('PlayerController', () => {
         name: 'Bob',
         email: 'boblebricoleur@test.com',
         password: 'password123',
+        googleId: null,
+        discordId: null,
+        isGuest: false,
         aboutMe: 'Hello there',
         avatarUrl: null,
+        isAdmin: false,
+        tokenVersion: 0,
         createdAt: new Date(),
         deletedAt: new Date(),
       };
@@ -177,15 +281,24 @@ describe('PlayerController', () => {
         .mockImplementation(() => Promise.resolve(result));
 
       const req = requestAs(5, 'bob@test.com');
-      expect(await playerController.remove(5, req)).toBe(result);
+      const res = { clearCookie: jest.fn() };
+      expect(
+        await playerController.remove(5, req, res as unknown as Response),
+      ).toBe(result);
       expect(playerService.remove).toHaveBeenCalledWith(5);
+      expect(res.clearCookie).toHaveBeenCalledWith(
+        'access_token',
+        expect.any(Object),
+      );
     });
 
     it('should reject deleting another player', async () => {
       const req = requestAs(6, 'other@test.com');
-      await expect(playerController.remove(5, req)).rejects.toThrow(
-        'Cannot delete another player',
-      );
+      const res = { clearCookie: jest.fn() };
+      await expect(
+        playerController.remove(5, req, res as unknown as Response),
+      ).rejects.toThrow('Cannot delete another player');
+      expect(res.clearCookie).not.toHaveBeenCalled();
     });
   });
 

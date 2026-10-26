@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
-function Logo() {
+function Logo({ className = "text-[1.7rem] sm:text-[3rem]" }: { className?: string }) {
 	return (
-		<Link to="/home" className='font-["UnifrakturMaguntia"] text-[2rem]'>
+		<Link to="/home" className={`font-logo ${className}`}>
 			UnderCover
 		</Link>
 	);

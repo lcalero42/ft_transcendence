@@ -3,7 +3,7 @@ import type { Player } from "../api/player";
 
 export interface User {
   id: number;
-  email: string;
+  email: string | null;
 }
 
 export interface AuthContextValue {
@@ -11,10 +11,13 @@ export interface AuthContextValue {
   profile: Player | null;
   profileLoading: boolean;
   isAuth: boolean;
+  isGuest: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  guest: (name: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);

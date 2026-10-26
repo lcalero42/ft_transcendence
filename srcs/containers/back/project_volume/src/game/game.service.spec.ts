@@ -29,15 +29,19 @@ describe('GameService', () => {
   });
 
   describe('create', () => {
-    it('should create a game', async () => {
+    it('should create a playing game with its players', async () => {
       const createDto = {
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         roomId: 7,
+        players: [
+          { playerId: 1, role: Role.civilian },
+          { playerId: 2, role: Role.undercover },
+        ],
       };
       const result = {
         id: 5,
-        status: GameStatus.waiting,
+        status: GameStatus.playing,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
@@ -53,6 +57,8 @@ describe('GameService', () => {
           civilianWord: createDto.civilianWord,
           undercoverWord: createDto.undercoverWord,
           roomId: createDto.roomId,
+          status: 'playing',
+          gamePlayers: { create: createDto.players },
         },
       });
     });
@@ -342,69 +348,49 @@ describe('GameService', () => {
     });
   });
 
-  describe('update', () => {
-    it('should update a game and return it', async () => {
-      const updateDto = {
-        civilianWord: 'dog',
-        undercoverWord: 'wolf',
-        roomId: 8,
-      };
-      const result = {
-        id: 5,
-        status: GameStatus.playing,
-        civilianWord: 'dog',
-        undercoverWord: 'wolf',
-        createdAt: new Date(),
-        finishedAt: null,
-        victory: null,
-        roomId: 8,
-      };
-      prismaMock.games.update.mockResolvedValue(result);
+  describe('eliminate', () => {
+    it('should stamp eliminatedAt on the player of the game', async () => {
+      prismaMock.game_Players.updateMany.mockResolvedValue({ count: 1 });
 
-      expect(await service.update(5, updateDto)).toBe(result);
-      expect(prismaMock.games.update).toHaveBeenCalledWith({
-        where: { id: 5, finishedAt: null },
-        data: {
-          civilianWord: updateDto.civilianWord,
-          undercoverWord: updateDto.undercoverWord,
-          roomId: updateDto.roomId,
-        },
+      expect(await service.eliminate(5, 2)).toEqual({ count: 1 });
+      expect(prismaMock.game_Players.updateMany).toHaveBeenCalledWith({
+        where: { gameId: 5, playerId: 2, eliminatedAt: null },
+        data: { eliminatedAt: expect.any(Date) as Date },
       });
     });
+  });
 
-    it('should forward undefined fields when the dto is partial', async () => {
-      const updateDto = { civilianWord: 'dog' };
+  describe('finish', () => {
+    it('should finish a game with a victory and return it', async () => {
       const result = {
         id: 5,
-        status: GameStatus.playing,
-        civilianWord: 'dog',
+        status: GameStatus.finished,
+        civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
-        finishedAt: null,
-        victory: null,
+        finishedAt: new Date(),
+        victory: Role.undercover,
         roomId: 7,
       };
       prismaMock.games.update.mockResolvedValue(result);
 
-      expect(await service.update(5, updateDto)).toBe(result);
+      expect(await service.finish(5, Role.undercover)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
         where: { id: 5, finishedAt: null },
         data: {
-          civilianWord: 'dog',
-          undercoverWord: undefined,
-          roomId: undefined,
+          status: 'finished',
+          finishedAt: expect.any(Date) as Date,
+          victory: Role.undercover,
         },
       });
     });
   });
 
   describe('remove', () => {
-    // Documents current behaviour: remove only stamps finishedAt,
-    // it does not switch the status to finished.
-    it('should soft delete a game and return it', async () => {
+    it('should abort a game without victory and return it', async () => {
       const result = {
         id: 5,
-        status: GameStatus.playing,
+        status: GameStatus.aborted,
         civilianWord: 'cat',
         undercoverWord: 'tiger',
         createdAt: new Date(),
@@ -417,7 +403,7 @@ describe('GameService', () => {
       expect(await service.remove(5)).toBe(result);
       expect(prismaMock.games.update).toHaveBeenCalledWith({
         where: { id: 5, finishedAt: null },
-        data: { finishedAt: expect.any(Date) as Date },
+        data: { status: 'aborted', finishedAt: expect.any(Date) as Date },
       });
     });
   });

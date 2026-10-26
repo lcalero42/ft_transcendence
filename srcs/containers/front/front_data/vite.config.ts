@@ -9,10 +9,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    hmr: {
+      clientPort: Number(process.env.HMR_CLIENT_PORT) || 443,
+    },
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: [
+      { find: '@', replacement: path.resolve(__dirname, './src') },
+      { find: /^@colyseus\/msgpackr$/, replacement: path.resolve(__dirname, 'node_modules/@colyseus/msgpackr/dist/index-no-eval.cjs') },
+    ],
   },
 })

@@ -1,15 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+@import "@fontsource/jacquard-24";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "./styles/glow.css";
+@import "./styles/neon-orbit.css";
+@import "./styles/dashed-orbit.css";
+@import "./styles/meteor.css";
+@import "./styles/arrow-wobble.css";
+@import "./styles/safe-reveal.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
 	--font-poppins: "Poppins", sans-serif;
-	--font-logo: "UnifrakturMaguntia", serif;
+	--font-logo: "Jacquard 24", serif;
 
 	/* Backgrounds */
 	--color-bg-deep: #020221;
@@ -75,15 +81,6 @@ body {
 @utility clean-btn {
 	@apply bg-none
 	cursor-pointer;
-}
-
-@utility btn-glow-start {
-	box-shadow: 0 0 25px 6px color-mix(in srgb, var(--color-start-gradient-end) 55%, transparent);
-	transition: box-shadow 200ms ease-in-out;
-
-	&:hover {
-		box-shadow: 0 0 40px 12px color-mix(in srgb, var(--color-start-gradient-end) 80%, transparent);
-	}
 }
 
 @utility text-outline {

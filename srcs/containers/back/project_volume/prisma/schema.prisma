@@ -10,11 +10,16 @@ generator client {
 
 model Player {
   id                Int         @id @default(autoincrement())
-  name              String      @unique
-  email             String      @unique
-  password          String
+  name              String      @unique @db.Citext
+  email             String?     @unique
+  password          String?
+  googleId          String?     @unique @map("google_id")
+  discordId         String?     @unique @map("discord_id")
+  isGuest          Boolean     @default(false) @map("is_guest")
   aboutMe           String?     @map("about_me")
   avatarUrl			String?		@map("avatar_url")
+  isAdmin           Boolean     @default(false) @map("is_admin")
+  tokenVersion      Int         @default(0) @map("token_version")
   createdAt         DateTime    @default(now()) @map("created_at")
   deletedAt         DateTime?   @map("deleted_at")
 
@@ -43,6 +48,7 @@ enum GameStatus {
   waiting
   playing
   finished
+  aborted
 }
 
 enum Role {
@@ -104,4 +110,10 @@ model Word_Pair {
   id                Int         @id @default(autoincrement())
   civilianWord      String      @map("civilian_word")
   undercoverWord    String      @map("undercover_word")
+  civilianWordFr    String      @map("civilian_word_fr")
+  undercoverWordFr  String      @map("undercover_word_fr")
+  civilianWordEs    String      @map("civilian_word_es")
+  undercoverWordEs  String      @map("undercover_word_es")
+
+  @@unique([civilianWord, undercoverWord])
 }

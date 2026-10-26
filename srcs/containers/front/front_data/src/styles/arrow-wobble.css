@@ -1,0 +1,24 @@
+@theme inline {
+	--animate-arrow-wobble: arrow-wobble 1500ms ease-out both;
+	@keyframes arrow-wobble {
+		0% {
+			transform: rotate(0deg) scale(1);
+		}
+		15% {
+			transform: rotate(-50deg) scale(1);
+		}
+		35% {
+			transform: rotate(35deg) scale(1);
+		}
+		55% {
+			transform: rotate(-18deg) scale(0.9);
+		}
+		75% {
+			transform: rotate(8deg) scale(0.6);
+		}
+		100% {
+			transform: rotate(0deg) scale(0.15);
+			opacity: 0;
+		}
+	}
+}

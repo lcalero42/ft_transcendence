@@ -1,21 +1,39 @@
-import { Link } from "react-router-dom";
+import type { MouseEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { isBannedFromRoom } from "@/api/rooms";
+import { toast } from "@/components/ui/toast";
 
 export type RoomCardProps = {
-    id: number;
+    colyseusRoomId: string;
     name: string;
-    min_players: number;
-    max_players: number;
+    playerCount: number;
+    maxClients: number;
 };
 
-function RoomCard({ id, name, min_players, max_players }: RoomCardProps) {
+function RoomCard({ colyseusRoomId, name, playerCount, maxClients }: RoomCardProps) {
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+    const path = `/game/${colyseusRoomId}`;
+
+    const handleClick = async (e: MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        const banned = await isBannedFromRoom(colyseusRoomId).catch(() => false);
+        if (banned) {
+            toast.add({ type: "error", title: t("lobby.joinError"), description: t("game.banned") });
+            return;
+        }
+        void navigate(path);
+    };
+
     return (
-        <Link to={`/game/${id}`} className="card border-l-2 border-card-accent-border">
+        <Link to={path} onClick={(e) => void handleClick(e)} className="card border-l-2 border-card-accent-border card-neon">
             <h3 className="truncate text-outline text-left font-bold">{name}</h3>
 
             <div className="flex items-center gap-1">
                 <span>🥷</span>
                 <p className="text-text-dim">undercover</p>
-                <span className="text-text-dim text-sm ml-auto">{min_players}/{max_players}</span>
+                <span className="text-text-dim text-sm ml-auto">{playerCount}/{maxClients}</span>
             </div>
         </Link>
     );

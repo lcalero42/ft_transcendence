@@ -11,6 +11,11 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
 
+  if (await prisma.player.findUnique({ where: { email: "alice@prisma.io" } })) {
+    console.log("demo data already seeded, skipping");
+    return;
+  }
+
   //players
   const alicePassword = await bcrypt.hash("Alice1234#", 10);
   const bobPassword = await bcrypt.hash("Bob1234#", 10);
@@ -54,7 +59,7 @@ async function main() {
   const aliceRoom = await prisma.rooms.create({
     data: {
       name: "alice's room",
-      createdBy: 1,
+      createdBy: alice.id,
     },
   });
 
@@ -122,7 +127,7 @@ async function main() {
   const aliceGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "civilian",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: alice.id
     }
   })
@@ -130,7 +135,7 @@ async function main() {
   const bobGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "civilian",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: bob.id
     }
   })
@@ -138,7 +143,7 @@ async function main() {
   const marleyGamePlayer_2 = await prisma.game_Players.create({
     data: {
       role: "undercover",
-      gameId: aliceRoomGame3.id,
+      gameId: aliceRoomGame2.id,
       playerId: marley.id
     }
   })
@@ -164,29 +169,6 @@ async function main() {
       role: "civilian",
       gameId: aliceRoomGame3.id,
       playerId: marley.id
-    }
-  })
-
-  // wordPairs
-
-  const wp_1 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "lapin",
-      undercoverWord: "cheval"
-    }
-  })
-
-  const wp_2 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "chat",
-      undercoverWord: "tigre"
-    }
-  })
-
-  const wp_3 = await prisma.word_Pair.create({
-    data: {
-      civilianWord: "telephone",
-      undercoverWord: "ordinateur"
     }
   })
 

@@ -3,6 +3,8 @@ import Logo from "../Logo/Logo";
 import Credit from "../Credit/Credit";
 import Divider from "../Divider/Divider";
 import SocialLogin from "../SocialLogin/SocialLogin";
+import LanguageSwitcher from "../LanguageSwitcher/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 type AuthLayoutProps = {
 	subtitle: string;
@@ -12,14 +14,18 @@ type AuthLayoutProps = {
 	onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 	submitLabel: string;
 	footer?: ReactNode;
+	showSocialLogin?: boolean;
 	children: ReactNode;
 };
 
-function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabel, footer, children }: AuthLayoutProps) {
+function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabel, footer, showSocialLogin = true, children }: AuthLayoutProps) {
+	const { t } = useTranslation();
+
 	return (
 		<div className="page">
-			<header className="flex w-full items-center justify-center md:justify-start px-[10vw] py-5 shadow-sm text-outline">
+			<header className="flex w-full items-center justify-between gap-3 px-8 py-3 shadow-sm text-outline sm:px-[10vw] md:py-5">
 				<Logo />
+				<LanguageSwitcher />
 			</header>
 
 			<main className="page-main flex flex-col items-center">
@@ -27,7 +33,7 @@ function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabe
 				<div className="card border-2 border-card-border w-full max-w-sm md:max-w-3xl md:border-0 md:bg-transparent md:rounded-none md:px-0 md:py-0">
 
 					<h1 className="mb-3 md:text-center text-xl md:text-4xl font-semibold">
-						Welcome to <span style={{color: "var(--color-accent-purple)"}}>Undercover</span>
+						{t("auth.welcome")} <span style={{color: "var(--color-accent-purple)"}}>Undercover</span>
 					</h1>
 
 					<h5 className="mb-3 md:text-center text-sm md:text-xl font-semibold" style={{color: "var(--color-gray-low)"}}>
@@ -57,13 +63,17 @@ function AuthLayout({ subtitle, icon, heading, description, onSubmit, submitLabe
 							{submitLabel}
 						</button>
 
-						<div className="mt-3">
-							<Divider label="or continue with" />
-						</div>
+						{showSocialLogin && (
+							<>
+								<div className="mt-3">
+									<Divider label={t("auth.orContinueWith")} />
+								</div>
 
-						<div className="mt-1">
-							<SocialLogin />
-						</div>
+								<div className="mt-1">
+									<SocialLogin />
+								</div>
+							</>
+						)}
 
 						{footer}
 					</form>

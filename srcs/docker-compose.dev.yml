@@ -1,0 +1,57 @@
+services:
+  nginx:
+    image: transcendence-nginx:dev
+    build:
+      target: dev
+    depends_on:
+      - front
+
+  front:
+    image: transcendence-front:dev
+    build:
+      context: ./containers/front
+    container_name: front
+    restart: unless-stopped
+    environment:
+      HMR_CLIENT_PORT: ${HTTPS_PORT:-8443}
+    volumes:
+      - front_data:/app
+      - back_src_readonly:/back/project_volume/src:ro
+
+  back:
+    image: transcendence-back:dev
+    build:
+      target: dev
+    ports:
+      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:51212:51212"
+    volumes:
+      - back_project:/app
+
+  postgres:
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_dev_data:
+
+  front_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/front/front_data
+
+  back_project:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/back/project_volume
+
+  back_src_readonly:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PROJECT_PATH}/srcs/containers/back/project_volume/src

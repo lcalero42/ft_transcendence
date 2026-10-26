@@ -1,5 +1,10 @@
 import { Request } from 'express';
 
 export type AuthenticatedRequest = Request & {
-  user: { id: number; email: string };
+  user: {
+    id: number;
+    email: string | null;
+    isGuest: boolean;
+    isAdmin: boolean;
+  };
 };

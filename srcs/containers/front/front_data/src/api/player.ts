@@ -5,9 +5,18 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 export interface Player {
 	id: number;
 	name: string;
-	email: string;
+	email: string | null;
+	isGuest: boolean;
 	aboutMe: string;
 	avatarUrl: string;
+	isAdmin: boolean;
+	createdAt: string;
+}
+export interface PublicProfile {
+	id: number;
+	name: string;
+	avatarUrl: string | null;
+	aboutMe: string | null;
 	createdAt: string;
 }
 export interface GameListOfPlayer {
@@ -23,7 +32,7 @@ export interface PlayerSummary {
 	name: string;
 	createdAt: string;
 	avatarUrl: string | null;
-	isLog: boolean;
+	isGuest: boolean;
 }
 
 interface GamesPlayedResponse {
@@ -71,6 +80,10 @@ export async function updateBio(playerId: number, aboutMe: string): Promise<Play
 
 export async function getMe(): Promise<Player> {
 	return apiFetch<Player>("/player/me");
+}
+
+export async function getPublicProfile(name: string): Promise<PublicProfile> {
+	return apiFetch<PublicProfile>(`/player/profile/${encodeURIComponent(name)}`);
 }
 
 export async function getGamesList(playerId: number): Promise<GameListOfPlayer[]> {

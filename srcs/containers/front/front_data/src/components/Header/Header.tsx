@@ -1,18 +1,29 @@
 import Logo from "@/components/Logo/Logo";
 import LinkProfile from "@/components/LinkProfile/LinkProfile";
+import FriendsMenuButton from "@/components/FriendsMenu/FriendsMenuButton";
+import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
 import { useAuth } from "@/context/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface HeaderProps {
 	compact?: boolean;
+	wide?: boolean;
 }
 
-function Header({ compact }: HeaderProps) {
-	const { profile } = useAuth();
+function Header({ compact, wide }: HeaderProps) {
+	const { profile, isAuth, isGuest } = useAuth();
+	const { t } = useTranslation();
 
 	return (
-		<header className={`page-header ${compact ? "py-3! md:py-3!" : ""}`}>
-			<Logo />
-			<LinkProfile name={profile?.name ? profile.name : "login"} icon="🥷" />
+		<header className={`page-header relative items-center gap-3 px-7! sm:px-[10vw]! md:px-[15vw]! ${wide ? "2xl:px-[8vw]!" : ""} ${compact ? "py-3! md:py-3!" : ""}`}>
+			<div className="flex min-w-0 items-center gap-3 sm:gap-4">
+				{isAuth && !isGuest && <FriendsMenuButton />}
+				<Logo />
+			</div>
+			<div className="flex shrink-0 items-center gap-3 sm:gap-4">
+				<LanguageSwitcher />
+				<LinkProfile name={profile?.name ? profile.name : t("auth.guest")} avatarUrl={profile?.avatarUrl || null} />
+			</div>
 		</header>
 	);
 }

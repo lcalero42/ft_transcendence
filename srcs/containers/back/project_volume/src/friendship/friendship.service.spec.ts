@@ -1,14 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
+  HttpStatus,
   NotFoundException,
 } from '@nestjs/common';
 import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
 import { FriendshipService } from './friendship.service';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus, PrismaClient } from '../generated/prisma/client';
+import { notifyPlayer, updateFriendship } from '../colyseus/presence-pubsub';
+
+jest.mock('../colyseus/presence-pubsub');
 
 const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
 
@@ -42,6 +45,7 @@ describe('FriendshipService', () => {
   let prismaMock: DeepMockProxy<PrismaClient>;
 
   beforeEach(async () => {
+    jest.clearAllMocks();
     prismaMock = mockDeep<PrismaClient>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -64,21 +68,26 @@ describe('FriendshipService', () => {
       name: 'Bob',
       email: 'bob@test.com',
       password: 'password123',
+      googleId: null,
+      discordId: null,
+      isGuest: false,
       aboutMe: null,
       avatarUrl: null,
+      isAdmin: false,
+      tokenVersion: 0,
       createdAt: new Date(),
       deletedAt: null,
     };
 
     it('should create a pending friendship request', async () => {
       const result = friendshipRow(FriendshipStatus.PENDING);
-      prismaMock.player.findUnique.mockResolvedValue(addressee);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
       prismaMock.friendship.findFirst.mockResolvedValue(null);
       prismaMock.friendship.create.mockResolvedValue(result);
 
-      expect(await service.create({ addressee: 2 }, 1)).toBe(result);
-      expect(prismaMock.player.findUnique).toHaveBeenCalledWith({
-        where: { id: 2, deletedAt: null },
+      expect(await service.create({ name: 'Bob' }, 1)).toBe(result);
+      expect(prismaMock.player.findFirst).toHaveBeenCalledWith({
+        where: { name: 'Bob', deletedAt: null },
       });
       expect(prismaMock.friendship.findFirst).toHaveBeenCalledWith({
         where: {
@@ -90,38 +99,102 @@ describe('FriendshipService', () => {
       });
       expect(prismaMock.friendship.create).toHaveBeenCalledWith({
         data: { requesterId: 1, addresseeId: 2 },
+        include: { requester: playerSelect },
       });
     });
 
-    it('should throw a NotFoundException when the addressee does not exist', async () => {
-      prismaMock.player.findUnique.mockResolvedValue(null);
+    it('should throw a NotFoundException when the player does not exist', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(null);
 
-      await expect(service.create({ addressee: 404 }, 1)).rejects.toThrow(
+      await expect(service.create({ name: 'Ghost' }, 1)).rejects.toThrow(
         NotFoundException,
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
     });
 
-    it('should throw a ConflictException when a friendship already exists', async () => {
-      prismaMock.player.findUnique.mockResolvedValue(addressee);
+    it('should throw a ConflictException naming the other player when they already sent a pending request', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
       prismaMock.friendship.findFirst.mockResolvedValue(
         friendshipRow(FriendshipStatus.PENDING, 2, 1),
       );
 
-      await expect(service.create({ addressee: 2 }, 1)).rejects.toThrow(
-        ConflictException,
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toThrow(
+        'This player already sent you a friend request',
+      );
+      expect(prismaMock.friendship.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw a ConflictException when resending a request that is still pending', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(
+        friendshipRow(FriendshipStatus.PENDING, 1, 2),
+      );
+
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toThrow(
+        'You already have a pending friend request to this player',
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
     });
 
     it('should throw a BadRequestException when befriending yourself', async () => {
-      prismaMock.player.findUnique.mockResolvedValue({ ...addressee, id: 1 });
+      prismaMock.player.findFirst.mockResolvedValue({ ...addressee, id: 1 });
       prismaMock.friendship.findFirst.mockResolvedValue(null);
 
-      await expect(service.create({ addressee: 1 }, 1)).rejects.toThrow(
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toThrow(
         BadRequestException,
       );
       expect(prismaMock.friendship.create).not.toHaveBeenCalled();
+    });
+
+    it('should revive a declined friendship back to pending instead of conflicting', async () => {
+      const declined = friendshipRow(FriendshipStatus.DECLINED, 2, 1);
+      const revived = friendshipRow(FriendshipStatus.PENDING);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(declined);
+      prismaMock.friendship.update.mockResolvedValue(revived);
+
+      expect(await service.create({ name: 'Bob' }, 1)).toBe(revived);
+      expect(prismaMock.friendship.update).toHaveBeenCalledWith({
+        where: { id: declined.id },
+        data: {
+          status: FriendshipStatus.PENDING,
+          requesterId: 1,
+          addresseeId: 2,
+        },
+        include: { requester: playerSelect },
+      });
+      expect(prismaMock.friendship.create).not.toHaveBeenCalled();
+    });
+
+    it('should throw a 429 when the requester resends a declined request during the cooldown', async () => {
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(
+        friendshipRow(FriendshipStatus.DECLINED, 1, 2),
+      );
+
+      await expect(service.create({ name: 'Bob' }, 1)).rejects.toMatchObject({
+        status: HttpStatus.TOO_MANY_REQUESTS,
+        response: { code: 'FRIEND_REQUEST_COOLDOWN' },
+      });
+      expect(prismaMock.friendship.update).not.toHaveBeenCalled();
+      expect(notifyPlayer).not.toHaveBeenCalled();
+    });
+
+    it('should revive a declined request resent by the requester once the cooldown is over', async () => {
+      const declined = {
+        ...friendshipRow(FriendshipStatus.DECLINED, 1, 2),
+        updatedAt: new Date(Date.now() - 25 * 60 * 60 * 1000),
+      };
+      const revived = friendshipRow(FriendshipStatus.PENDING);
+      prismaMock.player.findFirst.mockResolvedValue(addressee);
+      prismaMock.friendship.findFirst.mockResolvedValue(declined);
+      prismaMock.friendship.update.mockResolvedValue(revived);
+
+      expect(await service.create({ name: 'Bob' }, 1)).toBe(revived);
+      expect(notifyPlayer).toHaveBeenCalledWith(2, 'friendRequest', {
+        friendshipId: revived.id,
+        fromName: revived.requester.name,
+      });
     });
   });
 
@@ -201,6 +274,7 @@ describe('FriendshipService', () => {
         where: { id: 5, status: FriendshipStatus.PENDING },
         data: { status: FriendshipStatus.ACCEPTED },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, true);
     });
 
     it('should let the addressee decline a pending request', async () => {
@@ -217,6 +291,7 @@ describe('FriendshipService', () => {
         where: { id: 5, status: FriendshipStatus.PENDING },
         data: { status: FriendshipStatus.DECLINED },
       });
+      expect(updateFriendship).not.toHaveBeenCalled();
     });
 
     it('should throw a ForbiddenException when the requester accepts its own request', async () => {
@@ -259,6 +334,7 @@ describe('FriendshipService', () => {
           addresseeId: 1,
         },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, false);
     });
 
     it('should throw a ForbiddenException when the friendship is already blocked', async () => {
@@ -292,6 +368,7 @@ describe('FriendshipService', () => {
       expect(prismaMock.friendship.delete).toHaveBeenCalledWith({
         where: { id: 5, status: FriendshipStatus.ACCEPTED },
       });
+      expect(updateFriendship).toHaveBeenCalledWith(2, 1, false);
     });
 
     it('should let the blocker remove a block', async () => {

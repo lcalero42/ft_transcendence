@@ -1,0 +1,22 @@
+services:
+  nginx:
+    image: transcendence-nginx:prod
+    build:
+      target: prod
+
+  back:
+    image: transcendence-back:prod
+    build:
+      target: prod
+    volumes:
+      - back_uploads:/app/uploads
+
+  postgres:
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_prod_data:
+  back_uploads:

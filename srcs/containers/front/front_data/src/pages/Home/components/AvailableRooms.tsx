@@ -1,7 +1,10 @@
 
 import IconGamepad from "../../../assets/icons/gamepad.svg"
+import { useTranslation } from "react-i18next";
 
 function AvailableRooms() {
+	const { t } = useTranslation();
+
 	return (
 		<div className="card flex-row px-0 bg-transparent">
 			<div className="circle-purple w-12 h-12">
@@ -14,10 +17,10 @@ function AvailableRooms() {
 			</div>
 			<div className="text-left">
 				<h3 className="text-gray-high font-bold text-lg">
-					Available Rooms
+					{t("home.availableRooms")}
 				</h3>
 				<p className="text-gray-low text-xs font-bold">
-					Join a room and start playing
+					{t("home.availableRoomsHint")}
 				</p>
 			</div>
 		</div>
