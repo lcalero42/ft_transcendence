@@ -23,7 +23,7 @@ export class GameController {
   constructor(private readonly gameService: GameService) {}
 
   @UseGuards(InternalApiKeyGuard)
-  @Post()
+  @Post('internal')
   async create(@Body() createGameDto: CreateGameDto) {
     return this.gameService.create(createGameDto);
   }
@@ -62,7 +62,7 @@ export class GameController {
   }
 
   @UseGuards(InternalApiKeyGuard)
-  @Patch(':id/eliminate')
+  @Patch('internal/:id/eliminate')
   async eliminate(
     @Param('id', ParseIntPipe) id: number,
     @Body() eliminatePlayerDto: EliminatePlayerDto,
@@ -71,7 +71,7 @@ export class GameController {
   }
 
   @UseGuards(InternalApiKeyGuard)
-  @Patch(':id/finish')
+  @Patch('internal/:id/finish')
   async finish(
     @Param('id', ParseIntPipe) id: number,
     @Body() finishGameDto: FinishGameDto,
@@ -80,7 +80,7 @@ export class GameController {
   }
 
   @UseGuards(InternalApiKeyGuard)
-  @Delete(':id')
+  @Delete('internal/:id')
   async remove(@Param('id', ParseIntPipe) id: number) {
     return this.gameService.remove(id);
   }

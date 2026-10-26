@@ -13,6 +13,7 @@ import { csrfOriginCheck } from './common/csrf-origin.middleware';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.set('trust proxy', 1);
+  app.set('case sensitive routing', true);
   app.enableCors({
     origin: requireEnv('CORS_ORIGIN'),
   });
