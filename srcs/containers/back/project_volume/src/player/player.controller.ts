@@ -29,6 +29,7 @@ import type { AuthenticatedRequest } from '../common/authenticated-request';
 import { detectImageType } from './avatar-validation';
 import { saveAvatar } from './avatar-storage';
 import { AVATAR_MAX_SIZE, AVATAR_MIMES } from './avatar.constants';
+import { apiError } from '../common/api-error';
 
 @Controller('player')
 export class PlayerController {
@@ -77,7 +78,9 @@ export class PlayerController {
     @Req() req: AuthenticatedRequest,
   ) {
     if (req.user.id !== id) {
-      throw new ForbiddenException('Cannot edit another player');
+      throw new ForbiddenException(
+        apiError('CANNOT_EDIT_OTHER_PLAYER', 'Cannot edit another player'),
+      );
     }
     return this.playerService.update(id, updateProfileDto);
   }
@@ -90,7 +93,9 @@ export class PlayerController {
     @Res({ passthrough: true }) res: Response,
   ) {
     if (req.user.id !== id) {
-      throw new ForbiddenException('Cannot delete another player');
+      throw new ForbiddenException(
+        apiError('CANNOT_DELETE_OTHER_PLAYER', 'Cannot delete another player'),
+      );
     }
     const deleted = await this.playerService.remove(id);
     clearAuthCookie(res);
@@ -132,7 +137,10 @@ export class PlayerController {
         if (!AVATAR_MIMES.has(file.mimetype)) {
           callback(
             new UnsupportedMediaTypeException(
-              'Avatar must be a PNG, JPEG, WEBP, or GIF image',
+              apiError(
+                'AVATAR_INVALID_TYPE',
+                'Avatar must be a PNG, JPEG, WEBP, or GIF image',
+              ),
             ),
             false,
           );
@@ -148,21 +156,27 @@ export class PlayerController {
     @Req() req: AuthenticatedRequest,
   ) {
     if (req.user.id !== id) {
-      throw new ForbiddenException('Cannot edit another player');
+      throw new ForbiddenException(
+        apiError('CANNOT_EDIT_OTHER_PLAYER', 'Cannot edit another player'),
+      );
     }
     if (!file) {
-      throw new BadRequestException('No avatar file was uploaded');
+      throw new BadRequestException(
+        apiError('AVATAR_MISSING', 'No avatar file was uploaded'),
+      );
     }
     if (!detectImageType(file.buffer)) {
       throw new UnsupportedMediaTypeException(
-        'File content is not a valid image',
+        apiError('AVATAR_INVALID_TYPE', 'File content is not a valid image'),
       );
     }
     let avatarUrl: string;
     try {
       avatarUrl = await saveAvatar(file.buffer);
     } catch {
-      throw new BadRequestException('Image is corrupted or unsupported');
+      throw new BadRequestException(
+        apiError('AVATAR_CORRUPTED', 'Image is corrupted or unsupported'),
+      );
     }
     return this.playerService.updateAvatar(id, avatarUrl);
   }

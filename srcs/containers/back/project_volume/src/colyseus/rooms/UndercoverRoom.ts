@@ -18,6 +18,8 @@ import {
   TAKEN_OVER_CODE,
   KICKED_CODE,
   BANNED_CODE,
+  UNAUTHENTICATED_CODE,
+  PLAYER_NOT_FOUND_CODE,
   CHAT_RATE_LIMIT,
   CHAT_RATE_WINDOW_MS,
   INVITE_RATE_LIMIT,
@@ -243,18 +245,18 @@ export class UndercoverRoom extends Room {
   ): Promise<PlayerIdentity> {
     const token = tokenFromCookieHeader(context.headers.get('cookie'));
     if (!token) {
-      throw new Error('missing token');
+      throw new ServerError(UNAUTHENTICATED_CODE, 'missing token');
     }
     const playerId = await getPlayerId(token);
     if (!playerId) {
-      throw new Error('invalid token');
+      throw new ServerError(UNAUTHENTICATED_CODE, 'invalid token');
     }
     const player = await getPrisma().player.findUnique({
       where: { id: playerId, deletedAt: null },
       select: { id: true, isGuest: true, name: true, avatarUrl: true },
     });
     if (!player) {
-      throw new Error('player not found');
+      throw new ServerError(PLAYER_NOT_FOUND_CODE, 'player not found');
     }
     return {
       playerId: player.id,

@@ -9,6 +9,10 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { PrismaService } from '../prisma.service';
 import { MAX_CLIENTS } from '../colyseus/rooms/undercoverConstants';
+import { apiError } from '../common/api-error';
+
+const roomNotFound = () =>
+  new NotFoundException(apiError('ROOM_NOT_FOUND', 'Room does not exist'));
 
 @Injectable()
 export class RoomService implements OnApplicationBootstrap {
@@ -31,7 +35,10 @@ export class RoomService implements OnApplicationBootstrap {
     const maxRoomPerPlayer = 3;
     if (roomCount >= maxRoomPerPlayer) {
       throw new ForbiddenException(
-        `Player ${playerId} has reached the room creation limit.`,
+        apiError(
+          'ROOM_LIMIT_REACHED',
+          `Player ${playerId} has reached the room creation limit.`,
+        ),
       );
     }
     const createRoom = await this.prisma.rooms.create({
@@ -79,7 +86,7 @@ export class RoomService implements OnApplicationBootstrap {
     const room = await this.prisma.rooms.findUnique({
       where: { id: id, deletedAt: null },
     });
-    if (!room) throw new NotFoundException('Room does not exist');
+    if (!room) throw roomNotFound();
     return room;
   }
 
@@ -95,7 +102,7 @@ export class RoomService implements OnApplicationBootstrap {
       where: { id: id, deletedAt: null },
       include: { games: true },
     });
-    if (!room) throw new NotFoundException('Room does not exist');
+    if (!room) throw roomNotFound();
     return room.games;
   }
 

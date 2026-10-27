@@ -12,6 +12,7 @@ import { UpdateFriendshipDto } from './dto/update-friendship.dto';
 import { PrismaService } from '../prisma.service';
 import { FriendshipStatus } from '../generated/prisma/enums';
 import { notifyPlayer, updateFriendship } from '../colyseus/presence-pubsub';
+import { apiError } from '../common/api-error';
 
 const playerSelect = { select: { id: true, name: true, avatarUrl: true } };
 const DECLINED_REQUEST_COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -27,11 +28,18 @@ export class FriendshipService {
         deletedAt: null,
       },
     });
-    if (!addressee) throw new NotFoundException('Player not found');
+    if (!addressee)
+      throw new NotFoundException(
+        apiError('PLAYER_NOT_FOUND', 'Player not found'),
+      );
     if (addressee.id === id)
-      throw new BadRequestException("You can't be friend with yourself");
+      throw new BadRequestException(
+        apiError('FRIEND_SELF', "You can't be friend with yourself"),
+      );
     if (addressee.isGuest)
-      throw new ForbiddenException("You can't be friend with a guest");
+      throw new ForbiddenException(
+        apiError('FRIEND_GUEST', "You can't be friend with a guest"),
+      );
 
     const existingFriendship = await this.prisma.friendship.findFirst({
       where: {
@@ -49,12 +57,10 @@ export class FriendshipService {
           DECLINED_REQUEST_COOLDOWN_MS
       )
         throw new HttpException(
-          {
-            statusCode: HttpStatus.TOO_MANY_REQUESTS,
-            message:
-              'You must wait before sending another friend request to this player',
-            code: 'FRIEND_REQUEST_COOLDOWN',
-          },
+          apiError(
+            'FRIEND_REQUEST_COOLDOWN',
+            'You must wait before sending another friend request to this player',
+          ),
           HttpStatus.TOO_MANY_REQUESTS,
         );
       return this.reviveFriendship(existingFriendship.id, id, addressee.id);
@@ -63,12 +69,20 @@ export class FriendshipService {
     if (existingFriendship?.status === FriendshipStatus.PENDING)
       throw new ConflictException(
         existingFriendship.requesterId === id
-          ? 'You already have a pending friend request to this player'
-          : 'This player already sent you a friend request',
+          ? apiError(
+              'FRIEND_REQUEST_PENDING',
+              'You already have a pending friend request to this player',
+            )
+          : apiError(
+              'FRIEND_REQUEST_RECEIVED',
+              'This player already sent you a friend request',
+            ),
       );
 
     if (existingFriendship !== null)
-      throw new ConflictException('Friendship already exists');
+      throw new ConflictException(
+        apiError('FRIENDSHIP_EXISTS', 'Friendship already exists'),
+      );
 
     const createFriendship = await this.prisma.friendship.create({
       data: {
@@ -133,7 +147,10 @@ export class FriendshipService {
         addressee: playerSelect,
       },
     });
-    if (!friendship) throw new NotFoundException('Friendship not found');
+    if (!friendship)
+      throw new NotFoundException(
+        apiError('FRIENDSHIP_NOT_FOUND', 'Friendship not found'),
+      );
     return friendship;
   }
 
@@ -152,7 +169,10 @@ export class FriendshipService {
 
     if (!allowed)
       throw new ForbiddenException(
-        `Cannot change status from ${from} to ${to}`,
+        apiError(
+          'FRIENDSHIP_INVALID_TRANSITION',
+          `Cannot change status from ${from} to ${to}`,
+        ),
       );
 
     const otherId = isAddressee
@@ -189,7 +209,12 @@ export class FriendshipService {
       friendship.status === FriendshipStatus.BLOCKED &&
       friendship.requesterId !== playerId
     )
-      throw new ForbiddenException('Only the blocker can remove a block');
+      throw new ForbiddenException(
+        apiError(
+          'ONLY_BLOCKER_CAN_UNBLOCK',
+          'Only the blocker can remove a block',
+        ),
+      );
 
     const deleted = await this.prisma.friendship.delete({
       where: { id, status: friendship.status },

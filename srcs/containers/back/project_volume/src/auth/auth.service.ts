@@ -11,6 +11,7 @@ import { PrismaService } from '../prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { GuestDto } from './dto/guest.dto';
+import { apiError } from '../common/api-error';
 
 // A precomputed bcrypt hash with no matching plaintext, compared against on a
 // login miss so the response time doesn't reveal whether the email exists.
@@ -35,7 +36,9 @@ export class AuthService {
       where: { email: dto.email },
     });
     if (existingEmail) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException(
+        apiError('EMAIL_TAKEN', 'Email already registered'),
+      );
     }
     await this.assertNameAvailable(dto.name);
     const hashed = await bcrypt.hash(dto.password, 10);
@@ -64,7 +67,9 @@ export class AuthService {
       player?.password ?? DUMMY_PASSWORD_HASH,
     );
     if (!player || !isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(
+        apiError('INVALID_CREDENTIALS', 'Invalid credentials'),
+      );
     }
     return this.signToken(player.id, player.email, dto.rememberMe);
   }
@@ -73,7 +78,10 @@ export class AuthService {
     const existingName = await this.prisma.player.findUnique({
       where: { name },
     });
-    if (existingName) throw new ConflictException('Username already taken');
+    if (existingName)
+      throw new ConflictException(
+        apiError('USERNAME_TAKEN', 'Username already taken'),
+      );
   }
 
   async logout(playerId: number) {

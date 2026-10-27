@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWordPairDto } from './dto/create-word_pair.dto';
 import { UpdateWordPairDto } from './dto/update-word_pair.dto';
 import { PrismaService } from '../prisma.service';
+import { apiError } from '../common/api-error';
 
 @Injectable()
 export class WordPairService {
@@ -30,7 +31,10 @@ export class WordPairService {
     const wordPair = await this.prisma.word_Pair.findUnique({
       where: { id: id },
     });
-    if (!wordPair) throw new NotFoundException('Word pair does not exist');
+    if (!wordPair)
+      throw new NotFoundException(
+        apiError('WORD_PAIR_NOT_FOUND', 'Word pair does not exist'),
+      );
     return wordPair;
   }
 

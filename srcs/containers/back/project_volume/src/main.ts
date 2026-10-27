@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { colyseusServer } from './colyseus/server';
 import { PrismaExceptionFilter } from './common/prisma-exception.filter';
 import { HttpAdapterHost } from '@nestjs/core';
@@ -11,6 +11,7 @@ import { PrismaService } from './prisma.service';
 import { setPrisma } from './colyseus/prisma';
 import cookieParser from 'cookie-parser';
 import { csrfOriginCheck } from './common/csrf-origin.middleware';
+import { apiError } from './common/api-error';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,7 +25,19 @@ async function bootstrap() {
   app.use(cookieParser());
   app.use(csrfOriginCheck(requireEnv('CORS_ORIGIN')));
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      exceptionFactory: (errors) =>
+        new BadRequestException(
+          apiError(
+            'VALIDATION_FAILED',
+            errors
+              .flatMap((error) => Object.values(error.constraints ?? {}))
+              .join(', '),
+          ),
+        ),
+    }),
   );
   app.useGlobalFilters(
     new PrismaExceptionFilter(app.get(HttpAdapterHost).httpAdapter),
