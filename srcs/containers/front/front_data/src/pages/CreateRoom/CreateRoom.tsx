@@ -49,7 +49,7 @@ export default function CreateRoom() {
 			: async () => {
 				const targetRoomId = targetRoomIdRef.current;
 				const stored = readStoredReconnection();
-				if (stored && (!targetRoomId || stored.roomId === targetRoomId)) {
+				if (stored && (stored.roomId === targetRoomId)) {
 					try {
 						return await client.reconnect<UndercoverState>(stored.token);
 					} catch {
@@ -116,7 +116,10 @@ export default function CreateRoom() {
 		if (!room) return;
 		const onReconnect = () => storeReconnection(room);
 		room.onReconnect(onReconnect);
-		return () => room.onReconnect.remove(onReconnect);
+		return () => {
+			room.onReconnect.remove(onReconnect);
+			clearReconnection();
+		};
 	}, [room]);
 
 	useSeatTakenOver(room);
