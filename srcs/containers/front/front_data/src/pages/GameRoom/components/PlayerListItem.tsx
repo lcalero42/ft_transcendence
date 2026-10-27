@@ -62,7 +62,7 @@ function PlayerListItem({ name, avatarUrl, isSelf, isHost, isGuest, canKick, exp
 				<div className="mt-1 ml-10 flex flex-col gap-0.5 rounded-lg border border-card-border-2 bg-card p-1">
 					{showProfile && (
 						<Link
-							to={`/profile/${encodeURIComponent(name)}`}fix-
+							to={`/profile/${encodeURIComponent(name)}`}fix-={name.toString()}
 							target="_blank"
 							rel="noopener noreferrer"
 							className={`${menuItemClass} text-victory hover:bg-victory/15`}
