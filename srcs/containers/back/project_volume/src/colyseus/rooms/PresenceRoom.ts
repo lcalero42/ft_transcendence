@@ -1,6 +1,15 @@
 import { Logger } from '@nestjs/common';
-import { Room, type AuthContext, type Client } from '@colyseus/core';
+import {
+  Room,
+  ServerError,
+  type AuthContext,
+  type Client,
+} from '@colyseus/core';
 import { getFriendIds, getPlayer } from '../api';
+import {
+  FRIENDS_UNAVAILABLE_CODE,
+  UNAUTHENTICATED_CODE,
+} from './undercoverConstants';
 import {
   registerPresenceRoom,
   unregisterPresenceRoom,
@@ -29,15 +38,16 @@ export class PresenceRoom extends Room {
     context: AuthContext,
   ): Promise<PresenceAuth> {
     const token = tokenFromCookieHeader(context.headers.get('cookie'));
-    if (!token) throw new Error('Missing token');
+    if (!token) throw new ServerError(UNAUTHENTICATED_CODE, 'Missing token');
 
     const player = await getPlayer(token);
-    if (!player) throw new Error('Unauthorized');
+    if (!player) throw new ServerError(UNAUTHENTICATED_CODE, 'Unauthorized');
 
     const friendIds = player.isGuest
       ? []
       : await getFriendIds(token, player.id);
-    if (!friendIds) throw new Error('Could not load friends');
+    if (!friendIds)
+      throw new ServerError(FRIENDS_UNAVAILABLE_CODE, 'Could not load friends');
 
     return {
       id: player.id,

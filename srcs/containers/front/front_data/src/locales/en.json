@@ -216,8 +216,7 @@
 		"loadError": "Could not load your friends",
 		"roomInviteTitle": "Game invitation",
 		"roomInviteDescription": "{{name}} invites you to join their room",
-		"join": "Join",
-		"errRequestCooldown": "You recently sent a request to this player. Please try again later."
+		"join": "Join"
 	},
 	"profile": {
 		"loadError": "Error when loading the player",
@@ -279,5 +278,57 @@
 	"legal": {
 		"privacyPolicy": "Privacy Policy",
 		"lastUpdated": "Last updated:"
+	},
+	"errors": {
+		"api": {
+			"EMAIL_TAKEN": "This email is already registered.",
+			"USERNAME_TAKEN": "This username is already taken.",
+			"INVALID_CREDENTIALS": "Invalid email or password.",
+			"PLAYER_NOT_FOUND": "Player not found.",
+			"CANNOT_EDIT_OTHER_PLAYER": "You can't edit another player's profile.",
+			"CANNOT_DELETE_OTHER_PLAYER": "You can't delete another player's account.",
+			"AVATAR_MISSING": "No image was uploaded.",
+			"AVATAR_INVALID_TYPE": "The avatar must be a PNG, JPEG, WEBP or GIF image.",
+			"AVATAR_CORRUPTED": "This image is corrupted or unsupported.",
+			"ROOM_NOT_FOUND": "This room does not exist.",
+			"ROOM_LIMIT_REACHED": "You have reached the room creation limit.",
+			"NOT_ROOM_OWNER": "You can only manage rooms you created.",
+			"GAME_NOT_FOUND": "This game does not exist.",
+			"NOT_GAME_PLAYER": "You are not a player in this game.",
+			"WORD_NOT_AVAILABLE": "Your word is not available until the game starts.",
+			"WORD_PAIR_NOT_FOUND": "This word pair does not exist.",
+			"GUEST_FORBIDDEN": "Guests can't use this feature.",
+			"ADMIN_REQUIRED": "Admin access required.",
+			"FRIEND_SELF": "You can't add yourself as a friend.",
+			"FRIEND_GUEST": "You can't add a guest as a friend.",
+			"FRIEND_REQUEST_COOLDOWN": "You recently sent a request to this player. Please try again later.",
+			"FRIEND_REQUEST_PENDING": "You already sent a friend request to this player.",
+			"FRIEND_REQUEST_RECEIVED": "This player already sent you a friend request.",
+			"FRIENDSHIP_EXISTS": "You are already linked to this player.",
+			"FRIENDSHIP_NOT_FOUND": "Friendship not found.",
+			"FRIENDSHIP_INVALID_TRANSITION": "This action is not allowed on this friendship.",
+			"ONLY_BLOCKER_CAN_UNBLOCK": "Only the player who blocked can remove the block.",
+			"RECORD_NOT_FOUND": "This item no longer exists.",
+			"ALREADY_EXISTS": "This already exists.",
+			"RELATED_RECORD_MISSING": "A related item no longer exists.",
+			"VALIDATION_FAILED": "Some fields are invalid."
+		},
+		"status": {
+			"400": "Invalid request.",
+			"401": "You need to log in again.",
+			"403": "You are not allowed to do this.",
+			"404": "Not found.",
+			"409": "This conflicts with existing data.",
+			"413": "The file is too large.",
+			"415": "Unsupported file type.",
+			"server": "Server error. Please try again later."
+		},
+		"ws": {
+			"unauthenticated": "You need to log in to join this room.",
+			"playerNotFound": "Your account could not be found.",
+			"friendsUnavailable": "Could not load your friends.",
+			"roomNotFound": "This room does not exist anymore.",
+			"seatExpired": "Your seat expired. Please join again."
+		}
 	}
 }

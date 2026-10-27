@@ -4,6 +4,10 @@ import { basename, join } from 'node:path';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { PrismaService } from '../prisma.service';
 import { AVATAR_DIR, AVATAR_URL_PREFIX } from './avatar.constants';
+import { apiError } from '../common/api-error';
+
+const playerNotFound = () =>
+  new NotFoundException(apiError('PLAYER_NOT_FOUND', 'Player not found'));
 
 @Injectable()
 export class PlayerService {
@@ -29,7 +33,7 @@ export class PlayerService {
     const player = await this.prisma.player.findUnique({
       where: { id: id, deletedAt: null },
     });
-    if (!player) throw new NotFoundException('Player not found');
+    if (!player) throw playerNotFound();
     return player;
   }
 
@@ -44,7 +48,7 @@ export class PlayerService {
         createdAt: true,
       },
     });
-    if (!player) throw new NotFoundException('Player not found');
+    if (!player) throw playerNotFound();
     return player;
   }
 
@@ -172,7 +176,7 @@ export class PlayerService {
         deletedAt: null,
       },
     });
-    if (!player) throw new NotFoundException('Player not found');
+    if (!player) throw playerNotFound();
     const aboutMe = await this.prisma.player.findUnique({
       where: {
         id: id,

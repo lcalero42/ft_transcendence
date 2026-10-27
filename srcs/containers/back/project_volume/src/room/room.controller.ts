@@ -21,6 +21,7 @@ import { InternalApiKeyGuard } from '../common/internal-api-key.guard';
 import { adminOnly } from '../common/roles.decorator';
 import type { AuthenticatedRequest } from '../common/authenticated-request';
 import type { Rooms } from '../generated/prisma/client';
+import { apiError } from '../common/api-error';
 
 @Controller('room')
 export class RoomController {
@@ -86,7 +87,9 @@ export class RoomController {
       }
     }
     if (!room || room.createdBy !== req.user.id) {
-      throw new ForbiddenException('Cannot edit a room you did not create');
+      throw new ForbiddenException(
+        apiError('NOT_ROOM_OWNER', 'Cannot edit a room you did not create'),
+      );
     }
     return this.roomService.update(id, updateRoomDto);
   }
@@ -112,7 +115,9 @@ export class RoomController {
       }
     }
     if (!room || room.createdBy !== req.user.id) {
-      throw new ForbiddenException('Cannot delete a room you did not create');
+      throw new ForbiddenException(
+        apiError('NOT_ROOM_OWNER', 'Cannot delete a room you did not create'),
+      );
     }
     return this.roomService.remove(id);
   }

@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthenticatedRequest } from './authenticated-request';
+import { apiError } from './api-error';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -17,7 +18,9 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException();
     }
     if (!request.user.isAdmin) {
-      throw new ForbiddenException('Admin access required');
+      throw new ForbiddenException(
+        apiError('ADMIN_REQUIRED', 'Admin access required'),
+      );
     }
 
     return true;

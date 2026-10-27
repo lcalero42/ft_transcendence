@@ -15,8 +15,19 @@ export function isBannedError(error: Error) {
 	return (error as { code?: number }).code === 4102;
 }
 
+const JOIN_ERROR_MESSAGES: Record<number, string> = {
+	4102: "game.banned",
+	4103: "errors.ws.unauthenticated",
+	4104: "errors.ws.playerNotFound",
+	4105: "errors.ws.friendsUnavailable",
+	522: "errors.ws.roomNotFound",
+	524: "errors.ws.seatExpired",
+	525: "errors.ws.unauthenticated",
+};
+
 export function joinErrorMessage(error: Error, t: (key: string) => string) {
-	return isBannedError(error) ? t(FORCED_LEAVE_MESSAGES[4102]) : error.message;
+	const code = (error as { code?: number }).code;
+	return t((code !== undefined && JOIN_ERROR_MESSAGES[code]) || "game.unavailable");
 }
 
 export function useSeatTakenOver<T>(room: Room<T> | null | undefined) {

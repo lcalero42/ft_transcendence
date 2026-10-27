@@ -8,6 +8,10 @@ import { PrismaService } from '../prisma.service';
 import type { Games } from '../generated/prisma/client';
 import type { Player } from '../generated/prisma/client';
 import type { Role } from '../generated/prisma/client';
+import { apiError } from '../common/api-error';
+
+const gameNotFound = (id: number) =>
+  new NotFoundException(apiError('GAME_NOT_FOUND', `Game ${id} not found`));
 
 export type GameView = Omit<Games, 'civilianWord' | 'undercoverWord'> & {
   civilianWord: string | null;
@@ -61,7 +65,7 @@ export class GameService {
     const game = await this.prisma.games.findUnique({
       where: { id: id },
     });
-    if (!game) throw new NotFoundException(`Game ${id} not found`);
+    if (!game) throw gameNotFound(id);
     return this.toGameView(game);
   }
 
@@ -78,7 +82,7 @@ export class GameService {
         },
       },
     });
-    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+    if (!game) throw gameNotFound(gameId);
 
     const revealRoles = game.status === 'finished';
     return game.gamePlayers.map((gp) => ({
@@ -100,15 +104,20 @@ export class GameService {
         },
       },
     });
-    if (!game) throw new NotFoundException(`Game ${gameId} not found`);
+    if (!game) throw gameNotFound(gameId);
 
     const myGamePlayer = game.gamePlayers[0];
     if (!myGamePlayer) {
-      throw new ForbiddenException('You are not a player in this game');
+      throw new ForbiddenException(
+        apiError('NOT_GAME_PLAYER', 'You are not a player in this game'),
+      );
     }
     if (game.status === 'waiting') {
       throw new ForbiddenException(
-        'Word is not available until the game starts',
+        apiError(
+          'WORD_NOT_AVAILABLE',
+          'Word is not available until the game starts',
+        ),
       );
     }
 

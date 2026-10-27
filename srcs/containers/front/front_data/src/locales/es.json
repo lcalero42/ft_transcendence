@@ -216,8 +216,7 @@
 		"loadError": "No se pudieron cargar tus amigos",
 		"roomInviteTitle": "Invitación a una partida",
 		"roomInviteDescription": "{{name}} te invita a unirte a su sala",
-		"join": "Unirse",
-		"errRequestCooldown": "Has enviado una solicitud a este jugador hace poco. Vuelve a intentarlo más tarde."
+		"join": "Unirse"
 	},
 	"profile": {
 		"loadError": "Error al cargar el jugador",
@@ -279,5 +278,57 @@
 	"legal": {
 		"privacyPolicy": "Política de privacidad",
 		"lastUpdated": "Última actualización:"
+	},
+	"errors": {
+		"api": {
+			"EMAIL_TAKEN": "Este correo ya está registrado.",
+			"USERNAME_TAKEN": "Este nombre de usuario ya está en uso.",
+			"INVALID_CREDENTIALS": "Correo o contraseña incorrectos.",
+			"PLAYER_NOT_FOUND": "Jugador no encontrado.",
+			"CANNOT_EDIT_OTHER_PLAYER": "No puedes editar el perfil de otro jugador.",
+			"CANNOT_DELETE_OTHER_PLAYER": "No puedes eliminar la cuenta de otro jugador.",
+			"AVATAR_MISSING": "No se ha subido ninguna imagen.",
+			"AVATAR_INVALID_TYPE": "El avatar debe ser una imagen PNG, JPEG, WEBP o GIF.",
+			"AVATAR_CORRUPTED": "Esta imagen está dañada o no es compatible.",
+			"ROOM_NOT_FOUND": "Esta sala no existe.",
+			"ROOM_LIMIT_REACHED": "Has alcanzado el límite de creación de salas.",
+			"NOT_ROOM_OWNER": "Solo puedes gestionar las salas que has creado.",
+			"GAME_NOT_FOUND": "Esta partida no existe.",
+			"NOT_GAME_PLAYER": "No participas en esta partida.",
+			"WORD_NOT_AVAILABLE": "Tu palabra no estará disponible hasta que empiece la partida.",
+			"WORD_PAIR_NOT_FOUND": "Este par de palabras no existe.",
+			"GUEST_FORBIDDEN": "Los invitados no pueden usar esta función.",
+			"ADMIN_REQUIRED": "Se requiere acceso de administrador.",
+			"FRIEND_SELF": "No puedes añadirte a ti mismo como amigo.",
+			"FRIEND_GUEST": "No puedes añadir a un invitado como amigo.",
+			"FRIEND_REQUEST_COOLDOWN": "Has enviado una solicitud a este jugador hace poco. Vuelve a intentarlo más tarde.",
+			"FRIEND_REQUEST_PENDING": "Ya has enviado una solicitud de amistad a este jugador.",
+			"FRIEND_REQUEST_RECEIVED": "Este jugador ya te ha enviado una solicitud de amistad.",
+			"FRIENDSHIP_EXISTS": "Ya estás vinculado con este jugador.",
+			"FRIENDSHIP_NOT_FOUND": "Amistad no encontrada.",
+			"FRIENDSHIP_INVALID_TRANSITION": "Esta acción no está permitida en esta amistad.",
+			"ONLY_BLOCKER_CAN_UNBLOCK": "Solo el jugador que bloqueó puede quitar el bloqueo.",
+			"RECORD_NOT_FOUND": "Este elemento ya no existe.",
+			"ALREADY_EXISTS": "Este elemento ya existe.",
+			"RELATED_RECORD_MISSING": "Un elemento relacionado ya no existe.",
+			"VALIDATION_FAILED": "Algunos campos no son válidos."
+		},
+		"status": {
+			"400": "Solicitud no válida.",
+			"401": "Debes volver a iniciar sesión.",
+			"403": "No tienes permiso para hacer esto.",
+			"404": "No encontrado.",
+			"409": "Conflicto con datos existentes.",
+			"413": "El archivo es demasiado grande.",
+			"415": "Tipo de archivo no compatible.",
+			"server": "Error del servidor. Vuelve a intentarlo más tarde."
+		},
+		"ws": {
+			"unauthenticated": "Debes iniciar sesión para unirte a esta sala.",
+			"playerNotFound": "No se ha encontrado tu cuenta.",
+			"friendsUnavailable": "No se pudieron cargar tus amigos.",
+			"roomNotFound": "Esta sala ya no existe.",
+			"seatExpired": "Tu plaza ha caducado. Vuelve a unirte."
+		}
 	}
 }

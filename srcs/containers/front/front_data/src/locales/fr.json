@@ -216,8 +216,7 @@
 		"loadError": "Impossible de charger vos amis",
 		"roomInviteTitle": "Invitation à une partie",
 		"roomInviteDescription": "{{name}} vous invite à rejoindre son salon",
-		"join": "Rejoindre",
-		"errRequestCooldown": "Vous avez récemment envoyé une demande à ce joueur. Réessayez plus tard."
+		"join": "Rejoindre"
 	},
 	"profile": {
 		"loadError": "Erreur lors du chargement du joueur",
@@ -279,5 +278,57 @@
 	"legal": {
 		"privacyPolicy": "Politique de confidentialité",
 		"lastUpdated": "Dernière mise à jour :"
+	},
+	"errors": {
+		"api": {
+			"EMAIL_TAKEN": "Cet email est déjà utilisé.",
+			"USERNAME_TAKEN": "Ce nom d'utilisateur est déjà pris.",
+			"INVALID_CREDENTIALS": "Email ou mot de passe incorrect.",
+			"PLAYER_NOT_FOUND": "Joueur introuvable.",
+			"CANNOT_EDIT_OTHER_PLAYER": "Vous ne pouvez pas modifier le profil d'un autre joueur.",
+			"CANNOT_DELETE_OTHER_PLAYER": "Vous ne pouvez pas supprimer le compte d'un autre joueur.",
+			"AVATAR_MISSING": "Aucune image n'a été envoyée.",
+			"AVATAR_INVALID_TYPE": "L'avatar doit être une image PNG, JPEG, WEBP ou GIF.",
+			"AVATAR_CORRUPTED": "Cette image est corrompue ou non prise en charge.",
+			"ROOM_NOT_FOUND": "Ce salon n'existe pas.",
+			"ROOM_LIMIT_REACHED": "Vous avez atteint la limite de création de salons.",
+			"NOT_ROOM_OWNER": "Vous ne pouvez gérer que les salons que vous avez créés.",
+			"GAME_NOT_FOUND": "Cette partie n'existe pas.",
+			"NOT_GAME_PLAYER": "Vous ne participez pas à cette partie.",
+			"WORD_NOT_AVAILABLE": "Votre mot n'est pas disponible avant le début de la partie.",
+			"WORD_PAIR_NOT_FOUND": "Cette paire de mots n'existe pas.",
+			"GUEST_FORBIDDEN": "Les invités ne peuvent pas utiliser cette fonctionnalité.",
+			"ADMIN_REQUIRED": "Accès administrateur requis.",
+			"FRIEND_SELF": "Vous ne pouvez pas vous ajouter vous-même en ami.",
+			"FRIEND_GUEST": "Vous ne pouvez pas ajouter un invité en ami.",
+			"FRIEND_REQUEST_COOLDOWN": "Vous avez récemment envoyé une demande à ce joueur. Réessayez plus tard.",
+			"FRIEND_REQUEST_PENDING": "Vous avez déjà envoyé une demande d'ami à ce joueur.",
+			"FRIEND_REQUEST_RECEIVED": "Ce joueur vous a déjà envoyé une demande d'ami.",
+			"FRIENDSHIP_EXISTS": "Vous êtes déjà lié à ce joueur.",
+			"FRIENDSHIP_NOT_FOUND": "Relation d'amitié introuvable.",
+			"FRIENDSHIP_INVALID_TRANSITION": "Cette action n'est pas autorisée sur cette relation.",
+			"ONLY_BLOCKER_CAN_UNBLOCK": "Seul le joueur qui a bloqué peut retirer le blocage.",
+			"RECORD_NOT_FOUND": "Cet élément n'existe plus.",
+			"ALREADY_EXISTS": "Cet élément existe déjà.",
+			"RELATED_RECORD_MISSING": "Un élément associé n'existe plus.",
+			"VALIDATION_FAILED": "Certains champs sont invalides."
+		},
+		"status": {
+			"400": "Requête invalide.",
+			"401": "Vous devez vous reconnecter.",
+			"403": "Vous n'êtes pas autorisé à faire cela.",
+			"404": "Introuvable.",
+			"409": "Conflit avec des données existantes.",
+			"413": "Le fichier est trop volumineux.",
+			"415": "Type de fichier non pris en charge.",
+			"server": "Erreur serveur. Réessayez plus tard."
+		},
+		"ws": {
+			"unauthenticated": "Vous devez vous connecter pour rejoindre ce salon.",
+			"playerNotFound": "Votre compte est introuvable.",
+			"friendsUnavailable": "Impossible de charger vos amis.",
+			"roomNotFound": "Ce salon n'existe plus.",
+			"seatExpired": "Votre place a expiré. Rejoignez à nouveau."
+		}
 	}
 }
