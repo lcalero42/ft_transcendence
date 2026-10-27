@@ -116,7 +116,10 @@ export default function CreateRoom() {
 		if (!room) return;
 		const onReconnect = () => storeReconnection(room);
 		room.onReconnect(onReconnect);
-		return () => room.onReconnect.remove(onReconnect);
+		return () => {
+			room.onReconnect.remove(onReconnect);
+			clearReconnection();
+		};
 	}, [room]);
 
 	useSeatTakenOver(room);
