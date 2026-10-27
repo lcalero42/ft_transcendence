@@ -7,7 +7,7 @@ function Title() {
 		font-extrabold
 		md:mx-0
 		md:text-left">
-			Under<span className="text-[#f5a623]">Cover</span>
+			Under<span className="text-accent-orange">Cover</span>
 		</h1>
 	);
 }

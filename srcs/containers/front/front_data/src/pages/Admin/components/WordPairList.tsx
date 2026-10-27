@@ -74,14 +74,14 @@ function CreateWordPair({ onAdded }: { onAdded: (newPair: WordPair) => void }) {
 				{LANGUAGE_FIELDS.map(({ label, civilian, undercover }) => (
 					<div className="flex flex-col md:flex-row md:items-center gap-2" key={label}>
 						<span className="w-6 text-left text-text-dim">{label}</span>
-						<input className="text-blue-400 w-35 outline-none focus:border-blue-400 border border-card-border-2 rounded-full p-2 hoverable hover:text-blue-300"
+						<input className="text-civilian w-35 outline-none focus:border-civilian border border-card-border-2 rounded-full p-2 hoverable hover:text-civilian-hover"
 							type="text"
 							placeholder={t("admin.civilianPlaceholder")}
 							value={words[civilian]}
 							onChange={(e) => handleChange(civilian, e.target.value)}
 							onKeyDown={handleKeyDown}
 						/>
-						<input className="text-orange-400 w-35 outline-none focus:border-orange-400 border border-card-border-2 rounded-full p-2 hoverable hover:text-orange-300"
+						<input className="text-undercover w-35 outline-none focus:border-undercover border border-card-border-2 rounded-full p-2 hoverable hover:text-undercover-hover"
 							type="text"
 							placeholder={t("admin.undercoverPlaceholder")}
 							value={words[undercover]}
@@ -150,10 +150,10 @@ function WordPairList() {
 							{LANGUAGE_FIELDS.map(({ label, civilian, undercover }) => (
 								<div className="grid grid-cols-[2rem_1fr_1fr] items-center gap-2" key={label}>
 									<span className="text-xs text-text-dim">{label}</span>
-									<p className="text-blue-400 truncate">
+									<p className="text-civilian truncate">
 										{WordPair[civilian]}
 									</p>
-									<p className="text-orange-400 truncate">
+									<p className="text-undercover truncate">
 										{WordPair[undercover]}
 									</p>
 								</div>

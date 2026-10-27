@@ -26,7 +26,7 @@
 		30%,
 		60% {
 			border-color: var(--color-friends);
-			box-shadow: 0 0 22px #2ea0e199;
+			box-shadow: 0 0 22px color-mix(in oklab, var(--color-friends) 60%, transparent);
 		}
 	}
 }

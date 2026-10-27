@@ -71,8 +71,7 @@ function ChatBox({
 
 	return (
 		<div
-			className="card mb-0! flex h-full min-h-0 flex-col border-2 bg-transparent"
-			style={{ borderColor: "#15113A" }}
+			className="card border-game-panel-border mb-0! flex h-full min-h-0 flex-col border-2 bg-transparent"
 		>
 			<div className="border-card-border-2 -mx-5 mb-2 flex gap-6 border-b px-5 pb-3">
 				{TABS.map((id) => (

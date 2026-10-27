@@ -71,7 +71,7 @@ function PlayerList({gameId, wUnderCover, wCivil}: {gameId: number, wUnderCover:
 					</div>
 					<span
 						className={`text-xs md:text-sm ${
-							player.role === "undercover" ? "text-orange-400" : "text-blue-400"
+							player.role === "undercover" ? "text-undercover" : "text-civilian"
 						}`}
 					>
 						{player.role === "undercover" ? wUnderCover : wCivil}
@@ -124,11 +124,11 @@ function RoomItem({room}: {room: Room}) {
 						}
 					>
 						<div className="flex items-center md:gap-2 font-semibold hoverable group-hover:text-accent-purple text-xs md:text-sm">
-							<span className={`w-2 h-2 mr-2 md:mr-0 rounded-full shrink-0 ${game.victory === "undercover" ? "bg-orange-400" : "bg-blue-400"}`} />
+							<span className={`w-2 h-2 mr-2 md:mr-0 rounded-full shrink-0 ${game.victory === "undercover" ? "bg-undercover" : "bg-civilian"}`} />
 							<p className="hidden md:inline">{t("admin.gameOf")}</p>
 							<p>{new Date(game.createdAt).toLocaleDateString(i18n.language)}</p>
 						</div>
-						<div className={`font-semibold text-xs md:text-sm ${game.victory === "undercover" ? "text-orange-400" : "text-blue-400"}`}>
+						<div className={`font-semibold text-xs md:text-sm ${game.victory === "undercover" ? "text-undercover" : "text-civilian"}`}>
 						 	<p className="md:text-text-dim inline"> {t("admin.victory")} </p>
 							<p className="hidden text-text-dim md:inline"> : </p>
 							<p className="hidden md:inline"> {game.victory ? t(`roles.${game.victory}`) : ""} </p>
