@@ -14,7 +14,7 @@ import {
 	storeReconnection,
 } from "@/lib/roomReconnection";
 import { useAuth } from "@/context/useAuth";
-import { isBannedError, useSeatTakenOver } from "@/lib/useSeatTakenOver";
+import { isBannedError, joinErrorMessage, useSeatTakenOver } from "@/lib/useSeatTakenOver";
 import { toast } from "@/components/ui/toast";
 import { useTranslation } from "react-i18next";
 
@@ -94,7 +94,7 @@ function GameRoom() {
 	if (!id) return <ErrorPage error={t("game.noRoomId")} />;
 	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
 	if (isConnecting || (error && isBannedError(error))) return <LoadPage text={t("common.connecting")} />;
-	if (error) return <ErrorPage error={error.message} />;
+	if (error) return <ErrorPage error={joinErrorMessage(error, t)} />;
 	if (!room) return <ErrorPage error={t("game.unavailable")} />;
 
 	return <GameView room={room} />;
