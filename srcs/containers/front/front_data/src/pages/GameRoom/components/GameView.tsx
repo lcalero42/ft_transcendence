@@ -7,6 +7,7 @@ import type { UndercoverRoom } from "@back/colyseus/rooms/UndercoverRoom";
 import type { Player } from "@back/colyseus/rooms/UndercoverState";
 import { getAvatarUrl } from "@/api/player";
 import Header from "@/components/Header/Header";
+import Credit from "@/components/Credit/Credit";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
 import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/GameRoom/components/utils";
@@ -356,6 +357,7 @@ function GameView({ room }: GameViewProps) {
 					</aside>
 				</div>
 			</main>
+			<Credit />
 			<MobileDrawer open={drawer === "chat"} onClose={() => setDrawer(null)}>
 				<ChatBox
 					messages={chatMessages}

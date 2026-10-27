@@ -1,0 +1,93 @@
+{
+	"title": "Politique de confidentialité",
+	"whoWeAre": {
+		"title": "Qui sommes-nous",
+		"paragraphs": [
+			"Undercover est un projet étudiant réalisé à 42 par {{team}}. Nous sommes responsables des données collectées sur ce site."
+		]
+	},
+	"data": {
+		"title": "Les données que nous collectons",
+		"paragraphs": ["Nous collectons uniquement ce dont le jeu a besoin pour fonctionner :"],
+		"items": [
+			"Compte : votre nom d'utilisateur, votre adresse e-mail et votre mot de passe. Votre mot de passe est haché avec bcrypt, nous ne le stockons et ne le voyons donc jamais en clair.",
+			"Connexion Google ou Discord : si vous vous connectez avec Google ou Discord, nous recevons l'identifiant de votre compte, votre nom, votre adresse e-mail (uniquement si le fournisseur l'a vérifiée) et votre photo de profil. Nous utilisons le nom pour créer votre nom d'utilisateur et enregistrons une copie de la photo comme avatar. Nous ne recevons jamais votre mot de passe Google ou Discord.",
+			"Comptes invités : si vous jouez en tant qu'invité, nous enregistrons uniquement le nom d'utilisateur que vous choisissez. Aucun e-mail ni mot de passe n'est demandé.",
+			"Profil : la bio et l'avatar que vous choisissez d'ajouter, ainsi que la date de création de votre compte. Les avatars envoyés sont redimensionnés et convertis, ce qui supprime les métadonnées cachées comme la localisation.",
+			"Amis : les demandes d'ami que vous envoyez et recevez, et leur statut (en attente, acceptée, refusée ou bloquée).",
+			"Parties : les salons que vous créez, les parties que vous jouez, votre rôle, le moment où vous avez été éliminé et qui a gagné.",
+			"Chat : les messages envoyés dans un salon sont uniquement gardés dans la mémoire du serveur tant que le salon est ouvert. Ils ne sont jamais enregistrés dans notre base de données et disparaissent à la fermeture du salon.",
+			"Données techniques : votre adresse IP est utilisée, en mémoire uniquement, pour limiter le nombre de requêtes envoyées au serveur. Notre serveur web et notre back-end écrivent aussi des journaux techniques, qui peuvent contenir votre adresse IP, pour nous aider à corriger les bugs et sécuriser le site."
+		]
+	},
+	"cookies": {
+		"title": "Cookies et stockage du navigateur",
+		"paragraphs": [
+			"Nous n'utilisons aucun outil d'analyse, de publicité ou de suivi. Le seul cookie que nous utilisons sert à vous garder connecté :"
+		],
+		"items": [
+			"Cookie access_token : votre jeton de connexion. Il ne peut pas être lu par JavaScript et n'est envoyé qu'en HTTPS. Par défaut, il est supprimé à la fermeture du navigateur et le jeton expire au bout de {{sessionDays}} jour. Si vous cochez « Se souvenir de moi » ou vous connectez avec Google ou Discord, il est conservé {{rememberDays}} jours. La déconnexion le supprime et invalide le jeton.",
+			"Stockage local : votre navigateur mémorise la langue que vous avez choisie.",
+			"Stockage de session : pendant une partie, votre navigateur garde un jeton de reconnexion pour vous permettre de revenir si vous perdez la connexion. Il est supprimé à la fermeture de l'onglet."
+		]
+	},
+	"thirdParties": {
+		"title": "Services tiers",
+		"paragraphs": [
+			"Nous ne vendons pas vos données et ne les partageons avec personne à des fins publicitaires. Quelques services externes interviennent tout de même :"
+		],
+		"items": [
+			"Google et Discord, uniquement si vous choisissez de vous connecter avec eux. Ils sauront que vous avez utilisé leur compte pour vous connecter à Undercover.",
+			"Google Fonts : notre police est chargée depuis les serveurs de Google, votre navigateur envoie donc votre adresse IP à Google au chargement de la page."
+		]
+	},
+	"purposes": {
+		"title": "Pourquoi nous utilisons vos données",
+		"paragraphs": ["Nous utilisons vos données uniquement pour :"],
+		"items": [
+			"Créer votre compte et vous connecter.",
+			"Afficher votre profil, vos amis et vos statistiques de jeu.",
+			"Faire fonctionner les parties et vous permettre de jouer et discuter avec d'autres joueurs en temps réel.",
+			"Sécuriser le site, par exemple en limitant les tentatives de connexion répétées et les requêtes trop nombreuses."
+		]
+	},
+	"visibility": {
+		"title": "Qui peut voir vos données",
+		"paragraphs": [
+			"Les autres joueurs connectés peuvent voir votre nom d'utilisateur, votre avatar, votre bio, la date de création de votre compte ainsi que votre historique et vos statistiques de jeu. Les joueurs présents dans le même salon voient aussi votre nom d'utilisateur, votre avatar et vos messages. Les profils invités ne sont pas publics.",
+			"Votre adresse e-mail et votre mot de passe ne sont jamais montrés aux autres joueurs. Les administrateurs du site (membres de notre équipe) peuvent voir la liste des comptes, adresses e-mail comprises, pour gérer le site. Tout est hébergé sur notre propre serveur."
+		]
+	},
+	"retention": {
+		"title": "Combien de temps nous gardons vos données",
+		"paragraphs": [
+			"Nous gardons vos données tant que votre compte existe.",
+			"Les comptes invités sont automatiquement fermés {{guestHours}} heures après leur création : le nom d'utilisateur est remplacé par un nom anonyme et le compte ne peut plus être utilisé.",
+			"Il n'y a pas encore de bouton pour supprimer votre compte. Pour le faire supprimer, contactez-nous (voir plus bas). Nous le fermerons et effacerons définitivement vos données personnelles (e-mail, nom d'utilisateur, bio, avatar et amis) sous {{answerDays}} jours. Vos anciennes parties sont alors conservées de façon anonyme pour que les statistiques des autres joueurs restent correctes."
+		]
+	},
+	"rights": {
+		"title": "Vos droits",
+		"paragraphs": [
+			"Vous pouvez modifier vous-même votre bio et votre avatar à tout moment sur votre profil. Pour tout le reste, contactez-nous et notre équipe traitera votre demande à la main. Vous pouvez nous demander de :"
+		],
+		"items": [
+			"Vous dire quelles données personnelles nous avons sur vous.",
+			"Vous envoyer une copie de vos données.",
+			"Corriger vos données.",
+			"Effacer définitivement vos données."
+		]
+	},
+	"contact": {
+		"title": "Contact",
+		"paragraphs": [
+			"Pour faire une demande ou poser une question sur vos données, envoyez un message à l'un d'entre nous ({{team}}) sur le serveur Discord de 42 Lyon. Nous répondrons sous {{answerDays}} jours."
+		]
+	},
+	"changes": {
+		"title": "Modifications de cette politique",
+		"paragraphs": [
+			"Si nous changeons les données que nous collectons ou la façon dont nous les utilisons, nous mettrons à jour cette page et la date en haut."
+		]
+	}
+}
