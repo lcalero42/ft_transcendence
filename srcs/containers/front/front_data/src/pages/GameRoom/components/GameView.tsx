@@ -16,6 +16,7 @@ import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
 import VotePrompt from "@/pages/GameRoom/components/VotePrompt";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
+import HideWordButton from "@/pages/GameRoom/components/HideWordButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
 import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
@@ -46,6 +47,7 @@ function GameView({ room }: GameViewProps) {
 	const [myWord, setMyWord] = useState("");
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
+	const [isWordHidden, setIsWordHidden] = useState(false);
 	const [chatTab, setChatTab] = useState<ChatTab>("chat");
 	const [aimedSessionId, setAimedSessionId] = useState<string | null>(null);
 	const [kickRequest, setKickRequest] = useState<{ sessionId: string; action: KickAction } | null>(null);
@@ -151,7 +153,10 @@ function GameView({ room }: GameViewProps) {
 
 	if (phase !== prevPhase) {
 		setPrevPhase(phase);
-		if (phase === "starting") setChatTab("log");
+		if (phase === "starting") {
+			setChatTab("log");
+			setIsWordHidden(false);
+		}
 	}
 
 	useEffect(() => {
@@ -167,6 +172,8 @@ function GameView({ room }: GameViewProps) {
 	const handleStartGame = () => room.send("startGame");
 	const handleSubmitClue = (word: string) => room.send("submitClue", word);
 	const handleCastVote = (targetSessionId: string) => room.send("castVote", targetSessionId);
+	const toggleWordHidden = () => setIsWordHidden((current) => !current);
+	const isOwnWordShown = !!currentWord && centerWord === currentWord;
 	const clueEntries = (clues ?? []).map((clue, index) => ({
 		id: `${clue.sessionId}-${clue.submittedAt}-${index}`,
 		name: clue.name,
@@ -304,6 +311,8 @@ function GameView({ room }: GameViewProps) {
 										}
 										avatarUrl={eliminatedPlayer ? getAvatarUrl(eliminatedPlayer.avatarUrl ?? null) : undefined}
 										avatarName={eliminatedPlayer?.name}
+										obscured={isOwnWordShown && isWordHidden}
+										onToggleObscured={isOwnWordShown ? toggleWordHidden : undefined}
 									/>
 								)}
 							</PlayerCircle>
@@ -340,8 +349,9 @@ function GameView({ room }: GameViewProps) {
 											)}
 										</div>
 									)}
-									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
+									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-row flex-wrap items-center justify-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
+										{!!currentWord && <HideWordButton hidden={isWordHidden} onToggle={toggleWordHidden} />}
 									</div>
 								</>
 							)}

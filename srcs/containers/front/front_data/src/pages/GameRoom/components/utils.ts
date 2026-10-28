@@ -12,6 +12,41 @@ export const BADGE_AVATAR_CLASSES: Record<RevealTone, string> = {
 	neutral: "border-friends shadow-[0_0_18px_var(--color-friends)]/40",
 };
 
+const ENCHANTING_GLYPHS: Record<string, string> = {
+	a: "ᔑ",
+	b: "ʖ",
+	c: "ᓵ",
+	d: "↸",
+	e: "ᒷ",
+	f: "⎓",
+	g: "⊣",
+	h: "⍑",
+	i: "╎",
+	j: "⋮",
+	k: "ꖌ",
+	l: "ꖎ",
+	m: "ᒲ",
+	n: "リ",
+	o: "𝙹",
+	p: "!¡",
+	q: "ᑑ",
+	r: "∷",
+	s: "ᓭ",
+	t: "ℸ̣",
+	u: "⚍",
+	v: "⍊",
+	w: "∴",
+	x: "/̇",
+	y: "||",
+	z: "⨅",
+};
+
+export function toEnchantingTable(word: string) {
+	return Array.from(word.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase())
+		.map((char) => ENCHANTING_GLYPHS[char] ?? char)
+		.join("");
+}
+
 export function getPlayerAngleDeg(index: number, total: number) {
 	return total > 0 ? (index / total) * 360 : 0;
 }

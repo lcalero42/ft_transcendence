@@ -153,6 +153,8 @@
 		"openChat": "Open chat",
 		"openPlayers": "Open players list",
 		"autoJoin": "Auto-Join",
+		"hideWord": "Hide word",
+		"showWord": "Show word",
 		"chat": "Chat",
 		"log": "Log",
 		"typeMessage": "Type a message...",

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ArrowUp, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
 	BADGE_AVATAR_CLASSES,
 	BADGE_TONE_CLASSES,
+	toEnchantingTable,
 	type RevealTone,
 } from "@/pages/GameRoom/components/utils";
 
@@ -13,9 +15,23 @@ interface CenterWordProps {
 	badgeTone?: RevealTone;
 	avatarUrl?: string;
 	avatarName?: string;
+	obscured?: boolean;
+	onToggleObscured?: () => void;
 }
 
-function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarName }: CenterWordProps) {
+const PLAIN_WORD_CLASSES = "absolute text-[clamp(24px,2.2vw,48px)] font-bold tracking-wide uppercase";
+
+function CenterWord({
+	word,
+	direction = 0,
+	dimmed,
+	badgeTone,
+	avatarUrl,
+	avatarName,
+	obscured,
+	onToggleObscured,
+}: CenterWordProps) {
+	const { t } = useTranslation();
 	const [rotation, setRotation] = useState(direction);
 	const [prevDirection, setPrevDirection] = useState(direction);
 
@@ -90,10 +106,23 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 						{word}
 					</span>
 				</div>
+			) : onToggleObscured ? (
+				<button
+					type="button"
+					aria-label={t(obscured ? "game.showWord" : "game.hideWord")}
+					title={t(obscured ? "game.showWord" : "game.hideWord")}
+					onClick={(event) => {
+						event.stopPropagation();
+						onToggleObscured();
+					}}
+					className={`${PLAIN_WORD_CLASSES} cursor-pointer`}
+				>
+					<span key={String(obscured)} className="animate-in fade-in duration-300">
+						{obscured ? toEnchantingTable(word) : word}
+					</span>
+				</button>
 			) : (
-				<span className="absolute text-[clamp(24px,2.2vw,48px)] font-bold tracking-wide uppercase">
-					{word}
-				</span>
+				<span className={PLAIN_WORD_CLASSES}>{word}</span>
 			)}
 		</div>
 	);
