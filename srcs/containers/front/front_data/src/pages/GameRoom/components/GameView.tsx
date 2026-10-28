@@ -14,6 +14,7 @@ import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/Game
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
+import VotePrompt from "@/pages/GameRoom/components/VotePrompt";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
@@ -88,6 +89,7 @@ function GameView({ room }: GameViewProps) {
 		}));
 	const winnerLabel = winner === "undercover" ? t("game.undercoverWins") : t("game.civiliansWin");
 	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
+	const myVoteTargetName = myVoteTargetId ? players?.[myVoteTargetId]?.name : undefined;
 	const canVote = phase === "voting" && isParticipant;
 	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
 	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
@@ -320,13 +322,22 @@ function GameView({ room }: GameViewProps) {
 							)}
 							{(phase === "describing" || phase === "voting") && (
 								<>
-									{phase === "describing" && isParticipant && (
+									{((phase === "describing" && isParticipant) || phase === "voting") && (
 										<div className="pointer-events-auto order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto 2xl:translate-x-[4vw] flex flex-col gap-4">
-											<TurnInput
-												isMyTurn={isMyTurn}
-												activePlayerName={activePlayer?.name}
-												onSubmit={handleSubmitClue}
-											/>
+											{phase === "describing" ? (
+												<TurnInput
+													isMyTurn={isMyTurn}
+													activePlayerName={activePlayer?.name}
+													onSubmit={handleSubmitClue}
+												/>
+											) : (
+												<VotePrompt
+													canVote={canVote}
+													votedName={myVoteTargetName}
+													votedCount={votes?.length ?? 0}
+													voterCount={participants?.length ?? 0}
+												/>
+											)}
 										</div>
 									)}
 									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
