@@ -191,7 +191,6 @@
 		"voteInstruction": "Click the player you think is the Undercover",
 		"votedFor": "You voted for <accent>{{name}}</accent>, click another player to change",
 		"spectatorVoting": "Players are voting...",
-		"votesProgress": "{{voted}}/{{total}} players have voted",
 		"seatTakenOver": "Game opened in another tab",
 		"kicked": "You were kicked from the room",
 		"banned": "You are banned from this room",

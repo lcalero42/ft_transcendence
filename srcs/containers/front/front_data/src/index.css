@@ -186,6 +186,10 @@ body {
 		text-[clamp(13px,0.8vw,22px)];
 	}
 
+	.badge-icon {
+		@apply p-[max(0.7vw,8px)];
+	}
+
 	/* ============ FORM ============ */
 
 	.input {

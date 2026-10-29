@@ -7,17 +7,20 @@ interface WakeUpButtonProps {
 
 function WakeUpButton({ onClick }: WakeUpButtonProps) {
 	const { t } = useTranslation();
+	const label = t("game.wakeUp");
 
 	return (
 		<button
 			type="button"
 			onClick={onClick}
-			className="badge badge-action hoverable rounded-lg! shrink-0 gap-[max(0.6vw,8px)] border-accent-purple text-accent-purple"
+			aria-label={label}
+			title={label}
+			className="badge badge-icon hoverable rounded-lg! shrink-0 border-accent-purple text-accent-purple"
 		>
 			<AlarmClock className="size-[clamp(15px,1.1vw,24px)]" />
-			{t("game.wakeUp")}
 		</button>
 	);
 }
 
 export default WakeUpButton;
+

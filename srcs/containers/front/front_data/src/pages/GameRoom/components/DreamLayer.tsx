@@ -61,7 +61,7 @@ function DreamLayer() {
 			</div>
 			<div
 				aria-hidden
-				className="dream-vignette animate-in fade-in pointer-events-none fixed inset-0 z-30 duration-1000"
+				className="dream-vignette animate-in fade-in pointer-events-none fixed inset-0 z-30 duration-1000 md:backdrop-blur-xs"
 			/>
 		</>
 	);

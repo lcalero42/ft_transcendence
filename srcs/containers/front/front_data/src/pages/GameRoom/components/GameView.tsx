@@ -226,6 +226,7 @@ function GameView({ room }: GameViewProps) {
 		if (text.trim().toUpperCase() === "IWAAD") {
 			toggleDream();
 			setChatDraft("");
+			setDrawer(null);
 			return;
 		}
 		const retryAfterMs = chatBlockedUntilRef.current - Date.now();
@@ -297,7 +298,7 @@ function GameView({ room }: GameViewProps) {
 					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
 						<div className="z-10 flex w-full shrink-0 items-center justify-between px-6 pt-6 md:px-0 md:pt-0">
 							<div className="flex items-center gap-3">
-								<Timer secondsLeft={secondsLeft} melting={isDreamVisible} />
+								<Timer secondsLeft={secondsLeft} />
 								{dream === "dreaming" && <WakeUpButton onClick={toggleDream} />}
 							</div>
 							<div className="flex items-center gap-3 2xl:hidden">

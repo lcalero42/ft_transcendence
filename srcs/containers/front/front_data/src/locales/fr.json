@@ -191,7 +191,6 @@
 		"voteInstruction": "Cliquez sur le joueur que vous pensez être l'Undercover",
 		"votedFor": "Vous avez voté pour <accent>{{name}}</accent>, cliquez sur un autre joueur pour changer",
 		"spectatorVoting": "Les joueurs votent...",
-		"votesProgress": "{{voted}}/{{total}} joueurs ont voté",
 		"seatTakenOver": "Partie ouverte dans un autre onglet",
 		"kicked": "Vous avez été expulsé de la salle",
 		"banned": "Vous êtes banni de cette salle",
