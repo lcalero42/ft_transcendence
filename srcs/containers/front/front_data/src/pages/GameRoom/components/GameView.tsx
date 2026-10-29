@@ -369,16 +369,11 @@ function GameView({ room }: GameViewProps) {
 													onSubmit={handleSubmitClue}
 												/>
 											) : (
-												<VotePrompt
-													canVote={canVote}
-													votedName={myVoteTargetName}
-													votedCount={votes?.length ?? 0}
-													voterCount={participants?.length ?? 0}
-												/>
+												<VotePrompt canVote={canVote} votedName={myVoteTargetName} />
 											)}
 										</div>
 									)}
-									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-row flex-wrap items-center justify-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
+									<div className="pointer-events-auto order-2 flex flex-row flex-wrap items-center justify-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
 										{!!currentWord && <HideWordButton hidden={isWordHidden} onToggle={toggleWordHidden} />}
 									</div>
