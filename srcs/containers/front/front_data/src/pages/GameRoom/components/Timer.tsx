@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 interface TimerProps {
 	secondsLeft: number;
+	melting?: boolean;
 }
 
 function formatTime(secondsLeft: number) {
@@ -11,12 +12,12 @@ function formatTime(secondsLeft: number) {
 	return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 }
 
-function Timer({ secondsLeft }: TimerProps) {
+function Timer({ secondsLeft, melting }: TimerProps) {
 	const { t } = useTranslation();
 
 	return (
 		<div
-			className="card border-timer-border bg-timer-bg mb-0! w-fit flex-row items-center gap-[max(0.94vw,11px)] border-4 px-[max(0.67vw,13px)] py-1.5 md:py-4"
+			className={`card border-timer-border bg-timer-bg mb-0! w-fit flex-row items-center gap-[max(0.94vw,11px)] border-4 px-[max(0.67vw,13px)] py-1.5 md:py-4 ${melting ? "origin-top motion-safe:animate-dream-melt" : ""}`}
 		>
 			<TimerIcon className="text-accent-purple size-[clamp(22px,2.66vw,47px)] shrink-0" />
 			<div className="flex flex-col items-start">

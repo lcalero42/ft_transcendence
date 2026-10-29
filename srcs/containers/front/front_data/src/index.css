@@ -9,6 +9,7 @@
 @import "./styles/meteor.css";
 @import "./styles/arrow-wobble.css";
 @import "./styles/safe-reveal.css";
+@import "./styles/dream.css";
 
 @custom-variant dark (&:is(.dark *));
 

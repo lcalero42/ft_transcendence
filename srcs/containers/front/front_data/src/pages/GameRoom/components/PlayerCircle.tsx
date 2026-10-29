@@ -13,6 +13,7 @@ interface PlayerCircleEntry {
 	isAimable?: boolean;
 	isAimed?: boolean;
 	isEliminated?: boolean;
+	isSelf?: boolean;
 }
 
 interface PlayerCircleProps {
@@ -21,13 +22,24 @@ interface PlayerCircleProps {
 	onAim?: (sessionId: string | null) => void;
 	onSelect?: (sessionId: string) => void;
 	safeRevealStartMs?: number;
+	spinning?: boolean;
+	dreaming?: boolean;
 }
 
 const RADIUS_PERCENT = 40;
 const SAFE_STAGGER_MS = 150;
+const DREAM_FLOAT_STAGGER_MS = 700;
 
-function PlayerCircle({ players, children, onAim, onSelect, safeRevealStartMs }: PlayerCircleProps) {
-	const canAim = players.some((player) => player.isAimable);
+function PlayerCircle({
+	players,
+	children,
+	onAim,
+	onSelect,
+	safeRevealStartMs,
+	spinning,
+	dreaming,
+}: PlayerCircleProps) {
+	const canAim = !spinning && players.some((player) => player.isAimable);
 
 	function findAimedSessionId(event: React.MouseEvent<HTMLDivElement>) {
 		const bounds = event.currentTarget.getBoundingClientRect();
@@ -62,46 +74,50 @@ function PlayerCircle({ players, children, onAim, onSelect, safeRevealStartMs }:
 			onPointerLeave={canAim ? () => onAim?.(null) : undefined}
 			onClick={canAim ? handleSelect : undefined}
 		>
-			<div
-				className="border-game-panel-border absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4"
-				style={{
-					width: `${RADIUS_PERCENT * 2}%`,
-					height: `${RADIUS_PERCENT * 2}%`,
-				}}
-			/>
-			<div
-				className="border-game-panel-border bg-game-circle-bg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4"
-				style={{
-					width: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
-					height: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
-				}}
-			/>
-			<div className="absolute inset-0 flex items-center justify-center">{children}</div>
-			{players.map((player, index) => {
-				const angle = (getPlayerAngleDeg(index, players.length) * Math.PI) / 180;
-				const left = 50 + RADIUS_PERCENT * Math.sin(angle);
-				const top = 50 - RADIUS_PERCENT * Math.cos(angle);
+			<div className={`absolute inset-0 ${spinning ? "motion-safe:animate-dream-spin" : ""}`}>
+				<div
+					className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 transition-[border-color,box-shadow] duration-1000 ${dreaming ? "border-dream-1/50 shadow-[0_0_40px_var(--color-dream-1)]/40" : "border-game-panel-border"}`}
+					style={{
+						width: `${RADIUS_PERCENT * 2}%`,
+						height: `${RADIUS_PERCENT * 2}%`,
+					}}
+				/>
+				<div
+					className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 transition-[border-color,background-color] duration-1000 ${dreaming ? "border-dream-2/40 bg-game-circle-bg/50 motion-safe:animate-dream-breathe" : "border-game-panel-border bg-game-circle-bg"}`}
+					style={{
+						width: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
+						height: `${(RADIUS_PERCENT * 2 * 2) / 3}%`,
+					}}
+				/>
+				<div className="absolute inset-0 flex items-center justify-center">{children}</div>
+				{players.map((player, index) => {
+					const angle = (getPlayerAngleDeg(index, players.length) * Math.PI) / 180;
+					const left = 50 + RADIUS_PERCENT * Math.sin(angle);
+					const top = 50 - RADIUS_PERCENT * Math.cos(angle);
 
-				return (
-					<div
-						key={player.sessionId}
-						className="absolute -translate-x-1/2 -translate-y-1/2"
-						style={{ left: `${left}%`, top: `${top}%` }}
-					>
-						<PlayerAvatar
-							name={player.name}
-							avatarUrl={player.avatarUrl}
-							hintWord={player.hintWord}
-							isActive={player.isActive}
-							voteCount={player.voteCount}
-							isVoteTarget={player.isVoteTarget}
-							isAimed={player.isAimed}
-							isEliminated={player.isEliminated}
-							safeDelayMs={safeRevealStartMs === undefined ? undefined : safeRevealStartMs + index * SAFE_STAGGER_MS}
-						/>
-					</div>
-				);
-			})}
+					return (
+						<div
+							key={player.sessionId}
+							className="absolute -translate-x-1/2 -translate-y-1/2"
+							style={{ left: `${left}%`, top: `${top}%` }}
+						>
+							<PlayerAvatar
+								name={player.name}
+								avatarUrl={player.avatarUrl}
+								hintWord={player.hintWord}
+								isActive={player.isActive}
+								voteCount={player.voteCount}
+								isVoteTarget={player.isVoteTarget}
+								isAimed={player.isAimed}
+								isEliminated={player.isEliminated}
+								safeDelayMs={safeRevealStartMs === undefined ? undefined : safeRevealStartMs + index * SAFE_STAGGER_MS}
+								floatDelayMs={dreaming ? -index * DREAM_FLOAT_STAGGER_MS : undefined}
+								sleeping={dreaming && player.isSelf}
+							/>
+						</div>
+					);
+				})}
+			</div>
 		</div>
 	);
 }
