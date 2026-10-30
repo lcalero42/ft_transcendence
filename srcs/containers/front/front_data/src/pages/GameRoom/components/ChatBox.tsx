@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import ChatMessage from "@/pages/GameRoom/components/ChatMessage";
 import LogList from "@/pages/GameRoom/components/LogList";
 import UnreadDot from "@/pages/GameRoom/components/UnreadDot";
+import { CHAT_MAX_LENGTH } from "@/pages/GameRoom/components/utils";
 import { useTranslation } from "react-i18next";
 
 interface ChatEntry {
@@ -58,6 +59,7 @@ function ChatBox({
 }: ChatBoxProps) {
 	const { t } = useTranslation();
 	const listRef = useRef<HTMLDivElement>(null);
+	const isAtLimit = draft.length >= CHAT_MAX_LENGTH;
 
 	useEffect(() => {
 		listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
@@ -110,8 +112,9 @@ function ChatBox({
 						type="text"
 						value={draft}
 						onChange={(event) => onDraftChange(event.target.value)}
+						maxLength={CHAT_MAX_LENGTH}
 						placeholder={t("game.typeMessage")}
-						className="input h-10 py-2 text-sm"
+						className={`input h-10 py-2 text-sm ${isAtLimit ? "border-defeat" : ""}`}
 					/>
 				</form>
 			)}

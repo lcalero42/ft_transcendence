@@ -97,7 +97,7 @@ function GameRoom() {
 	if (!id) return <ErrorPage error={t("game.noRoomId")} />;
 	if (profileLoading) return <LoadPage text={t("common.connecting")} />;
 	if (isConnecting || (error && isBannedError(error))) return <LoadPage text={t("common.connecting")} />;
-	if (error) return <ErrorPage error={joinErrorMessage(error, t)} />;
+	if (error) return <ErrorPage error={joinErrorMessage(error, t)} homeLink />;
 	if (!room) return <ErrorPage error={t("game.unavailable")} />;
 
 	return <GameView room={room} />;

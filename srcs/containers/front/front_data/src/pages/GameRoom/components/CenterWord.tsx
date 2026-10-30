@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ArrowUp, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
 	BADGE_AVATAR_CLASSES,
 	BADGE_TONE_CLASSES,
+	toEnchantingTable,
 	type RevealTone,
 } from "@/pages/GameRoom/components/utils";
 
@@ -13,9 +15,26 @@ interface CenterWordProps {
 	badgeTone?: RevealTone;
 	avatarUrl?: string;
 	avatarName?: string;
+	obscured?: boolean;
+	onToggleObscured?: () => void;
+	dreaming?: boolean;
 }
 
-function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarName }: CenterWordProps) {
+const PLAIN_WORD_CLASSES = "absolute text-[clamp(24px,2.2vw,48px)] font-bold tracking-wide uppercase";
+
+function CenterWord({
+	word,
+	direction = 0,
+	dimmed,
+	badgeTone,
+	avatarUrl,
+	avatarName,
+	obscured,
+	onToggleObscured,
+	dreaming,
+}: CenterWordProps) {
+	const { t } = useTranslation();
+	const plainWordClasses = `${PLAIN_WORD_CLASSES} ${dreaming ? "drop-shadow-[0_0_6px_var(--color-dream-3)]/40" : ""}`;
 	const [rotation, setRotation] = useState(direction);
 	const [prevDirection, setPrevDirection] = useState(direction);
 
@@ -27,7 +46,7 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 
 	const arrow = (
 		<ArrowUp
-			className={`text-game-accent h-[max(11vw,120px)] w-[max(15vw,120px)] transition-[transform,opacity] duration-500 ease-in-out ${dimmed ? "opacity-30" : ""}`}
+			className={`text-game-accent h-[max(11vw,120px)] w-[max(15vw,120px)] transition-[transform,opacity] duration-500 ease-in-out ${dimmed ? "opacity-30" : ""} ${dreaming ? "drop-shadow-[0_0_8px_var(--color-dream-2)]/40" : ""}`}
 			strokeWidth={1.5}
 			style={{ transform: `rotate(${rotation}deg)` }}
 		/>
@@ -90,10 +109,23 @@ function CenterWord({ word, direction = 0, dimmed, badgeTone, avatarUrl, avatarN
 						{word}
 					</span>
 				</div>
+			) : onToggleObscured ? (
+				<button
+					type="button"
+					aria-label={t(obscured ? "game.showWord" : "game.hideWord")}
+					title={t(obscured ? "game.showWord" : "game.hideWord")}
+					onClick={(event) => {
+						event.stopPropagation();
+						onToggleObscured();
+					}}
+					className={`${plainWordClasses} cursor-pointer`}
+				>
+					<span key={String(obscured)} className="animate-in fade-in duration-300">
+						{obscured ? toEnchantingTable(word) : word}
+					</span>
+				</button>
 			) : (
-				<span className="absolute text-[clamp(24px,2.2vw,48px)] font-bold tracking-wide uppercase">
-					{word}
-				</span>
+				<span className={plainWordClasses}>{word}</span>
 			)}
 		</div>
 	);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { TFunction } from "i18next";
 import { MessageCircle, Users } from "lucide-react";
 import type { Room } from "@colyseus/sdk";
@@ -10,11 +10,17 @@ import Header from "@/components/Header/Header";
 import Credit from "@/components/Credit/Credit";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime, CHAT_MAX_LENGTH, type RevealTone } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
+import VotePrompt from "@/pages/GameRoom/components/VotePrompt";
 import AutoJoinButton from "@/pages/GameRoom/components/AutoJoinButton";
+import HideWordButton from "@/pages/GameRoom/components/HideWordButton";
+import DreamLayer from "@/pages/GameRoom/components/DreamLayer";
+import DreamFallAsleep from "@/pages/GameRoom/components/DreamFallAsleep";
+import DreamWakeUp from "@/pages/GameRoom/components/DreamWakeUp";
+import WakeUpButton from "@/pages/GameRoom/components/WakeUpButton";
 import JoinButton from "@/pages/GameRoom/components/JoinButton";
 import StartGameButton from "@/pages/GameRoom/components/StartGameButton";
 import ChatBox, { type ChatTab } from "@/pages/GameRoom/components/ChatBox";
@@ -45,6 +51,8 @@ function GameView({ room }: GameViewProps) {
 	const [myWord, setMyWord] = useState("");
 	const [drawer, setDrawer] = useState<"chat" | "players" | null>(null);
 	const [autoJoin, setAutoJoin] = useState(false);
+	const [isWordHidden, setIsWordHidden] = useState(false);
+	const [dream, setDream] = useState<"off" | "falling" | "opening" | "dreaming" | "waking">("off");
 	const [chatTab, setChatTab] = useState<ChatTab>("chat");
 	const [aimedSessionId, setAimedSessionId] = useState<string | null>(null);
 	const [kickRequest, setKickRequest] = useState<{ sessionId: string; action: KickAction } | null>(null);
@@ -88,6 +96,7 @@ function GameView({ room }: GameViewProps) {
 		}));
 	const winnerLabel = winner === "undercover" ? t("game.undercoverWins") : t("game.civiliansWin");
 	const myVoteTargetId = (votes ?? []).find((vote) => vote.voterSessionId === room.sessionId)?.targetSessionId;
+	const myVoteTargetName = myVoteTargetId ? players?.[myVoteTargetId]?.name : undefined;
 	const canVote = phase === "voting" && isParticipant;
 	const voteArrowTargetId = canVote ? (aimedSessionId ?? myVoteTargetId) : undefined;
 	const voteArrowTargetIndex = participantEntries.findIndex(([sessionId]) => sessionId === voteArrowTargetId);
@@ -149,7 +158,11 @@ function GameView({ room }: GameViewProps) {
 
 	if (phase !== prevPhase) {
 		setPrevPhase(phase);
-		if (phase === "starting") setChatTab("log");
+		if (phase === "starting") {
+			setChatTab("log");
+			setIsWordHidden(false);
+		}
+		if (phase === "finished" && dream !== "off") setDream("waking");
 	}
 
 	useEffect(() => {
@@ -165,6 +178,19 @@ function GameView({ room }: GameViewProps) {
 	const handleStartGame = () => room.send("startGame");
 	const handleSubmitClue = (word: string) => room.send("submitClue", word);
 	const handleCastVote = (targetSessionId: string) => room.send("castVote", targetSessionId);
+	const toggleWordHidden = () => setIsWordHidden((current) => !current);
+	const toggleDream = () =>
+		setDream((current) => {
+			if (current === "off") return "falling";
+			if (current === "dreaming") return "waking";
+			return current;
+		});
+	const openDreamEyes = useCallback(() => setDream("opening"), []);
+	const settleDream = useCallback(() => setDream("dreaming"), []);
+	const endDream = useCallback(() => setDream("off"), []);
+	const isFallingAsleep = dream === "falling" || dream === "opening";
+	const isDreamVisible = dream === "opening" || dream === "dreaming" || dream === "waking";
+	const isOwnWordShown = !!currentWord && centerWord === currentWord;
 	const clueEntries = (clues ?? []).map((clue, index) => ({
 		id: `${clue.sessionId}-${clue.submittedAt}-${index}`,
 		name: clue.name,
@@ -197,13 +223,20 @@ function GameView({ room }: GameViewProps) {
 		avatarUrl: getAvatarUrl(players?.[message.sessionId]?.avatarUrl ?? null),
 	}));
 	const handleSendChat = (text: string) => {
+		if (text.trim().toUpperCase() === "IWAAD") {
+			toggleDream();
+			setChatDraft("");
+			setDrawer(null);
+			return;
+		}
 		const retryAfterMs = chatBlockedUntilRef.current - Date.now();
 		if (retryAfterMs > 0) {
 			showChatRateLimited(t, retryAfterMs);
 			return;
 		}
-		lastChatRef.current = text;
-		room.send("chat", text);
+		const message = text.slice(0, CHAT_MAX_LENGTH);
+		lastChatRef.current = message;
+		room.send("chat", message);
 		setChatDraft("");
 	};
 	const isDesktop = useMediaQuery("(min-width: 96rem)");
@@ -259,12 +292,16 @@ function GameView({ room }: GameViewProps) {
 	return (
 		<div className="page h-screen overflow-hidden">
 			<div aria-hidden className="bg-game-bg fixed inset-0 -z-20" />
+			{isDreamVisible && <DreamLayer />}
 			<Header compact wide />
 			<main className="flex min-h-0 flex-1 items-stretch justify-center px-5 py-[2vh] sm:px-[10vw] md:items-center md:px-[15vw] md:py-[2vh] 2xl:px-[8vw]">
 				<div className="relative flex min-h-0 w-full flex-col items-center justify-center gap-6 text-center md:h-[80vh] 2xl:flex-row 2xl:items-stretch">
 					<div className="flex w-full min-h-0 flex-1 flex-col items-center gap-6 2xl:w-auto">
 						<div className="z-10 flex w-full shrink-0 items-center justify-between px-6 pt-6 md:px-0 md:pt-0">
-							<Timer secondsLeft={secondsLeft} />
+							<div className="flex items-center gap-3">
+								<Timer secondsLeft={secondsLeft} />
+								{dream === "dreaming" && <WakeUpButton onClick={toggleDream} />}
+							</div>
 							<div className="flex items-center gap-3 2xl:hidden">
 								<MobileDrawerTrigger
 									icon={MessageCircle}
@@ -285,6 +322,8 @@ function GameView({ room }: GameViewProps) {
 								onAim={setAimedSessionId}
 								onSelect={handleCastVote}
 								safeRevealStartMs={isNoElimination ? 1100 : undefined}
+								spinning={isFallingAsleep}
+								dreaming={isDreamVisible}
 							>
 								{phase === "finished" ? (
 									<WinnerReveal
@@ -302,6 +341,9 @@ function GameView({ room }: GameViewProps) {
 										}
 										avatarUrl={eliminatedPlayer ? getAvatarUrl(eliminatedPlayer.avatarUrl ?? null) : undefined}
 										avatarName={eliminatedPlayer?.name}
+										obscured={isOwnWordShown && isWordHidden}
+										onToggleObscured={isOwnWordShown ? toggleWordHidden : undefined}
+										dreaming={isDreamVisible}
 									/>
 								)}
 							</PlayerCircle>
@@ -320,17 +362,22 @@ function GameView({ room }: GameViewProps) {
 							)}
 							{(phase === "describing" || phase === "voting") && (
 								<>
-									{phase === "describing" && isParticipant && (
+									{((phase === "describing" && isParticipant) || phase === "voting") && (
 										<div className="pointer-events-auto order-1 min-w-0 w-full 2xl:order-2 2xl:col-start-2 2xl:w-auto 2xl:max-w-xl 2xl:mx-auto 2xl:translate-x-[4vw] flex flex-col gap-4">
-											<TurnInput
-												isMyTurn={isMyTurn}
-												activePlayerName={activePlayer?.name}
-												onSubmit={handleSubmitClue}
-											/>
+											{phase === "describing" ? (
+												<TurnInput
+													isMyTurn={isMyTurn}
+													activePlayerName={activePlayer?.name}
+													onSubmit={handleSubmitClue}
+												/>
+											) : (
+												<VotePrompt canVote={canVote} votedName={myVoteTargetName} />
+											)}
 										</div>
 									)}
-									<div className="pointer-events-auto order-2 mb-[max(1vw,12px)] flex flex-col items-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
+									<div className="pointer-events-auto order-2 flex flex-row flex-wrap items-center justify-center gap-3 md:items-start md:self-start 2xl:order-1 2xl:col-start-1 2xl:self-end">
 										<AutoJoinButton enabled={autoJoin} onToggle={() => setAutoJoin((current) => !current)} />
+										{!!currentWord && <HideWordButton hidden={isWordHidden} onToggle={toggleWordHidden} />}
 									</div>
 								</>
 							)}
@@ -358,6 +405,8 @@ function GameView({ room }: GameViewProps) {
 				</div>
 			</main>
 			<Credit />
+			{isFallingAsleep && <DreamFallAsleep onEyesClosed={openDreamEyes} onDone={settleDream} />}
+			{dream === "waking" && <DreamWakeUp onDone={endDream} />}
 			<MobileDrawer open={drawer === "chat"} onClose={() => setDrawer(null)}>
 				<ChatBox
 					messages={chatMessages}

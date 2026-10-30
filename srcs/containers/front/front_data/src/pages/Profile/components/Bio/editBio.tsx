@@ -2,6 +2,8 @@ import { useState} from "react";
 import { useTranslation } from "react-i18next";
 import Edit from "../../../../components/Popup/Edit";
 
+const BIO_MAX_LENGTH = 72;
+
 type EditBioProps = {
 	currentBio: string;
 	onClose: () => void;
@@ -11,6 +13,7 @@ type EditBioProps = {
 function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 	const [bioValue, setbioValue] = useState(currentBio);
 	const { t } = useTranslation();
+	const isAtLimit = bioValue.length >= BIO_MAX_LENGTH;
 
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setbioValue(e.target.value);
@@ -32,8 +35,9 @@ function EditBio({currentBio, onClose, onSave}: EditBioProps) {
 			{(handleClose) => (
 				<>
 					<h2 className="font-bold text-lg">{t("profile.aboutMe")}</h2>
-					<textarea className="border border-card-border rounded-lg p-2 text-sm outline-none transition-colors duration-200 ease-in-out focus:border-stroke-accent"
+					<textarea className={`border rounded-lg p-2 text-sm outline-none transition-colors duration-200 ease-in-out ${isAtLimit ? "border-defeat focus:border-defeat" : "border-card-border focus:border-stroke-accent"}`}
 						value={bioValue}
+						maxLength={BIO_MAX_LENGTH}
 						onChange={handleChange}
 						onKeyDown={(e) => handleKeyDown(e, handleClose)}
 					/>

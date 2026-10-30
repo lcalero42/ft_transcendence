@@ -10,6 +10,8 @@ interface PlayerAvatarProps {
 	isAimed?: boolean;
 	isEliminated?: boolean;
 	safeDelayMs?: number;
+	floatDelayMs?: number;
+	sleeping?: boolean;
 }
 
 function PlayerAvatar({
@@ -22,12 +24,15 @@ function PlayerAvatar({
 	isAimed,
 	isEliminated,
 	safeDelayMs,
+	floatDelayMs,
+	sleeping,
 }: PlayerAvatarProps) {
 	const { t } = useTranslation();
 
 	return (
 		<div
-			className={`flex flex-col items-center gap-1 transition-[opacity,scale] duration-700 ease-in-out md:gap-2 ${isEliminated ? "scale-90 opacity-50 delay-[1500ms]" : ""}`}
+			style={floatDelayMs === undefined ? undefined : { animationDelay: `${floatDelayMs}ms` }}
+			className={`flex flex-col items-center gap-1 transition-[opacity,scale] duration-700 ease-in-out md:gap-2 ${floatDelayMs === undefined ? "" : "motion-safe:animate-dream-float"} ${isEliminated ? "scale-90 opacity-50 delay-[1500ms]" : ""}`}
 		>
 			<span className={`text-body font-bold ${isActive ? "text-accent-purple" : "text-gray-high"}`}>
 				{name}
@@ -41,6 +46,22 @@ function PlayerAvatar({
 					alt={name}
 					className={`size-[50px] shrink-0 rounded-full object-cover transition-[filter] duration-700 md:size-[max(3vw,92px)] ${isEliminated ? "grayscale delay-[1500ms]" : ""}`}
 				/>
+				{sleeping &&
+					[0, 1, 2].map((index) => (
+						<span
+							key={index}
+							aria-hidden
+							style={{
+								left: `${-4 - index * 10}px`,
+								top: `${-index * 12}px`,
+								fontSize: `${12 + index * 4}px`,
+								animationDelay: `${index * 900}ms`,
+							}}
+							className="text-dream-3 pointer-events-none absolute font-bold motion-safe:animate-dream-zzz"
+						>
+							z
+						</span>
+					))}
 				{!!voteCount && (
 					<span
 						aria-label={t("game.votes", { count: voteCount })}

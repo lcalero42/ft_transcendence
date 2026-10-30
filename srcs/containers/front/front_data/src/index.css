@@ -9,6 +9,7 @@
 @import "./styles/meteor.css";
 @import "./styles/arrow-wobble.css";
 @import "./styles/safe-reveal.css";
+@import "./styles/dream.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -183,6 +184,10 @@ body {
 		@apply px-[max(1.2vw,14px)]
 		py-[max(0.7vw,8px)]
 		text-[clamp(13px,0.8vw,22px)];
+	}
+
+	.badge-icon {
+		@apply p-[max(0.7vw,8px)];
 	}
 
 	/* ============ FORM ============ */

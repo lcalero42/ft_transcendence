@@ -8,15 +8,18 @@ interface AutoJoinButtonProps {
 
 function AutoJoinButton({ enabled, onToggle }: AutoJoinButtonProps) {
 	const { t } = useTranslation();
+	const label = t("game.autoJoin");
 
 	return (
 		<button
 			type="button"
 			onClick={onToggle}
-			className={`badge badge-action hoverable rounded-lg! shrink-0 gap-[max(0.6vw,8px)] ${enabled ? "border-accent-purple text-accent-purple" : ""}`}
+			aria-pressed={enabled}
+			aria-label={label}
+			title={label}
+			className={`badge badge-icon hoverable rounded-lg! shrink-0 ${enabled ? "border-accent-purple text-accent-purple" : ""}`}
 		>
 			<UserPlus className="size-[clamp(15px,1.1vw,24px)]" />
-			{t("game.autoJoin")}
 		</button>
 	);
 }
