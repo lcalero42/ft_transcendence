@@ -12,7 +12,7 @@ RUN npx vite build
 
 FROM nginx:1.27-alpine AS base
 
-RUN apk add --no-cache openssl
+RUN apk add --no-cache openssl curl
 
 COPY --chmod=755 ./nginx/conf/generate-cert.sh /docker-entrypoint.d/05-generate-cert.sh
 COPY ./nginx/conf/upgrade-map.conf /etc/nginx/conf.d/upgrade-map.conf
