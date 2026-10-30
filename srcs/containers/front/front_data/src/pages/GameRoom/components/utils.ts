@@ -1,5 +1,7 @@
 export type RevealTone = "victory" | "defeat" | "neutral";
 
+export const CHAT_MAX_LENGTH = 300;
+
 export const BADGE_TONE_CLASSES: Record<RevealTone, string> = {
 	victory: "border-victory/60 bg-victory/10 text-victory",
 	defeat: "border-defeat/60 bg-defeat/10 text-defeat",

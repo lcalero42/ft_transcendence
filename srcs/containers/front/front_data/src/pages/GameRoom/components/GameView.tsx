@@ -10,7 +10,7 @@ import Header from "@/components/Header/Header";
 import Credit from "@/components/Credit/Credit";
 import Timer from "@/pages/GameRoom/components/Timer";
 import PlayerCircle from "@/pages/GameRoom/components/PlayerCircle";
-import { getPlayerAngleDeg, formatChatTime, type RevealTone } from "@/pages/GameRoom/components/utils";
+import { getPlayerAngleDeg, formatChatTime, CHAT_MAX_LENGTH, type RevealTone } from "@/pages/GameRoom/components/utils";
 import CenterWord from "@/pages/GameRoom/components/CenterWord";
 import WinnerReveal from "@/pages/GameRoom/components/WinnerReveal";
 import TurnInput from "@/pages/GameRoom/components/TurnInput";
@@ -234,8 +234,9 @@ function GameView({ room }: GameViewProps) {
 			showChatRateLimited(t, retryAfterMs);
 			return;
 		}
-		lastChatRef.current = text;
-		room.send("chat", text);
+		const message = text.slice(0, CHAT_MAX_LENGTH);
+		lastChatRef.current = message;
+		room.send("chat", message);
 		setChatDraft("");
 	};
 	const isDesktop = useMediaQuery("(min-width: 96rem)");
