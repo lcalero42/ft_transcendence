@@ -101,6 +101,61 @@ resort, `make fclean && make dev` wipes the data.
 - `/internal/` routes expect `x-internal-api-key`, not a session. NGINX
   never forwards them.
 
+## Deploying on a VPS
+
+`make vps` runs the prod stack with a real domain and a Let's Encrypt
+certificate. It is opt-in: `make prod` keeps the self-signed certificate
+and ports 8080/8443, so nothing changes where port 80 is unavailable.
+`docker-compose.vps.yml` only mounts the certificate and webroot into
+NGINX and points `SSL_CERT_PATH` / `SSL_KEY_PATH` at them.
+
+1. Point an `A` record (and `AAAA` if the VPS has IPv6) of the domain at the
+   VPS and check it with `dig +short example.com`.
+2. Harden the VPS: SSH keys only, `ufw allow 22,80,443/tcp`, fail2ban, and
+   don't open 3000, 2567 or 5432.
+3. Install Docker with the compose plugin and certbot, clone the repo, then
+   create the env files and secrets as in the README (fresh random values,
+   e.g. `openssl rand -hex 32`).
+4. In `srcs/.env` set:
+   ```
+   HTTP_PORT=80
+   HTTPS_PORT=443
+   DOMAIN=example.com
+   CORS_ORIGIN=https://example.com
+   ```
+   `CORS_ORIGIN` has no trailing slash and no port. It drives CORS, the
+   CSRF origin check and the OAuth redirect URIs.
+5. Register `https://example.com/api/auth/{google,discord}/callback` in the
+   Google and Discord apps (keep the localhost ones for local use).
+6. Get the first certificate while port 80 is still free, then start the
+   stack and switch renewal to the webroot method:
+   ```bash
+   sudo mkdir -p /var/www/certbot
+   sudo certbot certonly --standalone -d example.com
+   make vps
+   sudo certbot certonly --webroot -w /var/www/certbot -d example.com
+   ```
+7. Certbot's systemd timer (`systemctl list-timers | grep certbot`) renews
+   the certificate on its own. NGINX must be reloaded afterwards, so add a
+   deploy hook that certbot runs after every successful renewal (a hook
+   passed on the command line to `certbot renew` is not saved):
+   ```bash
+   sudo tee /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh >/dev/null <<'EOF'
+   #!/bin/sh
+   docker exec nginx nginx -s reload
+   EOF
+   sudo chmod +x /etc/letsencrypt/renewal-hooks/deploy/reload-nginx.sh
+   ```
+   Check it with `sudo certbot renew --dry-run` (it doesn't run deploy
+   hooks, so also run the script once by hand).
+8. Back up the `postgres_prod_data` and `back_uploads` volumes off the
+   machine (for example a nightly `pg_dump`), and test a restore once.
+
+Check: `curl -I http://example.com` returns a 301 to HTTPS, and
+`curl -I https://example.com` returns 200 with a valid certificate and the
+security headers. Use `make vps-logs` / `make vps-down` for day-to-day
+operation. Never commit `.env` files, `srcs/secrets/` or certificates.
+
 ### Changed the Prisma schema and nothing updates
 Run `make prisma-migrate`, or restart `back`. `npm run typecheck` in back
 runs `prisma generate` first, so calling `tsc` directly can report a stale

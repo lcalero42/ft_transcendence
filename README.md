@@ -59,6 +59,9 @@ Open **`https://localhost:8443`** (`http://localhost:8080` redirects to it).
 The certificate is self-signed, so the browser warns once: choose
 *Advanced → Continue to localhost*.
 
+To deploy on a VPS with a real domain and a Let's Encrypt certificate, use
+`make vps` (see [the runbook](docs/runbook.md#deploying-on-a-vps)).
+
 ```bash
 make down       # stop (keeps data)
 make logs       # follow logs (logs-back / logs-front / logs-nginx)

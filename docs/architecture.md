@@ -9,7 +9,7 @@ flowchart LR
     browser(["Browser"])
 
     subgraph compose["Docker Compose"]
-        nginx["<b>nginx</b> :443<br/>published on 8443<br/>8080 → 8443"]
+        nginx["<b>nginx</b> :443<br/>published on 8443<br/>8080 → 8443<br/>(VPS: 443, 80 → 443)"]
         front["<b>front</b><br/>dev: Vite :5173<br/>prod: static files in nginx"]
         back["<b>back</b><br/>NestJS :3000<br/>Colyseus :2567"]
         db[("<b>postgres</b> 16")]

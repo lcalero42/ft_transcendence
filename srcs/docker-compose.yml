@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
 services:
   nginx:
     build:
@@ -8,8 +14,12 @@ services:
     ports:
       - "${HTTP_PORT:-8080}:80"
       - "${HTTPS_PORT:-8443}:443"
+    logging: *default-logging
     environment:
       HTTPS_PORT: ${HTTPS_PORT:-8443}
+      DOMAIN: ${DOMAIN:-_}
+      SSL_CERT_PATH: ${SSL_CERT_PATH:-/etc/nginx/certs/transcendence.crt}
+      SSL_KEY_PATH: ${SSL_KEY_PATH:-/etc/nginx/certs/transcendence.key}
     volumes:
       - nginx_certs:/etc/nginx/certs
     depends_on:
@@ -20,6 +30,7 @@ services:
       context: ./containers/back
     container_name: back
     restart: unless-stopped
+    logging: *default-logging
     environment:
       CORS_ORIGIN: ${CORS_ORIGIN:-https://localhost:${HTTPS_PORT:-8443}}
     secrets:
@@ -41,6 +52,7 @@ services:
     container_name: postgres
     image: postgres:16
     restart: unless-stopped
+    logging: *default-logging
     secrets:
       - db_user
       - db_password

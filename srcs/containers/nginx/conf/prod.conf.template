@@ -1,15 +1,29 @@
+map "${HTTPS_PORT}" $https_redirect_port {
+    default ":${HTTPS_PORT}";
+    "443"   "";
+}
+
 server {
     listen 80;
     listen [::]:80;
-    server_name _;
+    server_name ${DOMAIN};
 
-    return 301 https://$host:${HTTPS_PORT}$request_uri;
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$https_redirect_port$request_uri;
+    }
 }
 
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
-    server_name _;
+    server_name ${DOMAIN};
+
+    ssl_certificate     ${SSL_CERT_PATH};
+    ssl_certificate_key ${SSL_KEY_PATH};
 
     set $csp "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 

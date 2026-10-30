@@ -5,8 +5,10 @@
 COMPOSE_FILE      := srcs/docker-compose.yml
 COMPOSE_DEV_FILE  := srcs/docker-compose.dev.yml
 COMPOSE_PROD_FILE := srcs/docker-compose.prod.yml
+COMPOSE_VPS_FILE  := srcs/docker-compose.vps.yml
 COMPOSE_DEV       := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_DEV_FILE)
 COMPOSE_PROD      := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE)
+COMPOSE_VPS       := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE) -f $(COMPOSE_VPS_FILE)
 COMPOSE           := $(COMPOSE_DEV)
 
 # Docker Compose defaults the project name to the basename of the directory
@@ -29,7 +31,7 @@ YELLOW := \033[0;33m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-.PHONY: all dev prod build buildd up upd down front back re re-front re-back \
+.PHONY: all dev prod vps vps-down vps-logs build buildd up upd down front back re re-front re-back \
         logs logs-front logs-back logs-nginx ps \
         clean fclean \
         prisma-migrate prisma-generate bots \
@@ -162,6 +164,15 @@ dev: check-env check-secrets ## Build and start the dev stack attached (hot relo
 
 prod: check-env check-secrets ## Build and start the prod stack detached (optimized build, only nginx exposed), app on https://localhost:8443
 	$(COMPOSE_PROD) up --build -d --remove-orphans
+
+vps: check-env check-secrets ## Build and start the prod stack on a VPS with a real domain and Let's Encrypt certificate (see docs/runbook.md)
+	$(COMPOSE_VPS) up --build -d --remove-orphans
+
+vps-down: ## Stop and remove the VPS stack containers (keeps data)
+	$(COMPOSE_VPS) down --remove-orphans
+
+vps-logs: ## Tail logs for the VPS stack
+	$(COMPOSE_VPS) logs -f
 
 up: dev ## Alias of dev
 
