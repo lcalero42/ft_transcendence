@@ -284,6 +284,7 @@
 	},
 	"legal": {
 		"privacyPolicy": "Privacy Policy",
+		"termsOfService": "Terms of Service",
 		"lastUpdated": "Last updated:"
 	},
 	"errors": {
