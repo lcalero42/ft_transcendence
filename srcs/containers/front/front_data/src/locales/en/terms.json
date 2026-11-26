@@ -1,0 +1,102 @@
+{
+	"title": "Terms of Service",
+	"acceptance": {
+		"title": "Acceptance of these terms",
+		"paragraphs": [
+			"These terms explain the rules for using Undercover. By creating an account, playing as a guest or using the website in any other way, you agree to them. If you do not agree, please do not use the website."
+		]
+	},
+	"service": {
+		"title": "About the service",
+		"paragraphs": [
+			"Undercover is a free online social deduction game made at 42 by {{team}} as a student project. It has no commercial purpose: there are no payments, no ads and no premium features.",
+			"In each game, {{minPlayers}} to {{maxPlayers}} players receive a secret word. Most of them are civilians who share the same word, while the undercover gets a slightly different one. Players take turns giving a clue, then vote to eliminate who they think is the undercover. The website also lets you chat in rooms, add friends and see game statistics."
+		]
+	},
+	"accounts": {
+		"title": "Your account",
+		"items": [
+			"You can register with an email and a password, sign in with Google or Discord, or play as a guest.",
+			"The information you give us must be accurate, and the email address you use must belong to you.",
+			"You are responsible for keeping your password secret and for everything done with your account. If you think someone else has access to it, contact us.",
+			"Your account is personal: do not share it, sell it or use someone else's account.",
+			"Guest accounts are temporary. They are automatically closed {{guestHours}} hours after they are created and cannot be recovered afterwards. Some features, like editing a profile or adding friends, are only available with a full account."
+		]
+	},
+	"conduct": {
+		"title": "Rules of conduct",
+		"paragraphs": [
+			"Undercover is meant to be fun for everyone. When you use the website, you agree not to:"
+		],
+		"items": [
+			"Harass, insult, threaten or discriminate against other players, in the chat or anywhere else.",
+			"Choose a username, bio or avatar that is offensive, sexual, violent, hateful or that pretends to be someone else.",
+			"Share personal information about other people without their consent.",
+			"Spam the chat, send advertising or post links to harmful websites.",
+			"Cheat, for example by sharing your secret word outside the game, teaming up with other players in secret or using several accounts in the same room.",
+			"Use bots, scripts or any automated tool to play or to send requests to the website.",
+			"Try to break, overload or get around the security of the website, or access data or accounts that are not yours."
+		]
+	},
+	"content": {
+		"title": "Your content",
+		"paragraphs": [
+			"You stay the owner of what you post on Undercover: your username, bio, avatar, clues and chat messages. You are responsible for it, and you must have the right to use it (for example, do not upload an image you are not allowed to share).",
+			"By posting it, you allow us to store it and show it to other players, only to make the website work. Chat messages are not saved: they disappear when the room closes."
+		]
+	},
+	"moderation": {
+		"title": "Moderation",
+		"items": [
+			"The host of a room can kick a player out of it, or ban them so they cannot join that room again.",
+			"Messages sent too quickly may be blocked to prevent spam.",
+			"Our team can remove content and suspend or close an account that breaks these terms, without notice if the situation is serious."
+		]
+	},
+	"availability": {
+		"title": "Availability of the service",
+		"paragraphs": [
+			"Undercover is a student project hosted on our own server. We do our best to keep it running, but we cannot promise that it will always be available, fast or free of bugs. The website is provided \"as is\".",
+			"We may change, pause or stop the website or any of its features at any time. Games in progress may be lost if the server restarts or if you lose your connection for too long."
+		]
+	},
+	"liability": {
+		"title": "Limitation of liability",
+		"paragraphs": [
+			"As far as the law allows, we are not responsible for any loss or damage caused by the use of the website, by its unavailability, or by the behaviour and content of other players. Nothing in these terms limits a responsibility that cannot be limited by law."
+		]
+	},
+	"intellectualProperty": {
+		"title": "Intellectual property",
+		"paragraphs": [
+			"The design, code, texts and word lists of Undercover were made by our team. The source code is available on GitHub (link at the bottom of every page). Fonts, icons and libraries used by the website belong to their respective authors and are used under their own licences.",
+			"Google and Discord are trademarks of their owners. Undercover is not affiliated with them."
+		]
+	},
+	"privacy": {
+		"title": "Privacy",
+		"paragraphs": [
+			"How we collect and use your personal data is explained in our Privacy Policy, available at the bottom of every page. It is part of these terms."
+		]
+	},
+	"termination": {
+		"title": "Closing your account",
+		"paragraphs": [
+			"You can stop using Undercover at any time. To have your account closed and your personal data erased, contact us as explained in the Privacy Policy. We will handle your request within {{answerDays}} days.",
+			"If your account is closed because you broke these terms, you may not create a new account to get around it."
+		]
+	},
+	"changes": {
+		"title": "Changes to these terms",
+		"paragraphs": [
+			"We may update these terms when the website changes. We will update this page and the date at the top. If you keep using the website after a change, you accept the new terms."
+		]
+	},
+	"contact": {
+		"title": "Contact and applicable law",
+		"paragraphs": [
+			"For any question about these terms, or to report a player or a problem, contact one of us ({{team}}).",
+			"These terms are governed by French law."
+		]
+	}
+}

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Privacy from "./pages/Privacy/Privacy";
+import Terms from "./pages/Terms/Terms";
 import Guest from "./pages/Guest/Guest";
 import Home from "./pages/Home/Home";
 import Profile from "./pages/Profile/Profile";
@@ -34,6 +35,7 @@ function App() {
 							<Route path="/profile" element={<ProtectedRoute allowGuest={false}><Profile /></ProtectedRoute>} />
 							<Route path="/profile/:name" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/privacy" element={<Privacy />} />
+							<Route path="/terms" element={<Terms />} />
 							<Route path="/create-room/:roomId?" element={<ProtectedRoute redirectTo="/guest"><CreateRoom /></ProtectedRoute>} />
 							<Route path="/game/:id" element={<ProtectedRoute redirectTo="/guest"><GameRoom /></ProtectedRoute>} />
 							<Route path="*" element={<NotFound />} />

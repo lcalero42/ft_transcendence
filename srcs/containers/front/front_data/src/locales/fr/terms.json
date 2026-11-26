@@ -1,0 +1,102 @@
+{
+	"title": "Conditions d'utilisation",
+	"acceptance": {
+		"title": "Acceptation des conditions",
+		"paragraphs": [
+			"Ces conditions expliquent les règles d'utilisation d'Undercover. En créant un compte, en jouant en tant qu'invité ou en utilisant le site de toute autre manière, vous les acceptez. Si vous n'êtes pas d'accord, merci de ne pas utiliser le site."
+		]
+	},
+	"service": {
+		"title": "À propos du service",
+		"paragraphs": [
+			"Undercover est un jeu de déduction sociale en ligne et gratuit, réalisé à 42 par {{team}} dans le cadre d'un projet étudiant. Il n'a aucun but commercial : pas de paiement, pas de publicité et pas de fonctionnalités premium.",
+			"Dans chaque partie, {{minPlayers}} à {{maxPlayers}} joueurs reçoivent un mot secret. La plupart sont des civils qui partagent le même mot, tandis que l'undercover reçoit un mot légèrement différent. Chacun donne un indice à tour de rôle, puis les joueurs votent pour éliminer celui qu'ils pensent être l'undercover. Le site permet aussi de discuter dans les salons, d'ajouter des amis et de consulter des statistiques de parties."
+		]
+	},
+	"accounts": {
+		"title": "Votre compte",
+		"items": [
+			"Vous pouvez vous inscrire avec un email et un mot de passe, vous connecter avec Google ou Discord, ou jouer en tant qu'invité.",
+			"Les informations que vous nous donnez doivent être exactes, et l'adresse email utilisée doit vous appartenir.",
+			"Vous êtes responsable de la confidentialité de votre mot de passe et de tout ce qui est fait avec votre compte. Si vous pensez que quelqu'un d'autre y a accès, contactez-nous.",
+			"Votre compte est personnel : ne le partagez pas, ne le vendez pas et n'utilisez pas le compte de quelqu'un d'autre.",
+			"Les comptes invités sont temporaires. Ils sont automatiquement fermés {{guestHours}} heures après leur création et ne peuvent pas être récupérés ensuite. Certaines fonctionnalités, comme la modification du profil ou l'ajout d'amis, ne sont disponibles qu'avec un compte complet."
+		]
+	},
+	"conduct": {
+		"title": "Règles de conduite",
+		"paragraphs": [
+			"Undercover doit rester amusant pour tout le monde. En utilisant le site, vous vous engagez à ne pas :"
+		],
+		"items": [
+			"Harceler, insulter, menacer ou discriminer d'autres joueurs, dans le chat ou ailleurs.",
+			"Choisir un nom d'utilisateur, une bio ou un avatar offensant, sexuel, violent, haineux ou qui se fait passer pour quelqu'un d'autre.",
+			"Partager des informations personnelles sur d'autres personnes sans leur accord.",
+			"Spammer le chat, envoyer de la publicité ou publier des liens vers des sites dangereux.",
+			"Tricher, par exemple en partageant votre mot secret en dehors du jeu, en vous alliant en secret avec d'autres joueurs ou en utilisant plusieurs comptes dans le même salon.",
+			"Utiliser des bots, des scripts ou tout outil automatisé pour jouer ou envoyer des requêtes au site.",
+			"Tenter de casser, de surcharger ou de contourner la sécurité du site, ou d'accéder à des données ou des comptes qui ne sont pas les vôtres."
+		]
+	},
+	"content": {
+		"title": "Votre contenu",
+		"paragraphs": [
+			"Vous restez propriétaire de ce que vous publiez sur Undercover : votre nom d'utilisateur, votre bio, votre avatar, vos indices et vos messages. Vous en êtes responsable et vous devez avoir le droit de l'utiliser (par exemple, n'importez pas une image que vous n'avez pas le droit de partager).",
+			"En le publiant, vous nous autorisez à le stocker et à l'afficher aux autres joueurs, uniquement pour faire fonctionner le site. Les messages du chat ne sont pas enregistrés : ils disparaissent à la fermeture du salon."
+		]
+	},
+	"moderation": {
+		"title": "Modération",
+		"items": [
+			"L'hôte d'un salon peut exclure un joueur, ou le bannir pour qu'il ne puisse plus rejoindre ce salon.",
+			"Les messages envoyés trop rapidement peuvent être bloqués pour éviter le spam.",
+			"Notre équipe peut supprimer du contenu et suspendre ou fermer un compte qui ne respecte pas ces conditions, sans préavis si la situation est grave."
+		]
+	},
+	"availability": {
+		"title": "Disponibilité du service",
+		"paragraphs": [
+			"Undercover est un projet étudiant hébergé sur notre propre serveur. Nous faisons de notre mieux pour qu'il fonctionne, mais nous ne pouvons pas garantir qu'il sera toujours disponible, rapide ou sans bug. Le site est fourni « tel quel ».",
+			"Nous pouvons modifier, suspendre ou arrêter le site ou l'une de ses fonctionnalités à tout moment. Une partie en cours peut être perdue si le serveur redémarre ou si vous perdez la connexion trop longtemps."
+		]
+	},
+	"liability": {
+		"title": "Limitation de responsabilité",
+		"paragraphs": [
+			"Dans la mesure permise par la loi, nous ne sommes pas responsables des pertes ou dommages causés par l'utilisation du site, par son indisponibilité, ou par le comportement et le contenu des autres joueurs. Rien dans ces conditions ne limite une responsabilité qui ne peut pas l'être selon la loi."
+		]
+	},
+	"intellectualProperty": {
+		"title": "Propriété intellectuelle",
+		"paragraphs": [
+			"Le design, le code, les textes et les listes de mots d'Undercover ont été réalisés par notre équipe. Le code source est disponible sur GitHub (lien en bas de chaque page). Les polices, icônes et bibliothèques utilisées par le site appartiennent à leurs auteurs respectifs et sont utilisées selon leurs propres licences.",
+			"Google et Discord sont des marques de leurs propriétaires. Undercover n'est pas affilié à ces services."
+		]
+	},
+	"privacy": {
+		"title": "Confidentialité",
+		"paragraphs": [
+			"La façon dont nous collectons et utilisons vos données personnelles est expliquée dans notre Politique de confidentialité, accessible en bas de chaque page. Elle fait partie de ces conditions."
+		]
+	},
+	"termination": {
+		"title": "Fermeture de votre compte",
+		"paragraphs": [
+			"Vous pouvez arrêter d'utiliser Undercover à tout moment. Pour faire fermer votre compte et effacer vos données personnelles, contactez-nous comme indiqué dans la Politique de confidentialité. Nous traiterons votre demande sous {{answerDays}} jours.",
+			"Si votre compte est fermé parce que vous n'avez pas respecté ces conditions, vous ne devez pas créer un nouveau compte pour le contourner."
+		]
+	},
+	"changes": {
+		"title": "Modification des conditions",
+		"paragraphs": [
+			"Nous pouvons mettre à jour ces conditions lorsque le site évolue. Nous mettrons alors à jour cette page et la date en haut. Si vous continuez à utiliser le site après une modification, vous acceptez les nouvelles conditions."
+		]
+	},
+	"contact": {
+		"title": "Contact et droit applicable",
+		"paragraphs": [
+			"Pour toute question sur ces conditions, ou pour signaler un joueur ou un problème, contactez l'un d'entre nous ({{team}}).",
+			"Ces conditions sont régies par le droit français."
+		]
+	}
+}

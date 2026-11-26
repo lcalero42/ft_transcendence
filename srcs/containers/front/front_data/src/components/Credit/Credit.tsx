@@ -15,6 +15,10 @@ function Credit() {
 					{t("legal.privacyPolicy")}
 				</Link>
 				<span>|</span>
+				<Link to="/terms" className="hover:underline hover:text-accent-purple">
+					{t("legal.termsOfService")}
+				</Link>
+				<span>|</span>
 				<a
 					href="https://github.com/lcalero42/ft_transcendence"
 					target="_blank"

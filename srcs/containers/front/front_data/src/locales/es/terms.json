@@ -1,0 +1,102 @@
+{
+	"title": "Términos de servicio",
+	"acceptance": {
+		"title": "Aceptación de los términos",
+		"paragraphs": [
+			"Estos términos explican las reglas de uso de Undercover. Al crear una cuenta, jugar como invitado o usar el sitio web de cualquier otra forma, los aceptas. Si no estás de acuerdo, por favor no uses el sitio web."
+		]
+	},
+	"service": {
+		"title": "Sobre el servicio",
+		"paragraphs": [
+			"Undercover es un juego gratuito de deducción social en línea, creado en 42 por {{team}} como proyecto de estudiantes. No tiene fines comerciales: no hay pagos, ni publicidad, ni funciones premium.",
+			"En cada partida, de {{minPlayers}} a {{maxPlayers}} jugadores reciben una palabra secreta. La mayoría son civiles que comparten la misma palabra, mientras que el undercover recibe una palabra ligeramente distinta. Cada jugador da una pista por turnos y luego todos votan para eliminar a quien creen que es el undercover. El sitio web también permite chatear en las salas, añadir amigos y consultar estadísticas de partidas."
+		]
+	},
+	"accounts": {
+		"title": "Tu cuenta",
+		"items": [
+			"Puedes registrarte con un correo y una contraseña, iniciar sesión con Google o Discord, o jugar como invitado.",
+			"La información que nos das debe ser correcta, y el correo que uses debe ser tuyo.",
+			"Eres responsable de mantener tu contraseña en secreto y de todo lo que se haga con tu cuenta. Si crees que otra persona tiene acceso a ella, contáctanos.",
+			"Tu cuenta es personal: no la compartas, no la vendas y no uses la cuenta de otra persona.",
+			"Las cuentas de invitado son temporales. Se cierran automáticamente {{guestHours}} horas después de su creación y no se pueden recuperar después. Algunas funciones, como editar el perfil o añadir amigos, solo están disponibles con una cuenta completa."
+		]
+	},
+	"conduct": {
+		"title": "Normas de conducta",
+		"paragraphs": [
+			"Undercover tiene que ser divertido para todos. Al usar el sitio web, te comprometes a no:"
+		],
+		"items": [
+			"Acosar, insultar, amenazar o discriminar a otros jugadores, en el chat o en cualquier otro lugar.",
+			"Elegir un nombre de usuario, una biografía o un avatar ofensivo, sexual, violento, de odio o que se haga pasar por otra persona.",
+			"Compartir información personal de otras personas sin su consentimiento.",
+			"Hacer spam en el chat, enviar publicidad o publicar enlaces a sitios peligrosos.",
+			"Hacer trampas, por ejemplo compartiendo tu palabra secreta fuera del juego, aliándote en secreto con otros jugadores o usando varias cuentas en la misma sala.",
+			"Usar bots, scripts o cualquier herramienta automatizada para jugar o enviar peticiones al sitio web.",
+			"Intentar romper, sobrecargar o saltarse la seguridad del sitio web, o acceder a datos o cuentas que no son tuyos."
+		]
+	},
+	"content": {
+		"title": "Tu contenido",
+		"paragraphs": [
+			"Sigues siendo el propietario de lo que publicas en Undercover: tu nombre de usuario, tu biografía, tu avatar, tus pistas y tus mensajes. Eres responsable de ello y debes tener derecho a usarlo (por ejemplo, no subas una imagen que no puedas compartir).",
+			"Al publicarlo, nos autorizas a guardarlo y mostrarlo a otros jugadores, solo para que el sitio web funcione. Los mensajes del chat no se guardan: desaparecen cuando se cierra la sala."
+		]
+	},
+	"moderation": {
+		"title": "Moderación",
+		"items": [
+			"El anfitrión de una sala puede expulsar a un jugador, o banearlo para que no pueda volver a entrar en esa sala.",
+			"Los mensajes enviados demasiado rápido pueden ser bloqueados para evitar el spam.",
+			"Nuestro equipo puede eliminar contenido y suspender o cerrar una cuenta que no respete estos términos, sin previo aviso si la situación es grave."
+		]
+	},
+	"availability": {
+		"title": "Disponibilidad del servicio",
+		"paragraphs": [
+			"Undercover es un proyecto de estudiantes alojado en nuestro propio servidor. Hacemos lo posible para que funcione, pero no podemos garantizar que esté siempre disponible, sea rápido o no tenga errores. El sitio web se ofrece «tal cual».",
+			"Podemos modificar, pausar o detener el sitio web o cualquiera de sus funciones en cualquier momento. Una partida en curso puede perderse si el servidor se reinicia o si pierdes la conexión durante demasiado tiempo."
+		]
+	},
+	"liability": {
+		"title": "Limitación de responsabilidad",
+		"paragraphs": [
+			"En la medida en que lo permita la ley, no somos responsables de ninguna pérdida o daño causado por el uso del sitio web, por su falta de disponibilidad, o por el comportamiento y el contenido de otros jugadores. Nada en estos términos limita una responsabilidad que la ley no permita limitar."
+		]
+	},
+	"intellectualProperty": {
+		"title": "Propiedad intelectual",
+		"paragraphs": [
+			"El diseño, el código, los textos y las listas de palabras de Undercover fueron creados por nuestro equipo. El código fuente está disponible en GitHub (enlace al final de cada página). Las fuentes, iconos y librerías que usa el sitio web pertenecen a sus respectivos autores y se usan según sus propias licencias.",
+			"Google y Discord son marcas de sus propietarios. Undercover no está afiliado a ellos."
+		]
+	},
+	"privacy": {
+		"title": "Privacidad",
+		"paragraphs": [
+			"Cómo recogemos y usamos tus datos personales se explica en nuestra Política de privacidad, disponible al final de cada página. Forma parte de estos términos."
+		]
+	},
+	"termination": {
+		"title": "Cierre de tu cuenta",
+		"paragraphs": [
+			"Puedes dejar de usar Undercover en cualquier momento. Para cerrar tu cuenta y borrar tus datos personales, contáctanos como se explica en la Política de privacidad. Atenderemos tu solicitud en un plazo de {{answerDays}} días.",
+			"Si tu cuenta se cierra por no respetar estos términos, no debes crear una cuenta nueva para evitarlo."
+		]
+	},
+	"changes": {
+		"title": "Cambios en estos términos",
+		"paragraphs": [
+			"Podemos actualizar estos términos cuando el sitio web cambie. Actualizaremos esta página y la fecha de arriba. Si sigues usando el sitio web después de un cambio, aceptas los nuevos términos."
+		]
+	},
+	"contact": {
+		"title": "Contacto y ley aplicable",
+		"paragraphs": [
+			"Para cualquier pregunta sobre estos términos, o para denunciar a un jugador o un problema, contacta con uno de nosotros ({{team}}).",
+			"Estos términos se rigen por la ley francesa."
+		]
+	}
+}

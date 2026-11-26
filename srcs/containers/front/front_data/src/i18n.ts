@@ -6,6 +6,9 @@ import es from "./locales/es.json";
 import enPrivacy from "./locales/en/privacy.json";
 import frPrivacy from "./locales/fr/privacy.json";
 import esPrivacy from "./locales/es/privacy.json";
+import enTerms from "./locales/en/terms.json";
+import frTerms from "./locales/fr/terms.json";
+import esTerms from "./locales/es/terms.json";
 
 export const LANGUAGES = ["en", "fr", "es"] as const;
 export type Language = (typeof LANGUAGES)[number];
@@ -24,9 +27,9 @@ function readStoredLanguage(): Language {
 
 void i18n.use(initReactI18next).init({
 	resources: {
-		en: { translation: en, privacy: enPrivacy },
-		fr: { translation: fr, privacy: frPrivacy },
-		es: { translation: es, privacy: esPrivacy },
+		en: { translation: en, privacy: enPrivacy, terms: enTerms },
+		fr: { translation: fr, privacy: frPrivacy, terms: frTerms },
+		es: { translation: es, privacy: esPrivacy, terms: esTerms },
 	},
 	lng: readStoredLanguage(),
 	fallbackLng: DEFAULT_LANGUAGE,
